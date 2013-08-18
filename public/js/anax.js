@@ -1,23 +1,28 @@
+var center = [-42.880556, 147.325]
 function initialize() {
   var mapOptions = {
     zoom: 6,
-    center: new google.maps.LatLng(-42.880556, 147.325), 
+    center: new google.maps.LatLng(center[0], center[1]), 
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }
   var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-  var pl = new google.maps.Polygon({
-    path: _.map(path, function (x) {
-      return new google.maps.LatLng(x[0], x[1]);
-    }),
-    strokeColor: '#FF0000',
-    strokeOpacity: 1.0,
-    strokeWeight: 2,
-    fillColor: "#558822",
-    fillOpacity: 0.5
-  });
+  $.get("/location", {lat: center[0], lon: center[1]}, function (results) {
+    _.each(results, function (result) {
+      var pl = new google.maps.Polygon({
+        path: _.map(result.location, function (x) {
+          return new google.maps.LatLng(x[0], x[1]);
+        }),
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        fillColor: "#558822",
+        fillOpacity: 0.5
+      });
 
-  pl.setMap(map);
+      pl.setMap(map);
+    });
+  });
 
 }
 

@@ -12,12 +12,24 @@ var app = express();
 app.use(express.static(__dirname + '/public'));
 
 app.get('/location', function(req, res) {
+  var params = req.query;
   db.runQuery(
     getEventAttendeesAtPoint({
-      lat: -42.880556, 
-      lon: 147.325
+      lat: parseFloat(params.lat), 
+      lon: parseFloat(params.lon)
     })
   ).then(function (result) {
+    var rows = result.rows;
+    _.map(rows, function (row) {
+      var location = row.location;
+      var data = /MULTILINESTRING\(\((.*)\)\)/.exec(location)[1];
+      var latlons = data.split(",");
+      var result = _.map(latlons, function (latlon) {
+        var array = latlon.split(" ");
+        return [parseFloat(array[1]), parseFloat(array[0])];
+      });
+      row.location = result;
+    });
     res.send(result.rows);
   }, function () {
     console.log("err", arguments)
