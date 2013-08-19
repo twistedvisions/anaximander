@@ -18,22 +18,31 @@ app.get('/location', function(req, res) {
       lat: parseFloat(params.lat), 
       lon: parseFloat(params.lon)
     })
-  ).then(function (result) {
-    var rows = result.rows;
-    _.map(rows, function (row) {
-      var location = row.location;
-      var data = /MULTILINESTRING\(\((.*)\)\)/.exec(location)[1];
-      var latlons = data.split(",");
-      var result = _.map(latlons, function (latlon) {
-        var array = latlon.split(" ");
-        return [parseFloat(array[1]), parseFloat(array[0])];
+  ).then(
+    function (result) {
+      var rows = result.rows;
+      _.map(rows, function (row) {
+        var location = row.location;
+        if (/MULTILINESTRING/.test(location)) {
+          var data = /MULTILINESTRING\(\((.*)\)\)/.exec(location)[1];
+          var latlons = data.split(",");
+          var result = _.map(latlons, function (latlon) {
+            var array = latlon.split(" ");
+            return [parseFloat(array[1]), parseFloat(array[0])];
+          });
+          row.location = result;
+        } else if (/POINT/.test(location)) {
+          var data = /POINT\((.*)\)/.exec(location)[1];
+          var array = data.split(" ");
+          row.location = [[parseFloat(array[1]), parseFloat(array[0])]];
+        }
       });
-      row.location = result;
-    });
-    res.send(result.rows);
-  }, function () {
-    console.log("err", arguments)
-  });
+      res.send(result.rows);
+    }, 
+    function () {
+      console.log("err", arguments)
+    }
+  );
 });
 
 app.listen(8000);

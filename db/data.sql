@@ -9,3 +9,12 @@ VALUES (1, 'European discovery of Tasmania', 1, '1642-11-24 00:00', '1642-11-24 
 
 INSERT INTO event_attendee (person_id, event_id)
 VALUES (1, 1);
+ 
+INSERT INTO place (id, name, location, start_date, end_date)
+VALUES (2, 'Lutjegast', ST_GeomFromText('POINT(' || 6.257778 || ' ' || 53.233333 || ')'), NULL, NULL);
+
+INSERT INTO event (id, name, place_id, start_date, end_date, attendee_count)
+VALUES (2, 'Birth of Abel Tasman', 2, '1603-01-01 00:00', '1603-01-01 23:59', NULL);
+
+INSERT INTO event_attendee (person_id, event_id)
+VALUES (1, 2);
