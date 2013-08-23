@@ -20,13 +20,7 @@ var processFile = function (file, lineProcessor, n) {
     .forEach(lineProcessor)
     .on("pipe", function () {
       d.resolve(data);
-    })
-    // .end()
-
-    // processor
-
- // .on("data", function (d) {console.log(d)})
-  // processor;
+    });
 
   return d.promise;
 };
@@ -109,22 +103,21 @@ var processLine = function (line) {
   var type = tokens[1];
   var value = tokens[2];
 
-  // thing = /wiki\/(.*)\?/.exec(thing)[1];
-
+  
   if (type in interestingTypes["position"]) {
-    // type = interestingTypes["position"][type];
+
     value = value.split("\"")[1];
-  }
-  else if (type in interestingTypes["places"]) {
-    // type = interestingTypes["places"][type];
+ 
+  } else if (type in interestingTypes["places"]) {
+ 
     value = value;
-  }
-  else if (type in interestingTypes["dates"]) {
-    // type = interestingTypes["dates"][type];
+ 
+  } else if (type in interestingTypes["dates"]) {
+ 
     value = value.split("\"")[1];
-  }
-  else if (type in interestingTypes["years"]) {
-    // type = interestingTypes["years"][type];
+ 
+  } else if (type in interestingTypes["years"]) {
+ 
     value = value.split("\"")[1];
   }
 
@@ -135,7 +128,6 @@ var processLine = function (line) {
   data[thing][type] = data[thing][type] || [];
   data[thing][type].push(value);
 
-  // console.log(thing, type, value);
 };
 
 var logData = function (data) {
@@ -186,10 +178,13 @@ var addPlaces = function (data) {
   }
 
   return when.map(_.pairs(data), guard(guard.n(1), function (pair) {
+
     var key = pair[0];
     var value = pair[1];
+
     if (value["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"] &&
         value["<http://www.w3.org/2003/01/geo/wgs84_pos#long>"]) {
+
       var insert = placeInsert({
         name: extractName(key), 
         lat: cleanLatLon(value["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]),
@@ -197,23 +192,24 @@ var addPlaces = function (data) {
         start_date: "NULL", 
         end_date: "NULL"
       });
+
       return db.runQuery(insert).then(
-    function () {
-      // process.exit(0);
-      console.log("done")
-    }, 
-    function (e) {
-      console.log("failed",e);
+        function () {
+          console.log("done writing places")
+        }, 
+        function (e) {
+          console.log("failed writing places", e);
+        }
+      );
+
     }
-  );
-    }
+
   })).then(
     function () {
-      // process.exit(0);
-      console.log("done")
+      console.log("done writing people")
     }, 
     function (e) {
-      console.log("failed",e);
+      console.log("failed writing people", e);
     }
   );
 };
@@ -251,16 +247,22 @@ var addPeople = function (data) {
 
     var key = pair[0];
     var value = pair[1];
+
     if (value["<http://dbpedia.org/ontology/birthDate>"] &&
         value["<http://dbpedia.org/ontology/birthPlace>"]) {
+
       var name = extractName(key);
       var insert = personInsert({
         name: escapeQuote(name)
       });
+
       return db.runQuery(insert).then(function (result) {
+
         var personId = result.rows[0].id;
         var birthPlace = extractName(value["<http://dbpedia.org/ontology/birthPlace>"][0]);
+
         return getPlaceId(birthPlace).then(function (placeId) {
+
           var birthday = value["<http://dbpedia.org/ontology/birthDate>"];
           var insert = eventInsert({
             name: escapeQuote(name + "'s birthday"), 
@@ -269,7 +271,9 @@ var addPeople = function (data) {
             end_date: birthday + " 23:59",
             attendee_count: 1
           });
+
           if(placeId) {
+
             return db.runQuery(insert).then(function (result) {
               var eventId = result.rows[0].id;
               var insert = eventAttendeeInsert({
@@ -278,13 +282,13 @@ var addPeople = function (data) {
               });
               return db.runQuery(insert);
             });
+
           }
         });
       });
     }
   })).then(
     function () {
-      // process.exit(0);
       console.log("done")
     }, 
     function (e) {
@@ -298,8 +302,7 @@ var n = Math.floor(20516861 / 100);
 var file = "/home/pretzel/Downloads/dbpedia_data/mappingbased_properties_en.nq";
 
 process.on('uncaughtException', function(err) {
-    // handle the error safely
-    console.log(err);
+  console.log(err);
 });
 
 processFile(file, processLine, n).then(function (data) {
