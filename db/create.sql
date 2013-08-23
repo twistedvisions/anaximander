@@ -1,6 +1,6 @@
 CREATE TABLE place
 (
-  id bigint NOT NULL,
+  id SERIAL,
   name character varying(100) NOT NULL,
   location geometry NOT NULL,
   start_date timestamp,
@@ -10,16 +10,14 @@ CREATE TABLE place
 
 CREATE TABLE person
 (
-  id bigint NOT NULL,
+  id SERIAL,
   name character varying(100) NOT NULL,
-  birth_date timestamp,
-  death_date timestamp,
   CONSTRAINT person_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE event 
 (
-  id bigint NOT NULL,
+  id SERIAL,
   name character varying(100) NOT NULL,
   place_id bigint NOT NULL,
   start_date timestamp,

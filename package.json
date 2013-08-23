@@ -6,6 +6,7 @@
     "underscore": "1.x",
     "when": "2.3",
     "express": "3.x",
-    "pg": "2.x"
+    "pg": "2.x",
+    "lazy": "1.x"
   }
 }
