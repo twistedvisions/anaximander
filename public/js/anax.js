@@ -44,14 +44,9 @@ var getDataAtLocation = _.debounce(function (lat, lon) {
 }, 500);
 
 var drawPoint = function (result) {
-  return new google.maps.Circle({
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.5,
-    strokeWeight: 1,
-    fillColor: "#FF0000",
-    fillOpacity: 0.0,
-    center: new google.maps.LatLng(result.location[0][0], result.location[0][1]),
-    radius: 2000
+  return new google.maps.Marker({
+    title: result.person_name,
+    position: new google.maps.LatLng(result.location[0][0], result.location[0][1])
   });
 };
 
