@@ -81,7 +81,8 @@ var drawShape = function (result) {
 var loadScript = function () {
   var script = document.createElement("script");
   script.type = "text/javascript";
-  script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyDiiFoiNcBsExYo5cb7b3qP0zteRor0bz8&sensor=false&callback=initialize";
+  script.src = "http://maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
+    "&sensor=false&callback=initialize";
   document.body.appendChild(script);
 }
 
