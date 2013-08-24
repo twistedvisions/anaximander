@@ -1,5 +1,6 @@
 {
   "data_file": "/home/pretzel/Downloads/dbpedia_data/mappingbased_properties_en.nq",
+  "parallelism": 8,
   "interesting_types": {
     "position": {
       "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>": "lat",
