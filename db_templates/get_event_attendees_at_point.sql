@@ -1,5 +1,6 @@
 select 
   person.name as person_name, 
+  person.link as person_link, 
   place.name as place_name, 
   event.name as event_name,
   event.start_date,

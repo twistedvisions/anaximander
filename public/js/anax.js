@@ -53,7 +53,7 @@ var drawPoint = function (result) {
     console.log(this, arguments);
     var info = new google.maps.InfoWindow({
       content: [
-        result.event_name,
+        "<a href='" + result.person_link + "'>" + result.event_name + "</a>",
         new Date(result.start_date).toLocaleDateString()
       ].join("<br/>")
     });
