@@ -1,4 +1,3 @@
-var assert = require("assert");
 var sinon = require("sinon");
 var should = require("should");
 var db = require("../lib/db");
