@@ -8,5 +8,10 @@
     "express": "3.x",
     "pg": "2.x",
     "lazy": "1.x"
+  },
+  "devDependencies": {
+    "mocha": "1.x",
+    "sinon": "1.x",
+    "should": "1.x"
   }
 }
