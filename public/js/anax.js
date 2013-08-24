@@ -72,24 +72,36 @@ var getDataAtLocation = _.debounce(function () {
       end: getEndOfYear(timeRange[1])
     }, 
     function (results) {
-      if (lastResults) {
-        var toRemove = _.difference(_.map(lastResults, makeKey), 
-                                    _.map(results, makeKey));
 
-        _.each(toRemove, function (result) {
-          mapObject = mapObjects[result];
-          mapObject.setMap(null);
-          delete mapObjects[result];
-        });
+      var oldResultsAsKeys = _.map(lastResults, makeKey);
+      var newResultsAsKeys = _.map(results, makeKey);
+
+      var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
+      var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
+
+      if (window.debug) {
+
+        console.log("total", results.length) 
+        console.log("removing", toRemove.length)
+        console.log("remaining", lastResults.length - toRemove.length)       
+        console.log("rendering", toRender.length)
       }
-      mapObjects = [];
 
-      _.each(results, function (result) {
-        var mapObject = (result.location.length === 1) 
-          ? drawPoint(result) 
-          : drawShape(result);
+      _.each(toRemove, function (result) {
+        mapObject = mapObjects[result];
+        mapObject.setMap(null);
+        delete mapObjects[result];
+      });
+
+      _.each(toRender, function (result) {
+        
+        resultObj = JSON.parse(result);
+      
+        var mapObject = (resultObj.location.length === 1) 
+          ? drawPoint(resultObj) 
+          : drawShape(resultObj);
         mapObject.setMap(map);
-        mapObjects[makeKey(result)] = mapObject;
+        mapObjects[result] = mapObject;
       });
       lastResults = results;
     }
@@ -99,13 +111,13 @@ var getDataAtLocation = _.debounce(function () {
 var makeKey = function (result) {
   var keys = _.keys(result);
   keys.sort();
-  return _.map(keys, function (key) {
+  return "{" + _.map(keys, function (key) {
     var el = result[key];
-    return key + ":" + 
+    return "\"" + key + "\":" + 
       ((_.isObject(el) && !_.isDate(el) && !_.isArray(el)) ? 
         makeKey(el) : 
         JSON.stringify(el));
-  }).join(",");
+  }).join(",") + "}";
 };
 
 var lastInfoWindow = null;
