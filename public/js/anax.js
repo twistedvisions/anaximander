@@ -133,7 +133,7 @@ var drawPoint = function (result) {
     }
     var info = new google.maps.InfoWindow({
       content: [
-        "<a href='" + result.person_link + "'>" + result.event_name + "</a>",
+        "<a href='" + result.person_link + "' target='_blank' >" + result.event_name + "</a>",
         new Date(result.start_date).toLocaleDateString()
       ].join("<br/>")
     });
