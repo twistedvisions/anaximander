@@ -1,5 +1,6 @@
-var assert = require("assert")
+var assert = require("assert");
 var sinon = require("sinon");
+var should = require("should");
 var db = require("../lib/db");
 
 describe("db connector", function () {
@@ -34,10 +35,17 @@ describe("db connector", function () {
       });
     });
 
+
+    it("should run the query", function (done) {
+      db.runQuery("SELECT 1").then(function (result) {
+        should.exist(result);
+        result.should.equal("Some result");
+        done();
+      });
+    });
+
     after(function () {
       pg.connect.restore();
     });
   })
-})
-
-should
+});
