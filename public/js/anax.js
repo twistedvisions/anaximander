@@ -127,7 +127,7 @@ var drawPoint = function (result) {
     position: new google.maps.LatLng(result.location[0][0], result.location[0][1])
   });
 
-  google.maps.event.addListener(marker, 'click', function() {
+  google.maps.event.addListener(marker, 'mouseover', function() {
     if (lastInfoWindow) {
       lastInfoWindow.close();  
     }
