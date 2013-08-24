@@ -195,10 +195,10 @@ var addPlaces = function (data) {
 
       return db.runQuery(insert).then(
         function () {
-          console.log("done writing places")
+         
         }, 
         function (e) {
-          console.log("failed writing places", e);
+          console.log("failed writing places", insert, e);
         }
       );
 
@@ -206,10 +206,10 @@ var addPlaces = function (data) {
 
   })).then(
     function () {
-      console.log("done writing people")
+      console.log("done writing places")
     }, 
     function (e) {
-      console.log("failed writing people", e);
+      console.log("failed writing places", insert, e);
     }
   );
 };
@@ -243,6 +243,7 @@ var addPeople = function (data) {
                return result.rows.length ? result.rows[0].id : null;
              });
   };
+
   return when.map(_.pairs(data), guard(guard.n(1), function (pair) {
 
     var key = pair[0];
