@@ -3,7 +3,8 @@
 var center = [53.24112905344493, 6.191539001464932];
 var zoom = 9;
 
-var mapObjects = [];
+var lastResults = [];
+var mapObjects = {};
 
 var initMap = function () {
   drawMap();
@@ -59,9 +60,16 @@ var getDataAtLocation = _.debounce(function () {
       end: getEndOfYear(timeRange[1])
     }, 
     function (results) {
-      _.each(mapObjects, function (mo) {
-        mo.setMap(null);
-      });
+      if (lastResults) {
+        var toRemove = _.difference(_.map(lastResults, makeKey), 
+                                    _.map(results, makeKey));
+
+        _.each(toRemove, function (result) {
+          mapObject = mapObjects[result];
+          mapObject.setMap(null);
+          delete mapObjects[result];
+        });
+      }
       mapObjects = [];
 
       _.each(results, function (result) {
@@ -69,11 +77,24 @@ var getDataAtLocation = _.debounce(function () {
           ? drawPoint(result) 
           : drawShape(result);
         mapObject.setMap(map);
-        mapObjects.push(mapObject);
-      }
-    );
-  });
+        mapObjects[makeKey(result)] = mapObject;
+      });
+      lastResults = results;
+    }
+  );
 }, 500);
+
+var makeKey = function (result) {
+  var keys = _.keys(result);
+  keys.sort();
+  return _.map(keys, function (key) {
+    var el = result[key];
+    return key + ":" + 
+      ((_.isObject(el) && !_.isDate(el) && !_.isArray(el)) ? 
+        makeKey(el) : 
+        JSON.stringify(el));
+  }).join(",");
+};
 
 var lastInfoWindow = null;
 var drawPoint = function (result) {
