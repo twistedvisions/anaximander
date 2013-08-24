@@ -75,6 +75,7 @@ var getDataAtLocation = _.debounce(function () {
   });
 }, 500);
 
+var lastInfoWindow = null;
 var drawPoint = function (result) {
   var marker = new google.maps.Marker({
     title: result.person_name,
@@ -82,7 +83,9 @@ var drawPoint = function (result) {
   });
 
   google.maps.event.addListener(marker, 'click', function() {
-    console.log(this, arguments);
+    if (lastInfoWindow) {
+      lastInfoWindow.close();  
+    }
     var info = new google.maps.InfoWindow({
       content: [
         "<a href='" + result.person_link + "'>" + result.event_name + "</a>",
@@ -90,6 +93,7 @@ var drawPoint = function (result) {
       ].join("<br/>")
     });
     info.open(this.map, marker);
+    lastInfoWindow = info;
   });
 
   return marker;
