@@ -1,0 +1,8 @@
+#info-panel {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  background-color: rgba(255,255,255,0.5);
+  padding: 17px;
+  border: 1px solid rgba(100,100,100,0.5);
+}

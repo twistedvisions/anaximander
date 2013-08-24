@@ -5,9 +5,9 @@ var zoom = 9;
 
 var mapObjects = [];
 
-var initialize = function () {
+var initMap = function () {
   drawMap();
-  getDataAtLocation(center[0], center[1]);
+  getDataAtLocation();
 };
 
 var drawMap = function () {
@@ -19,27 +19,59 @@ var drawMap = function () {
   window.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
   google.maps.event.addListener(map, 'center_changed', function () {
-    var mce = map.getCenter();
-    moveCenterLat = mce.lat();
-    moveCenterLng = mce.lng();
-    getDataAtLocation(mce.lat(), mce.lng());
+    getDataAtLocation();
   });
 };
 
-var getDataAtLocation = _.debounce(function (lat, lon) {
-  $.get("/location", {lat: lat, lon: lon}, function (results) {
-    _.each(mapObjects, function (mo) {
-      mo.setMap(null);
-    });
-    mapObjects = [];
+var getPosition = function () {
+  var mce = map.getCenter();
+  return {
+    lat: mce.lat(),
+    lon: mce.lng()
+  };
+};
 
-    _.each(results, function (result) {
-      var mapObject = (result.location.length === 1) 
-        ? drawPoint(result) 
-        : drawShape(result);
-      mapObject.setMap(map);
-      mapObjects.push(mapObject);
-    });
+var getDataAtLocation = _.debounce(function () {
+  var position = getPosition();
+  var timeRange = getTimeRange();
+  var pad = function (n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
+  var formatYear = function (year) {
+    return pad(Math.abs(year), 4, 0);
+  };
+  var getStartOfYear = function (year) {
+    var isBc = year < 0;
+    return formatYear(year) + "-01-01" + (isBc ? " BC" : "");
+  };
+  var getEndOfYear = function (year) {
+    var isBc = year < 0;
+    return formatYear(year) + "-12-31" + (isBc ? " BC" : "");
+  };
+  $.get(
+    "/location", 
+    {
+      lat: position.lat, 
+      lon: position.lon, 
+      start: getStartOfYear(timeRange[0]), 
+      end: getEndOfYear(timeRange[1])
+    }, 
+    function (results) {
+      _.each(mapObjects, function (mo) {
+        mo.setMap(null);
+      });
+      mapObjects = [];
+
+      _.each(results, function (result) {
+        var mapObject = (result.location.length === 1) 
+          ? drawPoint(result) 
+          : drawShape(result);
+        mapObject.setMap(map);
+        mapObjects.push(mapObject);
+      }
+    );
   });
 }, 500);
 
@@ -78,12 +110,58 @@ var drawShape = function (result) {
   });
 };
 
-var loadScript = function () {
+var loadMap = function () {
   var script = document.createElement("script");
   script.type = "text/javascript";
   script.src = "http://maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
-    "&sensor=false&callback=initialize";
+    "&sensor=false&callback=initMap";
   document.body.appendChild(script);
-}
+};
 
-window.onload = loadScript;
+var setSummaryText = function () {
+
+  var timeRange = getTimeRange();
+
+  var toText = function (year, otherYear) {
+    if (year < 0) {
+    
+      return (-year) + "BCE";
+    
+    } else if (otherYear && otherYear < 0) {
+    
+      return year + "CE";
+    
+    }
+    return year;
+  };
+ 
+  $("#info-panel").text(toText(timeRange[0]) + " - " +
+                        toText(timeRange[1], timeRange[0]));
+};
+var initSlider = function () {
+  $(function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: -4000,
+      max: 2013,
+      values: [ 1813, 2013 ],
+      slide: function( event, ui ) {
+        setSummaryText();
+        getDataAtLocation();
+      }
+    });
+  });
+  setSummaryText();
+};
+
+var getTimeRange = function () {
+  return [$("#slider-range").slider("values", 0), 
+          $("#slider-range").slider("values", 1)];
+};
+
+var init = function () {
+  initSlider();
+  loadMap();
+};
+
+window.onload = init;

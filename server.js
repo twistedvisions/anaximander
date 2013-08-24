@@ -16,7 +16,9 @@ app.get('/location', function(req, res) {
   db.runQuery(
     getEventAttendeesAtPoint({
       lat: parseFloat(params.lat), 
-      lon: parseFloat(params.lon)
+      lon: parseFloat(params.lon),
+      start: params.start,
+      end: params.end
     })
   ).then(
     function (result) {
