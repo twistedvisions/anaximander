@@ -44,10 +44,24 @@ var getDataAtLocation = _.debounce(function (lat, lon) {
 }, 500);
 
 var drawPoint = function (result) {
-  return new google.maps.Marker({
+  var marker = new google.maps.Marker({
     title: result.person_name,
     position: new google.maps.LatLng(result.location[0][0], result.location[0][1])
   });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    console.log(this, arguments);
+    var info = new google.maps.InfoWindow({
+      content: [
+        result.event_name,
+        new Date(result.start_date).toLocaleDateString()
+      ].join("<br/>")
+    });
+    info.open(this.map, marker);
+  });
+
+  return marker;
+
 };
 
 var drawShape = function (result) {

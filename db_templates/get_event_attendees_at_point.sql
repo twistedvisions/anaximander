@@ -1,6 +1,9 @@
 select 
   person.name as person_name, 
   place.name as place_name, 
+  event.name as event_name,
+  event.start_date,
+  event.end_date,
   ST_AsText(place.location) as location
 from place 
 inner join event on event.place_id = place.id
