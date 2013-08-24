@@ -17,6 +17,7 @@ app.get('/location', function(req, res) {
     getEventAttendeesAtPoint({
       lat: parseFloat(params.lat), 
       lon: parseFloat(params.lon),
+      radius: params.radius,
       start: params.start,
       end: params.end
     })

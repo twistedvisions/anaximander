@@ -19,7 +19,7 @@ var drawMap = function () {
   }
   window.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-  google.maps.event.addListener(map, 'center_changed', function () {
+  google.maps.event.addListener(map, 'bounds_changed', function () {
     getDataAtLocation();
   });
 };
@@ -32,9 +32,20 @@ var getPosition = function () {
   };
 };
 
+var getRadius = function () {
+  var bounds = map.getBounds();
+  var ne = bounds.getNorthEast();
+  var sw = bounds.getSouthWest();
+  var extent_vertical = ne.lat() - sw.lat();
+  var extent_horizontal = ne.lng() - sw.lng();
+  var furthestExtent = extent_vertical > extent_horizontal ? extent_vertical : extent_horizontal;
+  return furthestExtent / 2;
+};
+
 var getDataAtLocation = _.debounce(function () {
   var position = getPosition();
   var timeRange = getTimeRange();
+  var radius = getRadius();
   var pad = function (n, width, z) {
     z = z || '0';
     n = n + '';
@@ -56,6 +67,7 @@ var getDataAtLocation = _.debounce(function () {
     {
       lat: position.lat, 
       lon: position.lon, 
+      radius: radius,
       start: getStartOfYear(timeRange[0]), 
       end: getEndOfYear(timeRange[1])
     }, 

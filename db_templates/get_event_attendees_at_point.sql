@@ -13,6 +13,6 @@ inner join person on person.id = event_attendee.person_id
 where ST_MaxDistance (
   place.location,
   ST_PointFromText('POINT(<%= lon %> <%= lat %>)')
-) < 10
+) < <%= radius %>
 and event.start_date >= '<%= start %>'
 and event.end_date <= '<%= end %>'
