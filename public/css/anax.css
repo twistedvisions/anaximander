@@ -1,3 +1,21 @@
+body {
+  margin: 0;
+}
+
+#slider-range {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#map-holder {
+  padding-top: 16px;
+  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
+}
+
 #info-panel {
   position: fixed;
   right: 14px;
@@ -12,3 +30,4 @@
 .gm-style-iw {
   max-height: 200px;
 }
+
