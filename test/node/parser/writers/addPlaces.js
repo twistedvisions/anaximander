@@ -2,8 +2,8 @@
 var sinon = require("sinon");
 var when = require("when");
 var should = require("should");
-var db = require("../../../lib/db");
-var addPlaces = require("../../../lib/parser/writers/addPlaces");
+var db = require("../../../../lib/db");
+var addPlaces = require("../../../../lib/parser/writers/addPlaces");
 
 describe("addPlaces", function () {
 

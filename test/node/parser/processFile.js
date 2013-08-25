@@ -2,7 +2,7 @@
 var sinon = require("sinon");
 var should = require("should");
 var _ = require("underscore");
-var processFile = require("../../lib/parser/processFile");
+var processFile = require("../../../lib/parser/processFile");
 
 describe("processFile", function () {
 

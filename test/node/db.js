@@ -1,6 +1,7 @@
+/*global describe, before, after, beforeEach, afterEach, it */
 var sinon = require("sinon");
 var should = require("should");
-var db = require("../lib/db");
+var db = require("../../lib/db");
 
 describe("db connector", function () {
   describe("run query", function () {
