@@ -27,7 +27,7 @@ define([
     },
 
     renderSlider: function () {
-      $("#slider-range").slider({
+      this.slider = $("#slider-range").slider({
         range: true,
         min: -2000,
         max: 2013,
@@ -49,6 +49,10 @@ define([
 
       $("#info-panel").text(this.toText(timeRange[0]) + " - " +
                             this.toText(timeRange[1], timeRange[0]));
+
+      this.slider.slider({
+        values: this.model.get("date")
+      });
     },
 
     toText: function (year, otherYear) {
