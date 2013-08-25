@@ -3,19 +3,13 @@ define([
   "jqueryui",
   "underscore",
   "backbone",
-  "models/view_state",
   "text!templates/layout.html"
-], function ($, jqueryui, _, Backbone, ViewState, layoutTemplate) {
+], function ($, jqueryui, _, Backbone, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
     
     initialize: function () {
-      this.model = new ViewState({
-        date: [1813, 2013],
-        center: [53.24112905344493, 6.191539001464932],
-        zoom: 9,
-        radius: 10
-      });
+
     },
 
     render: function () {

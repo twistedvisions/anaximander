@@ -1,33 +1,40 @@
 define([
-  'jquery',
-  'underscore',
-  'backbone'
+  "jquery",
+  "underscore",
+  "backbone"
 ], function ($, _, Backbone) {
   var AppRouter = Backbone.Router.extend({
     routes: {
-      // Pages
-      'manager': 'manager',
-      
-      // Default - catch all
-      '*actions': 'defaultAction'
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView"
+    },
+    mapView: function (lat, lon, zoom, start, end) {
+      this.model.set({
+        date: [start, end],
+        center: [lat, lon],
+        zoom: parseInt(zoom, 10)
+      });
     }
   });
 
-  var initialize = function(options){
+  var initialize = function (options) {
+
     var appView = options.appView;
+    this.model = options.model;
     var router = new AppRouter(options);
-   // router.on('route:defaultAction', function (actions) {
-   //    require(['views/dashboard/page'], function (DashboardPage) {
-   //      var dashboardPage = Vm.create(appView, 'DashboardPage', DashboardPage);
-   //      dashboardPage.render();
-   //    });
-   //  });
-    // router.on('route:manager', function () {
-    //   require(['views/manager/page'], function (ManagerPage) {
-    //     var managerPage = Vm.create(appView, 'ManagerPage', ManagerPage);
-    //     managerPage.render();
-    //   });
-    // });
+    router.model = this.model;
+    this.model.on("change", function () {
+      var date = this.model.get("date");
+      var center = this.model.get("center");
+      var zoom = this.model.get("zoom");
+      router.navigate([
+        "lat", center[0],
+        "lon", center[1],
+        "zoom", zoom,
+        "start", date[0],
+        "end", date[1]
+      ].join("/"));
+    }, this);
+
     Backbone.history.start();
   };
   return {

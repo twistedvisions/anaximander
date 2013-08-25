@@ -28,7 +28,33 @@ define([
         this.getDataAtLocation();
       }, this);
 
-      this.model.on("change", this._getDataAtLocation, this);
+      this.model.on("change", this.update, this);
+    },
+
+    update: function () {
+      this.updateLocation();
+      this.getDataAtLocation();
+    },
+
+    updateLocation: function () {
+      if (this.mapNeedsUpdating()) {
+        var center = this.model.get("center");
+        this.map.panTo(new google.maps.LatLng(center[0], center[1]));
+        this.map.setZoom(this.model.get("zoom"));
+      }
+    },
+
+    mapNeedsUpdating: function () {
+      var modelPosition = {
+        center: this.model.get("center"), 
+        zoom: this.model.get("zoom")
+      };
+      var mapPosition = {
+        center: this.getPosition(),
+        zoom: this.getZoom()
+      };
+      
+      return JSON.stringify(modelPosition) !== JSON.stringify(mapPosition);
     },
 
     drawMap: function () {
@@ -38,19 +64,19 @@ define([
         center: new google.maps.LatLng(center[0], center[1]), 
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-      window.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+      this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-      google.maps.event.addListener(map, 'bounds_changed', _.bind(function () {
-        //TODO: should init these on render
+      google.maps.event.addListener(this.map, 'bounds_changed', _.bind(function () {
         this.model.set({
           "radius": this.getRadius(),
-          "center": this.getPosition()
+          "center": this.getPosition(),
+          "zoom": this.getZoom()
         });
       }, this));
     },
 
     getPosition: function () {
-      var mce = map.getCenter();
+      var mce = this.map.getCenter();
       return [
         mce.lat(),
         mce.lng()
@@ -58,13 +84,17 @@ define([
     },
 
     getRadius: function () {
-      var bounds = map.getBounds();
+      var bounds = this.map.getBounds();
       var ne = bounds.getNorthEast();
       var sw = bounds.getSouthWest();
       var extent_vertical = ne.lat() - sw.lat();
       var extent_horizontal = ne.lng() - sw.lng();
       var furthestExtent = Math.max(extent_vertical, extent_horizontal);
       return furthestExtent / 2;
+    },
+
+    getZoom: function () {
+      return this.map.getZoom();
     },
 
     _getDataAtLocation: function () {
@@ -126,7 +156,7 @@ define([
         var mapObject = (resultObj.location.length === 1) ? 
           this.drawPoint(resultObj) : 
           this.drawShape(resultObj);
-        mapObject.setMap(map);
+        mapObject.setMap(this.map);
         this.mapObjects[result] = mapObject;
       }, this);
 
@@ -178,7 +208,7 @@ define([
         strokeWeight: 2,
         fillColor: "#558822",
         fillOpacity: 0.5,
-        map: map
+        map: this.map
       });
     }
   });
