@@ -1,4 +1,15 @@
+var tests = [];
+for (var file in window.__karma__.files) {
+  if (window.__karma__.files.hasOwnProperty(file)) {
+    if (/test\/webapp\/.*\.js$/.test(file)) {
+      tests.push(file);
+    }
+  }
+}
+
 require.config({
+
+  baseUrl: '/base/public/js',
   shim: {
     "backbone": {
       deps: ["underscore", "jquery"],
@@ -23,26 +34,10 @@ require.config({
     templates: "../templates",
     async: "./libs/async",
     styled_marker: "./libs/styled_marker"
-  }
-});
+  },
+  
+  deps: tests,
 
-require([
-  "views/app",
-  "router",
-  "models/view_state"
-], function (AppView, Router, ViewState) {
-  var model = new ViewState({
-    date: [1813, 2013],
-    center: [53.24112905344493, 6.191539001464932],
-    zoom: 9,
-    radius: 10
-  });
-  var appView = new AppView({
-    model: model
-  });
-  appView.render();
-  this.router = new Router(); 
-  this.router.init({
-    model: model
-  });
+  
+  callback: window.__karma__.start
 });
