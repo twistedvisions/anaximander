@@ -209,10 +209,7 @@ define([
           this.lastInfoWindow.close();  
         }
         var info = new google.maps.InfoWindow({
-          content: [
-            "<a href='" + result.person_link + "' target='_blank' >" + result.event_name + "</a>",
-            new Date(result.start_date).toLocaleDateString()
-          ].join("<br/>")
+          content: this.getContent(result)
         });
         info.open(this.map, marker);
         this.lastInfoWindow = info;
@@ -220,6 +217,17 @@ define([
 
       return marker;
 
+    },
+
+    getContent: function (result) {
+      return _.map(result.events, this.getEventText).join("<p>");
+    },
+
+    getEventText: function (event) {
+      return [
+        "<a href='" + event.person_link + "' target='_blank' >" + event.event_name + "</a>",
+        new Date(event.start_date).toLocaleDateString()
+      ].join("<br/>");
     },
 
     drawShape: function (result) {

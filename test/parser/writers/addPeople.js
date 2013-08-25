@@ -1,7 +1,9 @@
+/*global describe, beforeEach, afterEach, it */
 var sinon = require("sinon");
 var when = require("when");
 var should = require("should");
 var db = require("../../../lib/db");
+var addEvent = require("../../../lib/parser/writers/addEvent");
 var addPeople = require("../../../lib/parser/writers/addPeople");
 
 describe("addPlaces", function () {
@@ -26,23 +28,45 @@ describe("addPlaces", function () {
       return d.promise;
     });
 
+    sinon.stub(addEvent, "addEvent");
+
     testData = {
       "<http://dbpedia.org/resource/Place1>": {
         id: 1,
-        "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>":[
-          {"value":"\"10\"^^<http://www.w3.org/2001/XMLSchema#float>","link":"http://en.wikipedia.org/wiki/Name1"}
+        "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>": [
+          {
+            "value": "\"10\"^^<http://www.w3.org/2001/XMLSchema#float>"
+          }
         ],
-        "<http://www.w3.org/2003/01/geo/wgs84_pos#long>":[
-          {"value":"\"-20\"^^<http://www.w3.org/2001/XMLSchema#float>","link":"http://en.wikipedia.org/wiki/Name1"}
-        ]
+        "<http://www.w3.org/2003/01/geo/wgs84_pos#long>": [
+          {
+            "value": "\"-20\"^^<http://www.w3.org/2001/XMLSchema#float>"
+          }
+        ], 
+        "link": "http://en.wikipedia.org/wiki/Name1"
       },
       "<http://dbpedia.org/resource/Person1>": {
-        "<http://dbpedia.org/ontology/birthDate>":[
-          {"value":"\"1948-12-13\"^^<http://www.w3.org/2001/XMLSchema#date>","link":"http://en.wikipedia.org/wiki/Name1"}
+        "<http://dbpedia.org/ontology/birthDate>": [
+          {
+            "value": "\"1948-12-13\"^^<http://www.w3.org/2001/XMLSchema#date>"
+          }
         ],
-        "<http://dbpedia.org/ontology/birthPlace>":[
-          {"value":"<http://dbpedia.org/resource/Place1>","link":"http://en.wikipedia.org/wiki/Name1"}
-        ]
+        "<http://dbpedia.org/ontology/birthPlace>": [
+          {
+            "value": "<http://dbpedia.org/resource/Place1>"
+          }
+        ],
+        "<http://dbpedia.org/ontology/deathDate>": [
+          {
+            "value": "\"1948-12-13\"^^<http://www.w3.org/2001/XMLSchema#date>"
+          }
+        ],
+        "<http://dbpedia.org/ontology/deathPlace>": [
+          {
+            "value": "<http://dbpedia.org/resource/Place1>",
+          }
+        ], 
+        "link": "http://en.wikipedia.org/wiki/Person1"
       }
     };
   });
@@ -62,11 +86,32 @@ describe("addPlaces", function () {
     });
   });
 
-  it("should call the database 3 times", function (done) {
+  it("should add a birthday", function (done) {
     addPeople(testData).then(function () {
       var ex;
       try {
-        db.runQuery.calledThrice.should.be.true;
+        addEvent.addEvent.calledWith(sinon.match.any, sinon.match.any, 
+          sinon.match.any, "born",
+          "<http://dbpedia.org/ontology/birthPlace>",
+          "<http://dbpedia.org/ontology/birthDate>").should.be.true;
+      } catch (e) {
+        ex = e;
+      }
+      done(ex);
+    }, function (err) {
+      done(err);
+    });
+  });
+
+
+  it("should add a deathday", function (done) {
+    addPeople(testData).then(function () {
+      var ex;
+      try {
+        addEvent.addEvent.calledWith(sinon.match.any, sinon.match.any, 
+          sinon.match.any, "died",
+          "<http://dbpedia.org/ontology/deathPlace>",
+          "<http://dbpedia.org/ontology/deathDate>").should.be.true;
       } catch (e) {
         ex = e;
       }
@@ -78,6 +123,7 @@ describe("addPlaces", function () {
 
   afterEach(function () {
     db.runQuery.restore();
+    addEvent.addEvent.restore();
   });
 
 });

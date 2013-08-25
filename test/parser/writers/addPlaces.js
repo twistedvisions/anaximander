@@ -1,3 +1,4 @@
+/*global describe, beforeEach, afterEach, it */
 var sinon = require("sinon");
 var when = require("when");
 var should = require("should");
@@ -30,12 +31,13 @@ describe("addPlaces", function () {
   beforeEach(function () {
     testData = {
       "<http://dbpedia.org/resource/Name1>": {
-        "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>":[
-          {"value":"\"10\"^^<http://www.w3.org/2001/XMLSchema#float>","link":"http://en.wikipedia.org/wiki/Name1"}
+        "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>": [
+          {"value": "\"10\"^^<http://www.w3.org/2001/XMLSchema#float>"}
         ],
-        "<http://www.w3.org/2003/01/geo/wgs84_pos#long>":[
-          {"value":"\"-20\"^^<http://www.w3.org/2001/XMLSchema#float>","link":"http://en.wikipedia.org/wiki/Name1"}
-        ]
+        "<http://www.w3.org/2003/01/geo/wgs84_pos#long>": [
+          {"value": "\"-20\"^^<http://www.w3.org/2001/XMLSchema#float>"}
+        ],
+        "link": "http://en.wikipedia.org/wiki/Name1"
       }
     };
   });
