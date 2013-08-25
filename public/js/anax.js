@@ -1,12 +1,17 @@
 require.config({
   shim: {
     "backbone": {
-        deps: ["underscore", "jquery"],
-        exports: "Backbone"
+      deps: ["underscore", "jquery"],
+      exports: "Backbone"
     },
     "jqueryui": {
-        deps: ["jquery"],
-        exports: "$"
+      deps: ["jquery"],
+      exports: "$"
+    },
+    "styled_marker": {
+      deps: ["async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
+        "&sensor=false!callback"],
+      exports: "StyledMarker"
     }
   },
   paths: {
@@ -15,7 +20,9 @@ require.config({
     jqueryui: "//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min",
     backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
-    templates: "../templates"
+    templates: "../templates",
+    async: "./libs/async",
+    styled_marker: "./libs/styled_marker"
   }
 });
 

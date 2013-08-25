@@ -1,5 +1,14 @@
 {
-  "indent"        : 4,  
+  "indent"        : 2,  
   "plusplus"      : true, 
-  "white"         : true
+  "white"         : true,
+  "latedef"       : true,
+  "undef"         : true,
+  "quotmark"      : "double",
+  "browser"       : true,
+  "globals": {
+    "require": true, 
+    "define": true,
+    "module": true
+  }
 }  

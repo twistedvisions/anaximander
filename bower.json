@@ -1,0 +1,21 @@
+{
+  "name": "anaximander",
+  "version": "0.0.0",
+  "homepage": "https://github.com/twistedvisions/anaximander",
+  "authors": [
+    "William Becker <wbecker@gmail.com>"
+  ],
+  "main": "js/anax.js",
+  "license": "None yet",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs-plugins": "~1.0.2"
+  }
+}

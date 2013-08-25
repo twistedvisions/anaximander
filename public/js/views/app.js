@@ -29,7 +29,7 @@ define([
     renderSlider: function () {
       $("#slider-range").slider({
         range: true,
-        min: -4000,
+        min: -2000,
         max: 2013,
         values: this.model.get("date"),
         slide: _.bind(function( event, ui ) {

@@ -1,11 +1,15 @@
+/*global google, StyledIconTypes, StyledMarker, StyledIcon */
 define([
-  'jquery',
-  'underscore',
-  'backbone'
-], function ($, _, Backbone) {
+  "jquery",
+  "underscore",
+  "backbone",
+  "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
+        "&sensor=false!callback",
+  "styled_marker"
+], function ($, _, Backbone, gmaps, _StyledMarker) {
 
   var MapView = Backbone.View.extend({
-    el: '#map-canvas',
+    el: "#map-canvas",
 
     initialize: function (opts) {
       this.center = [53.24112905344493, 6.191539001464932];
@@ -17,16 +21,8 @@ define([
     },
 
     render: function () {
-      var script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = "http://maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
-        "&sensor=false&callback=initMap";
-      document.body.appendChild(script);
-
-      window.initMap = _.bind(function () {
-        this.drawMap();
-        this.getDataAtLocation();
-      }, this);
+      this.drawMap();
+      this.getDataAtLocation();
 
       this.model.on("change", this.update, this);
     },
@@ -66,7 +62,7 @@ define([
       };
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-      google.maps.event.addListener(this.map, 'bounds_changed', _.bind(function () {
+      google.maps.event.addListener(this.map, "bounds_changed", _.bind(function () {
         this.model.set({
           "radius": this.getRadius(),
           "center": this.getPosition(),
@@ -102,8 +98,8 @@ define([
       var timeRange = this.model.get("date");
       var radius = this.model.get("radius");
       var pad = function (n, width, z) {
-        z = z || '0';
-        n = n + '';
+        z = z || "0";
+        n = n + "";
         return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
       };
       var formatYear = function (year) {
@@ -130,6 +126,7 @@ define([
       );
     },
     handleResults: function (results) {
+      results = this.combineEventsAtTheSamePlace(_.cloneDeep(results));
 
       var oldResultsAsKeys = _.map(this.lastResults, this.makeKey, this);
       var newResultsAsKeys = _.map(results, this.makeKey, this);
@@ -146,16 +143,14 @@ define([
       }
 
       _.each(toRemove, function (result) {
-        mapObject = this.mapObjects[result];
+        var mapObject = this.mapObjects[result];
         mapObject.setMap(null);
         delete this.mapObjects[result];
       }, this);
 
       _.each(toRender, function (result) {
-        resultObj = JSON.parse(result);      
-        var mapObject = (resultObj.location.length === 1) ? 
-          this.drawPoint(resultObj) : 
-          this.drawShape(resultObj);
+        var resultObj = JSON.parse(result);       
+        var mapObject = this.drawResult(resultObj);
         mapObject.setMap(this.map);
         this.mapObjects[result] = mapObject;
       }, this);
@@ -163,24 +158,53 @@ define([
       this.lastResults = results;
     },
 
-    makeKey: function (result) {
-      var keys = _.keys(result);
-      keys.sort();
-      return "{" + _.map(keys, function (key) {
-        var el = result[key];
-        return "\"" + key + "\":" + 
-          ((_.isObject(el) && !_.isDate(el) && !_.isArray(el)) ? 
-            this.makeKey(el) : 
-            JSON.stringify(el));
-      }, this).join(",") + "}";
+    combineEventsAtTheSamePlace: function (results) {
+      
+      var locations = {};
+      _.each(results, function (result) {
+        var location = JSON.stringify(result.location[0]);
+        locations[location] = locations[location] || [];
+        locations[location].push(result);
+      });
+      locations = _.values(locations);
+      _.each(locations, function (location) {
+        location.sort(function (a, b) {
+          a = new Date(a.start_date).getTime();
+          b = new Date(b.start_date).getTime(); 
+          return (a - b) / Math.abs(a - b);
+        });
+      });
+      return locations;
     },
+
+    makeKey: function (result) {
+      return JSON.stringify({
+        location: result[0].location[0],
+        events: _.map(result, function (r) {
+          return r;
+        })
+      });
+    },
+
+    drawResult: function (resultObj) {
+      // return (resultObj.location.length === 1) ? 
+      //     this.drawPoint(resultObj) : 
+      //     this.drawShape(resultObj);
+      return this.drawPoint(resultObj);
+    },
+
     drawPoint: function (result) {
-      var marker = new google.maps.Marker({
-        title: result.person_name,
-        position: new google.maps.LatLng(result.location[0][0], result.location[0][1])
+      var marker;
+
+      marker = new StyledMarker({
+        styleIcon: new StyledIcon(StyledIconTypes.MARKER, {
+          color: "00ff00",
+          text: result.events.length.toString()
+        }),
+        position: new google.maps.LatLng(result.location[0], result.location[1])
       });
 
-      google.maps.event.addListener(marker, 'mouseover', _.bind(function() {
+      google.maps.event.addListener(marker, "mouseover", _.bind(function () {
         if (this.lastInfoWindow) {
           this.lastInfoWindow.close();  
         }
@@ -192,7 +216,7 @@ define([
         });
         info.open(this.map, marker);
         this.lastInfoWindow = info;
-      }), this);
+      }, this));
 
       return marker;
 
@@ -203,7 +227,7 @@ define([
         path: _.map(result.location, function (x) {
           return new google.maps.LatLng(x[0], x[1]);
         }),
-        strokeColor: '#FF0000',
+        strokeColor: "#FF0000",
         strokeOpacity: 1.0,
         strokeWeight: 2,
         fillColor: "#558822",
