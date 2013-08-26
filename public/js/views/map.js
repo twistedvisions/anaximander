@@ -3,33 +3,48 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "../collections/events",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
   "styled_marker"
-], function ($, _, Backbone, gmaps, _StyledMarker) {
+], function ($, _, Backbone, EventCollection) {
 
   var MapView = Backbone.View.extend({
+    
     el: "#map-canvas",
 
     initialize: function (opts) {
-      this.center = [53.24112905344493, 6.191539001464932];
-      this.zoom = 9;
-      this.lastResults = [];
+
       this.mapObjects = {};
-      this.lastInfoWindow = null;
-      this.getDataAtLocation = _.bind(_.debounce(this._getDataAtLocation, 500), this);
+      this.eventsCollection = new EventCollection({state: this.model});
     },
 
     render: function () {
+      
       this.drawMap();
-      this.getDataAtLocation();
-
       this.model.on("change", this.update, this);
+      this.eventsCollection.on("reset", this.redrawMarkers, this);
+    },
+
+    redrawMarkers: function (newMarkers) {
+      var toRemove = newMarkers[0];
+      var toRender = newMarkers[1];
+
+      _.each(toRemove, function (result) {
+        var mapObject = this.mapObjects[result];
+        mapObject.setMap(null);
+        delete this.mapObjects[result];
+      }, this);
+      _.each(toRender, function (result) {
+        var resultObj = JSON.parse(result);       
+        var mapObject = this.drawResult(resultObj);
+        mapObject.setMap(this.map);
+        this.mapObjects[result] = mapObject;
+      }, this);
     },
 
     update: function () {
       this.updateLocation();
-      this.getDataAtLocation();
     },
 
     updateLocation: function () {
@@ -93,102 +108,6 @@ define([
       return this.map.getZoom();
     },
 
-    _getDataAtLocation: function () {
-      var position = this.model.get("center");
-      var timeRange = this.model.get("date");
-      var radius = this.model.get("radius");
-      var pad = function (n, width, z) {
-        z = z || "0";
-        n = n + "";
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-      };
-      var formatYear = function (year) {
-        return pad(Math.abs(year), 4, 0);
-      };
-      var getStartOfYear = function (year) {
-        return formatYearAsTimestamp(year, "-01-01 00:00");
-      };
-      var getEndOfYear = function (year) {
-        return formatYearAsTimestamp(year, "-12-31 23:59");
-      };
-      var formatYearAsTimestamp = function (year, suffix) {
-        var isBc = year < 0;
-        year = formatYear(year) + suffix + (isBc ? " BC" : "");
-        return isBc ? year.substring(1) : year;
-      };
-      $.get(
-        "/location", 
-        {
-          lat: position[0], 
-          lon: position[1], 
-          radius: radius,
-          start: getStartOfYear(timeRange[0]), 
-          end: getEndOfYear(timeRange[1])
-        }, 
-        _.bind(this.handleResults, this)
-      );
-    },
-    handleResults: function (results) {
-      results = this.combineEventsAtTheSamePlace(_.cloneDeep(results));
-
-      var oldResultsAsKeys = _.map(this.lastResults, this.makeKey, this);
-      var newResultsAsKeys = _.map(results, this.makeKey, this);
-
-      var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
-      var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
-
-      if (this.debug) {
-
-        console.log("total", results.length);
-        console.log("removing", toRemove.length);
-        console.log("remaining", this.lastResults.length - toRemove.length);
-        console.log("rendering", toRender.length);
-      }
-
-      _.each(toRemove, function (result) {
-        var mapObject = this.mapObjects[result];
-        mapObject.setMap(null);
-        delete this.mapObjects[result];
-      }, this);
-
-      _.each(toRender, function (result) {
-        var resultObj = JSON.parse(result);       
-        var mapObject = this.drawResult(resultObj);
-        mapObject.setMap(this.map);
-        this.mapObjects[result] = mapObject;
-      }, this);
-
-      this.lastResults = results;
-    },
-
-    combineEventsAtTheSamePlace: function (results) {
-      
-      var locations = {};
-      _.each(results, function (result) {
-        var location = JSON.stringify(result.location[0]);
-        locations[location] = locations[location] || [];
-        locations[location].push(result);
-      });
-      locations = _.values(locations);
-      _.each(locations, function (location) {
-        location.sort(function (a, b) {
-          a = new Date(a.start_date).getTime();
-          b = new Date(b.start_date).getTime(); 
-          return (a - b) / Math.abs(a - b);
-        });
-      });
-      return locations;
-    },
-
-    makeKey: function (result) {
-      return JSON.stringify({
-        location: result[0].location[0],
-        events: _.map(result, function (r) {
-          return r;
-        })
-      });
-    },
-
     drawResult: function (resultObj) {
       // return (resultObj.location.length === 1) ? 
       //     this.drawPoint(resultObj) : 
@@ -250,6 +169,5 @@ define([
       });
     }
   });
-
   return MapView;
 });
