@@ -15,32 +15,19 @@ define([
     render: function () {
       $(this.el).html(layoutTemplate);
 
-      this.renderSlider();
-
       require(["views/map"], _.bind(function (MapView) {
         var mapView = new MapView({model: this.model});
         mapView.render();
       }, this));
 
+
+      require(["views/date_slider"], _.bind(function (DateSliderView) {
+        var dateSliderView = new DateSliderView({model: this.model});
+        dateSliderView.render();
+      }, this));
+
       this.model.on("change:date", this.setSummaryText, this);
       this.setSummaryText();
-    },
-
-    renderSlider: function () {
-      this.slider = $("#slider-range").slider({
-        range: true,
-        min: -2000,
-        max: 2013,
-        values: this.model.get("date"),
-        slide: _.bind(function( event, ui ) {
-          this.model.set("date", this.getTimeRange());
-        }, this)
-      });
-    },
-
-    getTimeRange: function () {
-      return [$("#slider-range").slider("values", 0), 
-              $("#slider-range").slider("values", 1)];
     },
       
     setSummaryText: function () {
@@ -49,10 +36,6 @@ define([
 
       $("#info-panel").text(this.toText(timeRange[0]) + " - " +
                             this.toText(timeRange[1], timeRange[0]));
-
-      this.slider.slider({
-        values: this.model.get("date")
-      });
     },
 
     toText: function (year, otherYear) {
