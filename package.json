@@ -21,6 +21,6 @@
     "karma-chai-plugins": "0.1.2"
   },
   "scripts": {
-    "test": "mocha $(find test/node -name '*.js')"
+    "test": "mocha $(find test/node -name '*.js') && ./node_modules/.bin/karma start --single-run --browsers PhantomJS"
   }
 }
