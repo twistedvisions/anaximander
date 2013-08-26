@@ -57,6 +57,24 @@ describe("addPlaces", function () {
     });
   });
 
+  it("should create a founding event", function () {
+    addPlaces(testData).then(function () {
+      var ex;
+      try {
+        addEvent.addEvent.calledWith(
+          sinon.match.any, sinon.match.any, 
+          "founded", 1,
+          ["<http://dbpedia.org/ontology/foundingDate>",
+           "<http://dbpedia.org/ontology/foundingYear>"]).should.be.true;
+      } catch (e) {
+        ex = e;
+      }
+      done(ex);
+    }, function (err) {
+      done(err);
+    });
+  });
+
   after(function () {
     db.runQuery.restore();
   });

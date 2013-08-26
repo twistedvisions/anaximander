@@ -90,9 +90,9 @@ describe("adding people", function () {
     addPeople(testData).then(function () {
       var ex;
       try {
-        addEvent.addEvent.calledWith(sinon.match.any, sinon.match.any, 
-          sinon.match.any, "born",
-          "<http://dbpedia.org/ontology/birthPlace>",
+        addEvent.addEvent.calledWith(
+          sinon.match.any, sinon.match.any,
+          "born", 1,
           ["<http://dbpedia.org/ontology/birthDate>", 
            "<http://dbpedia.org/ontology/birthYear>"]).should.be.true;
       } catch (e) {
@@ -109,9 +109,9 @@ describe("adding people", function () {
     addPeople(testData).then(function () {
       var ex;
       try {
-        addEvent.addEvent.calledWith(sinon.match.any, sinon.match.any, 
-          sinon.match.any, "died",
-          "<http://dbpedia.org/ontology/deathPlace>",
+        addEvent.addEvent.calledWith(
+          sinon.match.any, sinon.match.any, 
+          "died", 1,
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.be.true;
       } catch (e) {
