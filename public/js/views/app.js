@@ -20,31 +20,15 @@ define([
         mapView.render();
       }, this));
 
-
       require(["views/date_slider"], _.bind(function (DateSliderView) {
         var dateSliderView = new DateSliderView({model: this.model});
         dateSliderView.render();
       }, this));
 
-      this.model.on("change:date", this.setSummaryText, this);
-      this.setSummaryText();
-    },
-      
-    setSummaryText: function () {
-
-      var timeRange = this.model.get("date");
-
-      $("#info-panel").text(this.toText(timeRange[0]) + " - " +
-                            this.toText(timeRange[1], timeRange[0]));
-    },
-
-    toText: function (year, otherYear) {
-      if (year < 0) {
-        return (-year) + "BCE";
-      } else if (otherYear && otherYear < 0) {
-        return year + "CE";
-      }
-      return year;
+      require(["views/summary_text"], _.bind(function (SummaryTextView) {
+        var summaryTextView = new SummaryTextView({model: this.model});
+        summaryTextView.render();
+      }, this));
     }
   });
   return AppView;
