@@ -148,7 +148,7 @@ define([
     getEventText: function (event) {
       var date = new Date(event.start_date);
       return [
-        "<a href='" + event.person_link + "' target='_blank' >" + event.event_name + "</a>",
+        "<a href='" + event.event_link + "' target='_blank' >" + event.event_name + "</a>",
         date.getDate() + "/" + (date.getMonth() + 1) + "/" + 
         Math.abs(date.getFullYear()) + 
         (date.getFullYear() < 0 ? " BC" : "")
