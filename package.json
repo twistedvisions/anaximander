@@ -19,5 +19,8 @@
     "karma-mocha": "0.1.x",
     "karma-chai": "0.0.1",
     "karma-chai-plugins": "0.1.2"
+  },
+  "scripts": {
+    "test": "mocha $(find test/node -name '*.js')"
   }
 }
