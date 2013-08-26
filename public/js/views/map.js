@@ -106,12 +106,15 @@ define([
         return pad(Math.abs(year), 4, 0);
       };
       var getStartOfYear = function (year) {
-        var isBc = year < 0;
-        return formatYear(year) + "-01-01" + (isBc ? " BC" : "");
+        return formatYearAsTimestamp(year, "-01-01 00:00");
       };
       var getEndOfYear = function (year) {
+        return formatYearAsTimestamp(year, "-12-31 23:59");
+      };
+      var formatYearAsTimestamp = function (year, suffix) {
         var isBc = year < 0;
-        return formatYear(year) + "-12-31" + (isBc ? " BC" : "");
+        year = formatYear(year) + suffix + (isBc ? " BC" : "");
+        return isBc ? year.substring(1) : year;
       };
       $.get(
         "/location", 
@@ -224,9 +227,12 @@ define([
     },
 
     getEventText: function (event) {
+      var date = new Date(event.start_date);
       return [
         "<a href='" + event.person_link + "' target='_blank' >" + event.event_name + "</a>",
-        new Date(event.start_date).toLocaleDateString()
+        date.getDate() + "/" + (date.getMonth() + 1) + "/" + 
+        Math.abs(date.getFullYear()) + 
+        (date.getFullYear() < 0 ? " BC" : "")
       ].join("<br/>");
     },
 
