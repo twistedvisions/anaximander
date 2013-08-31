@@ -27,4 +27,18 @@ describe("utils", function () {
     });
   });
 
+  describe("tidyLine", function () {
+    it("should remove spaces from within quotes", function () {
+      utils.tidyLine("hey \"ho let's\" go").should.equal("hey \"ho_let's\" go");
+    });
+    it("should remove multiple spaces from within quotes", function () {
+      utils.tidyLine("hey \"ho let's really\" go").should.equal("hey \"ho_let's_really\" go");
+    });
+
+    it("should remove spaces from multiple quotes", function () {
+      utils.tidyLine("hey \"ho let's\" go \"somewhere better\" than this")
+       .should.equal("hey \"ho_let's\" go \"somewhere_better\" than this");
+    });
+  })
+
 });
