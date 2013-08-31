@@ -5,11 +5,11 @@ var should = require("should");
 var db = require("../../../../lib/db");
 var addEvent = require("../../../../lib/parser/writers/addEvent");
 var getPlace = require("../../../../lib/parser/writers/getPlace");
-var addPeople = require("../../../../lib/parser/writers/addPeople");
+var processEvents = require("../../../../lib/parser/writers/processEvents");
 
 describe("adding people", function () {
-
-  var job;
+  
+  var personJob, placeJob;
 
   beforeEach(function () {
 
@@ -37,7 +37,7 @@ describe("adding people", function () {
 
     sinon.stub(addEvent, "addEvent");
 
-    job = {
+    personJob = {
       "log": function () {},
       "data": {
         "key": "<http://dbpedia.org/resource/Person1>",
@@ -58,15 +58,36 @@ describe("adding people", function () {
         }))
       }
     };
+
+    placeJob = {
+      "log": function () {},
+      "data": {
+        "key": "<http://dbpedia.org/resource/Place1>",
+        "link": "http://en.wikipedia.org/wiki/Place1",
+        "value": escape(JSON.stringify({
+          "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>": [
+            "41.169444444444444"
+          ],
+          "<http://www.w3.org/2003/01/geo/wgs84_pos#long>": [
+            "42.16944443"
+          ],
+          "<http://dbpedia.org/ontology/foundingDate>": [
+            "1948-12-13"
+          ]
+        }))
+      }
+    };
+
   });
 
+
   it("should create an id for each place from the database", function (done) {
-    should.not.exist(job.data.value.id);
-    should.not.exist(job.value);
-    addPeople(job).then(function () {
+    should.not.exist(personJob.data.value.id);
+    should.not.exist(personJob.value);
+    processEvents(personJob).then(function () {
       var ex;
       try {
-        should.exist(job.value.id);
+        should.exist(personJob.value.id);
       } catch (e) {
         ex = e;
       }
@@ -77,11 +98,11 @@ describe("adding people", function () {
   });
 
   it("should add a birthday", function (done) {
-    addPeople(job).then(function () {
+    processEvents(personJob).then(function () {
       var ex;
       try {
         addEvent.addEvent.calledWith(
-          "Person1", job, 
+          "Person1", personJob, 
           "born", 1,
           ["<http://dbpedia.org/ontology/birthDate>", 
            "<http://dbpedia.org/ontology/birthYear>"]).should.be.true;
@@ -96,11 +117,11 @@ describe("adding people", function () {
 
 
   it("should add a deathday", function (done) {
-    addPeople(job).then(function () {
+    processEvents(personJob).then(function () {
       var ex;
       try {
         addEvent.addEvent.calledWith(
-          "Person1", job, 
+          "Person1", personJob, 
           "died", 1,
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.be.true;
@@ -112,6 +133,27 @@ describe("adding people", function () {
       done(err);
     });
   });
+
+
+  it("should create a founding event", function (done) {
+    processEvents(placeJob).then(function () {
+      var ex;
+      try {
+        addEvent.addEvent.calledWith(
+          "Place1", placeJob, 
+          "founded", 1,
+          ["<http://dbpedia.org/ontology/foundingDate>",
+           "<http://dbpedia.org/ontology/foundingYear>"]).should.be.true;
+      } catch (e) {
+        ex = e;
+        console.log(e)
+      }
+      done(ex);
+    }, function (err) {
+      done(err);
+    });
+  });
+
 
   afterEach(function () {
     db.runQuery.restore();
