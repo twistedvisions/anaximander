@@ -8,7 +8,7 @@ select
   ST_AsText(place.location) as location
 from place 
 inner join event on event.place_id = place.id
-inner join event_attendee on event_attendee.event_id = event.id
+left join event_attendee on event_attendee.event_id = event.id
 left join person on event_attendee.person_id = person.id
 where ST_MaxDistance (
   place.location,
