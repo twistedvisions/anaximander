@@ -6,6 +6,7 @@
   "undef"         : true,
   "quotmark"      : "double",
   "browser"       : true,
+  "nonstandard"   : true,
   "globals": {
     "require": true, 
     "define": true,

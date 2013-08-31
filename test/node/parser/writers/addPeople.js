@@ -4,11 +4,12 @@ var when = require("when");
 var should = require("should");
 var db = require("../../../../lib/db");
 var addEvent = require("../../../../lib/parser/writers/addEvent");
+var getPlace = require("../../../../lib/parser/writers/getPlace");
 var addPeople = require("../../../../lib/parser/writers/addPeople");
 
 describe("adding people", function () {
 
-  var testData;
+  var job;
 
   beforeEach(function () {
 
@@ -28,55 +29,44 @@ describe("adding people", function () {
       return d.promise;
     });
 
+    sinon.stub(getPlace, "byName", function () {
+      var d = when.defer();
+      d.resolve(1);
+      return d.promise;
+    });
+
     sinon.stub(addEvent, "addEvent");
 
-    testData = {
-      "<http://dbpedia.org/resource/Place1>": {
-        id: 1,
-        "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>": [
-          {
-            "value": "\"10\"^^<http://www.w3.org/2001/XMLSchema#float>"
-          }
-        ],
-        "<http://www.w3.org/2003/01/geo/wgs84_pos#long>": [
-          {
-            "value": "\"-20\"^^<http://www.w3.org/2001/XMLSchema#float>"
-          }
-        ], 
-        "link": "http://en.wikipedia.org/wiki/Name1"
-      },
-      "<http://dbpedia.org/resource/Person1>": {
-        "<http://dbpedia.org/ontology/birthDate>": [
-          {
-            "value": "1948-12-13"
-          }
-        ],
-        "<http://dbpedia.org/ontology/birthPlace>": [
-          {
-            "value": "<http://dbpedia.org/resource/Place1>"
-          }
-        ],
-        "<http://dbpedia.org/ontology/deathDate>": [
-          {
-            "value": "1948-12-13"
-          }
-        ],
-        "<http://dbpedia.org/ontology/deathPlace>": [
-          {
-            "value": "<http://dbpedia.org/resource/Place1>",
-          }
-        ], 
-        "link": "http://en.wikipedia.org/wiki/Person1"
+    job = {
+      "log": function () {},
+      "data": {
+        "key": "<http://dbpedia.org/resource/Person1>",
+        "link": "http://en.wikipedia.org/wiki/Person1",
+        "value": escape(JSON.stringify({
+          "<http://dbpedia.org/ontology/birthDate>": [
+            "1948-12-13"
+          ],
+          "<http://dbpedia.org/ontology/birthPlace>": [
+            "<http://dbpedia.org/resource/Place1>"
+          ],
+          "<http://dbpedia.org/ontology/deathDate>": [
+            "1948-12-13"
+          ],
+          "<http://dbpedia.org/ontology/deathPlace>": [
+            "<http://dbpedia.org/resource/Place1>"
+          ]
+        }))
       }
     };
   });
 
   it("should create an id for each place from the database", function (done) {
-    should.not.exist(testData["<http://dbpedia.org/resource/Person1>"].id);
-    addPeople(testData).then(function () {
+    should.not.exist(job.data.value.id);
+    should.not.exist(job.value);
+    addPeople(job).then(function () {
       var ex;
       try {
-        should.exist(testData["<http://dbpedia.org/resource/Person1>"].id);
+        should.exist(job.value.id);
       } catch (e) {
         ex = e;
       }
@@ -87,11 +77,11 @@ describe("adding people", function () {
   });
 
   it("should add a birthday", function (done) {
-    addPeople(testData).then(function () {
+    addPeople(job).then(function () {
       var ex;
       try {
         addEvent.addEvent.calledWith(
-          sinon.match.any, sinon.match.any,
+          "Person1", job, 
           "born", 1,
           ["<http://dbpedia.org/ontology/birthDate>", 
            "<http://dbpedia.org/ontology/birthYear>"]).should.be.true;
@@ -106,11 +96,11 @@ describe("adding people", function () {
 
 
   it("should add a deathday", function (done) {
-    addPeople(testData).then(function () {
+    addPeople(job).then(function () {
       var ex;
       try {
         addEvent.addEvent.calledWith(
-          sinon.match.any, sinon.match.any, 
+          "Person1", job, 
           "died", 1,
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.be.true;
@@ -126,6 +116,7 @@ describe("adding people", function () {
   afterEach(function () {
     db.runQuery.restore();
     addEvent.addEvent.restore();
+    getPlace.byName.restore();
   });
 
 });

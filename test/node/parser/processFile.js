@@ -6,7 +6,7 @@ var processFile = require("../../../lib/parser/processFile");
 
 describe("processFile", function () {
 
-  var fs;
+  var fs, kue;
 
   var sampleData = [
     "header",
@@ -33,13 +33,34 @@ describe("processFile", function () {
       }, 1);
       return x;
     });
+
+  });
+
+  var jobs;
+
+  beforeEach(function () {
+    jobs = {};
+    kue = require("kue"); 
+    sinon.stub(kue, "createQueue", function () {
+      var queue = function () {};
+      queue.create = function (type, data) {
+        data = _.clone(data);
+        data.value = JSON.parse(unescape(data.value));
+        jobs[unescape(data.key)] = data;
+        return queue; 
+      };
+      queue.priority = function () {return queue; };
+      queue.save = function () {return queue; };
+      return queue;
+    });
+
   });
   
   it("should process the first 4 lines bar 1", function (done) {
     processFile("", 4).then(function (data) {
       var ex;
       try {
-        _.keys(data).length.should.equal(4);
+        _.keys(jobs).length.should.equal(4);
       } catch (e) {
         ex = e;
       }
@@ -48,10 +69,10 @@ describe("processFile", function () {
   });
 
   it("should only process interesting lines", function (done) {
-    processFile("", 8).then(function (data) {
+    processFile("", 9).then(function (data) {
       var ex;
       try {
-        _.keys(data).length.should.equal(7);
+        _.keys(jobs).length.should.equal(7);
       } catch (e) {
         ex = e;
       }
@@ -63,7 +84,7 @@ describe("processFile", function () {
     processFile("", 9).then(function (data) {
       var ex;
       try {
-        _.keys(data["<http://dbpedia.org/resource/Name8>"]).length.should.equal(3);
+        _.keys(jobs["<http://dbpedia.org/resource/Name8>"].value).length.should.equal(2);
       } catch (e) {
         ex = e;
       }
@@ -76,9 +97,9 @@ describe("processFile", function () {
       var ex;
       try {
         should.exists(
-          data["<http://dbpedia.org/resource/Name8>"]
+          jobs["<http://dbpedia.org/resource/Name8>"].value
               ["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]
-              [0].value
+              [0]
         );
       } catch (e) {
         ex = e;
@@ -92,7 +113,7 @@ describe("processFile", function () {
       var ex;
       try {
         should.exists(
-          data["<http://dbpedia.org/resource/Name8>"].link
+          jobs["<http://dbpedia.org/resource/Name8>"].link
         );
       } catch (e) {
         ex = e;
@@ -105,7 +126,7 @@ describe("processFile", function () {
     processFile("", 10).then(function (data) {
       var ex;
       try {
-        data["<http://dbpedia.org/resource/Name8>"]
+        jobs["<http://dbpedia.org/resource/Name8>"].value
             ["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]
             .length.should.equal(2)
         
@@ -114,6 +135,10 @@ describe("processFile", function () {
       }
       done(ex);
     });
+  });
+
+  afterEach(function () {
+    kue.createQueue.restore();
   });
 
   after(function () {
