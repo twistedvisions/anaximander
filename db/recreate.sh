@@ -1,1 +1,1 @@
-redis-cli FLUSHALL && ./db/create.sh && node lib/parser/parser.js 
+time redis-cli FLUSHALL && time ./db/create.sh && time node lib/parser/parser.js 
