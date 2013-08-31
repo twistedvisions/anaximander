@@ -35,7 +35,7 @@ describe("adding people", function () {
       return d.promise;
     });
 
-    sinon.stub(addEvent, "addEvent");
+    sinon.stub(addEvent, "addEventWithPlace");
 
     personJob = {
       "log": function () {},
@@ -101,9 +101,9 @@ describe("adding people", function () {
     processEvents(personJob).then(function () {
       var ex;
       try {
-        addEvent.addEvent.calledWith(
+        addEvent.addEventWithPlace.calledWith(
           "Person1", personJob, 
-          "born", 1,
+          "born", "<http://dbpedia.org/ontology/birthPlace>",
           ["<http://dbpedia.org/ontology/birthDate>", 
            "<http://dbpedia.org/ontology/birthYear>"]).should.be.true;
       } catch (e) {
@@ -120,9 +120,9 @@ describe("adding people", function () {
     processEvents(personJob).then(function () {
       var ex;
       try {
-        addEvent.addEvent.calledWith(
+        addEvent.addEventWithPlace.calledWith(
           "Person1", personJob, 
-          "died", 1,
+          "died", "<http://dbpedia.org/ontology/deathPlace>",
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.be.true;
       } catch (e) {
@@ -139,9 +139,9 @@ describe("adding people", function () {
     processEvents(placeJob).then(function () {
       var ex;
       try {
-        addEvent.addEvent.calledWith(
+        addEvent.addEventWithPlace.calledWith(
           "Place1", placeJob, 
-          "founded", 1,
+          "founded", null,
           ["<http://dbpedia.org/ontology/foundingDate>",
            "<http://dbpedia.org/ontology/foundingYear>"]).should.be.true;
       } catch (e) {
@@ -157,7 +157,7 @@ describe("adding people", function () {
 
   afterEach(function () {
     db.runQuery.restore();
-    addEvent.addEvent.restore();
+    addEvent.addEventWithPlace.restore();
     getPlace.byName.restore();
   });
 
