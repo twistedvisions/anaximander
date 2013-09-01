@@ -2,6 +2,22 @@
 	<head>
     <title>Redraw: find how we were!</title>
     <script>
+      var debounce = function(func, wait, immediate) {
+        var result;
+        var timeout = null;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) result = func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) result = func.apply(context, args);
+          return result;
+        };
+      };
       window.universal_variable = {
         events: {
           listeners: [],
@@ -13,7 +29,7 @@
           },
           on: function (type, cb) {
             if (type === "change") {
-              this.listeners.push(_.debounce(cb, 1000));
+              this.listeners.push(debounce(cb, 1000));
             }
           }
         }
