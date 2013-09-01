@@ -1,6 +1,24 @@
 <html>
 	<head>
     <title>Redraw: find how we were!</title>
+    <script>
+      window.universal_variable = {
+        events: {
+          listeners: [],
+          push: function (data) {
+            this.last_value = data;
+            _.each(this.listeners, function (cb) {
+              cb(data);
+            });
+          },
+          on: function (type, cb) {
+            if (type === "change") {
+              this.listeners.push(_.debounce(cb, 1000));
+            }
+          }
+        }
+      };
+    </script>
     <script src='//d3c3cq33003psk.cloudfront.net/opentag-82113-782996.js'></script>
     <script src="js/settings.js"></script>
     <script  

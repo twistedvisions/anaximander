@@ -18,6 +18,7 @@ define([
         max: 2013,
         values: this.model.get("date"),
         slide: _.bind(function (event, ui) {
+          window.lastEvent = "slider";
           this.model.set("date", this.getTimeRange());
         }, this)
       });

@@ -1,25 +1,30 @@
 define([
   "jquery",
   "underscore",
-  "backbone"
-], function ($, _, Backbone) {
+  "backbone",
+  "./analytics"
+], function ($, _, Backbone, analytics) {
   var Router = Backbone.Router.extend({
     routes: {
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView"
     },
     mapView: function (lat, lon, zoom, start, end) {
-      this.model.set({
+      var data = {
         date: [start, end],
         center: [lat, lon],
         zoom: parseInt(zoom, 10)
-      });
+      };
+      analytics.send(arguments);
+      window.lastEvent = "url_change";
     },
     init: function (options) {
       this.model = options.model;
       this.model.on("change", function () {
+
         var date = this.model.get("date");
         var center = this.model.get("center");
         var zoom = this.model.get("zoom");
+
         this.navigate([
           "lat", center[0],
           "lon", center[1],
@@ -27,6 +32,15 @@ define([
           "start", date[0],
           "end", date[1]
         ].join("/"));
+
+        analytics.send([
+          center[0],
+          center[1],
+          zoom,
+          parseInt(date[0], 10),
+          parseInt(date[1], 10)
+        ]);
+
       }, this);
 
       Backbone.history.start();

@@ -78,6 +78,7 @@ define([
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
       google.maps.event.addListener(this.map, "bounds_changed", _.bind(function () {
+        window.lastEvent = "map";
         this.model.set({
           "radius": this.getRadius(),
           "center": this.getPosition(),
