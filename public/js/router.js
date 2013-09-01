@@ -5,18 +5,24 @@ define([
   "./analytics"
 ], function ($, _, Backbone, analytics) {
   var Router = Backbone.Router.extend({
+    
     routes: {
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView"
     },
+
     mapView: function (lat, lon, zoom, start, end) {
+      
       var data = {
         date: [start, end],
         center: [lat, lon],
         zoom: parseInt(zoom, 10)
       };
-      analytics.send(arguments);
+
       window.lastEvent = "url_change";
+
+      this.model.set(data);
     },
+
     init: function (options) {
       this.model = options.model;
       this.model.on("change", function () {
@@ -33,13 +39,13 @@ define([
           "end", date[1]
         ].join("/"));
 
-        analytics.send([
-          center[0],
-          center[1],
-          zoom,
-          parseInt(date[0], 10),
-          parseInt(date[1], 10)
-        ]);
+        analytics.navigation({
+          lat: center[0],
+          lon: center[1],
+          zoom: zoom,
+          start: parseInt(date[0], 10),
+          end: parseInt(date[1], 10)
+        });
 
       }, this);
 

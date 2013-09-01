@@ -4,10 +4,11 @@ define([
   "underscore",
   "backbone",
   "../collections/events",
+  "../analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
   "styled_marker"
-], function ($, _, Backbone, EventCollection) {
+], function ($, _, Backbone, EventCollection, analytics) {
 
   var MapView = Backbone.View.extend({
     
@@ -17,6 +18,7 @@ define([
 
       this.mapObjects = {};
       this.eventsCollection = new EventCollection({state: this.model});
+      this.onLinkClick = _.bind(this.onLinkClick, this);
     },
 
     render: function () {
@@ -128,6 +130,7 @@ define([
       });
 
       google.maps.event.addListener(marker, "mouseover", _.bind(function () {
+        analytics.infoBoxShown(result);
         if (this.lastInfoWindow) {
           this.lastInfoWindow.close();  
         }
@@ -135,13 +138,21 @@ define([
           content: this.getContent(result)
         });
         info.open(this.map, marker);
+        info.result = result;
         this.lastInfoWindow = info;
+
+        $(".event_link").on("click", this.onLinkClick);
+
       }, this));
 
       return marker;
 
     },
 
+    onLinkClick: function () {
+      analytics.linkClicked(this.lastInfoWindow.result);
+    },
+    
     getContent: function (result) {
       return _.map(result.events, this.getEventText).join("<p>");
     },
@@ -149,7 +160,7 @@ define([
     getEventText: function (event) {
       var date = new Date(event.start_date);
       return [
-        "<a href='" + event.event_link + "' target='_blank' >" + event.event_name + "</a>",
+        "<a class='event_link' href='" + event.event_link + "' target='_blank' >" + event.event_name + "</a>",
         date.getDate() + "/" + (date.getMonth() + 1) + "/" + 
         Math.abs(date.getFullYear()) + 
         (date.getFullYear() < 0 ? " BC" : "")
