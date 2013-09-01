@@ -7,9 +7,15 @@
   "production": {
     "database": {
       "connection_string": ""
+    },
+    "server": {
+      "port": 80
     }
   },
   "defaults": {
+    "server": {
+      "port": 8000
+    },
     "parser": {
       "data_file": "/home/pretzel/Downloads/dbpedia_data/mappingbased_properties_en.nq",
       "parallelism": 8,

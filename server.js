@@ -5,6 +5,8 @@ var express = require("express");
 
 var db = require("./lib/db");
 
+var nconf = require("./lib/config");
+
 var getEventAttendeesAtPoint = _.template(fs.readFileSync("db_templates/get_event_attendees_at_point.sql").toString());
 
 var app = express();
@@ -49,6 +51,6 @@ app.get("/location", function (req, res) {
   );
 });
 
-app.listen(8000);
+app.listen(nconf.server.port);
 
-console.log("Listening on port 8000");
+console.log("Listening on port ", nconf.server.port);
