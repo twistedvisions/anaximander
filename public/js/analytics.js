@@ -6,17 +6,18 @@ define(["underscore"], function (_) {
         data = {};
       }
       data.type = type;
+      return data;
     },
     navigation: function (data) {
-      this.ensureData("navigation");
+      data = this.ensureData(data, "navigation");
       window.universal_variable.events.push(data);
     },
     infoBoxShown: function (data) {
-      this.ensureData("infoBoxShown");
+      data = this.ensureData(data, "infoBoxShown");
       window.universal_variable.events.push(data);
     },
     linkClicked: function (data) {
-      this.ensureData("linkClicked");
+      data = this.ensureData(data, "linkClicked");
       window.universal_variable.events.push(data);
     }
   };
