@@ -1,4 +1,4 @@
-/*global google, StyledIconTypes, StyledMarker, StyledIcon */
+/*global google */
 define([
   "jquery",
   "underscore",
@@ -8,7 +8,7 @@ define([
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
   "styled_marker"
-], function ($, _, Backbone, EventCollection, analytics) {
+], function ($, _, Backbone, EventCollection, analytics, maps, StyledMarker) {
 
   var MapView = Backbone.View.extend({
     
@@ -121,8 +121,8 @@ define([
     drawPoint: function (result) {
       var marker;
 
-      marker = new StyledMarker({
-        styleIcon: new StyledIcon(StyledIconTypes.MARKER, {
+      marker = new StyledMarker.StyledMarker({
+        styleIcon: new StyledMarker.StyledIcon(StyledMarker.StyledIconTypes.MARKER, {
           color: "00ff00",
           text: result.events.length.toString()
         }),
@@ -160,7 +160,8 @@ define([
     getEventText: function (event) {
       var date = new Date(event.start_date);
       return [
-        "<a class='event_link' href='" + event.event_link + "' target='_blank' >" + event.event_name + "</a>",
+        "<a class='event_link' href='" + event.event_link + "' target='_blank' >" + 
+        event.event_name + "</a>",
         date.getDate() + "/" + (date.getMonth() + 1) + "/" + 
         Math.abs(date.getFullYear()) + 
         (date.getFullYear() < 0 ? " BC" : "")

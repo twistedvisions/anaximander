@@ -9,7 +9,7 @@ for (var file in window.__karma__.files) {
 
 require.config({
 
-  baseUrl: '/base/public/js',
+  baseUrl: "/base/public/js",
   shim: {
     "backbone": {
       deps: ["underscore", "jquery"],
@@ -18,11 +18,6 @@ require.config({
     "jqueryui": {
       deps: ["jquery"],
       exports: "$"
-    },
-    "styled_marker": {
-      deps: ["async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
-        "&sensor=false!callback"],
-      exports: "StyledMarker"
     }
   },
   paths: {
@@ -32,8 +27,10 @@ require.config({
     backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
     templates: "../templates",
-    async: "./libs/async",
+    async: "../../test/webapp/mocks/async",
     styled_marker: "./libs/styled_marker"
+
+    // app: "js"
   },
   
   deps: tests,

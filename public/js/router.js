@@ -11,7 +11,6 @@ define([
     },
 
     mapView: function (lat, lon, zoom, start, end) {
-      
       var data = {
         date: [start, end],
         center: [lat, lon],
