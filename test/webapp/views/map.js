@@ -24,6 +24,10 @@ define(
           };
         });
         google.maps.event.triggers = [];
+
+        this.map = new Map({model: model});
+        sinon.stub(this.map, "getColor");
+
       });
 
       afterEach(function () {
@@ -32,18 +36,17 @@ define(
         StyledMarker.StyledMarker.restore();
         StyledMarker.StyledIcon.restore();
       });
+        
 
       it("should set lastEvent to 'map'", function () {
-        var map = new Map({model: model});
-        map.render();
+        this.map.render();
         google.maps.event.triggers[0]();
         window.lastEvent.should.equal("map");
       });
 
       it("should track when a marker is hovered over", function () {
-        var map = new Map({model: model});
-        map.render();
-        map.drawPoint({
+        this.map.render();
+        this.map.drawPoint({
           events: [],
           location: []
         });
@@ -54,19 +57,44 @@ define(
       });
 
       it("should track when a marker link is clicked on", function () {
-        var map = new Map({model: model});
-
-        map.render();
-        map.drawPoint({
+        this.map.render();
+        this.map.drawPoint({
           events: [],
           location: []
         });
 
         google.maps.event.triggers[1]();
         
-        map.onLinkClick();
+        this.map.onLinkClick();
 
         Analytics.linkClicked.calledOnce.should.be.true;
+      });
+    });
+
+    describe("getColor", function () {
+      it("should be blue at the most recent end", function () {
+        var map = new Map({model: model});
+        map.getColor({
+          events: [{
+            start_date: "2000-12-31"
+          }]
+        }).should.be.equal("#0000ff");
+      });
+      it("should be red at the most distant end", function () {
+        var map = new Map({model: model});
+        map.getColor({
+          events: [{
+            start_date: "1900-01-01"
+          }]
+        }).should.be.equal("#ff0000");
+      });
+      it("should be a mixture in the middle", function () {
+        var map = new Map({model: model});
+        map.getColor({
+          events: [{
+            start_date: "1950-05-06"
+          }]
+        }).should.be.equal("#80007f");
       });
     });
   }

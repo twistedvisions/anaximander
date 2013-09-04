@@ -7,8 +7,9 @@ define([
   "../analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
-  "styled_marker"
-], function ($, _, Backbone, EventCollection, analytics, maps, StyledMarker) {
+  "styled_marker",
+  "chroma"
+], function ($, _, Backbone, EventCollection, analytics, maps, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
     
@@ -123,7 +124,8 @@ define([
 
       marker = new StyledMarker.StyledMarker({
         styleIcon: new StyledMarker.StyledIcon(StyledMarker.StyledIconTypes.MARKER, {
-          color: "00ff00",
+          color: this.getColor(result),
+          fore: "#eeeeee",
           text: result.events.length.toString()
         }),
         position: new google.maps.LatLng(result.location[0], result.location[1])
@@ -147,6 +149,25 @@ define([
 
       return marker;
 
+    },
+
+    getColor: function (result) {
+
+      var eventTime = new Date(_.last(result.events).start_date);
+
+      var range = this.model.get("date");
+      var start = new Date(range[0], 0, 1);
+      var end = new Date(range[1], 12, 31);
+
+      var diff = (end.getTime() - eventTime.getTime()) / 
+                 (end.getTime() - start.getTime());
+
+      var blue = Math.ceil(255 - 255 * diff);
+      var red = Math.floor(255 * diff);
+
+      var color = chroma.color("rgb(" + [red, 0, blue].join(",") + ")");
+
+      return color.hex();
     },
 
     onLinkClick: function () {

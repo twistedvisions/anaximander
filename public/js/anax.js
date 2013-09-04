@@ -12,6 +12,9 @@ require.config({
       deps: ["async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback"],
       exports: "StyledMarker"
+    },
+    "chroma": {
+      exports: "chroma"
     }
   },
   paths: {
@@ -20,6 +23,7 @@ require.config({
     jqueryui: "//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min",
     backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
+    chroma: "//cdnjs.cloudflare.com/ajax/libs/chroma-js/0.4.12/chroma.min",
     templates: "../templates",
     async: "./libs/async",
     styled_marker: "./libs/styled_marker"

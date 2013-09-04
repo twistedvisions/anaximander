@@ -31,3 +31,12 @@ body {
   max-height: 200px;
 }
 
+#slider-range .ui-slider-handle {
+  background: none;
+  background-color: #ff0000;
+}
+
+#slider-range .ui-slider-handle:last-of-type {
+  background: none;
+  background-color: #0000ff;
+}
