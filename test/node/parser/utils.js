@@ -39,6 +39,13 @@ describe("utils", function () {
       utils.tidyLine("hey \"ho let's\" go \"somewhere better\" than this")
        .should.equal("hey \"ho_let's\" go \"somewhere_better\" than this");
     });
-  })
+  });
+
+  describe("unescapeUnicode", function () {
+    it("should unescape strings with unescaped unicode in them", function () {
+      utils.unescapeUnicode("Helene Kr\\u00F6ller-M\\u00FCller")
+        .should.equal("Helene Kröller-Müller");
+    });
+  });
 
 });
