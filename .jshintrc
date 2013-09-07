@@ -7,6 +7,9 @@
   "quotmark"      : "double",
   "browser"       : true,
   "nonstandard"   : true,
+  "shadow"        : true,
+  "unused"        : true,
+  "undef"         : true,
   "globals": {
     "require": true, 
     "define": true,

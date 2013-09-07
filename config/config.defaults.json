@@ -29,19 +29,25 @@
           "<http://dbpedia.org/ontology/place>": "place",
           "<http://dbpedia.org/ontology/birthPlace>": "birthPlace",
           "<http://dbpedia.org/ontology/deathPlace>": "deathPlace",
-          "<http://dbpedia.org/ontology/foundationPlace>": "foundationPlace"
+          "<http://dbpedia.org/ontology/foundationPlace>": "foundationPlace",
+          "<http://dbpedia.org/ontology/locationCity>": "locationCity",
+          "<http://dbpedia.org/ontology/locationCounty>": "locationCounty",
+          "<http://dbpedia.org/ontology/headquarter>": "headquarter"
         },
         "dates": {
           "<http://dbpedia.org/ontology/date>": "date",
           "<http://dbpedia.org/ontology/year>": "year",
           "<http://dbpedia.org/ontology/birthDate>": "birthDate",
           "<http://dbpedia.org/ontology/deathDate>": "dateDate",
-          "<http://dbpedia.org/ontology/foundingDate>": "foundingDate"
+          "<http://dbpedia.org/ontology/foundingDate>": "foundingDate",
+          "<http://dbpedia.org/ontology/extinctionDate>": "extinctionDate"
+
         },
         "years": {
           "<http://dbpedia.org/ontology/birthYear>": "birthYear",
           "<http://dbpedia.org/ontology/deathYear>": "deathYear",
-          "<http://dbpedia.org/ontology/foundingYear>": "foundingYear"
+          "<http://dbpedia.org/ontology/foundingYear>": "foundingYear",
+          "<http://dbpedia.org/ontology/extinctionYear>": "extinctionYear"
         }
       }
     }

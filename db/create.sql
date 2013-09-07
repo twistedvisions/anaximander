@@ -45,3 +45,4 @@ CREATE TABLE event_participant
 );
 
 INSERT INTO thing_type (name) VALUES ('person');
+INSERT INTO thing_type (name) VALUES ('organisation');

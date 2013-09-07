@@ -7,9 +7,9 @@ var addEvent = require("../../../../lib/parser/writers/addEvent");
 var getPlace = require("../../../../lib/parser/writers/getPlace");
 var processEvents = require("../../../../lib/parser/writers/processEvents");
 
-describe("adding people", function () {
+describe("processing events", function () {
   
-  var personJob, placeJob;
+  var personJob, placeJob, organisationJob;
 
   beforeEach(function () {
 
@@ -78,6 +78,25 @@ describe("adding people", function () {
       }
     };
 
+    organisationJob = {
+      "log": function () {},
+      "data": {
+        "key": "<http://dbpedia.org/resource/Organisation1>",
+        "link": "http://en.wikipedia.org/wiki/Organisation1",
+        "value": escape(JSON.stringify({
+          "<http://dbpedia.org/ontology/location>": [
+            "<http://dbpedia.org/resource/Place1>"
+          ],
+          "<http://dbpedia.org/ontology/foundingDate>": [
+            "1948-12-13"
+          ],
+          "<http://dbpedia.org/ontology/extinctionDate>": [
+            "1949-12-13"
+          ]
+        }))
+      }
+    };
+
   });
 
 
@@ -103,7 +122,7 @@ describe("adding people", function () {
       try {
         addEvent.addEventWithPlace.calledWith(
           "Person1", personJob, 
-          "born", "<http://dbpedia.org/ontology/birthPlace>",
+          "born", ["<http://dbpedia.org/ontology/birthPlace>"],
           ["<http://dbpedia.org/ontology/birthDate>", 
            "<http://dbpedia.org/ontology/birthYear>"]).should.be.true;
       } catch (e) {
@@ -122,7 +141,7 @@ describe("adding people", function () {
       try {
         addEvent.addEventWithPlace.calledWith(
           "Person1", personJob, 
-          "died", "<http://dbpedia.org/ontology/deathPlace>",
+          "died", ["<http://dbpedia.org/ontology/deathPlace>"],
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.be.true;
       } catch (e) {
@@ -134,19 +153,69 @@ describe("adding people", function () {
     });
   });
 
-
-  it("should create a founding event", function (done) {
+  it("should create a founding event for places", function (done) {
     processEvents(placeJob).then(function () {
       var ex;
       try {
         addEvent.addEventWithPlace.calledWith(
           "Place1", placeJob, 
-          "founded", null,
+          "founded as a place", null,
           ["<http://dbpedia.org/ontology/foundingDate>",
            "<http://dbpedia.org/ontology/foundingYear>"]).should.be.true;
       } catch (e) {
         ex = e;
-        console.log(e)
+      }
+      done(ex);
+    }, function (err) {
+      done(err);
+    });
+  });
+
+  it("should create a founding event for organisations", function (done) {
+    processEvents(organisationJob).then(function () {
+      var ex;
+      try {
+        addEvent.addEventWithPlace.calledWith(
+          "Organisation1", organisationJob, 
+          "founded as an organisation", 
+          [
+            "<http://dbpedia.org/ontology/locationCity>",
+            "<http://dbpedia.org/ontology/locationCountry>",
+            "<http://dbpedia.org/ontology/location>",
+            "<http://dbpedia.org/ontology/headquarter>"
+          ],
+          [
+            "<http://dbpedia.org/ontology/foundingDate>",
+            "<http://dbpedia.org/ontology/foundingYear>"
+          ]).should.be.true;
+      } catch (e) {
+        ex = e;
+      }
+      done(ex);
+    }, function (err) {
+      done(err);
+    });
+  });
+
+  it("should create an extinction event for organisations", function (done) {
+    processEvents(organisationJob).then(function () {
+      var ex;
+      try {
+        addEvent.addEventWithPlace.calledWith(
+          "Organisation1", organisationJob, 
+          "went extinct as an organisation", 
+          [
+            "<http://dbpedia.org/ontology/locationCity>",
+            "<http://dbpedia.org/ontology/locationCountry>",
+            "<http://dbpedia.org/ontology/location>",
+            "<http://dbpedia.org/ontology/headquarter>"
+          ],
+          [
+            "<http://dbpedia.org/ontology/extinctionDate>",
+            "<http://dbpedia.org/ontology/extinctionYear>"
+          ]).should.be.true;
+      } catch (e) {
+        ex = e;
       }
       done(ex);
     }, function (err) {
