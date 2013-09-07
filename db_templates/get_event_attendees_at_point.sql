@@ -15,7 +15,7 @@ from place
 inner join event on event.place_id = place.id
 left join event_participant on event_participant.event_id = event.id
 left join thing on event_participant.thing_id = thing.id
-inner join thing_type on thing.type_id = thing_type.id
+left join thing_type on thing.type_id = thing_type.id
 where  ST_MaxDistance (
   place.location,
   ST_PointFromText('POINT(<%= lon %> <%= lat %>)')
