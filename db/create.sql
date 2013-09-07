@@ -9,10 +9,18 @@ CREATE TABLE place
   CONSTRAINT place_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE person
+CREATE TABLE thing_type
 (
   id SERIAL,
   name character varying(100) NOT NULL,
+  CONSTRAINT thing_type_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE thing
+(
+  id SERIAL,
+  name character varying(100) NOT NULL,
+  type_id bigint NOT NULL references thing_type(id),
   link character varying(200),
   CONSTRAINT person_pkey PRIMARY KEY (id)
 );
@@ -21,7 +29,7 @@ CREATE TABLE event
 (
   id SERIAL,
   name character varying(100) NOT NULL,
-  place_id bigint NOT NULL,
+  place_id bigint NOT NULL references place(id),
   start_date timestamp,
   end_date timestamp,
   attendee_count INT,
@@ -29,9 +37,11 @@ CREATE TABLE event
   CONSTRAINT event_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE event_attendee
+CREATE TABLE event_participant
 (
-  person_id bigint NOT NULL,
-  event_id bigint NOT NULL,
-  CONSTRAINT event_attendee_pkey PRIMARY KEY (person_id, event_id)
+  thing_id bigint NOT NULL references thing(id),
+  event_id bigint NOT NULL references event(id),
+  CONSTRAINT event_attendee_pkey PRIMARY KEY (thing_id, event_id)
 );
+
+INSERT INTO thing_type (name) VALUES ('person');
