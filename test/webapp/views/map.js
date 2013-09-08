@@ -7,6 +7,7 @@ define(
       date: [1900, 2000],
       zoom: 3
     });
+    var collection = new Backbone.Collection();
 
     describe("interaction", function () {
       beforeEach(function () {
@@ -25,7 +26,10 @@ define(
         });
         google.maps.event.triggers = [];
 
-        this.map = new Map({model: model});
+        this.map = new Map({
+          model: model,
+          eventsCollection: collection
+        });
         sinon.stub(this.map, "getColor");
 
       });
