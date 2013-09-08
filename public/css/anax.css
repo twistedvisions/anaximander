@@ -67,12 +67,6 @@ body {
   display: inline-block;
 }
 
-#summary-bar #social {
-  float: right;
-  padding-top: 10px;
-  padding-right: 10px;
-}
-
 #summary-bar #selector-holder {
   float: left;
   margin-right: 20px;
@@ -87,3 +81,21 @@ body {
 #summary-bar #selector-holder .select2-container {
   width: 250px;
 }
+
+#summary-bar #social {
+  float: right;
+  padding-top: 3px;
+  padding-right: 10px;
+}
+
+#summary-bar #social #github {
+  float: right;
+
+}
+
+#summary-bar #social #github a {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  color: #053FFA;
+}
+
