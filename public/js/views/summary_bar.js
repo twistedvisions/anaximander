@@ -79,6 +79,7 @@ define([
         data: _.values(data)
       });
       this.placeSelector.on("change", _.bind(function () {
+        window.lastEvent = "period_selector";
         var id = this.placeSelector.select2("val");
         this.model.set(data[id].place);
       }, this));
