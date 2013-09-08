@@ -3,13 +3,12 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "../collections/events",
   "../analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
   "styled_marker",
   "chroma"
-], function ($, _, Backbone, EventCollection, analytics, maps, StyledMarker, chroma) {
+], function ($, _, Backbone, analytics, maps, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
     
@@ -18,7 +17,7 @@ define([
     initialize: function (opts) {
 
       this.mapObjects = {};
-      this.eventsCollection = new EventCollection({state: this.model});
+      this.eventsCollection = opts.eventsCollection;
       this.onLinkClick = _.bind(this.onLinkClick, this);
     },
 

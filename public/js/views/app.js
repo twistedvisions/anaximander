@@ -3,20 +3,24 @@ define([
   "jqueryui",
   "underscore",
   "backbone",
+  "../collections/events",
   "text!templates/layout.html"
-], function ($, jqueryui, _, Backbone, layoutTemplate) {
+], function ($, jqueryui, _, Backbone, EventCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
     
     initialize: function () {
-
+      this.eventsCollection = new EventCollection({state: this.model});
     },
 
     render: function () {
       $(this.el).html(layoutTemplate);
 
       require(["views/map"], _.bind(function (MapView) {
-        var mapView = new MapView({model: this.model});
+        var mapView = new MapView({
+          model: this.model,
+          eventsCollection: this.eventsCollection
+        });
         mapView.render();
       }, this));
 
@@ -28,6 +32,14 @@ define([
       require(["views/summary_text"], _.bind(function (SummaryTextView) {
         var summaryTextView = new SummaryTextView({model: this.model});
         summaryTextView.render();
+      }, this));
+
+      require(["views/summary_bar"], _.bind(function (SummaryBar) {
+        var summaryBar = new SummaryBar({
+          model: this.model,
+          eventsCollection: this.eventsCollection
+        });
+        summaryBar.render();
       }, this));
     }
   });
