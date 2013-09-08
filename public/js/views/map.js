@@ -54,6 +54,10 @@ define([
         var center = this.model.get("center");
         this.map.panTo(new google.maps.LatLng(center[0], center[1]));
         this.map.setZoom(this.model.get("zoom"));
+        this.locationChanged = true;
+        setTimeout(_.bind(function () {
+          this.locationChanged = false;
+        }, this), 200);
       }
     },
 
@@ -80,7 +84,9 @@ define([
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
       google.maps.event.addListener(this.map, "bounds_changed", _.bind(function () {
-        window.lastEvent = "map";
+        if (!this.locationChanged) {
+          window.lastEvent = "map";
+        }
         this.model.set({
           "radius": this.getRadius(),
           "center": this.getPosition(),
