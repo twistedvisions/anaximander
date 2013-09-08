@@ -4,7 +4,7 @@ define([
   "underscore",
   "backbone",
   "../collections/events",
-  "text!templates/layout.html"
+  "text!templates/layout.htm"
 ], function ($, jqueryui, _, Backbone, EventCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",

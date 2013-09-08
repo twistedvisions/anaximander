@@ -16,7 +16,8 @@ module.exports = function (config) {
     files: [
       "test/test-main.js",
       {pattern: "test/webapp/**/*.js", included: false},
-      {pattern: "public/js/**/*.js", included: false}
+      {pattern: "public/js/**/*.js", included: false},
+      {pattern: "public/templates/**/*.htm*", included: false, served: true}
     ],
 
 
