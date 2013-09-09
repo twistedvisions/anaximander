@@ -1,7 +1,7 @@
 CREATE TABLE place
 (
   id SERIAL,
-  name character varying(100) NOT NULL,
+  name character varying(200) NOT NULL,
   location geometry NOT NULL,
   start_date timestamp,
   end_date timestamp,
@@ -12,14 +12,14 @@ CREATE TABLE place
 CREATE TABLE thing_type
 (
   id SERIAL,
-  name character varying(100) NOT NULL,
+  name character varying(200) NOT NULL,
   CONSTRAINT thing_type_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE thing
 (
   id SERIAL,
-  name character varying(100) NOT NULL,
+  name character varying(200) NOT NULL,
   type_id bigint NOT NULL references thing_type(id),
   link character varying(200),
   CONSTRAINT person_pkey PRIMARY KEY (id)
@@ -28,7 +28,7 @@ CREATE TABLE thing
 CREATE TABLE event 
 (
   id SERIAL,
-  name character varying(100) NOT NULL,
+  name character varying(300) NOT NULL,
   place_id bigint NOT NULL references place(id),
   start_date timestamp,
   end_date timestamp,
