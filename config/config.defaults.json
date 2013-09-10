@@ -36,20 +36,25 @@
         },
         "dates": {
           "<http://dbpedia.org/ontology/date>": "date",
-          "<http://dbpedia.org/ontology/year>": "year",
           "<http://dbpedia.org/ontology/birthDate>": "birthDate",
           "<http://dbpedia.org/ontology/deathDate>": "dateDate",
           "<http://dbpedia.org/ontology/foundingDate>": "foundingDate",
           "<http://dbpedia.org/ontology/extinctionDate>": "extinctionDate",
-          "<http://dbpedia.org/ontology/dissolutionDate>": "dissolutionDate"
-
+          "<http://dbpedia.org/ontology/dissolutionDate>": "dissolutionDate",
+          "<http://dbpedia.org/ontology/openingDate>": "openingDate",
+          "<http://dbpedia.org/ontology/closingDate>": "closingDate",
+          "<http://dbpedia.org/ontology/buildingStartDate>": "buildingStartDate"
         },
         "years": {
+          "<http://dbpedia.org/ontology/year>": "year",
           "<http://dbpedia.org/ontology/birthYear>": "birthYear",
           "<http://dbpedia.org/ontology/deathYear>": "deathYear",
           "<http://dbpedia.org/ontology/foundingYear>": "foundingYear",
           "<http://dbpedia.org/ontology/extinctionYear>": "extinctionYear",
-          "<http://dbpedia.org/ontology/dissolutionYear>": "dissolutionYear"
+          "<http://dbpedia.org/ontology/dissolutionYear>": "dissolutionYear",
+          "<http://dbpedia.org/ontology/openingYear>": "openingYear",
+          "<http://dbpedia.org/ontology/openingYear>": "closingYear",
+          "<http://dbpedia.org/ontology/buildingStartYear>": "buildingStartYear"
         }
       }
     }
