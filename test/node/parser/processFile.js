@@ -57,7 +57,7 @@ describe("processFile", function () {
   });
   
   it("should process the first 4 lines bar 1", function (done) {
-    processFile("", 4).then(function (data) {
+    processFile("", 100, 0, 5, true, true).then(function () {
       var ex;
       try {
         _.keys(jobs).length.should.equal(4);
@@ -69,7 +69,7 @@ describe("processFile", function () {
   });
 
   it("should only process interesting lines", function (done) {
-    processFile("", 9).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function () {
       var ex;
       try {
         _.keys(jobs).length.should.equal(7);
@@ -81,7 +81,7 @@ describe("processFile", function () {
   });
 
   it("should return the keys available for each object", function (done) {
-    processFile("", 9).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function (data) {
       var ex;
       try {
         _.keys(jobs["<http://dbpedia.org/resource/Name8>"].value).length.should.equal(2);
@@ -93,7 +93,7 @@ describe("processFile", function () {
   });
 
   it("should have a value for a key", function (done) {
-    processFile("", 9).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function (data) {
       var ex;
       try {
         should.exists(
@@ -109,7 +109,7 @@ describe("processFile", function () {
   });
 
   it("should have a link for a value", function (done) {
-    processFile("", 9).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function (data) {
       var ex;
       try {
         should.exists(
@@ -123,7 +123,7 @@ describe("processFile", function () {
   });
 
   it("should store multiple values for a single key if given", function (done) {
-    processFile("", 10).then(function (data) {
+    processFile("", 100, 0, 11, true, true).then(function (data) {
       var ex;
       try {
         jobs["<http://dbpedia.org/resource/Name8>"].value
