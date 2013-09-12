@@ -7,7 +7,7 @@ select
   event.start_date,
   event.end_date,
   ST_AsText(place.location) as location,
-  ST_MaxDistance (
+  ST_Distance (
     place.location,
     ST_PointFromText('POINT(<%= lon %> <%= lat %>)')
   ) as distance
@@ -16,10 +16,11 @@ inner join event on event.place_id = place.id
 left join event_participant on event_participant.event_id = event.id
 left join thing on event_participant.thing_id = thing.id
 left join thing_type on thing.type_id = thing_type.id
-where  ST_MaxDistance (
+where  ST_DWithin (
   place.location,
-  ST_PointFromText('POINT(<%= lon %> <%= lat %>)')
-) < <%= radius %>
+ ST_PointFromText('POINT(<%= lon %> <%= lat %>)'),
+  <%= radius %>
+)
 and event.start_date >= '<%= start %>'
 and event.end_date <= '<%= end %>'
 order by distance asc

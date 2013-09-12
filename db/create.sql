@@ -2,7 +2,7 @@ CREATE TABLE place
 (
   id SERIAL,
   name character varying(200) NOT NULL,
-  location geometry NOT NULL,
+  location geography NOT NULL,
   start_date timestamp,
   end_date timestamp,
   link character varying(200),

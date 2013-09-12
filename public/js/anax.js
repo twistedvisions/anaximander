@@ -41,7 +41,7 @@ require([
   "models/view_state"
 ], function (AppView, Router, ViewState) {
   var model = new ViewState({
-    date: [1813, 2013],
+    date: [1963, 2013],
     center: [53.24112905344493, 6.191539001464932],
     zoom: 9,
     radius: 10

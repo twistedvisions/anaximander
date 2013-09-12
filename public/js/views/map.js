@@ -106,11 +106,31 @@ define([
     getRadius: function () {
       var bounds = this.map.getBounds();
       var ne = bounds.getNorthEast();
-      var sw = bounds.getSouthWest();
-      var extent_vertical = ne.lat() - sw.lat();
-      var extent_horizontal = ne.lng() - sw.lng();
-      var furthestExtent = Math.max(extent_vertical, extent_horizontal);
-      return furthestExtent / 2;
+      
+      return this.getDistance(ne, this.map.getCenter());
+    },
+
+    getDistance: function (p1, p2) {
+      var lat1 = p1.lat();
+      var lat2 = p2.lat();
+      var lon1 = p1.lng();
+      var lon2 = p2.lng();
+
+      var toRad = function (x) {
+        return x * Math.PI / 180;
+      };
+
+      var R = 6371; // km
+      var dLat = toRad(lat2 - lat1);
+      var dLon = toRad(lon2 - lon1);
+      var lat1 = toRad(lat1);
+      var lat2 = toRad(lat2);
+
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2); 
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+      var d = R * c;
+      return d * 1000;
     },
 
     getZoom: function () {
