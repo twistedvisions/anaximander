@@ -44,6 +44,21 @@ CREATE TABLE event_participant
   CONSTRAINT event_attendee_pkey PRIMARY KEY (thing_id, event_id)
 );
 
+CREATE INDEX location_index
+  ON place USING gist (location);
+
+CREATE INDEX start_date_idx
+  ON event USING btree (start_date ASC NULLS LAST);
+
+CREATE INDEX end_date_idx
+   ON event USING btree (end_date ASC NULLS LAST);
+
+CREATE INDEX thing_type_idx
+   ON thing USING hash (type_id);
+
+CREATE INDEX place_idx
+   ON event USING hash (place_id);
+
 INSERT INTO thing_type (name) VALUES ('person');
 INSERT INTO thing_type (name) VALUES ('organisation');
 INSERT INTO thing_type (name) VALUES ('construction');
