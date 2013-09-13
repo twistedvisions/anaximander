@@ -11,6 +11,7 @@ define([
 
     initialize: function (options) {
       this.state = options.state;
+      this.queryPending = false;
 
       this.lastResults = [];
       this.lastInfoWindow = null;
@@ -19,42 +20,46 @@ define([
     },
 
     updateData: function () {
-      var position = this.state.get("center");
-      var timeRange = this.state.get("date");
-      var radius = this.state.get("radius");
-      var pad = function (n, width, z) {
-        z = z || "0";
-        n = n + "";
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-      };
-      var formatYear = function (year) {
-        return pad(Math.abs(year), 4, 0);
-      };
-      var getStartOfYear = function (year) {
-        return formatYearAsTimestamp(year, "-01-01 00:00");
-      };
-      var getEndOfYear = function (year) {
-        return formatYearAsTimestamp(year, "-12-31 23:59");
-      };
-      var formatYearAsTimestamp = function (year, suffix) {
-        var isBc = year < 0;
-        year = formatYear(year) + suffix + (isBc ? " BC" : "");
-        return isBc ? year.substring(1) : year;
-      };
-      $.get(
-        "/location", 
-        {
-          lat: position[0], 
-          lon: position[1], 
-          radius: radius,
-          start: getStartOfYear(timeRange[0]), 
-          end: getEndOfYear(timeRange[1])
-        }, 
-        _.bind(this.handleResults, this)
-      );
+      if (!this.queryPending) {
+        this.queryPending = true;
+        var position = this.state.get("center");
+        var timeRange = this.state.get("date");
+        var radius = this.state.get("radius");
+        var pad = function (n, width, z) {
+          z = z || "0";
+          n = n + "";
+          return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+        };
+        var formatYear = function (year) {
+          return pad(Math.abs(year), 4, 0);
+        };
+        var getStartOfYear = function (year) {
+          return formatYearAsTimestamp(year, "-01-01 00:00");
+        };
+        var getEndOfYear = function (year) {
+          return formatYearAsTimestamp(year, "-12-31 23:59");
+        };
+        var formatYearAsTimestamp = function (year, suffix) {
+          var isBc = year < 0;
+          year = formatYear(year) + suffix + (isBc ? " BC" : "");
+          return isBc ? year.substring(1) : year;
+        };
+        $.get(
+          "/location", 
+          {
+            lat: position[0], 
+            lon: position[1], 
+            radius: radius,
+            start: getStartOfYear(timeRange[0]), 
+            end: getEndOfYear(timeRange[1])
+          }, 
+          _.bind(this.handleResults, this)
+        );
+      }
     },
 
     handleResults: function (results) {
+      this.queryPending = false;
       results = this.combineEventsAtTheSamePlace(_.cloneDeep(results));
 
       var oldResultsAsKeys = _.map(this.lastResults, this.makeKey, this);
