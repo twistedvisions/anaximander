@@ -200,7 +200,7 @@ define([
     },
     
     getContent: function (result) {
-      return _.map(result.events, this.getEventText).join("<p>");
+      return "<p>" + _.map(result.events, this.getEventText).join("<p>");
     },
 
     getEventText: function (event) {
