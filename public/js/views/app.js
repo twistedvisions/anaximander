@@ -41,6 +41,14 @@ define([
         });
         summaryBar.render();
       }, this));
+
+      require(["views/filters"], _.bind(function (Filters) {
+        var filters = new Filters({
+          model: this.model,
+          eventsCollection: this.eventsCollection
+        });
+        filters.render();
+      }, this));
     }
   });
   return AppView;

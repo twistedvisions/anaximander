@@ -87,9 +87,6 @@ define([
 
       this.eventsCollection.on("reset", this.showStats, this);
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));
-
-      //TODO: remove
-      $("body").toggleClass("filters-visible");
     },
 
     showFilters: function () {
