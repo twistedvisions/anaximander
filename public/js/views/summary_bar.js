@@ -3,8 +3,9 @@ define([
   "underscore",
   "backbone",
   "select2",
+  "./filters",
   "text!templates/summary_bar.htm"
-], function ($, _, Backbone, Select2, template) {
+], function ($, _, Backbone, Select2, Filters, template) {
 
   var SummaryBar = Backbone.View.extend({
     el: "#summary-bar",
@@ -59,6 +60,16 @@ define([
           zoom: 5,
           date: [1938, 1945]
         }
+      },
+      6: {
+        id: 6,
+        text: "The Classical Period",
+        link: "http://en.wikipedia.org/wiki/Classical_Greece",
+        place: {
+          center: [37.51250057352118, 19.418217102810722],
+          zoom: 5,
+          date: [-550, -200]
+        }
       }
     },
 
@@ -69,8 +80,20 @@ define([
     render: function () {
       this.$el.html(template);
       setTimeout(_.bind(this.showSelector, this), 100);
+      this.filters = new Filters({
+        model: this.model,
+        eventsCollection: this.eventsCollection
+      });
 
       this.eventsCollection.on("reset", this.showStats, this);
+      this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));
+
+      //TODO: remove
+      $("body").toggleClass("filters-visible");
+    },
+
+    showFilters: function () {
+      $("body").toggleClass("filters-visible");
     },
 
     showSelector: function () {
