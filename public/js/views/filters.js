@@ -13,26 +13,23 @@ define([
       this.eventsCollection = opts.eventsCollection;
       this.typesCollection = opts.typesCollection;
       this.subtypesCollection = opts.subtypesCollection;
-      this.filterState = {};
     },
 
     render: function () {
       this.$el.html(template);
-      this.showPrimaryFilters();
+      this.updatePrimaryFilters();
       return this.$el;
     },
 
-    showPrimaryFilters: function () {
+    updatePrimaryFilters: function () {
       var primary = this.$(".primary .options");
       primary.html("");
       var template =  _.template(filterTemplate);
       this.typesCollection.forEach(function (filter) {
         var json = filter.toJSON();
-        json.isUnset = !!this.filterState[json.id];
+        json.isUnset = this.filterStateExists(json.id);
         var id = filter.get("id");
-        json.isHalfSet = _.any(_.values(this.filterState), function (filter) {
-          return filter.parent_type === id;
-        });
+        json.isHalfSet = this.isPrimaryFilterStateUsed(id);
         var el = $(template(json));
         primary.append(el);
         el.hover(_.bind(this.showSecondaryFilters, this, filter));
@@ -42,21 +39,6 @@ define([
           input.removeClass("half");
         }, this));
       }, this);
-    },
-
-    showSecondaryFilters: function (filter) {
-      var secondary = this.$(".secondary .options");
-      secondary.html("");
-      this.subtypesCollection.setParentType(filter);
-
-      this.subtypesCollection.fetch({
-        reset: true,
-        success: _.bind(this._showSecondaryFilters, this)
-      });
-    },
-
-    setState: function (filterState) {
-      this.filterState = filterState;
     },
 
     checkPrimary: function (filter, isChecked) {
@@ -70,12 +52,23 @@ define([
     _setSecondaries: function (isChecked) {
       this.subtypesCollection.forEach(function (filter) {
         if (isChecked) {
-          delete this.filterState[filter.get("id")];
+          this.removeFilterStateKey(filter.get("id"));
         } else {
-          this.filterState[filter.get("id")] = true;
+          this.addFilterStateKey(filter.get("id"));
         }
       }, this);
       this._showSecondaryFilters();
+    },
+
+    showSecondaryFilters: function (filter) {
+      var secondary = this.$(".secondary .options");
+      secondary.html("");
+      this.subtypesCollection.setParentType(filter);
+
+      this.subtypesCollection.fetch({
+        reset: true,
+        success: _.bind(this._showSecondaryFilters, this)
+      });
     },
 
     _showSecondaryFilters: function () {
@@ -83,10 +76,10 @@ define([
       var secondary = this.$(".secondary .options");
       secondary.html("");
       var parentTypeId = this.subtypesCollection.getParentType().get("id");
-      var isParentUnselected = !!this.filterState[parentTypeId];
+      var isParentUnselected = this.filterStateExists(parentTypeId);
       this.subtypesCollection.forEach(function (filter) {
         var json = filter.toJSON();
-        json.isUnset = isParentUnselected || this.filterState[json.id];
+        json.isUnset = isParentUnselected || this.filterStateExists(json.id);
         json.isHalfSet = false;
         var el = $(template(json));
         secondary.append(el);
@@ -95,52 +88,81 @@ define([
     },
 
     checkSecondary: function (filter, event) {
+      this.updateFilterState(filter, $(event.currentTarget).prop("checked"));
+
+      //todo: only update the one
+      this.updatePrimaryFilters();
+    },
+
+    updateFilterState: function (filter, checked) {
       var id = filter.get("id");  
-      var checked = $(event.currentTarget).prop("checked");
       if (checked) {
-        delete this.filterState[id];
+        this.removeFilterStateKey(id);
       } else {
-        this.filterState[id] = {parent_type: filter.get("parent_type")};
+        this.addFilterStateKey(id, filter.get("parent_type"));
       }
+
       if (this.allSecondariesUnchecked()) {
         this.switchAllSecondarysForPrimary();
       } else {
         this.setRemainingSecondaryFilters();
       }
-      //todo: only update the one
-      this.showPrimaryFilters();
     },
+
     allSecondariesUnchecked: function () {
       return this.subtypesCollection.all(function (subtype) {
-        return !!this.filterState[subtype.get("id")];
+        return this.filterStateExists(subtype.get("id"));
       }, this);
     },
     switchAllSecondarysForPrimary: function () {
       this.subtypesCollection.forEach(function (subtype) {
-        delete this.filterState[subtype.get("id")];
+        this.removeFilterStateKey(subtype.get("id"));
       }, this);
 
-      this.filterState[this.getParentTypeId()] = {
-        parent_type: null
-      };
+      this.addFilterStateKey(this.getParentTypeId());
     },
     setRemainingSecondaryFilters: function () {
       var parentTypeId = this.getParentTypeId();
-      delete this.filterState[parentTypeId];
+      this.removeFilterStateKey(parentTypeId);
       this.$el.find(".secondary input").each(_.bind(function (i, el) {
         var $el = $(el);
         var id = parseInt($el.attr("data-id"), 10);
         if (!$el.prop("checked")) {
-          this.filterState[id] = {parent_type: parentTypeId};
+          this.addFilterStateKey(id, parentTypeId);
         }
       }, this));
     },
-    getParentTypeId: function () {
-      return this.subtypesCollection.getParentType().get("id");
+
+    getFilterState: function (id) {
+      return this.model.get("filterState").get(id);
     },
 
-    getFilters: function () {
-      return this.filterState;
+    filterStateExists: function (id) {
+      return !!this.model.get("filterState").get(id);
+    },
+
+    isPrimaryFilterStateUsed: function (id) {
+      return this.model.get("filterState").any(function (filter) {
+        return filter.get("parent_type") === id;
+      });
+    },
+
+    removeFilterStateKey: function (id) {
+      this.model.get("filterState").remove(id);
+    },
+
+    addFilterStateKey: function (id, parent_type) {
+      var model = {
+        id: id
+      };
+      if (parent_type) {
+        model.parent_type = parent_type;
+      }
+      this.model.get("filterState").set([model], {remove: false});
+    },
+
+    getParentTypeId: function () {
+      return this.subtypesCollection.getParentType().get("id");
     }
   });
 

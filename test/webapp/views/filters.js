@@ -5,7 +5,8 @@ define(
     var model = new Backbone.Model({
       center: [1, 1],
       date: [1900, 2000],
-      zoom: 3
+      zoom: 3,
+      filterState: new Backbone.Collection()
     });
     var eventsCollection = new Backbone.Collection();
     var typesCollection = new Backbone.Collection();
@@ -67,19 +68,20 @@ define(
       });
 
       it("doesn't select primary filters when state has them unselected", function () {
-        this.filters.setState({1: {parent_type: null}});
+        this.filters.model.get("filterState").set([{id: 1}]);
         this.filters.render();
         this.filters.$el.find(".primary input:checked").length.should.equal(1);
       });
+      
       it("doesn't select secondary filters when state has them unselected", function () {
-        this.filters.setState({3: {parent_type: 1}});
+        this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
         this.filters.$el.find(".secondary input:checked").length.should.equal(1);
       });
 
       it("selects all secondary filters when a primary filter is selected", function () {
-        this.filters.setState({3: {parent_type: 1}});
+        this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
         this.filters.$el.find(".secondary input:checked").length.should.equal(1);
@@ -88,7 +90,7 @@ define(
       });
 
       it("deselects all secondary filters when a primary filter is deselected", function () {
-        this.filters.setState({3: {parent_type: 1}});
+        this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
         this.filters.$el.find(".secondary input:checked").length.should.equal(1);
@@ -97,21 +99,23 @@ define(
       });
 
       it("puts the primary checkbox in a half-state when not all secondary filters are selected", function () {
-        this.filters.setState({3: {parent_type: 1}});
+        this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.$el.find(".primary input.half:checked").length.should.equal(1);
       });
+
       it("puts the primary checkbox in a selected state when all secondary filters are selected", function () {
-        this.filters.setState({});
+        this.filters.model.get("filterState").set([{}]);
         this.filters.render();
         this.filters.$el.find(".primary input.half:checked").length.should.equal(0);
         this.filters.$el.find(".primary input:checked").length.should.equal(2);
       });
+
       it("puts the primary checkbox in a unselected state when all secondary filters are unselected", function () {
-        this.filters.setState({
-          3: {parent_type: 1},
-          4: {parent_type: 1}
-        });
+        this.filters.model.get("filterState").set([
+          {id: 3, parent_type: 1},
+          {id: 4, parent_type: 1}
+        ]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
         this.filters.checkSecondary(
@@ -123,10 +127,11 @@ define(
         this.filters.$el.find(".primary input.half:checked").length.should.equal(0);
         this.filters.$el.find(".primary input:checked").length.should.equal(1);
       });
+
       it("puts the primary checkbox in a half state when unselect everything then select one secondary", function () {
-        this.filters.setState({
-          1: {parent_type: null}
-        });
+        this.filters.model.get("filterState").set([
+          {id: 1}
+        ]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
         this.filters.$el.find(".secondary input:checked").length.should.equal(0);
@@ -142,25 +147,29 @@ define(
       });
 
       describe("serialisation", function () {
+
         it("returns empty if nothing is filtered out", function () {
-          this.filters.setState({});
+          this.filters.model.get("filterState").set([]);
           this.filters.render();
-          _.keys(this.filters.getFilters()).length.should.equal(0);
+          this.filters.model.get("filterState").length.should.equal(0);
         });
+
         it("returns a single filter if one primary is unselected", function () {
-          this.filters.setState({
-            1: {}
-          });
+          this.filters.model.get("filterState").set([
+            {id: 1}
+          ]);
           this.filters.render();
-          _.keys(this.filters.getFilters()).length.should.equal(1);
+          this.filters.model.get("filterState").length.should.equal(1);
         });
+
         it("returns a single filter if one secondary is unselected", function () {
-          this.filters.setState({
-            3: {parent_type: 1}
-          });
+          this.filters.model.get("filterState").set([
+            {id: 3, parent_type: 1}
+          ]);
           this.filters.render();
-          _.keys(this.filters.getFilters()).length.should.equal(1);
+          this.filters.model.get("filterState").length.should.equal(1);
         });
+
       });
     });
   }
