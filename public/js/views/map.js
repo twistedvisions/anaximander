@@ -83,16 +83,18 @@ define([
       };
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-      google.maps.event.addListener(this.map, "bounds_changed", _.bind(function () {
-        if (!this.locationChanged) {
-          window.lastEvent = "map";
-        }
-        this.model.set({
-          "radius": this.getRadius(),
-          "center": this.getPosition(),
-          "zoom": this.getZoom()
-        });
-      }, this));
+      google.maps.event.addListener(this.map, "bounds_changed", _.bind(this.onBoundsChanged, this));
+    },
+
+    onBoundsChanged: function () {
+      if (!this.locationChanged) {
+        window.lastEvent = "map";
+      }
+      this.model.set({
+        "radius": this.getRadius(),
+        "center": this.getPosition(),
+        "zoom": this.getZoom()
+      });
     },
 
     getPosition: function () {
