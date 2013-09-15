@@ -3,52 +3,76 @@ define([
   "jqueryui",
   "underscore",
   "backbone",
+  "libs/when",
   "../collections/events",
+  "../collections/types",
+  "../collections/subtypes",
   "text!templates/layout.htm"
-], function ($, jqueryui, _, Backbone, EventCollection, layoutTemplate) {
+], function ($, jqueryui, _, Backbone, when, EventCollection, TypeCollection, 
+    SubtypeCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
     
     initialize: function () {
       this.eventsCollection = new EventCollection({state: this.model});
+      this.typesCollection = new TypeCollection();
+      this.subtypesCollection = new SubtypeCollection();
     },
 
     render: function () {
       $(this.el).html(layoutTemplate);
 
+      var typesLoaded = when.defer();
+      var filtersLoaded = when.defer();
+      this.typesCollection.fetch({
+        success: function () {
+          typesLoaded.resolve(true);
+        },
+        error: function () {
+          typesLoaded.reject();
+        }
+      });
+      
       require(["views/map"], _.bind(function (MapView) {
-        var mapView = new MapView({
+        this.mapView = new MapView({
           model: this.model,
           eventsCollection: this.eventsCollection
         });
-        mapView.render();
+        this.mapView.render();
       }, this));
 
       require(["views/date_slider"], _.bind(function (DateSliderView) {
-        var dateSliderView = new DateSliderView({model: this.model});
-        dateSliderView.render();
+        this.dateSliderView = new DateSliderView({model: this.model});
+        this.dateSliderView.render();
       }, this));
 
       require(["views/summary_text"], _.bind(function (SummaryTextView) {
-        var summaryTextView = new SummaryTextView({model: this.model});
-        summaryTextView.render();
+        this.summaryTextView = new SummaryTextView({model: this.model});
+        this.summaryTextView.render();
       }, this));
 
       require(["views/summary_bar"], _.bind(function (SummaryBar) {
-        var summaryBar = new SummaryBar({
+        this.summaryBar = new SummaryBar({
           model: this.model,
           eventsCollection: this.eventsCollection
         });
-        summaryBar.render();
+        this.summaryBar.render();
       }, this));
 
       require(["views/filters"], _.bind(function (Filters) {
-        var filters = new Filters({
+        this.filters = new Filters({
           model: this.model,
-          eventsCollection: this.eventsCollection
+          eventsCollection: this.eventsCollection,
+          typesCollection: this.typesCollection,
+          subtypesCollection: this.subtypesCollection
         });
-        filters.render();
+        filtersLoaded.resolve(true);
       }, this));
+      when.all([typesLoaded.promise, filtersLoaded.promise])
+          .then(_.bind(this.renderFilters, this));
+    },
+    renderFilters: function () {
+      this.filters.render();
     }
   });
   return AppView;

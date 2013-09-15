@@ -7,22 +7,38 @@ define(
       date: [1900, 2000],
       zoom: 3
     });
-    var collection = new Backbone.Collection();
-
+    var eventsCollection = new Backbone.Collection();
+    var typesCollection = new Backbone.Collection();
+    var subtypesCollection = new Backbone.Collection();
+    subtypesCollection.setParentType = function () {};
     describe("rendering", function () {
       beforeEach(function () {
-    
-
         $("body").append("<div id='filters-container'></div>");
+        
+       typesCollection.reset([{
+          id: 1,
+          name: "name 1"
+        }]);
+
+        sinon.stub(subtypesCollection, "fetch", function (opts) {
+          subtypesCollection.reset([{
+            id: 1,
+            name: "name 1"
+          }]);
+          opts.success();
+        });
         this.filters = new Filters({
           model: model,
-          eventsCollection: collection
+          eventsCollection: eventsCollection,
+          typesCollection: typesCollection,
+          subtypesCollection: subtypesCollection
         });
 
       });
 
       afterEach(function () {
         $("body").remove("#filters-container");
+        subtypesCollection.fetch.restore();
       });
 
       it("shows check boxes for primary filters", function () {
@@ -32,7 +48,7 @@ define(
 
       it("shows check boxes for secondary filters", function () {
         this.filters.render();
-        this.filters.showSecondaryFilters(this.filters.data[0]);
+        this.filters.showSecondaryFilters(subtypesCollection.get(1));
         this.filters.$el.find(".secondary input[type=checkbox]").length.should.be.above(0);
       });
     });

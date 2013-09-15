@@ -11,6 +11,7 @@ CREATE TABLE thing_type
 (
   id SERIAL,
   name character varying(200) NOT NULL,
+  parent_type bigint,
   CONSTRAINT thing_type_pkey PRIMARY KEY (id)
 );
 
@@ -64,5 +65,5 @@ CREATE INDEX thing_type_idx
 CREATE INDEX place_idx
    ON event USING hash (place_id);
 
-INSERT INTO thing_type (name) VALUES ('person');
-INSERT INTO thing_type (name) VALUES ('organisation');
+INSERT INTO thing_type (name) VALUES ('Person');
+INSERT INTO thing_type (name) VALUES ('Organisation');

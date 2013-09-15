@@ -77,8 +77,6 @@ a, a:hover {
 }
 
 #filters-container .filter-holder {
-  box-sizing: border-box;
-  float: left;
   padding-left: 10px;
 }
 
@@ -117,6 +115,18 @@ a, a:hover {
 }
 
 #filters-container .secondary {
+  margin-left: 180px;
+}
+
+#filters-container .secondary .options {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+#filters-container .secondary .filter {
+  float: left;
+  width: 251px;
 }
 
 #summary-bar {
