@@ -1,7 +1,12 @@
 <div class="filter">
   <div class="checkbox">
     <label>
-      <input type="checkbox" checked> 
+      <input 
+        type="checkbox" 
+        data-id="<%= id %>"
+        <%= (isUnset ? "" : "checked") %> 
+        <%= (isHalfSet ? "class='half'" : "") %> 
+      > 
       <%= name %> 
     </label>
   </div>

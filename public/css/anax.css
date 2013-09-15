@@ -13,6 +13,10 @@ a, a:hover {
   color: rgb(0, 0, 238);
 }
 
+input.half {
+  opacity: 0.5;
+}
+
 #slider-range {
   position: fixed;
   top: 0;

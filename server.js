@@ -75,6 +75,10 @@ app.get("/type/:id/type", function (req, res) {
     })
   ).then(
     function (result) {
+      result.rows = _.map(result.rows, function (row) {
+        row.parent_type = parseInt(row.parent_type, 10);
+        return row;
+      });
       res.send(result.rows);
     }, 
     function () {

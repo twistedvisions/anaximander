@@ -18,6 +18,10 @@ define([
 
     setParentType: function (parentType) {
       this.parentType = parentType;
+    },
+
+    getParentType: function () {
+      return this.parentType;
     }
 
   });
