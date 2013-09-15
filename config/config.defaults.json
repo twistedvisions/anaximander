@@ -55,6 +55,9 @@
           "<http://dbpedia.org/ontology/openingYear>": "openingYear",
           "<http://dbpedia.org/ontology/openingYear>": "closingYear",
           "<http://dbpedia.org/ontology/buildingStartYear>": "buildingStartYear"
+        },
+        "person": {
+          "<http://dbpedia.org/ontology/profession>": "profession"
         }
       }
     }
