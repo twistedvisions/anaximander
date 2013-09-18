@@ -5,7 +5,7 @@
         type="checkbox" 
         data-id="<%= id %>"
         <%= (isUnset ? "" : "checked") %> 
-        <%= (isHalfSet ? "class='half'" : "") %> 
+        class="<%= (isHalfSet ? "half" : "") %> <%= (not_specified ? "not-specified" : "specified") %>"
       > 
       <%= name %> 
     </label>

@@ -30,6 +30,7 @@ define([
         json.isUnset = this.filterStateExists(json.id);
         var id = filter.get("id");
         json.isHalfSet = this.isPrimaryFilterStateUsed(id);
+        json.not_specified = false;
         var el = $(template(json));
         primary.append(el);
         el.hover(_.bind(this.showSecondaryFilters, this, filter));
@@ -42,6 +43,12 @@ define([
     },
 
     checkPrimary: function (filter, isChecked) {
+      var id = filter.get("id");
+      if (isChecked) {
+        this.removeFilterStateKey(id);
+      } else {
+        this.addFilterStateKey(id);
+      }
       this.subtypesCollection.setParentType(filter);
       this.subtypesCollection.fetch({
         reset: true,
@@ -51,11 +58,7 @@ define([
 
     _setSecondaries: function (isChecked) {
       this.subtypesCollection.forEach(function (filter) {
-        if (isChecked) {
-          this.removeFilterStateKey(filter.get("id"));
-        } else {
-          this.addFilterStateKey(filter.get("id"));
-        }
+        this.removeFilterStateKey(filter.get("id"));
       }, this);
       this._showSecondaryFilters();
     },
@@ -77,14 +80,25 @@ define([
       secondary.html("");
       var parentTypeId = this.subtypesCollection.getParentType().get("id");
       var isParentUnselected = this.filterStateExists(parentTypeId);
-      this.subtypesCollection.forEach(function (filter) {
-        var json = filter.toJSON();
-        json.isUnset = isParentUnselected || this.filterStateExists(json.id);
-        json.isHalfSet = false;
-        var el = $(template(json));
-        secondary.append(el);
-        el.find("input").on("change", _.bind(this.checkSecondary, this, filter));
-      }, this);
+      this._showSecondaryFilter(isParentUnselected, secondary, template, new Backbone.Model({
+        id: -parentTypeId,
+        name: "Not Specified",
+        not_specified: true
+      }));
+      this.subtypesCollection.forEach(
+        _.bind(this._showSecondaryFilter, 
+          this, isParentUnselected, secondary, template)
+      );
+    },
+
+    _showSecondaryFilter: function (isParentUnselected, secondary, template, filter) {
+      var json = filter.toJSON();
+      json.isUnset = isParentUnselected || this.filterStateExists(json.id);
+      json.isHalfSet = false;
+      json.not_specified = json.not_specified === true || json.not_specified === false;
+      var el = $(template(json));
+      secondary.append(el);
+      el.find("input").on("change", _.bind(this.checkSecondary, this, filter));
     },
 
     checkSecondary: function (filter, event) {

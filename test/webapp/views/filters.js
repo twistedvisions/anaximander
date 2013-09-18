@@ -67,33 +67,53 @@ define(
         this.filters.$el.find(".secondary input[type=checkbox]").length.should.be.above(0);
       });
 
+      it("shows check boxes for not-specified secondary filters", function () {
+        this.filters.render();
+        this.filters.showSecondaryFilters(subtypesCollection.get(1));
+        this.filters.$el.find(".secondary input[type=checkbox].not-specified").length.should.equal(1);
+      });
+
+      it("unsets not-specified filter when appropriate", function () {
+        this.filters.model.get("filterState").set([{id: -1}]);
+        this.filters.render();
+        this.filters.showSecondaryFilters(subtypesCollection.get(1));
+        this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
+      });
+
+      it("doesn't unset not-specified filter when not in options", function () {
+        this.filters.model.get("filterState").set([]);
+        this.filters.render();
+        this.filters.showSecondaryFilters(subtypesCollection.get(1));
+        this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(true);
+      });
+
       it("doesn't select primary filters when state has them unselected", function () {
         this.filters.model.get("filterState").set([{id: 1}]);
         this.filters.render();
         this.filters.$el.find(".primary input:checked").length.should.equal(1);
       });
-      
+
       it("doesn't select secondary filters when state has them unselected", function () {
         this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
-        this.filters.$el.find(".secondary input:checked").length.should.equal(1);
+        this.filters.$el.find(".secondary input:checked.specified").length.should.equal(1);
       });
 
       it("selects all secondary filters when a primary filter is selected", function () {
         this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
-        this.filters.$el.find(".secondary input:checked").length.should.equal(1);
-        this.filters.checkPrimary(new Backbone.Model({id: 1}), true);
         this.filters.$el.find(".secondary input:checked").length.should.equal(2);
+        this.filters.checkPrimary(new Backbone.Model({id: 1}), true);
+        this.filters.$el.find(".secondary input:checked").length.should.equal(3);
       });
 
       it("deselects all secondary filters when a primary filter is deselected", function () {
         this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
         this.filters.render();
         this.filters.showSecondaryFilters(subtypesCollection.get(1));
-        this.filters.$el.find(".secondary input:checked").length.should.equal(1);
+        this.filters.$el.find(".secondary input:checked").length.should.equal(2);
         this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
         this.filters.$el.find(".secondary input:checked").length.should.equal(0);
       });
@@ -113,6 +133,7 @@ define(
 
       it("puts the primary checkbox in a unselected state when all secondary filters are unselected", function () {
         this.filters.model.get("filterState").set([
+          {id: -1},
           {id: 3, parent_type: 1},
           {id: 4, parent_type: 1}
         ]);
@@ -155,10 +176,11 @@ define(
         });
 
         it("returns a single filter if one primary is unselected", function () {
-          this.filters.model.get("filterState").set([
-            {id: 1}
-          ]);
+          this.filters.model.get("filterState").set([]);
           this.filters.render();
+          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.model.get("filterState").length.should.equal(0);
+          this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
           this.filters.model.get("filterState").length.should.equal(1);
         });
 
