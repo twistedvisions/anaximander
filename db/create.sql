@@ -62,6 +62,9 @@ CREATE INDEX end_date_idx
 CREATE INDEX thing_type_idx
    ON thing USING hash (type_id);
 
+CREATE INDEX event_id_idx
+   ON event_participant USING hash (event_id);
+
 CREATE INDEX place_idx
    ON event USING hash (place_id);
 
