@@ -22,7 +22,7 @@ require.config({
     }
   },
   paths: {
-    underscore: "//cdnjs.cloudflare.com/ajax/libs/lodash.js/1.3.1/lodash.min", // https://github.com/amdjs
+    underscore: "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.0.0/lodash.min", // https://github.com/amdjs
     jquery: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
     jqueryui: "//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min",
     backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
