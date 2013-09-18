@@ -16,6 +16,11 @@ inner join event on event.place_id = place.id
 left join event_participant on event_participant.event_id = event.id
 left join thing on event_participant.thing_id = thing.id
 left join thing_type on thing.type_id = thing_type.id
+<%= (
+  eventFilters.length > 0 ? 
+  "left join thing_subtype on thing.id = thing_subtype.thing_id" : 
+  ""
+) %>
 where  ST_DWithin (
   place.location,
  ST_PointFromText('POINT(<%= lon %> <%= lat %>)'),
@@ -23,5 +28,12 @@ where  ST_DWithin (
 )
 and event.start_date >= '<%= start %>'
 and event.end_date <= '<%= end %>'
+<%= eventFilters %>
+group by thing.name, thing_type.name, place.name,
+  event.name,
+  event.link, 
+  event.start_date,
+  event.end_date,
+  place.location
 order by distance asc
 limit 200

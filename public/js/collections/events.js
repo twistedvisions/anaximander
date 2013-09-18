@@ -25,6 +25,7 @@ define([
         var position = this.state.get("center");
         var timeRange = this.state.get("date");
         var radius = this.state.get("radius");
+        var filterState = this.state.get("filterState");
         var pad = function (n, width, z) {
           z = z || "0";
           n = n + "";
@@ -44,6 +45,30 @@ define([
           year = formatYear(year) + suffix + (isBc ? " BC" : "");
           return isBc ? year.substring(1) : year;
         };
+        var getTypeFilterKeys = function () {
+          var typeFilters = filterState.filter(function (filter) {
+            return !filter.get("parent_type");
+          });
+          return JSON.stringify(_.map(typeFilters, function (filter) {
+            return filter.toJSON();
+          }));
+        };
+        var getSubtypeFilterKeys = function () {
+          var typeFilters = filterState.filter(function (filter) {
+            return !!filter.get("parent_type") && (filter.get("id") > 0);
+          });
+          return JSON.stringify(_.map(typeFilters, function (filter) {
+            return filter.toJSON();
+          }));
+        };
+        var getNotSpecifiedTypeFilterKeys = function () {
+          var typeFilters = filterState.filter(function (filter) {
+            return !!filter.get("parent_type") && (filter.get("id") < 0);
+          });
+          return JSON.stringify(_.map(typeFilters, function (filter) {
+            return {"id": -filter.get("id")};
+          }));
+        };
         $.get(
           "/location", 
           {
@@ -51,7 +76,10 @@ define([
             lon: position[1], 
             radius: radius,
             start: getStartOfYear(timeRange[0]), 
-            end: getEndOfYear(timeRange[1])
+            end: getEndOfYear(timeRange[1]),
+            typeFilters: getTypeFilterKeys(),
+            subtypeFilters: getSubtypeFilterKeys(),
+            notSpecifiedTypeFilters: getNotSpecifiedTypeFilterKeys()
           }, 
           _.bind(this.handleResults, this)
         );
