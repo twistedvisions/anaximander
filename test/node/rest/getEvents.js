@@ -88,7 +88,7 @@ thing_type not in (1)
         subtypeFilters: [{id: 2, parent_type: 1}, {id: 3, parent_type: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
-        "and (((((thing.type_id = 1) and (thing_subtype.thing_type_id not in (2, 3))) or (thing_subtype.thing_type_id is null)) " +
+        "and (((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (2, 3)) or (thing_subtype.thing_type_id is null))) " +
         "or (thing.type_id not in (1)))))");
     });
 
@@ -114,7 +114,7 @@ thing_type not in (1)
         subtypeFilters: [{id: 3, parent_type: 1}],
         notSpecifiedTypeFilters: [{id: 1}]
       }).should.equal(
-        "and (((((thing.type_id = 1) and (thing_subtype.thing_type_id not in (3))) " +
+        "and (((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)))) " +
         "or (thing.type_id not in (1)))))");
     });
 
@@ -138,8 +138,8 @@ thing_type not in (1)
         subtypeFilters: [{id: 3, parent_type: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
-        "and (((((thing.type_id = 1) and (thing_subtype.thing_type_id not in (3))) or " +
-        "(thing_subtype.thing_type_id is null)) " +
+        "and (((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)) or " +
+        "(thing_subtype.thing_type_id is null))) " +
         "or (thing.type_id not in (1)))))");
     });
 
@@ -186,9 +186,65 @@ thing_type not in (1)
         "and (" +
           "(thing.type_id not in (2)) and " +
           "((" + "(" + "(thing.type_id = 1) and " +
-                      "(thing_subtype.thing_type_id not in (3))" + 
+                      "((thing_subtype.thing_type_id not in (3)))" + 
                 ") or " +
                 "(thing.type_id not in (1))" +
+          "))" +
+        ")"
+      );
+    });
+
+
+    /*
+
+      [.] Primary1 (1)
+      [ ] Primary2 (2)
+      [ ] Not specified (-1)
+      [X] Secondary2 (2)
+      [X] Secondary3 (3)
+
+    where (thing_type = 1 and thing_subtype is not null) 
+    or (thing_type not in (1, 2))
+    => thing_id 1,2,3
+    */
+    it("should allow you to filter out a whole type and unspecifieds of another type", function () {
+      getEvents.generateEventFilters({
+        typeFilters: [{id: 2}],
+        subtypeFilters: [],
+        notSpecifiedTypeFilters: [{id: 1}]
+      }).should.equal(
+        "and (((thing.type_id = 1) and (thing_subtype.thing_type_id is not null)) " +
+        "or (thing.type_id not in (1, 2)))");
+    });
+
+
+    /*
+
+      [.] Primary1 (1)
+      [ ] Primary2 (2)
+      [X] Not specified (-1)
+      [X] Secondary2 (2)
+      [ ] Secondary3 (3)
+
+    where (thing.type_id not in (2) or (thing_type = 1 and thing_subtype not in (3)))
+    => thing_id 1, 2, 4
+    */
+
+    it("should allow you to filter out a whole type and a single other subtype", function () {
+      getEvents.generateEventFilters({
+        typeFilters: [{id: 2}],
+        subtypeFilters: [{id: 3, parent_type: 1}],
+        notSpecifiedTypeFilters: []
+      }).should.equal(
+        "and (" +
+          "(thing.type_id not in (2)) and " +
+          "((" + "(" + "(thing.type_id = 1) and " +
+                      "(" + 
+                        "(thing_subtype.thing_type_id not in (3)) or " + 
+                        "(thing_subtype.thing_type_id is null)" + 
+                      ")" +
+                 ") or " +
+                 "(thing.type_id not in (1))" +
           "))" +
         ")"
       );
