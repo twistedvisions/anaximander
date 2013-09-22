@@ -58,6 +58,10 @@
         },
         "person": {
           "<http://dbpedia.org/ontology/profession>": "profession"
+        },
+        "organization": {
+          "<http://dbpedia.org/ontology/industry>": "industry",
+          "<http://dbpedia.org/ontology/type>": "type"
         }
       }
     }
