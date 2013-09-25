@@ -1,12 +1,3 @@
-CREATE TABLE place
-(
-  id SERIAL,
-  name character varying(200) NOT NULL,
-  location geography NOT NULL,
-  link character varying(200),
-  CONSTRAINT place_pkey PRIMARY KEY (id)
-);
-
 CREATE TABLE thing_type
 (
   id SERIAL,
@@ -24,6 +15,14 @@ CREATE TABLE thing
   CONSTRAINT person_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE place
+(
+  id SERIAL,
+  location geography NOT NULL,
+  thing_id bigint NOT NULL REFERENCES thing(id),
+  CONSTRAINT place_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE thing_subtype
 (
   thing_id bigint,
@@ -35,7 +34,7 @@ CREATE TABLE event
 (
   id SERIAL,
   name character varying(300) NOT NULL,
-  place_id bigint NOT NULL REFERENCES place(id),
+  place_id bigint NOT NULL REFERENCES thing(id),
   start_date timestamp,
   end_date timestamp,
   attendee_count INT,
@@ -70,3 +69,5 @@ CREATE INDEX place_idx
 
 INSERT INTO thing_type (name) VALUES ('Person');
 INSERT INTO thing_type (name) VALUES ('Organisation');
+INSERT INTO thing_type (name) VALUES ('Place');
+INSERT INTO thing_type (name) VALUES ('Construction');
