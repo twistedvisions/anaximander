@@ -52,11 +52,12 @@ define([
       this.subtypesCollection.setParentType(filter);
       this.subtypesCollection.fetch({
         reset: true,
-        success: _.bind(this._setSecondaries, this, isChecked)
+        success: _.bind(this._setSecondaries, this, id)
       });
     },
 
-    _setSecondaries: function (isChecked) {
+    _setSecondaries: function (id) {
+      this.removeFilterStateKey(-id);
       this.subtypesCollection.forEach(function (filter) {
         this.removeFilterStateKey(filter.get("id"));
       }, this);

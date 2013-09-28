@@ -80,6 +80,18 @@ define(
         this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
       });
 
+      it("sets not-specified filter when it was off, but the primary is toggled", function () {
+        this.filters.model.get("filterState").set([{id: -1}]);
+        this.filters.render();
+        this.filters.showSecondaryFilters(subtypesCollection.get(1));
+
+        this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
+        this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
+        this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
+        this.filters.checkPrimary(new Backbone.Model({id: 1}), true);
+        this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(true);
+      });
+
       it("doesn't unset not-specified filter when not in options", function () {
         this.filters.model.get("filterState").set([]);
         this.filters.render();
