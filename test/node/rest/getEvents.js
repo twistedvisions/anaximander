@@ -82,8 +82,8 @@ describe("getEvents", function () {
         subtypeFilters: [{id: 2, parent_type: 1}, {id: 3, parent_type: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
-        "and (((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (2, 3)) or (thing_subtype.thing_type_id is null))) " +
-        "or (thing.type_id not in (1)))");
+        "and ((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (2, 3)) or (thing_subtype.thing_type_id is null))) " +
+        "or (thing.type_id not in (1))))");
     });
 
     /*
@@ -103,8 +103,8 @@ describe("getEvents", function () {
         subtypeFilters: [{id: 3, parent_type: 1}],
         notSpecifiedTypeFilters: [{id: 1}]
       }).should.equal(
-        "and (((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)))) " +
-        "or (thing.type_id not in (1)))");
+        "and ((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)))) " +
+        "or (thing.type_id not in (1))))");
     });
 
     /*
@@ -122,9 +122,9 @@ describe("getEvents", function () {
         subtypeFilters: [{id: 3, parent_type: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
-        "and (((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)) or " +
+        "and ((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)) or " +
         "(thing_subtype.thing_type_id is null))) " +
-        "or (thing.type_id not in (1)))");
+        "or (thing.type_id not in (1))))");
     });
 
     /*
@@ -168,10 +168,10 @@ describe("getEvents", function () {
       }).should.equal(
         "and (" +
           "(thing.type_id not in (2)) and " +
-          "(" + "(thing.type_id = 1) and " +
+          "((" + "(thing.type_id = 1) and " +
                       "((thing_subtype.thing_type_id not in (3)))" + 
                 ") or " +
-                "(thing.type_id not in (1))" +
+                "(thing.type_id not in (1)))" +
         ")"
       );
     });
@@ -217,13 +217,13 @@ describe("getEvents", function () {
       }).should.equal(
         "and (" +
           "(thing.type_id not in (2)) and " +
-          "(" + "(thing.type_id = 1) and " +
+          "((" + "(thing.type_id = 1) and " +
                       "(" + 
                         "(thing_subtype.thing_type_id not in (3)) or " + 
                         "(thing_subtype.thing_type_id is null)" + 
                       ")" +
                  ") or " +
-                 "(thing.type_id not in (1))" +
+                 "(thing.type_id not in (1)))" +
         ")"
       );
     });
@@ -287,7 +287,7 @@ describe("getEvents", function () {
       diff.should.equal(closes.length);
 
       query.should.equal(
-        "and (" +
+        "and ((" +
               "(" + "(thing.type_id = 1) and " +
                     "(" + 
                           "(thing_subtype.thing_type_id not in (2))" + 
@@ -303,7 +303,7 @@ describe("getEvents", function () {
               ") " +
                "or " +
               "(thing.type_id not in (1, 2))" +
-            ")"
+            "))"
       );
     });
 
@@ -332,13 +332,15 @@ describe("getEvents", function () {
       query.should.equal(
         "and (" +
               "(" + 
-                "(" + "(thing.type_id = 2) and " +
-                      "(" + 
-                            "(thing_subtype.thing_type_id not in (4))" + 
-                            " or (thing_subtype.thing_type_id is null)" +
-                      ")" +
-                ") " +
-                "or (thing.type_id not in (2))" +
+                "(" + 
+                  "(" + "(thing.type_id = 2) and " +
+                        "(" + 
+                              "(thing_subtype.thing_type_id not in (4))" + 
+                              " or (thing_subtype.thing_type_id is null)" +
+                        ")" +
+                  ") " +
+                  "or (thing.type_id not in (2))" +
+                ")" + 
               ") " + 
               "and " +
               "(" +
