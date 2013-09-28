@@ -100,6 +100,9 @@ define([
     },
 
     showSecondaryFilters: function (filter) {
+      this.$(".primary .filter").removeClass("selected");
+      this.$(".primary .filter[data-id=" + filter.get("id") + "]").addClass("selected");
+      this.$("#secondary-filter").select();
       var secondary = this.$(".secondary .options");
       secondary.html("");
       this.subtypesCollection.setParentType(filter);
@@ -125,6 +128,7 @@ define([
         _.bind(this._showSecondaryFilter, 
           this, isParentUnselected, secondary, template)
       );
+      this._filterSecondaryFilters();
     },
 
     _showSecondaryFilter: function (isParentUnselected, secondary, template, filter) {

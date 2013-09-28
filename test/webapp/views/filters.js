@@ -40,7 +40,9 @@ define(
               name: "name 4"
             }
           ]);
-          opts.success();
+          if (opts) {
+            opts.success();
+          }
         });
         this.filters = new Filters({
           model: model,
@@ -65,27 +67,27 @@ define(
 
         it("shows check boxes for secondary filters", function () {
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input[type=checkbox]").length.should.be.above(0);
         });
 
         it("shows check boxes for not-specified secondary filters", function () {
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input[type=checkbox].not-specified").length.should.equal(1);
         });
 
         it("unsets not-specified filter when appropriate", function () {
           this.filters.model.get("filterState").set([{id: -1}]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
         });
 
         it("sets not-specified filter when it was off, but the primary is toggled", function () {
           this.filters.model.get("filterState").set([{id: -1}]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
 
           this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
           this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
@@ -97,7 +99,7 @@ define(
         it("doesn't unset not-specified filter when not in options", function () {
           this.filters.model.get("filterState").set([]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(true);
         });
 
@@ -110,14 +112,14 @@ define(
         it("doesn't select secondary filters when state has them unselected", function () {
           this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input:checked.specified").length.should.equal(1);
         });
 
         it("selects all secondary filters when a primary filter is selected", function () {
           this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input:checked").length.should.equal(2);
           this.filters.checkPrimary(new Backbone.Model({id: 1}), true);
           this.filters.$el.find(".secondary input:checked").length.should.equal(3);
@@ -126,7 +128,7 @@ define(
         it("deselects all secondary filters when a primary filter is deselected", function () {
           this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input:checked").length.should.equal(2);
           this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
           this.filters.$el.find(".secondary input:checked").length.should.equal(0);
@@ -152,7 +154,7 @@ define(
             {id: 4, parent_type: 1}
           ]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.checkSecondary(
             new Backbone.Model({id: 3, parent_type: 1}), 
             {
@@ -168,7 +170,7 @@ define(
             {id: 1}
           ]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$el.find(".secondary input:checked").length.should.equal(0);
           this.filters.$el.find(".secondary input").first().prop("checked", true);
           this.filters.checkSecondary(
@@ -185,14 +187,14 @@ define(
       describe("filtering", function () {
         it("shows everything when nothing is typed in", function () {
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$("#secondary-filter").val("");
           this.filters._filterSecondaryFilters();
           this.filters.$el.find(".secondary .filter:not([style*='display:'])").length.should.be.above(0);
         });
         it("filters the list when something is typed in", function () {
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.$("#secondary-filter").val("not going to be found");
           this.filters._filterSecondaryFilters();
           this.filters.$el.find(".secondary .filter:not([style*='display:'])").length.should.equal(0);
@@ -211,7 +213,7 @@ define(
         it("returns a single filter if one primary is unselected", function () {
           this.filters.model.get("filterState").set([]);
           this.filters.render();
-          this.filters.showSecondaryFilters(subtypesCollection.get(1));
+          this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.model.get("filterState").length.should.equal(0);
           this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
           this.filters.model.get("filterState").length.should.equal(1);
