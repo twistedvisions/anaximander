@@ -161,8 +161,8 @@ thing_type not in (1)
         subtypeFilters: [],
         notSpecifiedTypeFilters: [{id: 1}]
       }).should.equal(
-        "and (((thing.type_id = 1) and (thing_subtype.thing_type_id is not null)) " +
-        "or (thing.type_id not in (1)))");
+        "and ((((thing.type_id = 1) and (thing_subtype.thing_type_id is not null)) " +
+        "or (thing.type_id not in (1))))");
     });
 
     /*
@@ -213,8 +213,8 @@ thing_type not in (1)
         subtypeFilters: [],
         notSpecifiedTypeFilters: [{id: 1}]
       }).should.equal(
-        "and (((thing.type_id = 1) and (thing_subtype.thing_type_id is not null)) " +
-        "or (thing.type_id not in (1, 2)))");
+        "and ((thing.type_id not in (2)) and (((thing.type_id = 1) and (thing_subtype.thing_type_id is not null)) " +
+        "or (thing.type_id not in (1))))");
     });
 
 
@@ -246,6 +246,38 @@ thing_type not in (1)
                  ") or " +
                  "(thing.type_id not in (1))" +
           "))" +
+        ")"
+      );
+    });
+
+
+    /*
+
+      [.] Primary1 (1)
+      [ ] Primary2 (2)
+      [X] Not specified (-1)
+      [ ] Secondary2 (2)
+      [ ] Secondary3 (3)
+
+    where (thing.type_id not in (2) or (thing_type = 1 and thing_subtype is null))
+    => thing_id 4
+    */
+
+    it("should allow you to filter out a whole type see only unspecifieds of another type", function () {
+
+      getEvents.generateEventFilters({
+        typeFilters: [{id: 2}],
+        subtypeFilters: [],
+        notSpecifiedTypeFilters: [{id: 1}]
+      }).should.equal(
+        "and (" +
+          "(thing.type_id not in (2)) and " +
+          "(" +
+            "(" + "(thing.type_id = 1) and " +
+                  "(thing_subtype.thing_type_id is not null)" + 
+            ") or " +
+            "(thing.type_id not in (1))" +
+          ")" +
         ")"
       );
     });
