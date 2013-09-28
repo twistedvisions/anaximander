@@ -2,9 +2,10 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "fuse",
   "text!templates/filters.htm",
   "text!templates/filter.htm"
-], function ($, _, Backbone, template, filterTemplate) {
+], function ($, _, Backbone, Fuse, template, filterTemplate) {
 
   var Filters = Backbone.View.extend({
     el: "#filters-container",
@@ -18,6 +19,7 @@ define([
     render: function () {
       this.$el.html(template);
       this.updatePrimaryFilters();
+      this.filterSecondaryFilters();
       return this.$el;
     },
 
@@ -40,6 +42,39 @@ define([
           input.removeClass("half");
         }, this));
       }, this);
+    },
+
+    filterSecondaryFilters: function () {
+      this.$("#secondary-filter").on("keyup",
+        _.bind(this._filterSecondaryFilters, this));
+    },
+
+    _filterSecondaryFilters: function () {
+      
+      var searchString = this.$("#secondary-filter").val();
+      var els = this.$(".secondary .filter");
+      if (searchString.length > 0) {
+        var values = [];
+        els.each(function (index, el) {
+          values.push($(el).find(".name").text());
+        });
+        var matcher = new Fuse(values, {threshold: 0.4});
+        var matches = matcher.search(searchString);
+
+        matches = _.indexBy(matches, _.identity);
+        els.each(function (index, el) {
+          el = $(el);
+          if (!matches[index]) {
+            el.hide();
+          } else {
+            el.show();
+          }
+        });
+      } else {
+        els.each(function (index, el) {
+          $(el).show();
+        });
+      }
     },
 
     checkPrimary: function (filter, isChecked) {

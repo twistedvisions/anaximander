@@ -31,7 +31,8 @@ require.config({
     select2: "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.1/select2.min",
     templates: "../templates",
     async: "./libs/async",
-    styled_marker: "./libs/styled_marker"
+    styled_marker: "./libs/styled_marker",
+    fuse: "./libs/fuse"
   }
 });
 

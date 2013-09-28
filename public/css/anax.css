@@ -118,6 +118,10 @@ input.half {
   position: relative;
 }
 
+#secondary-filter-holder {
+  margin-top: 8px;
+}
+
 #filters-container .secondary {
   margin-left: 180px;
 }
