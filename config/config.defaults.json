@@ -17,7 +17,7 @@
       "port": 8000
     },
     "parser": {
-      "data_file": "/home/pretzel/Downloads/dbpedia_data/3.8/mappingbased_properties_en.nq",
+      "data_file": "/home/pretzel/Downloads/dbpedia_data/3.9/mappingbased_properties_en.nq",
       "parallelism": 8,
       "interesting_types": {
         "position": {
