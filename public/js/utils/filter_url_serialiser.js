@@ -3,8 +3,6 @@ define(["underscore"], function (_) {
   var serialiser = {
     serialise: function (model) {
       var filterState = model.get("filterState");
-      // filterState.
-      console.log(JSON.stringify(filterState.toJSON()))
       var filterMap = this.getFilterMap(filterState);
       var formatFilterMapEntry = function (value, key) {
         if (value.length === 0) {
