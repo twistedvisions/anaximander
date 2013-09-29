@@ -64,6 +64,7 @@
         },
         "organization": {
           "<http://dbpedia.org/ontology/industry>": "industry",
+          "<http://dbpedia.org/ontology/product>": "product",
           "<http://dbpedia.org/ontology/type>": "type"
         }
       }
