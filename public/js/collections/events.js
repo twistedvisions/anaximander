@@ -2,8 +2,9 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "../utils/filter_url_serialiser",
   "../models/event"
-], function ($, _, Backbone, Event) {
+], function ($, _, Backbone, FilterUrlSerialiser, Event) {
   
   var Events = Backbone.Collection.extend({
     
@@ -45,30 +46,6 @@ define([
           year = formatYear(year) + suffix + (isBc ? " BC" : "");
           return isBc ? year.substring(1) : year;
         };
-        var getTypeFilterKeys = function () {
-          var typeFilters = filterState.filter(function (filter) {
-            return !filter.get("parent_type");
-          });
-          return JSON.stringify(_.map(typeFilters, function (filter) {
-            return filter.toJSON();
-          }));
-        };
-        var getSubtypeFilterKeys = function () {
-          var typeFilters = filterState.filter(function (filter) {
-            return !!filter.get("parent_type") && (filter.get("id") > 0);
-          });
-          return JSON.stringify(_.map(typeFilters, function (filter) {
-            return filter.toJSON();
-          }));
-        };
-        var getNotSpecifiedTypeFilterKeys = function () {
-          var typeFilters = filterState.filter(function (filter) {
-            return !!filter.get("parent_type") && (filter.get("id") < 0);
-          });
-          return JSON.stringify(_.map(typeFilters, function (filter) {
-            return {"id": -filter.get("id")};
-          }));
-        };
         $.get(
           "/location", 
           {
@@ -77,9 +54,9 @@ define([
             radius: radius,
             start: getStartOfYear(timeRange[0]), 
             end: getEndOfYear(timeRange[1]),
-            typeFilters: getTypeFilterKeys(),
-            subtypeFilters: getSubtypeFilterKeys(),
-            notSpecifiedTypeFilters: getNotSpecifiedTypeFilterKeys()
+            typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
+            subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
+            notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
           }, 
           _.bind(this.handleResults, this)
         );

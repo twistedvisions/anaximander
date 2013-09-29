@@ -121,6 +121,7 @@ define([
       var isParentUnselected = this.filterStateExists(parentTypeId);
       this._showSecondaryFilter(isParentUnselected, secondary, template, new Backbone.Model({
         id: -parentTypeId,
+        parent_type: parentTypeId,  
         name: "Not Specified",
         not_specified: true
       }));
