@@ -117,7 +117,7 @@ define([
       var template =  _.template(filterTemplate);
       var secondary = this.$(".secondary .options");
       secondary.html("");
-      var parentTypeId = this.subtypesCollection.getParentType().get("id");
+      var parentTypeId = this.getParentTypeId();
       var isParentUnselected = this.filterStateExists(parentTypeId);
       this._showSecondaryFilter(isParentUnselected, secondary, template, new Backbone.Model({
         id: -parentTypeId,
@@ -150,7 +150,7 @@ define([
     },
 
     updateFilterState: function (filter, checked) {
-      var id = filter.get("id");  
+      var id = filter.get("id");
       if (checked) {
         this.removeFilterStateKey(id);
       } else {
@@ -170,22 +170,34 @@ define([
       }, this);
     },
     switchAllSecondarysForPrimary: function () {
+      var removed = false;
       this.subtypesCollection.forEach(function (subtype) {
-        this.removeFilterStateKey(subtype.get("id"));
+        removed = true;
+        this.removeFilterStateKey(subtype.get("id"), true);
       }, this);
+      this.removeFilterStateKey(-this.getParentTypeId(), true);
+      if (removed) {
+        this.model.get("filterState").trigger("remove");
+      }
 
       this.addFilterStateKey(this.getParentTypeId());
     },
+
     setRemainingSecondaryFilters: function () {
       var parentTypeId = this.getParentTypeId();
       this.removeFilterStateKey(parentTypeId);
+      var added = false;
       this.$el.find(".secondary input[type=checkbox]").each(_.bind(function (i, el) {
+        added = true;
         var $el = $(el);
         var id = parseInt($el.attr("data-id"), 10);
         if (!$el.prop("checked")) {
-          this.addFilterStateKey(id, parentTypeId);
+          this.addFilterStateKey(id, parentTypeId, true);
         }
       }, this));
+      if (added) {
+        this.model.get("filterState").trigger("add");
+      }
     },
 
     getFilterState: function (id) {
@@ -202,18 +214,18 @@ define([
       });
     },
 
-    removeFilterStateKey: function (id) {
-      this.model.get("filterState").remove(id);
+    removeFilterStateKey: function (id, silent) {
+      this.model.get("filterState").remove(id, {silent: !!silent});
     },
 
-    addFilterStateKey: function (id, parent_type) {
+    addFilterStateKey: function (id, parent_type, silent) {
       var model = {
         id: id
       };
       if (parent_type) {
         model.parent_type = parent_type;
       }
-      this.model.get("filterState").set([model], {remove: false});
+      this.model.get("filterState").set([model], {remove: false, silent: !!silent});
     },
 
     getParentTypeId: function () {
