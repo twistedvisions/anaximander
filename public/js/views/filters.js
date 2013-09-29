@@ -36,7 +36,7 @@ define([
         var el = $(template(json));
         primary.append(el);
         el.hover(_.bind(this.showSecondaryFilters, this, filter));
-        el.find("input").on("change", _.bind(function (event) {
+        el.find("input[type=checkbox]").on("change", _.bind(function (event) {
           var input = $(event.currentTarget);
           this.checkPrimary(filter, input.prop("checked"));
           input.removeClass("half");
@@ -139,7 +139,7 @@ define([
       json.not_specified = json.not_specified === true || json.not_specified === false;
       var el = $(template(json));
       secondary.append(el);
-      el.find("input").on("change", _.bind(this.checkSecondary, this, filter));
+      el.find("input[type=checkbox]").on("change", _.bind(this.checkSecondary, this, filter));
     },
 
     checkSecondary: function (filter, event) {
@@ -179,7 +179,7 @@ define([
     setRemainingSecondaryFilters: function () {
       var parentTypeId = this.getParentTypeId();
       this.removeFilterStateKey(parentTypeId);
-      this.$el.find(".secondary input").each(_.bind(function (i, el) {
+      this.$el.find(".secondary input[type=checkbox]").each(_.bind(function (i, el) {
         var $el = $(el);
         var id = parseInt($el.attr("data-id"), 10);
         if (!$el.prop("checked")) {
