@@ -20,7 +20,16 @@ define([
       this.$el.html(template);
       this.updatePrimaryFilters();
       this.filterSecondaryFilters();
+      this.$("#toggle-selection").on("click", _.bind(this.toggleVisible, this));
       return this.$el;
+    },
+
+    toggleVisible: function () {
+      var first = this.$(".secondary .filter:visible input[type=checkbox]").first();
+      var shouldCheck = !$(first).prop("checked");
+      this.$(".secondary .filter:visible input[type=checkbox]").each(function (i, el) {
+        $(el).prop("checked", shouldCheck);
+      });
     },
 
     updatePrimaryFilters: function () {
@@ -54,6 +63,7 @@ define([
       var searchString = this.$("#secondary-filter").val();
       var els = this.$(".secondary .filter");
       if (searchString.length > 0) {
+        this.$("#toggle-selection").addClass("visible");
         var values = [];
         els.each(function (index, el) {
           values.push($(el).find(".name").text());
@@ -71,6 +81,7 @@ define([
           }
         });
       } else {
+        this.$("#toggle-selection").removeClass("visible");
         els.each(function (index, el) {
           $(el).show();
         });

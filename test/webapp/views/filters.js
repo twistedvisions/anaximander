@@ -199,6 +199,67 @@ define(
           this.filters._filterSecondaryFilters();
           this.filters.$el.find(".secondary .filter:not([style*='display:'])").length.should.equal(0);
         });
+        describe("toggle selection", function () {
+          it("shows when something is typed in", function () {
+            this.filters.render();
+            this.filters.showSecondaryFilters(typesCollection.get(1));
+            this.filters.$("#secondary-filter").val("");
+            this.filters._filterSecondaryFilters();
+            this.filters.$("#toggle-selection.visible").length.should.equal(0);
+          });
+          it("doesn't show when the filter box is empty", function () {
+            this.filters.render();
+            this.filters.showSecondaryFilters(typesCollection.get(1));
+            this.filters.$("#secondary-filter").val("some filter string");
+            this.filters._filterSecondaryFilters();
+            this.filters.$("#toggle-selection.visible").length.should.equal(1);
+          });
+
+          describe("toggling visible filter selection", function () {
+            beforeEach(function () {
+              this.filters.render();
+              this.filters.showSecondaryFilters(typesCollection.get(1));
+              this.filters.$("#secondary-filter").val("name");
+              this.filters._filterSecondaryFilters();
+            });
+
+            it("will select unselected visible filters", function () {
+              this.filters.$(".secondary .filter:visible").length.should.equal(2);
+              this.filters.$(".secondary .filter:visible:nth(0) input[type=checkbox]").prop("checked", false);
+              this.filters.$(".secondary .filter:visible:nth(1) input[type=checkbox]").prop("checked", true);
+              this.filters.$(".secondary .filter:visible input[type=checkbox]:checked").length.should.equal(1);
+              this.filters.toggleVisible();
+              this.filters.$(".secondary .filter:visible input[type=checkbox]:checked").length.should.equal(2);
+            });
+            it("will not select unselected invisible filters", function () {
+              this.filters.$(".secondary .filter:visible").length.should.equal(2);
+              this.filters.$(".secondary .filter:visible:nth(0) input[type=checkbox]").prop("checked", false);
+              this.filters.$(".secondary .filter:visible:nth(1) input[type=checkbox]").prop("checked", false);
+              this.filters.$(".secondary .filter:nth(1)").hide();
+              this.filters.$(".secondary .filter input[type=checkbox]:checked").length.should.equal(0);
+              this.filters.toggleVisible();
+              this.filters.$(".secondary .filter input[type=checkbox]:checked").length.should.equal(1);
+            });
+            
+            it("will unselect selected visible filters", function () {
+              this.filters.$(".secondary .filter:visible").length.should.equal(2);
+              this.filters.$(".secondary .filter:visible:nth(0) input[type=checkbox]").prop("checked", true);
+              this.filters.$(".secondary .filter:visible:nth(1) input[type=checkbox]").prop("checked", false);
+              this.filters.$(".secondary .filter:visible input[type=checkbox]:checked").length.should.equal(1);
+              this.filters.toggleVisible();
+              this.filters.$(".secondary .filter:visible input[type=checkbox]:checked").length.should.equal(0);
+            });
+            it("will not unselect selected invisible filters", function () {
+              this.filters.$(".secondary .filter:visible").length.should.equal(2);
+              this.filters.$(".secondary .filter:visible:nth(0) input[type=checkbox]").prop("checked", true);
+              this.filters.$(".secondary .filter:visible:nth(1) input[type=checkbox]").prop("checked", true);
+              this.filters.$(".secondary .filter:nth(1)").hide();
+              this.filters.$(".secondary .filter input[type=checkbox]:checked").length.should.equal(2);
+              this.filters.toggleVisible();
+              this.filters.$(".secondary .filter input[type=checkbox]:checked").length.should.equal(1);
+            });
+          });
+        }); 
       });
 
 

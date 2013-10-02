@@ -131,6 +131,13 @@ input.half {
   padding-left: 5px;
 }
 
+#secondary-filter-holder #toggle-selection {
+  display: none;
+}
+#secondary-filter-holder #toggle-selection.visible {
+  display: inline;
+}
+
 #filters-container .secondary {
   margin-left: 180px;
 }
