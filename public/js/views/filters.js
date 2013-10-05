@@ -104,7 +104,7 @@ define([
         this.addFilterStateKey(id);
       }
       this.subtypesCollection.setParentType(filter);
-      this.subtypesCollection.fetch({
+      this.subtypesCollection.updateData({
         reset: true,
         success: _.bind(this._setSecondaries, this, id)
       });
@@ -126,7 +126,7 @@ define([
       secondary.html("");
       this.subtypesCollection.setParentType(filter);
 
-      this.subtypesCollection.fetch({
+      this.subtypesCollection.updateData({
         reset: true,
         success: _.bind(this._showSecondaryFilters, this)
       });

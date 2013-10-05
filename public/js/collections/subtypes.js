@@ -13,7 +13,7 @@ define([
     },
 
     initialize: function () {
-
+      this.byParentType = {};
     },
 
     setParentType: function (parentType) {
@@ -22,6 +22,21 @@ define([
 
     getParentType: function () {
       return this.parentType;
+    },
+
+    updateData: function (opts) {
+      var success = opts.success;
+      var parentType = this.parentType.get("id");
+      if (this.byParentType[parentType]) {
+        this.reset(this.byParentType[parentType]);
+        success();
+      } else {
+        opts.success = _.bind(function () {
+          this.byParentType[parentType] = this.toJSON();
+          success();
+        }, this);
+        return this.fetch(opts);
+      }
     }
 
   });
