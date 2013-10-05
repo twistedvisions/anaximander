@@ -15,6 +15,9 @@ define(
     subtypesCollection.getParentType = function () {
       return new Backbone.Model({id: 1});
     };
+    subtypesCollection.updateData = function (opts) {
+      return this.fetch(opts);
+    };
     
     describe("filter view", function () {
       beforeEach(function () {
