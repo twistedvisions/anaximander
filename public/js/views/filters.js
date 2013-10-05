@@ -239,12 +239,12 @@ define([
       this.model.get("filterState").remove(id, {silent: !!silent});
     },
 
-    addFilterStateKey: function (id, parent_type, silent) {
+    addFilterStateKey: function (id, parentType, silent) {
       var model = {
         id: id
       };
-      if (parent_type) {
-        model.parent_type = parent_type;
+      if (parentType) {
+        model.parent_type = parentType;
       }
       this.model.get("filterState").set([model], {remove: false, silent: !!silent});
     },
