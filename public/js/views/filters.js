@@ -98,10 +98,11 @@ define([
 
     checkPrimary: function (filter, isChecked) {
       var id = filter.get("id");
+      //can do this silently because secondary will trigger
       if (isChecked) {
-        this.removeFilterStateKey(id);
+        this.removeFilterStateKey(id, null, true);
       } else {
-        this.addFilterStateKey(id);
+        this.addFilterStateKey(id, null, true);
       }
       this.subtypesCollection.setParentType(filter);
       this.subtypesCollection.updateData({
