@@ -27,11 +27,39 @@ define([
 
     toggleVisible: function () {
       analytics.toggleSecondaryFilterSelection();
+      var parentId = this.getParentTypeId();
       var first = this.$(".secondary .filter:visible input[type=checkbox]").first();
       var shouldCheck = !$(first).prop("checked");
-      this.$(".secondary .filter:visible input[type=checkbox]").each(function (i, el) {
-        $(el).prop("checked", shouldCheck);
-      });
+      var anyChanged = false;
+
+      this.$(".secondary .filter:visible").each(_.bind(function (i, el) {
+
+        var el = $(el);
+        el.find("input[type=checkbox]").prop("checked", shouldCheck);
+        var id = parseInt(el.attr("data-id"), 10);
+
+        if (shouldCheck) {
+          this.removeFilterStateKey(id, parentId, true);
+        } else {
+          this.addFilterStateKey(id, parentId, true);
+        }
+        anyChanged = true;
+
+      }, this));
+
+      if (anyChanged) {
+        var updated;
+        updated = this.normaliseFilters();
+        //todo: only update the one primary not all of them
+        this.updatePrimaryFilters();
+        if (!updated) {
+          if (shouldCheck) {
+            this.model.get("filterState").trigger("add");
+          } else {
+            this.model.get("filterState").trigger("remove");
+          }
+        }
+      }
     },
 
     updatePrimaryFilters: function () {
@@ -166,7 +194,7 @@ define([
       analytics.filterEventsBySecondary(filter.toJSON());
       this.updateFilterState(filter, $(event.currentTarget).prop("checked"));
 
-      //todo: only update the one
+      //todo: only update the one primary not all of them
       this.updatePrimaryFilters();
     },
 
@@ -177,12 +205,17 @@ define([
       } else {
         this.addFilterStateKey(id, filter.get("parent_type"));
       }
+      this.normaliseFilters();
+    },
 
+    normaliseFilters: function () {
+      var changed = false;
       if (this.allSecondariesUnchecked()) {
-        this.switchAllSecondarysForPrimary();
+        changed = this.switchAllSecondarysForPrimary();
       } else {
-        this.setRemainingSecondaryFilters();
+        changed = this.setRemainingSecondaryFilters();
       }
+      return changed;
     },
 
     allSecondariesUnchecked: function () {
@@ -202,6 +235,8 @@ define([
       }
 
       this.addFilterStateKey(this.getParentTypeId());
+
+      return removed;
     },
 
     setRemainingSecondaryFilters: function () {
@@ -219,6 +254,7 @@ define([
       if (added) {
         this.model.get("filterState").trigger("add");
       }
+      return added;
     },
 
     getFilterState: function (id) {
