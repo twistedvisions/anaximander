@@ -88,6 +88,16 @@ define([
 
       this.eventsCollection.on("reset", this.showStats, this);
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));
+      this.model.on("change", this.setFilterButtonHighlighting, this);
+      this.setFilterButtonHighlighting();
+    },
+
+    setFilterButtonHighlighting: function () {
+      if (this.model.get("filterState").length > 0) {
+        this.$("#filter-toggle").addClass("highlight");
+      } else {
+        this.$("#filter-toggle").removeClass("highlight");
+      }
     },
 
     showFilters: function () {

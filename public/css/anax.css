@@ -185,6 +185,10 @@ input.half {
   padding-top: 8px;
 }
 
+#summary-bar #filter-toggle.highlight {
+  font-weight: bold;
+}
+
 #summary-bar #selector-holder {
   float: left;
   margin-right: 20px;
