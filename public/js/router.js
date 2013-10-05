@@ -60,16 +60,15 @@ define([
 
       this.navigate(location.join("/"));
 
-      this.sendAnalytics(center, zoom, date, filters);
+      this.sendAnalytics(center, zoom, date);
     },
-    sendAnalytics: _.debounce(function (center, zoom, date, filters) {
+    sendAnalytics: _.debounce(function (center, zoom, date) {
       analytics.navigation({
         lat: center[0],
         lon: center[1],
         zoom: zoom,
         start: parseInt(date[0], 10),
-        end: parseInt(date[1], 10),
-        filters: filters
+        end: parseInt(date[1], 10)
       });
     }, 500)
   });
