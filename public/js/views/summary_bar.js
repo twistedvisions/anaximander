@@ -4,8 +4,9 @@ define([
   "backbone",
   "select2",
   "./filters",
+  "../analytics",
   "text!templates/summary_bar.htm"
-], function ($, _, Backbone, Select2, Filters, template) {
+], function ($, _, Backbone, Select2, Filters, analytics, template) {
 
   var SummaryBar = Backbone.View.extend({
     el: "#summary-bar",
@@ -90,6 +91,7 @@ define([
     },
 
     showFilters: function () {
+      analytics.showFilters();
       $("body").toggleClass("filters-visible");
     },
 

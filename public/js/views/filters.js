@@ -3,9 +3,10 @@ define([
   "underscore",
   "backbone",
   "fuse",
+  "../analytics",
   "text!templates/filters.htm",
   "text!templates/filter.htm"
-], function ($, _, Backbone, Fuse, template, filterTemplate) {
+], function ($, _, Backbone, Fuse, analytics, template, filterTemplate) {
 
   var Filters = Backbone.View.extend({
     el: "#filters-container",
@@ -25,6 +26,7 @@ define([
     },
 
     toggleVisible: function () {
+      analytics.toggleSecondaryFilterSelection();
       var first = this.$(".secondary .filter:visible input[type=checkbox]").first();
       var shouldCheck = !$(first).prop("checked");
       this.$(".secondary .filter:visible input[type=checkbox]").each(function (i, el) {
@@ -46,6 +48,7 @@ define([
         primary.append(el);
         el.hover(_.bind(this.showSecondaryFilters, this, filter));
         el.find("input[type=checkbox]").on("change", _.bind(function (event) {
+          analytics.filterEventsByPrimary(json);
           var input = $(event.currentTarget);
           this.checkPrimary(filter, input.prop("checked"));
           input.removeClass("half");
@@ -59,6 +62,11 @@ define([
     },
 
     _filterSecondaryFilters: function () {
+      var searchString = this.$("#secondary-filter").val();
+      analytics.filterSecondaryFilters({searchString: searchString});
+      this.updateVisibleSecondaryFilters();
+    },
+    updateVisibleSecondaryFilters: function () {
       
       var searchString = this.$("#secondary-filter").val();
       var els = this.$(".secondary .filter");
@@ -154,6 +162,7 @@ define([
     },
 
     checkSecondary: function (filter, event) {
+      analytics.filterEventsBySecondary(filter.toJSON());
       this.updateFilterState(filter, $(event.currentTarget).prop("checked"));
 
       //todo: only update the one
