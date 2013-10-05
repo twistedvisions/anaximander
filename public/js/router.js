@@ -34,40 +34,44 @@ define([
 
     init: function (options) {
       this.model = options.model;
-      this.model.on("change", function () {
-
-        var date = this.model.get("date");
-        var center = this.model.get("center");
-        var zoom = this.model.get("zoom");
-        var filterState = this.model.get("filterState").toJSON();
-        
-        var location = [
-          "lat", center[0],
-          "lon", center[1],
-          "zoom", zoom,
-          "start", date[0],
-          "end", date[1]
-        ];
-
-        if (filterState.length > 0) {
-          location.push("filter");
-          location.push(FilterUrlSerialiser.serialise(this.model));
-        }
-
-        this.navigate(location.join("/"));
-
-        analytics.navigation({
-          lat: center[0],
-          lon: center[1],
-          zoom: zoom,
-          start: parseInt(date[0], 10),
-          end: parseInt(date[1], 10)
-        });
-
-      }, this);
-
+      this.model.on("change", _.bind(this.handleChange, this));
       Backbone.history.start();
-    }
+    },
+
+    handleChange: function () {
+      var date = this.model.get("date");
+      var center = this.model.get("center");
+      var zoom = this.model.get("zoom");
+      var filterState = this.model.get("filterState").toJSON();
+      var filters = "";
+      var location = [
+        "lat", center[0],
+        "lon", center[1],
+        "zoom", zoom,
+        "start", date[0],
+        "end", date[1]
+      ];
+
+      if (filterState.length > 0) {
+        location.push("filter");
+        filters = FilterUrlSerialiser.serialise(this.model);
+        location.push(filters);
+      }
+
+      this.navigate(location.join("/"));
+
+      this.sendAnalytics(center, zoom, date, filters);
+    },
+    sendAnalytics: _.debounce(function (center, zoom, date, filters) {
+      analytics.navigation({
+        lat: center[0],
+        lon: center[1],
+        zoom: zoom,
+        start: parseInt(date[0], 10),
+        end: parseInt(date[1], 10),
+        filters: filters
+      });
+    }, 500)
   });
 
   return Router;
