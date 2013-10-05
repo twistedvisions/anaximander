@@ -95,7 +95,6 @@ define([
       this.updateVisibleSecondaryFilters();
     },
     updateVisibleSecondaryFilters: function () {
-      
       var searchString = this.$("#secondary-filter").val();
       var els = this.$(".secondary .filter");
       if (searchString.length > 0) {
@@ -141,9 +140,14 @@ define([
 
     _setSecondaries: function (id) {
       this.removeFilterStateKey(-id);
+      var removed = false;
       this.subtypesCollection.forEach(function (filter) {
-        this.removeFilterStateKey(filter.get("id"));
+        this.removeFilterStateKey(filter.get("id"), true);
+        removed = true;
       }, this);
+      if (removed) {
+        this.model.get("filterState").trigger("remove");
+      }
       this._showSecondaryFilters();
     },
 
@@ -177,7 +181,7 @@ define([
         _.bind(this._showSecondaryFilter, 
           this, isParentUnselected, secondary, template)
       );
-      this._filterSecondaryFilters();
+      this.updateVisibleSecondaryFilters();
     },
 
     _showSecondaryFilter: function (isParentUnselected, secondary, template, filter) {
