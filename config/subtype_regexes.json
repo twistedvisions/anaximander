@@ -1,0 +1,23 @@
+{
+  "1": {
+    "Politician": ["heads? of state", "governor"],
+    "Organised Religion": ["priest"],
+    "Diplomat": ["ambassador"],
+    "Engineer": ["engineer"],
+    "Legal Profession": ["attorney", "barrister"]
+  },
+  "2": {},
+  "3": {
+    "Subdivision": ["territor[y,ies]", "municipalit[y,ies]", 
+      "county", "provinc[e,ial]", "township", 
+      "administrative division", "census division", "canton", 
+      "states of", "unitary authorit", "municipio", "amphoe"],
+    "Settlement": ["cit[y,ies]", "capital", "town", 
+      "village", "borough", "settlement", "urban area", 
+      "metropolis", "neighborhood", "hamlet", "district"],
+    "Place of education": ["college", "university", "school"]
+  },
+  "4": {
+    "Bridge": ["bridge"]
+  }
+}
