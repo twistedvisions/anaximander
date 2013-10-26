@@ -84,8 +84,12 @@ body {
 
 #summary-bar #social {
   float: right;
-  padding-top: 3px;
   padding-right: 10px;
+  margin-top: -1;
+}
+
+#summary-bar #social div {
+  margin-bottom: 3px;
 }
 
 #summary-bar #social #github {
