@@ -206,7 +206,7 @@ define([
     getEventText: function (event) {
       var date = new Date(event.start_date);
       return [
-        "<a class='event_link' href='" + event.event_link + "' target='_blank' >" + 
+        "<a class=\"event_link\" href=\"" + encodeURI(event.event_link) + "\" target=\"_blank\" >" + 
         event.event_name + "</a>",
         date.getDate() + "/" + (date.getMonth() + 1) + "/" + 
         Math.abs(date.getFullYear()) + 
