@@ -1,5 +1,4 @@
-define(["underscore"], function (_) {
-  var initialised = false;
+define([], function () {
   return {
     ensureUniversalVariable: function () {
       if (!window.universal_variable) {
@@ -15,20 +14,34 @@ define(["underscore"], function (_) {
       data.type = type;
       return data;
     },
-    navigation: function (data) {
+    sendEvent: function (data, type) {
       this.ensureUniversalVariable();
-      data = this.ensureData(data, "navigation");
+      data = this.ensureData(data, type);
       window.universal_variable.events.push(data);
+    },
+    navigation: function (data) {
+      this.sendEvent(data, "navigation");
     },
     infoBoxShown: function (data) {
-      this.ensureUniversalVariable();
-      data = this.ensureData(data, "infoBoxShown");
-      window.universal_variable.events.push(data);
+      this.sendEvent(data, "infoBoxShown");
     },
     linkClicked: function (data) {
-      this.ensureUniversalVariable();
-      data = this.ensureData(data, "linkClicked");
-      window.universal_variable.events.push(data);
+      this.sendEvent(data, "linkClicked");
+    },
+    showFilters: function (data) {
+      this.sendEvent(data, "showFilters");
+    },
+    filterEventsByPrimary: function (data) {
+      this.sendEvent(data, "filterEventsByPrimary");
+    },
+    filterEventsBySecondary: function (data) {
+      this.sendEvent(data, "filterEventsBySecondary");
+    },
+    filterSecondaryFilters: function (data) {
+      this.sendEvent(data, "filterSecondaryFilters");
+    },
+    toggleSecondaryFilterSelection: function (data) {
+      this.sendEvent(data, "toggleSecondaryFilterSelection");
     }
   };
 });

@@ -1,0 +1,14 @@
+<div class="filter" data-id="<%= id %>">
+  <div class="checkbox">
+    <label>
+      <input 
+        type="checkbox" 
+        data-id="<%= id %>"
+        <%= (isUnset ? "" : "checked") %> 
+        class="<%= (isHalfSet ? "half" : "") %> <%= (not_specified ? "not-specified" : "specified") %>"
+      > 
+      <span class="name"><%= name %><span>
+    </label>
+  </div>
+  <span class="see-more glyphicon glyphicon-chevron-right"></span
+</div>

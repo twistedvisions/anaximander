@@ -2,8 +2,9 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "../utils/filter_url_serialiser",
   "../models/event"
-], function ($, _, Backbone, Event) {
+], function ($, _, Backbone, FilterUrlSerialiser, Event) {
   
   var Events = Backbone.Collection.extend({
     
@@ -25,6 +26,7 @@ define([
         var position = this.state.get("center");
         var timeRange = this.state.get("date");
         var radius = this.state.get("radius");
+        var filterState = this.state.get("filterState");
         var pad = function (n, width, z) {
           z = z || "0";
           n = n + "";
@@ -51,7 +53,10 @@ define([
             lon: position[1], 
             radius: radius,
             start: getStartOfYear(timeRange[0]), 
-            end: getEndOfYear(timeRange[1])
+            end: getEndOfYear(timeRange[1]),
+            typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
+            subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
+            notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
           }, 
           _.bind(this.handleResults, this)
         );

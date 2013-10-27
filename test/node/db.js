@@ -14,16 +14,15 @@ describe("db connector", function () {
       sinon.stub(pg, "connect", function (err, cb) {
         cb(
           null, 
-          [
-            //connection api
-            {
-              query: function (queryString, cb) {
-                cb(null, "Some result");
-              }
-            }, 
-            //close connection callback
-            function () {}
-          ]
+          //connection api
+          {
+            query: function (queryString, cb) {
+              cb(null, "Some result");
+            },
+            x: 11
+          }, 
+          //close connection callback
+          function () {}
         );
       });
     });

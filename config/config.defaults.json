@@ -17,7 +17,7 @@
       "port": 8000
     },
     "parser": {
-      "data_file": "/home/pretzel/Downloads/dbpedia_data/mappingbased_properties_en.nq",
+      "data_file": "/home/pretzel/Downloads/dbpedia_data/3.9/mappingbased_properties_en.nq",
       "parallelism": 8,
       "interesting_types": {
         "position": {
@@ -32,7 +32,10 @@
           "<http://dbpedia.org/ontology/foundationPlace>": "foundationPlace",
           "<http://dbpedia.org/ontology/locationCity>": "locationCity",
           "<http://dbpedia.org/ontology/locationCounty>": "locationCounty",
-          "<http://dbpedia.org/ontology/headquarter>": "headquarter"
+          "<http://dbpedia.org/ontology/headquarter>": "headquarter",
+          "<http://dbpedia.org/ontology/largestCity>": "largestCity",
+          "<http://dbpedia.org/ontology/countySeat>": "countySeat",
+          "<http://dbpedia.org/ontology/anthem>": "anthem"
         },
         "dates": {
           "<http://dbpedia.org/ontology/date>": "date",
@@ -55,6 +58,15 @@
           "<http://dbpedia.org/ontology/openingYear>": "openingYear",
           "<http://dbpedia.org/ontology/openingYear>": "closingYear",
           "<http://dbpedia.org/ontology/buildingStartYear>": "buildingStartYear"
+        },
+        "person": {
+          "<http://dbpedia.org/ontology/profession>": "profession"
+        },
+        "organization": {
+          "<http://dbpedia.org/ontology/industry>": "industry",
+          "<http://dbpedia.org/ontology/product>": "product",
+          "<http://dbpedia.org/ontology/type>": "type",
+          "<http://dbpedia.org/ontology/circulation>": "circulation"
         }
       }
     }

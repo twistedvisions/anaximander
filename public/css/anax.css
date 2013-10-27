@@ -1,5 +1,20 @@
 body {
   margin: 0;
+  font-size: 12px;
+  font-family: Verdana, Helvetica, Arial;
+}
+
+label {
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+a, a:hover {
+  color: rgb(0, 0, 238);
+}
+
+input.half {
+  opacity: 0.5;
 }
 
 #slider-range {
@@ -7,6 +22,13 @@ body {
   top: 0;
   left: 0;
   width: 100%;
+  height: 16px;
+}
+
+#slider-range .ui-slider-handle {
+  margin-top: 3px;
+  width: 5px;
+  margin-left: -2px;
 }
 
 #map-holder {
@@ -17,6 +39,10 @@ body {
   padding-bottom: 50px;
 }
 
+.filters-visible #map-holder {
+  padding-bottom: 250px;
+}
+
 #info-panel {
   position: fixed;
   right: 6px;
@@ -24,8 +50,6 @@ body {
   background-color: rgba(255,255,255,0.5);
   padding: 10px;
   border: 1px solid rgba(100,100,100,0.5);
-  font-family: Verdana, Helvetica, Arial;
-  font-size: 12px;
 }
 
 .gm-style-iw {
@@ -42,6 +66,96 @@ body {
   background-color: #0000ff;
 }
 
+
+#filters-container {
+  position: fixed;
+  width: 100%;
+  box-sizing: border-box;
+  height: 200px;
+  bottom: 50px;
+  display: none;
+}
+
+.filters-visible #filters-container {
+  display: block;
+}
+
+#filters-container .filter-holder {
+  padding-left: 10px;
+}
+
+#filters-container .primary {
+  width: 180px;
+  border-right: 1px solid #aaa;
+  height: 100%;
+  padding-top: 10px;
+  box-sizing: border-box;
+  float: left;
+}
+
+#filters-container .primary .options {
+  margin-top: 5px;
+}
+
+#filters-container .primary .options .checkbox {
+  display: inline-block;
+}
+
+#filters-container .options .see-more {
+  float: right;
+  margin-top: 10px;
+  margin-right: 10px;
+  display: none;
+}
+
+#filters-container .primary .filter:hover .see-more,
+#filters-container .primary .filter.selected .see-more {
+  display: inline;
+}
+
+#filters-container .primary input {
+  margin-top: 0;
+  bottom: -2px;
+  position: relative;
+}
+
+#secondary-filter-holder {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  background-color: white;
+  padding-top: 8px;
+}
+
+#secondary-filter {
+  padding-left: 5px;
+}
+
+#secondary-filter-holder #toggle-selection {
+  display: none;
+}
+#secondary-filter-holder #toggle-selection.visible {
+  display: inline;
+}
+
+#filters-container .secondary {
+  margin-left: 180px;
+}
+
+#filters-container .secondary .options {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-top: 30px;
+  top: 0;
+  position: absolute;
+}
+
+#filters-container .secondary .filter {
+  float: left;
+  width: 251px;
+}
+
 #summary-bar {
   width: 100%;
   position: fixed;
@@ -49,33 +163,36 @@ body {
   bottom: 0;
   height: 50px;
   background-color: #f6f6ff;
-  font-size: 12px;
-  font-family: Verdana, Helvetica, Arial;
   padding: 5px;
 }
 
 #summary-bar #stats {
   float: left;
+  margin-right: 20px;
 }
 
 #summary-bar #stats .stats-container {
   line-height: 20px;
 }
 
-#summary-bar #stats .stats-container .label {
+#summary-bar #stats .stats-container label {
   width: 113px;
   display: inline-block;
+}
+
+#summary-bar #menu {
+  float: left;
+  padding-top: 8px;
+}
+
+#summary-bar #filter-toggle.highlight {
+  font-weight: bold;
 }
 
 #summary-bar #selector-holder {
   float: left;
   margin-right: 20px;
   margin-top: 7px;
-}
-
-.select2-result {
-  font-family: Verdana, Helvetica, Arial;
-  font-size: 12px;
 }
 
 #summary-bar #selector-holder .select2-container {
@@ -102,4 +219,3 @@ body {
   text-decoration-style: dotted;
   color: #053FFA;
 }
-
