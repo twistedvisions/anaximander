@@ -4,9 +4,11 @@ define([
   "backbone",
   "select2",
   "./filters",
+  "../utils/filter_url_serialiser",
   "../analytics",
   "text!templates/summary_bar.htm"
-], function ($, _, Backbone, Select2, Filters, analytics, template) {
+], function ($, _, Backbone, Select2, Filters, FilterUrlSerialiser,
+    analytics, template) {
 
   var SummaryBar = Backbone.View.extend({
     el: "#summary-bar",
@@ -59,7 +61,8 @@ define([
         place: {
           center: [49.43109536582428, 10.431494519476798],
           zoom: 5,
-          date: [1938, 1945]
+          date: [1938, 1945],
+          filters: "1:*;2:*;3:u,5,12,14,8,6,7;4:*"
         }
       },
       6: {
@@ -70,6 +73,17 @@ define([
           center: [37.51250057352118, 19.418217102810722],
           zoom: 5,
           date: [-550, -200]
+        }
+      },
+      7: {
+        id: 7,
+        text: "Silicon Valley",
+        link: "http://en.wikipedia.org/wiki/Silicon_Valley",
+        place: {
+          center: [37.51735873697871, -122.04311712570482],
+          zoom: 9,
+          date: [1970, 2013],
+          filters: "1:*;2:u,93,29,35,107,101,77,55,95,45,32,74,102,80,62,87,60,96,54,99,97,41,106,61,65,49,89,75,90,100,73,94,36,46,58,92,108,109,50,44,71,70,52,83,69,68,26,59,66;3:*;4:*"
         }
       }
     },
@@ -118,7 +132,11 @@ define([
     handleChange: function () {
       window.lastEvent = "period_selector";
       var id = this.placeSelector.select2("val");
-      this.model.set(this.data[id].place);
+      var place = this.data[id].place;
+      this.model.set(this.data[id].place, {silent: true});
+      FilterUrlSerialiser.deserialise(place.filters || "", this.model);
+      this.model.trigger("change");
+       
     },
 
     showStats: function () {
