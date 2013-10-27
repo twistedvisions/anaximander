@@ -1,5 +1,6 @@
 /*global console, __dirname*/
 
+require("newrelic");
 var _ = require("underscore");
 
 var fs = require("fs");
