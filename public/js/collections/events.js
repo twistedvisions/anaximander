@@ -25,7 +25,7 @@ define([
         this.queryPending = true;
         var position = this.state.get("center");
         var timeRange = this.state.get("date");
-        var radius = this.state.get("radius");
+        var bounds = this.state.get("bounds");
         var filterState = this.state.get("filterState");
         var pad = function (n, width, z) {
           z = z || "0";
@@ -51,7 +51,7 @@ define([
           {
             lat: position[0], 
             lon: position[1], 
-            radius: radius,
+            bounds: bounds,
             start: getStartOfYear(timeRange[0]), 
             end: getEndOfYear(timeRange[1]),
             typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
