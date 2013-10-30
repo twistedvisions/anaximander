@@ -16,7 +16,9 @@ define([
 
       this.lastResults = [];
       this.lastInfoWindow = null;
-      
+    },
+
+    start: function () {
       this.state.on("change", _.debounce(this.updateData, 500), this);
     },
 

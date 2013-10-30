@@ -26,6 +26,7 @@ define([
       this.drawMap();
       this.model.on("change", this.update, this);
       this.eventsCollection.on("reset", this.redrawMarkers, this);
+      this.eventsCollection.start();
     },
 
     redrawMarkers: function (newMarkers) {
