@@ -1,7 +1,8 @@
 define([
   "jquery",
   "underscore",
-  "backbone"
+  "backbone",
+  "css!/css/summary_text"
 ], function ($, _, Backbone) {
 
   var SummaryTextView = Backbone.View.extend({

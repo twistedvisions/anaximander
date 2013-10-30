@@ -5,6 +5,7 @@ var _ = require("underscore");
 
 var fs = require("fs");
 var express = require("express");
+var lessMiddleware = require("less-middleware");
 
 var db = require("./lib/db");
 
@@ -13,6 +14,13 @@ var nconf = require("./lib/config");
 var getEventTypes = _.template(fs.readFileSync("db_templates/get_event_types.sql").toString());
 var getEventSubtypes = _.template(fs.readFileSync("db_templates/get_event_subtypes.sql").toString());
 var app = express();
+
+app.configure(function () {    
+  app.use(lessMiddleware({
+    src: __dirname + "/public",
+    compress: true
+  }));
+});
 
 app.use(express["static"](__dirname + "/public"));
 
@@ -30,7 +38,6 @@ app.get("/type", function (req, res) {
     }
   );
 });
-
 
 app.get("/type/:id/type", function (req, res) {
   db.runQuery(

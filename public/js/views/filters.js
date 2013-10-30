@@ -5,7 +5,8 @@ define([
   "fuse",
   "../analytics",
   "text!templates/filters.htm",
-  "text!templates/filter.htm"
+  "text!templates/filter.htm",
+  "css!/css/filters"
 ], function ($, _, Backbone, Fuse, analytics, template, filterTemplate) {
 
   var Filters = Backbone.View.extend({

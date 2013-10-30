@@ -6,7 +6,8 @@ define([
   "./filters",
   "../utils/filter_url_serialiser",
   "../analytics",
-  "text!templates/summary_bar.htm"
+  "text!templates/summary_bar.htm",
+  "css!/css/summary_bar"
 ], function ($, _, Backbone, Select2, Filters, FilterUrlSerialiser,
     analytics, template) {
 

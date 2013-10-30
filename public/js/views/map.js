@@ -7,7 +7,8 @@ define([
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
   "styled_marker",
-  "chroma"
+  "chroma",
+  "css!/css/map"
 ], function ($, _, Backbone, analytics, maps, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({

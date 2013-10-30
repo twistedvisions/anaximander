@@ -21,6 +21,11 @@ require.config({
       exports: "Select2"
     }
   },
+  map: {
+    "*": {
+      "css": "libs/require-css/css"
+    }
+  },
   paths: {
     underscore: "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.0.0/lodash.min", // https://github.com/amdjs
     jquery: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
@@ -39,7 +44,8 @@ require.config({
 require([
   "views/app",
   "router",
-  "models/view_state"
+  "models/view_state",
+  "css!/css/anax"
 ], function (AppView, Router, ViewState) {
   var model = new ViewState({
     date: [1963, 2013],

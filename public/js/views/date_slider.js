@@ -1,7 +1,8 @@
 define([
   "jquery",
   "underscore",
-  "backbone"
+  "backbone",
+  "css!/css/date_slider"
 ], function ($, _, Backbone) {
 
   var DateSliderView = Backbone.View.extend({
