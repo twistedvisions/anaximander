@@ -8,6 +8,7 @@ define(
       zoom: 3
     });
     var collection = new Backbone.Collection();
+    collection.start = function () {};
 
     describe("interaction", function () {
       beforeEach(function () {
