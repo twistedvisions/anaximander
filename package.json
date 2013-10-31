@@ -14,7 +14,8 @@
     "nconf": "0.6.x",
     "optimist": "0.6.x",
     "newrelic": "1.x",
-    "less-middleware": "0.1.x"
+    "less-middleware": "0.1.x",
+    "winston": "0.7.x"
   },
   "devDependencies": {
     "mocha": "1.x",

@@ -11,6 +11,15 @@ var db = require("./lib/db");
 
 var nconf = require("./lib/config");
 
+
+var winston = require("winston");
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {
+  "level": "warn", 
+  "timestamp": true, 
+  "colorize": true
+});
+
 var getEventTypes = _.template(fs.readFileSync("db_templates/get_event_types.sql").toString());
 var getEventSubtypes = _.template(fs.readFileSync("db_templates/get_event_subtypes.sql").toString());
 var app = express();
@@ -34,6 +43,7 @@ app.get("/type", function (req, res) {
       res.send(result.rows);
     }, 
     function () {
+      winston.error("failed to process /type request", arguments);
       console.log("err", arguments);
     }
   );
@@ -53,6 +63,7 @@ app.get("/type/:id/type", function (req, res) {
       res.send(result.rows);
     }, 
     function () {
+      winston.error("failed to process /type/:id/type request", arguments);
       console.log("err", arguments);
     }
   );
@@ -60,4 +71,4 @@ app.get("/type/:id/type", function (req, res) {
 
 app.listen(nconf.server.port);
 
-console.log("Listening on port ", nconf.server.port);
+winston.info("Listening on port ", nconf.server.port);
