@@ -1,9 +1,9 @@
-/*global sinon, describe, before, after, beforeEach, afterEach, it */
+/*global sinon, describe, beforeEach, afterEach, it */
 define(
 
-  ["backbone", "views/summary_bar"], 
+  ["backbone", "views/summary_bar", "jquery"], 
 
-  function (Backbone, SummaryBar) {
+  function (Backbone, SummaryBar, $) {
 
     beforeEach(function () {
       $("body").append("<div id='summary-bar'></div>");

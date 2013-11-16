@@ -1,4 +1,5 @@
-/*global sinon, describe, before, after, beforeEach, afterEach, it, google */
+/*global sinon, describe, beforeEach, afterEach, it, google */
+/*jshint expr: true*/
 define(
   ["jquery", "backbone", "views/map", "analytics", "styled_marker"], 
   function ($, Backbone, Map, Analytics, StyledMarker) {

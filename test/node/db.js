@@ -1,4 +1,5 @@
-/*global describe, before, after, beforeEach, afterEach, it */
+/*global describe, before, after, it */
+/*jshint expr: true*/
 var sinon = require("sinon");
 var should = require("should");
 var db = require("../../lib/db");
@@ -46,5 +47,5 @@ describe("db connector", function () {
     after(function () {
       pg.connect.restore();
     });
-  })
+  });
 });

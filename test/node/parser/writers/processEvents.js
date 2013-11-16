@@ -1,4 +1,5 @@
 /*global describe, beforeEach, afterEach, it */
+/*jshint expr: true*/
 var sinon = require("sinon");
 var when = require("when");
 var should = require("should");

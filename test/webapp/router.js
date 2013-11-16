@@ -1,4 +1,5 @@
-/*global sinon, describe, before, after, beforeEach, afterEach, it */
+/*global sinon, describe, before, after, afterEach, it */
+/*jshint expr: true*/
 define(
   ["backbone", "router"], 
   function (Backbone, Router) {
@@ -39,7 +40,7 @@ define(
         });
         after(function () {
           sinon.restore(Backbone.history.getFragment);
-        })
+        });
       });
     });
   }

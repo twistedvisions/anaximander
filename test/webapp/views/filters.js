@@ -1,4 +1,4 @@
-/*global sinon, describe, beforeEach, afterEach, it, google */
+/*global sinon, describe, beforeEach, afterEach, it */
 define(
   ["jquery", "underscore", "backbone", "views/filters"], 
   function ($, _, Backbone, Filters) {

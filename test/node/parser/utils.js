@@ -1,4 +1,4 @@
-/*global describe, before, after, beforeEach, afterEach, it */
+/*global describe, it */
 var utils = require("../../../lib/parser/utils");
 
 describe("utils", function () {

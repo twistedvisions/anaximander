@@ -1,4 +1,4 @@
-/*global describe, before, after, beforeEach, afterEach, it */
+/*global describe, it */
 var getEvents = require("../../../lib/rest/getEvents");
 
 describe("getEvents", function () {

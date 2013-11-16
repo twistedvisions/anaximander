@@ -1,4 +1,4 @@
-/*global describe, beforeEach, afterEach, it */
+/*global describe, before, after, beforeEach, it */
 var sinon = require("sinon");
 var when = require("when");
 var should = require("should");

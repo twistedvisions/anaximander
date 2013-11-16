@@ -75,13 +75,6 @@ define([
       var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
       var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
 
-      if (this.debug) {
-
-        console.log("total", results.length);
-        console.log("removing", toRemove.length);
-        console.log("remaining", this.lastResults.length - toRemove.length);
-        console.log("rendering", toRender.length);
-      }
       this.lastResults = results;
 
       this.trigger("reset", [toRemove, toRender]);

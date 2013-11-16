@@ -8,7 +8,7 @@ define([
   var DateSliderView = Backbone.View.extend({
     el: "#slider-range",
 
-    initialize: function (opts) {      
+    initialize: function () {      
       
     },
 
@@ -24,7 +24,7 @@ define([
       this.model.on("change:date", this.update, this);
     },
 
-    sliderChanged: function (event, ui) {
+    sliderChanged: function (/*event, ui*/) {
       window.lastEvent = "slider";
       this.model.set("date", this.getTimeRange());
     },

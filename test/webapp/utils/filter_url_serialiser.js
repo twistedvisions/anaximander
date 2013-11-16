@@ -1,4 +1,4 @@
-/*global sinon, describe, before, after, beforeEach, afterEach, it */
+/*global describe, beforeEach, it */
 define(
 
   ["backbone", "utils/filter_url_serialiser"], 

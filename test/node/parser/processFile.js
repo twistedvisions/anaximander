@@ -1,4 +1,4 @@
-/*global describe, before, beforeEach, afterEach, it */
+/*global describe, before, after, beforeEach, afterEach, it */
 var sinon = require("sinon");
 var should = require("should");
 var _ = require("underscore");
@@ -81,7 +81,7 @@ describe("processFile", function () {
   });
 
   it("should return the keys available for each object", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function () {
       var ex;
       try {
         _.keys(jobs["<http://dbpedia.org/resource/Name8>"].value).length.should.equal(2);
@@ -93,13 +93,12 @@ describe("processFile", function () {
   });
 
   it("should have a value for a key", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function () {
       var ex;
       try {
         should.exists(
-          jobs["<http://dbpedia.org/resource/Name8>"].value
-              ["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]
-              [0]
+          jobs["<http://dbpedia.org/resource/Name8>"]
+            .value["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"][0]
         );
       } catch (e) {
         ex = e;
@@ -109,7 +108,7 @@ describe("processFile", function () {
   });
 
   it("should have a link for a value", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function (data) {
+    processFile("", 100, 0, 10, true, true).then(function () {
       var ex;
       try {
         should.exists(
@@ -123,12 +122,12 @@ describe("processFile", function () {
   });
 
   it("should store multiple values for a single key if given", function (done) {
-    processFile("", 100, 0, 11, true, true).then(function (data) {
+    processFile("", 100, 0, 11, true, true).then(function () {
       var ex;
       try {
-        jobs["<http://dbpedia.org/resource/Name8>"].value
-            ["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]
-            .length.should.equal(2)
+        jobs["<http://dbpedia.org/resource/Name8>"]
+          .value["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]
+          .length.should.equal(2);
         
       } catch (e) {
         ex = e;

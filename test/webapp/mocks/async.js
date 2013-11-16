@@ -1,6 +1,6 @@
 define(function () {
   return {
-    load: function (name, req, onLoad, config) {
+    load: function (name, req, onLoad) {
       var googleMapsString = "//maps.googleapis.com";
       if (name.substring(0, googleMapsString.length) === googleMapsString) {
         var latLng = {

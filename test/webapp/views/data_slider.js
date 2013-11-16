@@ -1,4 +1,4 @@
-/*global sinon, describe, before, after, beforeEach, afterEach, it */
+/*global sinon, describe, it */
 define(
 
   ["backbone", "views/date_slider"], 
