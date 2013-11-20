@@ -14,6 +14,7 @@ define([
 
     mapView: function (lat, lon, zoom, start, end) {
       this.filteredMapView(lat, lon, zoom, start, end, null);
+      this.setFromUrl = true;
     },
     filteredMapView: function (lat, lon, zoom, start, end, filters) {
       var data = {
@@ -36,6 +37,17 @@ define([
       this.model = options.model;
       this.model.on("change", _.bind(this.handleChange, this));
       Backbone.history.start();
+      if (!this.setFromUrl) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(_.bind(function (position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            this.model.set({
+              "center": [latitude, longitude]
+            });
+          }, this));
+        }
+      }
     },
 
     handleChange: function () {
