@@ -30,7 +30,7 @@ define([
       }
 
       this.model.set(data);
-
+      this.model.trigger("change:filterState");  
     },
 
     init: function (options) {
