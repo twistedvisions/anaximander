@@ -31,6 +31,7 @@ require.config({
     jquery: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
     jqueryui: "//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min",
     backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
+    bootstrap: "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min",
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
     chroma: "//cdnjs.cloudflare.com/ajax/libs/chroma-js/0.4.12/chroma.min",
     select2: "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.1/select2.min",

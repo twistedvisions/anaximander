@@ -3,12 +3,14 @@ define([
   "jqueryui",
   "underscore",
   "backbone",
+  "bootstrap",
   "libs/when",
   "../collections/events",
   "../collections/types",
   "../collections/subtypes",
   "text!templates/layout.htm"
-], function ($, jqueryui, _, Backbone, when, EventCollection, TypeCollection, 
+], function ($, jqueryui, _, Backbone, Bootstrap, when, 
+    EventCollection, TypeCollection, 
     SubtypeCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",

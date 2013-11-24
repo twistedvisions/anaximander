@@ -6,10 +6,11 @@ define([
   "../analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
+  "./options_menu",
   "styled_marker",
   "chroma",
   "css!/css/map"
-], function ($, _, Backbone, analytics, maps, StyledMarker, chroma) {
+], function ($, _, Backbone, analytics, maps, OptionsMenu, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
     
@@ -86,6 +87,13 @@ define([
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
       google.maps.event.addListener(this.map, "bounds_changed", _.bind(this.onBoundsChanged, this));
+      google.maps.event.addListener(this.map, "click", _.bind(this.onClick, this));
+    },
+
+    onClick: function (e) {
+      new OptionsMenu({
+        event: e
+      }).render();
     },
 
     onBoundsChanged: function () {
