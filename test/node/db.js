@@ -4,13 +4,16 @@ var sinon = require("sinon");
 var should = require("should");
 var db = require("../../lib/db");
 
+
 describe("db connector", function () {
   describe("run query", function () {
 
     var pg;
+    var Transaction;
 
     before(function () {
       pg = require("pg");
+      Transaction = require("pg-transaction");
 
       sinon.stub(pg, "connect", function (err, cb) {
         cb(
@@ -19,6 +22,9 @@ describe("db connector", function () {
           {
             query: function (queryString, cb) {
               cb(null, "Some result");
+              return {
+                on: function () {}
+              };
             },
             x: 11
           }, 
@@ -30,7 +36,7 @@ describe("db connector", function () {
 
     it("should get a connection", function (done) {
       db.runQuery("SELECT 1").then(function () {
-        pg.connect.calledOnce.should.be.true;
+        pg.connect.callCount.should.equal(1);
         done();
       });
     });
@@ -41,6 +47,44 @@ describe("db connector", function () {
         should.exist(result);
         result.should.equal("Some result");
         done();
+      });
+    });
+
+    it("should allow transactions", function (done) {
+      var errorHandler = function (e) {
+        done(e);
+      };
+      db.startTransaction().then(function (tx) {
+        db.runQueryInTransaction("select 2", tx).then(
+          function () {
+            db.endTransaction(tx).then(
+              function () {
+                done();
+              },
+              errorHandler
+            );
+          }, 
+          errorHandler
+        );
+      });
+    });
+
+    it("should allow transactions to be rolled back", function (done) {
+      var errorHandler = function (e) {
+        done(e);
+      };
+      db.startTransaction().then(function (tx) {
+        db.runQueryInTransaction("select 2", tx).then(
+          function () {
+            db.rollbackTransaction(tx).then(
+              function () {
+                done();
+              },
+              errorHandler
+            );
+          }, 
+          errorHandler
+        );
       });
     });
 
