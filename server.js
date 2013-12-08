@@ -28,6 +28,7 @@ app.use(express["static"](__dirname + "/public"));
 app.use(express.bodyParser());
 
 require("./lib/rest/getEvents").init(app);
+require("./lib/rest/saveEvent").init(app);
 require("./lib/rest/getPlaces").init(app);
 require("./lib/rest/getAttendee").init(app);
 require("./lib/rest/getTypes").init(app);

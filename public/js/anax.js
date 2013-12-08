@@ -4,6 +4,9 @@ require.config({
       deps: ["underscore", "jquery"],
       exports: "Backbone"
     },
+    "bootstrap": {
+      deps: ["jquery"]
+    },
     "jqueryui": {
       deps: ["jquery"],
       exports: "$"
@@ -19,6 +22,9 @@ require.config({
     "select2": {
       deps: ["jquery"],
       exports: "Select2"
+    },
+    "parsley": {
+      deps: ["jquery"]
     }
   },
   map: {
@@ -35,6 +41,7 @@ require.config({
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
     chroma: "//cdnjs.cloudflare.com/ajax/libs/chroma-js/0.4.12/chroma.min",
     select2: "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.1/select2.min",
+    parsley: "//cdnjs.cloudflare.com/ajax/libs/parsley.js/1.1.16/parsley.min",
     templates: "../templates",
     async: "./libs/async",
     styled_marker: "./libs/styled_marker",

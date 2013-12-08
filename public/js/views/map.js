@@ -19,7 +19,7 @@ define([
     initialize: function (opts) {
 
       this.mapObjects = {};
-      this.eventsCollection = opts.eventsCollection;
+      this.eventLocationsCollection = opts.eventLocationsCollection;
       this.onLinkClick = _.bind(this.onLinkClick, this);
     },
 
@@ -27,8 +27,8 @@ define([
       
       this.drawMap();
       this.model.on("change", this.update, this);
-      this.eventsCollection.on("reset", this.redrawMarkers, this);
-      this.eventsCollection.start();
+      this.eventLocationsCollection.on("reset", this.redrawMarkers, this);
+      this.eventLocationsCollection.start();
     },
 
     redrawMarkers: function (newMarkers) {

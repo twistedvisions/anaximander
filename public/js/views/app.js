@@ -5,18 +5,18 @@ define([
   "backbone",
   "bootstrap",
   "libs/when",
-  "../collections/events",
+  "../collections/event_locations",
   "../collections/types",
   "../collections/subtypes",
   "text!templates/layout.htm"
 ], function ($, jqueryui, _, Backbone, Bootstrap, when, 
-    EventCollection, TypeCollection, 
+    EventLocationsCollection, TypeCollection, 
     SubtypeCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
     
     initialize: function () {
-      this.eventsCollection = new EventCollection({state: this.model});
+      this.eventLocationsCollection = new EventLocationsCollection({state: this.model});
       this.typesCollection = new TypeCollection();
       this.subtypesCollection = new SubtypeCollection();
     },
@@ -38,7 +38,7 @@ define([
       require(["views/map"], _.bind(function (MapView) {
         this.mapView = new MapView({
           model: this.model,
-          eventsCollection: this.eventsCollection
+          eventLocationsCollection: this.eventLocationsCollection
         });
         this.mapView.render();
       }, this));
@@ -56,7 +56,7 @@ define([
       require(["views/summary_bar"], _.bind(function (SummaryBar) {
         this.summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.eventsCollection
+          eventLocationsCollection: this.eventLocationsCollection
         });
         this.summaryBar.render();
       }, this));
@@ -64,7 +64,6 @@ define([
       require(["views/filters"], _.bind(function (Filters) {
         this.filters = new Filters({
           model: this.model,
-          eventsCollection: this.eventsCollection,
           typesCollection: this.typesCollection,
           subtypesCollection: this.subtypesCollection
         });

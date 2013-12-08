@@ -26,7 +26,7 @@ define(
         var clock = sinon.useFakeTimers();
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          eventLocationsCollection: this.collection
         });    
         summaryBar.render();
         clock.tick(200);
@@ -46,7 +46,7 @@ define(
       it("should show the correct amount of locations", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          eventLocationsCollection: this.collection
         });    
         summaryBar.getLocationCount(results).should.equal(2);
       });
@@ -54,7 +54,7 @@ define(
       it("should show the correct amount of events", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          eventLocationsCollection: this.collection
         });    
         
         summaryBar.getEventCount(results).should.equal(3);
@@ -65,7 +65,7 @@ define(
       it("should not be highlighted when there are no filters selected", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          eventLocationsCollection: this.collection
         }); 
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(false);
@@ -74,7 +74,7 @@ define(
         this.model.get("filterState").reset({id: 1});
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          eventLocationsCollection: this.collection
         });
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(true);

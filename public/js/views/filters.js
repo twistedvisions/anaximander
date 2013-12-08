@@ -13,7 +13,6 @@ define([
     el: "#filters-container",
 
     initialize: function (opts) {      
-      this.eventsCollection = opts.eventsCollection;
       this.typesCollection = opts.typesCollection;
       this.subtypesCollection = opts.subtypesCollection;
     },

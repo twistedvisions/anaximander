@@ -8,7 +8,7 @@ define(
       zoom: 3,
       filterState: new Backbone.Collection()
     });
-    var eventsCollection = new Backbone.Collection();
+    
     var typesCollection = new Backbone.Collection();
     var subtypesCollection = new Backbone.Collection();
     subtypesCollection.setParentType = function () {};
@@ -49,7 +49,6 @@ define(
         });
         this.filters = new Filters({
           model: model,
-          eventsCollection: eventsCollection,
           typesCollection: typesCollection,
           subtypesCollection: subtypesCollection
         });

@@ -18,15 +18,24 @@ define([
       this.$el.html(template);
       this.$(".add-event").on("click", _.bind(this.handleAddEvent, this));
 
-      this.$el.appendTo($("body")).css({
-        left: this.event.pixel.x,
-        top: this.event.pixel.y
-      });
+      if (this.event) {
+        this.$el.appendTo($("body")).css({
+          left: this.event.pixel.x,
+          top: this.event.pixel.y
+        });
+      }
       return this.$el;
     },
 
     handleAddEvent: function () {
-      new EventEditor().render();
+      new EventEditor({
+        newEvent: {
+          location: {
+            lat: this.event.latLng.lat(),
+            lon: this.event.latLng.lng()
+          }
+        }
+      }).render();
       this.$el.remove();
     }
 

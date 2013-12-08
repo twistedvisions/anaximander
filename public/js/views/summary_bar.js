@@ -90,7 +90,7 @@ define([
     },
 
     initialize: function (opts) {      
-      this.eventsCollection = opts.eventsCollection;
+      this.eventLocationsCollection = opts.eventLocationsCollection;
     },
 
     render: function () {
@@ -98,10 +98,10 @@ define([
       setTimeout(_.bind(this.showSelector, this), 100);
       this.filters = new Filters({
         model: this.model,
-        eventsCollection: this.eventsCollection
+        eventLocationsCollection: this.eventLocationsCollection
       });
 
-      this.eventsCollection.on("reset", this.showStats, this);
+      this.eventLocationsCollection.on("reset", this.showStats, this);
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));
       this.model.on("change", this.setFilterButtonHighlighting, this);
       this.setFilterButtonHighlighting();
@@ -141,7 +141,7 @@ define([
     },
 
     showStats: function () {
-      var results = this.eventsCollection.lastResults;
+      var results = this.eventLocationsCollection.lastResults;
       this.$el.find("#locations-shown").text(this.getLocationCount(results));
       this.$el.find("#events-shown").text(this.getEventCount(results));
     },

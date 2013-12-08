@@ -30,7 +30,7 @@ define(
 
         this.map = new Map({
           model: model,
-          eventsCollection: collection
+          eventLocationsCollection: collection
         });
         sinon.stub(this.map, "getColor");
 
@@ -57,7 +57,7 @@ define(
           location: []
         });
 
-        google.maps.event.triggers[1]();
+        google.maps.event.triggers[2]();
 
         Analytics.infoBoxShown.calledOnce.should.be.true;
       });
@@ -69,7 +69,7 @@ define(
           location: []
         });
 
-        google.maps.event.triggers[1]();
+        google.maps.event.triggers[2]();
         
         this.map.onLinkClick();
 
