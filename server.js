@@ -1,13 +1,8 @@
-/*global console, __dirname*/
+/*global __dirname*/
 
 require("newrelic");
-var _ = require("underscore");
-
-var fs = require("fs");
 var express = require("express");
 var lessMiddleware = require("less-middleware");
-
-var db = require("./lib/db");
 
 var nconf = require("./lib/config");
 
@@ -20,8 +15,6 @@ winston.add(winston.transports.Console, {
   "colorize": true
 });
 
-var getEventTypes = _.template(fs.readFileSync("db_templates/get_event_types.sql").toString());
-var getEventSubtypes = _.template(fs.readFileSync("db_templates/get_event_subtypes.sql").toString());
 var app = express();
 
 app.configure(function () {    
@@ -32,42 +25,13 @@ app.configure(function () {
 });
 
 app.use(express["static"](__dirname + "/public"));
+app.use(express.bodyParser());
 
 require("./lib/rest/getEvents").init(app);
-
-app.get("/type", function (req, res) {
-  db.runQuery(
-    getEventTypes({})
-  ).then(
-    function (result) {
-      res.send(result.rows);
-    }, 
-    function () {
-      winston.error("failed to process /type request", arguments);
-      console.log("err", arguments);
-    }
-  );
-});
-
-app.get("/type/:id/type", function (req, res) {
-  db.runQuery(
-    getEventSubtypes({
-      parent_type: req.param("id")
-    })
-  ).then(
-    function (result) {
-      result.rows = _.map(result.rows, function (row) {
-        row.parent_type = parseInt(row.parent_type, 10);
-        return row;
-      });
-      res.send(result.rows);
-    }, 
-    function () {
-      winston.error("failed to process /type/:id/type request", arguments);
-      console.log("err", arguments);
-    }
-  );
-});
+require("./lib/rest/getPlaces").init(app);
+require("./lib/rest/getAttendee").init(app);
+require("./lib/rest/getTypes").init(app);
+require("./lib/rest/getSubtypes").init(app);
 
 app.listen(nconf.server.port);
 
