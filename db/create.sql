@@ -37,7 +37,6 @@ CREATE TABLE event
   place_id bigint NOT NULL REFERENCES thing(id),
   start_date timestamp,
   end_date timestamp,
-  attendee_count INT,
   link character varying(200),
   CONSTRAINT event_pkey PRIMARY KEY (id)
 );
