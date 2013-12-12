@@ -4,11 +4,12 @@ define([
   "backbone",
   "select2",
   "./filters",
+  "./login",
   "../utils/filter_url_serialiser",
   "../analytics",
   "text!templates/summary_bar.htm",
   "css!/css/summary_bar"
-], function ($, _, Backbone, Select2, Filters, FilterUrlSerialiser,
+], function ($, _, Backbone, Select2, Filters, Login, FilterUrlSerialiser,
     analytics, template) {
 
   var SummaryBar = Backbone.View.extend({
@@ -100,6 +101,8 @@ define([
         model: this.model,
         eventLocationsCollection: this.eventLocationsCollection
       });
+      this.login = new Login();
+      this.login.render();//.appendTo(this.$("#login-holder"));
 
       this.eventLocationsCollection.on("reset", this.showStats, this);
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));

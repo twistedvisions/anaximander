@@ -1,3 +1,12 @@
+CREATE TABLE registered_user
+(
+  id SERIAL,
+  username character varying(64) NOT NULL,
+  password character varying(64) NOT NULL,
+  salt character varying(64) NOT NULL,
+  CONSTRAINT registered_user_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE thing_type
 (
   id SERIAL,

@@ -6,7 +6,8 @@
   },
   "production": {
     "database": {
-      "connection_string": ""
+      "connection_string": "",
+      "sessionSecret": ""
     },
     "server": {
       "port": 80
@@ -14,7 +15,8 @@
   },
   "defaults": {
     "server": {
-      "port": 8000
+      "port": 8000,
+      "sessionSecret": "somesecret"
     },
     "parser": {
       "data_file": "/home/pretzel/Downloads/dbpedia_data/3.9/mappingbased_properties_en.nq",

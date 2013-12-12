@@ -44,8 +44,10 @@ require.config({
     parsley: "//cdnjs.cloudflare.com/ajax/libs/parsley.js/1.1.16/parsley.min",
     templates: "../templates",
     async: "./libs/async",
+    when: "./libs/when",
     styled_marker: "./libs/styled_marker",
-    fuse: "./libs/fuse"
+    fuse: "./libs/fuse",
+    sha256: "./libs/sha256"
   }
 });
 

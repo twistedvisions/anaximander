@@ -16,7 +16,13 @@
     "newrelic": "1.x",
     "less-middleware": "0.1.x",
     "winston": "0.7.x",
-    "pg-transaction": "1.x"
+    "pg-transaction": "1.x",
+    "passport": "0.1.x",
+    "passport-facebook": "1.x",
+    "passport-local": "0.1.x",  
+    "db-migrate": "0.6.x",
+    "bcrypt": "0.7.x",
+    "connect-flash": "0.1.x"
   },
   "devDependencies": {
     "mocha": "1.x",

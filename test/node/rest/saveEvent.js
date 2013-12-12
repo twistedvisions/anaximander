@@ -34,6 +34,10 @@ describe("saveEvent", function () {
       db.runQueryInTransaction.restore();
     });
 
+    describe("permissions", function () {
+      it("cannot be called if the user is not logged in");
+    });
+
     describe("ensurePlace", function () {
       it("should try to find a place if it has an id", function (done) {
         var self = this;
