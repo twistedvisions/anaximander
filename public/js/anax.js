@@ -47,28 +47,43 @@ require.config({
     when: "./libs/when",
     styled_marker: "./libs/styled_marker",
     fuse: "./libs/fuse",
-    sha256: "./libs/sha256"
+    sha256: "./libs/sha256",
+    "socket-io": "../socket.io/socket.io",
+    cookies: "./libs/cookies"
   }
 });
 
 require([
+  "underscore",
   "views/app",
   "router",
   "models/view_state",
+  "models/current_user",
   "css!/css/anax"
-], function (AppView, Router, ViewState) {
+], function (_, AppView, Router, ViewState, User) {
   var model = new ViewState({
     date: [1963, 2013],
     center: [53.24112905344493, 6.191539001464932],
     zoom: 9,
     radius: 10
   });
-  var appView = new AppView({
-    model: model
+  var user = new User({
+    id: -1
   });
-  appView.render();
-  this.router = new Router(); 
-  this.router.init({
-    model: model
+  user.fetch({
+    success: _.bind(function () {
+      var appView = new AppView({
+        model: model,
+        user: user
+      });
+      appView.render();
+      this.router = new Router(); 
+      this.router.init({
+        model: model
+      });
+    }, this),
+    failure: _.bind(function () {
+      console.log("failed to log in")
+    }, this)
   });
 });

@@ -13,6 +13,7 @@ define([
  
     initialize: function (options) {
       this.target = options.target;
+      this.user = options.user;
     },
 
     render: function () {
@@ -41,8 +42,8 @@ define([
         password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
       })).then(
         _.bind(function () {
-          window.console.log("done", arguments);
           this.$("#login-retred").popover("toggle");
+          this.user.set("logged-in", true);
         }, this), 
         this.handleFailedRequest("Registration failed")
       );
@@ -54,8 +55,8 @@ define([
         password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
       })).then(
         _.bind(function () {
-          window.console.log("done", arguments);
           this.$("#login-retred").popover("toggle");
+          this.user.set("logged-in", true);
         }, this),
         this.handleFailedRequest("Login failed")
       );

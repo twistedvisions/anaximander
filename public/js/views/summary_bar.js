@@ -92,6 +92,7 @@ define([
 
     initialize: function (opts) {      
       this.eventLocationsCollection = opts.eventLocationsCollection;
+      this.user = opts.user;
     },
 
     render: function () {
@@ -101,7 +102,9 @@ define([
         model: this.model,
         eventLocationsCollection: this.eventLocationsCollection
       });
-      this.login = new Login();
+      this.login = new Login({
+        user: this.user
+      });
       this.login.render();//.appendTo(this.$("#login-holder"));
 
       this.eventLocationsCollection.on("reset", this.showStats, this);

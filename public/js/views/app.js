@@ -15,10 +15,11 @@ define([
   var AppView = Backbone.View.extend({
     el: "body",
     
-    initialize: function () {
+    initialize: function (options) {
       this.eventLocationsCollection = new EventLocationsCollection({state: this.model});
       this.typesCollection = new TypeCollection();
       this.subtypesCollection = new SubtypeCollection();
+      this.user = options.user;
     },
 
     render: function () {
@@ -56,6 +57,7 @@ define([
       require(["views/summary_bar"], _.bind(function (SummaryBar) {
         this.summaryBar = new SummaryBar({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.eventLocationsCollection
         });
         this.summaryBar.render();

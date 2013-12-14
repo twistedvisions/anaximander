@@ -33,4 +33,5 @@ describe("register", function () {
   });
   it("creates an entry in the database with a bcrypt-ed password");
   it("doesn't create an entry if the user already exists");
+  it("should log the user in");
 });
