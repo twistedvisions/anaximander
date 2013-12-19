@@ -1,13 +1,13 @@
 /*global describe, it, beforeEach, afterEach */
 
-var should = require("should");
 var sinon = require("sinon");
 
-var db = require("../../../lib/db");
 var when = require("when");
-var _ = require("underscore");
 
-var require = require("../../../lib/rest/require");
+
+var stubDb = require("../stubDb");
+
+// var register = require("../../../lib/rest/register");
 
 var winston = require("winston");
 try {
@@ -18,20 +18,13 @@ try {
 
 describe("register", function () {
   beforeEach(function () {
-    var self = this;
-    self.d = [];
-    self.args = [];
-    sinon.stub(db, "runQueryInTransaction", function () {
-      var d = when.defer();
-      self.d.push(d);
-      self.args.push(arguments);
-      return d.promise;
-    });
+    stubDb.setup(this);
   });
   afterEach(function () {
-    db.runQueryInTransaction.restore();
+    stubDb.restore();
   });
   it("creates an entry in the database with a bcrypt-ed password");
   it("doesn't create an entry if the user already exists");
+  it("should send a 422 if the user already exists");
   it("should log the user in");
 });

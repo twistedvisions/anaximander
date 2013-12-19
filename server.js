@@ -51,7 +51,7 @@ require("./lib/rest/getCurrentUser").init(app);
 require("./lib/rest/logout").init(app);
 require("./lib/rest/login").init(app);
 require("./lib/rest/register").init(app);
-require("./lib/rest/login-facebook").init(app, server);
+new require("./lib/rest/login-facebook")(app, server);
 
 require("./lib/rest/getEvents").init(app);
 require("./lib/rest/saveEvent").init(app);

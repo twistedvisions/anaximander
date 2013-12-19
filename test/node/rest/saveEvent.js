@@ -1,11 +1,9 @@
 /*global describe, it, beforeEach, afterEach */
 
 var should = require("should");
-var sinon = require("sinon");
-
-var db = require("../../../lib/db");
-var when = require("when");
 var _ = require("underscore");
+
+var stubDb = require("../stubDb");
 
 var saveEvent = require("../../../lib/rest/saveEvent");
 
@@ -20,18 +18,10 @@ describe("saveEvent", function () {
   describe("component functions", function () {
 
     beforeEach(function () {
-      var self = this;
-      self.d = [];
-      self.args = [];
-      sinon.stub(db, "runQueryInTransaction", function () {
-        var d = when.defer();
-        self.d.push(d);
-        self.args.push(arguments);
-        return d.promise;
-      });
+      stubDb.setup(this);
     });
     afterEach(function () {
-      db.runQueryInTransaction.restore();
+      stubDb.restore();
     });
 
     describe("permissions", function () {
@@ -342,27 +332,10 @@ describe("saveEvent", function () {
 
   describe("transaction", function () {
     beforeEach(function () {
-      var transactionStub = function (result) {
-        return function () {
-          var d = when.defer();
-          d.resolve(result);
-          return d.promise;
-        };
-      };
-      sinon.stub(db, "startTransaction", transactionStub({}));
-      sinon.stub(db, "endTransaction", transactionStub());
-      sinon.stub(db, "rollbackTransaction", transactionStub());
-      sinon.stub(db, "runQueryInTransaction", function () {
-        var d = when.defer();
-        d.resolve({rows: [{id: 4}]});
-        return d.promise;
-      });
+      stubDb.setup(this);
     });
     afterEach(function () {
-      db.startTransaction.restore();
-      db.endTransaction.restore();
-      db.rollbackTransaction.restore();
-      db.runQueryInTransaction.restore();
+      stubDb.restore(this);
     });
     it("should do the entire save in a transaction", function (done) {
       
@@ -380,24 +353,33 @@ describe("saveEvent", function () {
             id: 611528,
             name: "Kareem Ajani (Person)"
           }]
+        },
+        isAuthenticated: function () {
+          return true;
         }
       };
       var res = {
         send: function () {}
       };
+      var next = function () {};
 
-      new saveEvent.EventSaver().saveEvent(req, res).then(function () {
+      new saveEvent.EventSaver().saveEvent(req, res, next).then(_.bind(function () {
         var ex;
         try {
-          db.startTransaction.callCount.should.equal(1);
-          db.endTransaction.callCount.should.equal(1);
+          this.db.startTransaction.callCount.should.equal(1);
+          this.db.endTransaction.callCount.should.equal(1);
         } catch (e) {
           ex = e;
         } finally {
           done(ex);
         }
-
-      });
+      }, this)); 
+      stubDb.setQueryValues(this, [
+        [{id: 1}],
+        [{id: 2}],
+        [{id: 3}],
+        [{id: 4}]
+      ]);
     });
     it("should roll back the transaction if a component section fails", function (done) {
       var req = {
@@ -412,6 +394,9 @@ describe("saveEvent", function () {
           attendees: [{
             id: -1
           }]
+        },
+        isAuthenticated: function () {
+          return true;
         }
       };
       var res = {
@@ -421,19 +406,32 @@ describe("saveEvent", function () {
       new saveEvent.EventSaver().saveEvent(req, res).then(
         function () {
           done({message: "shouldn't get here"});
-        }, function () {
+        }, 
+        _.bind(function () {
           var ex;
           try {
-            db.startTransaction.callCount.should.equal(1);
-            db.endTransaction.callCount.should.equal(0);
-            db.rollbackTransaction.callCount.should.equal(1);
+            this.db.startTransaction.callCount.should.equal(1);
+            this.db.endTransaction.callCount.should.equal(0);
+            this.db.rollbackTransaction.callCount.should.equal(1);
           } catch (e) {
             ex = e;
           } finally {
             done(ex);
           }
-        }
+        }, this)
       );
+
+      stubDb.setQueryValues(this, [
+        [{id: 1}],
+        [{id: 2}],
+        [{id: 3}],
+        [{id: 4}]
+      ]);
+
     });
+  });
+
+  describe("user state", function () {
+    it("shouldn't save an event if the user is not logged in");
   });
 });
