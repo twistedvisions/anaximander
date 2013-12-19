@@ -3,6 +3,7 @@
 var should = require("should");
 var _ = require("underscore");
 
+var tryTest = require("../tryTest");
 var stubDb = require("../stubDb");
 
 var saveEvent = require("../../../lib/rest/saveEvent");
@@ -31,82 +32,55 @@ describe("saveEvent", function () {
     describe("ensurePlace", function () {
       it("should try to find a place if it has an id", function (done) {
         var self = this;
-        new saveEvent.EventSaver().ensurePlace({id: 3}).then(function () {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensurePlace({id: 3}).then(
+          tryTest(function () {
             self.args[0][0].indexOf("select").should.not.equal(-1);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        }, function (e) {
-          done(e);
-        });
+          }, done), 
+          done
+        );
         this.d[0].resolve({rows: [{id: 1}]});
       });
 
       it("throw an exception if it can't find a place", function (done) {
-        new saveEvent.EventSaver().ensurePlace({id: 4}).then(function () {
-          done({message: "should not succeed"});
-        }, function (e) {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensurePlace({id: 4}).then(
+          function () {
+            done({message: "should not succeed"});
+          }, 
+          tryTest(function (e) {
             should.exist(e);
-          } catch (ee) {
-            ex = ee;
-          } finally {
-            done(ex);
-          }
-        });
+          }, done)
+        );
         this.d[0].resolve({rows: []});
       });
 
       it("should try to create a place if it doesn't exist", function (done) {
         var self = this;
-        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(function () {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
+          tryTest(function () {
             self.args[0][0].indexOf("insert").should.not.equal(-1);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        }, function (e) {
-          done(e);
-        });
+          }, done
+        ), done);
         this.d[0].resolve({rows: [{id: 1}]});
       });
 
       it("should return the place id if it was created", function (done) {
-        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(function (id) {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
+          tryTest(function (id) {
             id.should.be.above(0);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        }, function (e) {
-          done(e);
-        });
+          }, done),
+          done
+        );
         this.d[0].resolve({rows: [{id: 1}]});
       });
       it("should throw an exception if the place cannot be created", function (done) {
-        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(function () {
-          done({message: "should not succeed"});
-        }, function (e) {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
+          function () {
+            done({message: "should not succeed"});
+          }, 
+          tryTest(function (e) {
             should.exist(e);
-          } catch (ee) {
-            ex = ee;
-          } finally {
-            done(ex);
-          }
-        });
+          }, done)
+        );
         this.d[0].resolve({rows: []});
       });
     });
@@ -114,90 +88,63 @@ describe("saveEvent", function () {
     describe("ensureAttendees", function () {
       it("should ensure that each attendee exists", function (done) {
         var self = this;
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(function () {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(
+          tryTest(function () {
             self.args[0][0].indexOf("select").should.not.equal(-1);
             self.args[1][0].indexOf("select").should.not.equal(-1);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        }, function (e) {
-          done(e);
-        });
+          }, done), 
+          done
+        );
         this.d[0].resolve({rows: [{id: 3}]});
         this.d[1].resolve({rows: [{id: 4}]});
       });
 
       it("should throw an exception if an attendee cannot be found", function (done) {
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(function () {
-          done({message: "should not succeed"});
-        }, function (e) {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(
+          function () {
+            done({message: "should not succeed"});
+          }, 
+          tryTest(function (e) {
             should.exist(e);
-          } catch (ee) {
-            ex = ee;
-          } finally {
-            done(ex);
-          }
-        });
+          }, done)
+        );
         this.d[0].resolve({rows: [{id: 3}]});
         this.d[1].resolve({rows: []});
       });
 
       it("should create attendees if they do not exist", function (done) {
         var self = this;
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(function () {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
+          tryTest(function () {
             self.args[0][0].indexOf("select").should.not.equal(-1);
             self.args[1][0].indexOf("insert").should.not.equal(-1);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        }, function (e) {
-          done(e);
-        });
+          }, done),
+          done
+        );
         this.d[0].resolve({rows: [{id: 3}]});
         this.d[1].resolve({rows: [{id: 4}]});
       });
 
       it("should callback with the new ids if they can be found", function (done) {
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(function (ids) {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
+          tryTest(function (ids) {
             JSON.stringify(ids).should.equal(JSON.stringify([5, 6]));
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          } 
-
-        }, function (e) {
-          done(e);
-        });
+          }, done),
+          done
+        );
         this.d[0].resolve({rows: [{id: 5}]});
         this.d[1].resolve({rows: [{id: 6}]});
       });
 
       it("should throw an exception if an attendee cannot be created", function (done) {
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(function () {
-          done({message: "should not succeed"});
-        }, function (e) {
-          var ex;
-          try {
+        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
+          function () {
+            done({message: "should not succeed"});
+          }, 
+          tryTest(function (e) {
             should.exist(e);
-          } catch (ee) {
-            ex = ee;
-          } finally {
-            done(ex);
-          }
-        });
+          }, done)
+        );
         this.d[0].resolve({rows: [{id: 5}]});
         this.d[1].resolve({rows: []});
       });
@@ -213,16 +160,10 @@ describe("saveEvent", function () {
             link: "http://some.wiki.page/ihope.html"
           }
         ).then(
-          function (id) {
-            var ex;
-            try {
-              id.should.be.above(0);
-            } catch (e) {
-              ex = e;
-            } finally {
-              done(ex);
-            } 
-          }, function (e) {
+          tryTest(function (id) {
+            id.should.be.above(0);
+          }, done), 
+          function (e) {
             done(e);
           }
         );
@@ -242,16 +183,9 @@ describe("saveEvent", function () {
             function () {
               done({message: "should not succeed"});
             }, 
-            function (e) {
-              var ex;
-              try {
-                should.exist(e);
-              } catch (ee) {
-                ex = ee;
-              } finally {
-                done(ex);
-              }
-            }
+            tryTest(function (e) {
+              should.exist(e);
+            }, done)
           );
         });
       });
@@ -266,16 +200,9 @@ describe("saveEvent", function () {
             function () {
               done({message: "should not succeed"});
             }, 
-            function (e) {
-              var ex;
-              try {
-                should.exist(e);
-              } catch (ee) {
-                ex = ee;
-              } finally {
-                done(ex);
-              }
-            }
+            tryTest(function (e) {
+              should.exist(e);
+            }, done)
           );
         });
       it("should throw an exception if it cannot create the event", function (done) {
@@ -289,16 +216,10 @@ describe("saveEvent", function () {
         ).then(
           function () {
             done({message: "should not succeed"});
-          }, function (e) {
-            var ex;
-            try {
-              should.exist(e);
-            } catch (ee) {
-              ex = ee;
-            } finally {
-              done(ex);
-            }
-          }
+          }, 
+          tryTest(function (e) {
+            should.exist(e);
+          }, done)
         );
         this.d[0].resolve({rows: []});
       });
@@ -308,17 +229,11 @@ describe("saveEvent", function () {
       it("should add each attendee to the event", function (done) {
         var self = this;
         new saveEvent.EventSaver().addAttendees([{id: 3}, {id: 4}], 5).then(
-          function () {
-            var ex;
-            try {
-              self.args[0][0].indexOf("insert").should.not.equal(-1);
-              self.args[1][0].indexOf("insert").should.not.equal(-1);
-            } catch (e) {
-              ex = e;
-            } finally {
-              done(ex);
-            } 
-          }, function (e) {
+          tryTest(function () {
+            self.args[0][0].indexOf("insert").should.not.equal(-1);
+            self.args[1][0].indexOf("insert").should.not.equal(-1);
+          }, done), 
+          function (e) {
             done(e);
           }
         );
@@ -363,17 +278,11 @@ describe("saveEvent", function () {
       };
       var next = function () {};
 
-      new saveEvent.EventSaver().saveEvent(req, res, next).then(_.bind(function () {
-        var ex;
-        try {
+      new saveEvent.EventSaver().saveEvent(req, res, next).then(tryTest(
+        _.bind(function () {
           this.db.startTransaction.callCount.should.equal(1);
           this.db.endTransaction.callCount.should.equal(1);
-        } catch (e) {
-          ex = e;
-        } finally {
-          done(ex);
-        }
-      }, this)); 
+        }, this), done)); 
       stubDb.setQueryValues(this, [
         [{id: 1}],
         [{id: 2}],
@@ -407,18 +316,11 @@ describe("saveEvent", function () {
         function () {
           done({message: "shouldn't get here"});
         }, 
-        _.bind(function () {
-          var ex;
-          try {
-            this.db.startTransaction.callCount.should.equal(1);
-            this.db.endTransaction.callCount.should.equal(0);
-            this.db.rollbackTransaction.callCount.should.equal(1);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        }, this)
+        tryTest(_.bind(function () {
+          this.db.startTransaction.callCount.should.equal(1);
+          this.db.endTransaction.callCount.should.equal(0);
+          this.db.rollbackTransaction.callCount.should.equal(1);
+        }, this), done) 
       );
 
       stubDb.setQueryValues(this, [

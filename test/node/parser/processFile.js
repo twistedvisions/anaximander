@@ -2,6 +2,8 @@
 var sinon = require("sinon");
 var should = require("should");
 var _ = require("underscore");
+var tryTest = require("../tryTest");
+
 var processFile = require("../../../lib/parser/processFile");
 
 describe("processFile", function () {
@@ -57,83 +59,64 @@ describe("processFile", function () {
   });
   
   it("should process the first 4 lines bar 1", function (done) {
-    processFile("", 100, 0, 5, true, true).then(function () {
-      var ex;
-      try {
+    processFile("", 100, 0, 5, true, true).then(
+      tryTest(function () {
         _.keys(jobs).length.should.equal(4);
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    });
+      },
+      done
+    ));
   });
 
   it("should only process interesting lines", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function () {
-      var ex;
-      try {
+    processFile("", 100, 0, 10, true, true).then(
+      tryTest(function () {
         _.keys(jobs).length.should.equal(7);
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    });
+      },
+      done
+    ));
   });
 
   it("should return the keys available for each object", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function () {
-      var ex;
-      try {
+    processFile("", 100, 0, 10, true, true).then(
+      tryTest(function () {
         _.keys(jobs["<http://dbpedia.org/resource/Name8>"].value).length.should.equal(2);
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    });
+      },
+      done
+    ));
   });
 
   it("should have a value for a key", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function () {
-      var ex;
-      try {
+    processFile("", 100, 0, 10, true, true).then(
+      tryTest(function () {
         should.exists(
           jobs["<http://dbpedia.org/resource/Name8>"]
             .value["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"][0]
         );
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    });
+      },
+      done
+    ));
   });
 
   it("should have a link for a value", function (done) {
-    processFile("", 100, 0, 10, true, true).then(function () {
-      var ex;
-      try {
+    processFile("", 100, 0, 10, true, true).then(
+      tryTest(function () {
         should.exists(
           jobs["<http://dbpedia.org/resource/Name8>"].link
         );
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    });
+      }, 
+      done
+    ));
   });
 
   it("should store multiple values for a single key if given", function (done) {
-    processFile("", 100, 0, 11, true, true).then(function () {
-      var ex;
-      try {
+    processFile("", 100, 0, 11, true, true).then(
+      tryTest(function () {
         jobs["<http://dbpedia.org/resource/Name8>"]
           .value["<http://www.w3.org/2003/01/geo/wgs84_pos#lat>"]
           .length.should.equal(2);
-        
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    });
+      },
+      done
+    ));
   });
 
   afterEach(function () {

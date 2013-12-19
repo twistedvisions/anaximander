@@ -7,6 +7,7 @@ var sinon = require("sinon");
 var _ = require("underscore");
 var bcrypt = require("bcrypt");
 
+var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
 
 describe("localStrategy", function () {  
@@ -19,18 +20,12 @@ describe("localStrategy", function () {
   });
 
   it("should callback with an error if the user cannot be found", function (done) {
-    localStrategy.localStrategyImpl(null, null, function (err, user, message) {
-      var ex;
-      try {
-        should.not.exist(err);
-        user.should.equal(false);
-        should.exist(message.message);
-      } catch (e) {
-        ex = e;
-      } finally {
-        done(ex);
-      }
-    });
+    localStrategy.localStrategyImpl(null, null, 
+      tryTest(function (err, user, message) {
+      should.not.exist(err);
+      user.should.equal(false);
+      should.exist(message.message);
+    }, done));
     stubDb.setQueryValues(this, [
       []
     ]);
@@ -43,18 +38,13 @@ describe("localStrategy", function () {
     bcrypt.genSalt(10, _.bind(function (err, salt) {
       bcrypt.hash(plaintext, salt, _.bind(function (err, password) {
 
-        localStrategy.localStrategyImpl(username, plaintext, function (err, user, message) {
-          var ex;
-          try {
+        localStrategy.localStrategyImpl(username, plaintext, 
+          tryTest(function (err, user, message) {
             should.not.exist(err);
             user.id.should.equal(3);
             should.not.exist(message);
-          } catch (e) {
-            ex = e;
-          } finally {
-            done(ex);
-          }
-        });
+          }, done
+        ));
 
         stubDb.setQueryValues(this, [
           [{
@@ -76,19 +66,15 @@ describe("localStrategy", function () {
       cb(new Error("some exception"));
     });
 
-    localStrategy.localStrategyImpl(username, plaintext, function (err, user, message) {
-      var ex;
-      try {
+    localStrategy.localStrategyImpl(username, plaintext, tryTest(
+      function (err, user, message) {
         should.exist(err);
         should.not.exist(message);
         should.not.exist(user);
-      } catch (e) {
-        ex = e;
-      } finally {
+      }, function (ex) {
         bcrypt.compare.restore();
         done(ex);
-      }
-    });
+      }));
     stubDb.setQueryValues(this, [
       [{
         id: 4,
@@ -103,18 +89,13 @@ describe("localStrategy", function () {
     var username = "a";
     var plaintext = "abc";
 
-    localStrategy.localStrategyImpl(username, plaintext, function (err, user, message) {
-      var ex;
-      try {
+    localStrategy.localStrategyImpl(username, plaintext, 
+      tryTest(function (err, user, message) {
         should.not.exist(err);
         user.should.equal(false);
         should.exist(message.message);
-      } catch (e) {
-        ex = e;
-      } finally {
-        done(ex);
-      }
-    });
+      }, done
+    ));
 
     stubDb.setQueryValues(this, [
       [{
@@ -127,18 +108,13 @@ describe("localStrategy", function () {
 
   it("should callback with an error if an exception occurs running the query", function (done) {
     
-    localStrategy.localStrategyImpl(null, null, function (err, user, message) {
-      var ex;
-      try {
+    localStrategy.localStrategyImpl(null, null, 
+      tryTest(function (err, user, message) {
         should.exist(err);
         should.not.exist(user);
         should.not.exist(message);
-      } catch (e) {
-        ex = e;
-      } finally {
-        done(ex);
-      }
-    });
+      }, done
+    ));
 
     stubDb.setQueryValues(this, [
       {"throw": {message: "some error"}}
