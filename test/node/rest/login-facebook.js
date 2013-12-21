@@ -5,7 +5,6 @@ var supertest = require("supertest");
 var express = require("express");
 var http = require("http");
 var _ = require("underscore");
-// var passport = require("passport");
 var io = require("socket.io-client");
 var tryTest = require("../tryTest");
 var LoginFacebook = require("../../../lib/rest/login-facebook");

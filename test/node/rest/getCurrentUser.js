@@ -1,8 +1,6 @@
 /*global describe, it */
 var getCurrentUser = require("../../../lib/rest/getCurrentUser");
 
-var should = require("should");
-
 describe("getCurrentUser", function () {
   var test = function (isAuthenticated, done) {
     var app = {

@@ -1,4 +1,4 @@
-module.exports = function (code, done) {
+module.exports = function (code, done, onlyCallDoneOnFail) {
   return function () {
     var ex;
     try {
@@ -6,7 +6,9 @@ module.exports = function (code, done) {
     } catch (e) {
       ex = e;
     } finally {
-      done(ex);
+      if (!onlyCallDoneOnFail || ex) {
+        done(ex);
+      }
     }
   };
 };
