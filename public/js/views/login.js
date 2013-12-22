@@ -3,7 +3,7 @@ define([
   "underscore",
   "backbone",
   "when",
-  "socket-io",
+  "socketio",
   "cookies",
   "./login_local",
   "text!templates/login.htm",

@@ -13,6 +13,9 @@ define(
         zoom: 3,
         filterState: new Backbone.Collection()
       });
+      this.user = new Backbone.Model({
+        "logged-in": false
+      });
 
       this.collection = new Backbone.Collection();
     });
@@ -26,6 +29,7 @@ define(
         var clock = sinon.useFakeTimers();
         var summaryBar = new SummaryBar({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.collection
         });    
         summaryBar.render();
@@ -46,6 +50,7 @@ define(
       it("should show the correct amount of locations", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.collection
         });    
         summaryBar.getLocationCount(results).should.equal(2);
@@ -54,6 +59,7 @@ define(
       it("should show the correct amount of events", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.collection
         });    
         
@@ -65,6 +71,7 @@ define(
       it("should not be highlighted when there are no filters selected", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.collection
         }); 
         summaryBar.render();
@@ -74,6 +81,7 @@ define(
         this.model.get("filterState").reset({id: 1});
         var summaryBar = new SummaryBar({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.collection
         });
         summaryBar.render();

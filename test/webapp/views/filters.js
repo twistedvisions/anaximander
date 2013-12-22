@@ -220,6 +220,7 @@ define(
           describe("toggling visible filter selection", function () {
             beforeEach(function () {
               this.filters.render();
+              this.filters.$el.show();
               this.filters.showSecondaryFilters(typesCollection.get(1));
               this.filters.$("#secondary-filter").val("name");
               this.filters._filterSecondaryFilters();

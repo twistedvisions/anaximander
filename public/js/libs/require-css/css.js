@@ -403,6 +403,10 @@ define(['./normalize'], function(normalize) {
     if (cssAPI.attachBuffer(resourceId, load))
       return;
 
+    if (config.cssDir) {
+      resourceId = config.cssDir + resourceId;
+    }
+
     var fileUrl = req.toUrl(resourceId);
     
     if (!alerted && testing) {

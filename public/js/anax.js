@@ -48,7 +48,7 @@ require.config({
     styled_marker: "./libs/styled_marker",
     fuse: "./libs/fuse",
     sha256: "./libs/sha256",
-    "socket-io": "../socket.io/socket.io",
+    "socketio": "../socket.io/socket.io",
     cookies: "./libs/cookies"
   }
 });
