@@ -21,7 +21,7 @@ define(
     });
 
     afterEach(function () {
-      $("body").remove("#summary-bar");
+      $("#summary-bar").remove();
     });
 
     describe("interaction", function () {

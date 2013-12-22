@@ -56,7 +56,7 @@ define(
       });
 
       afterEach(function () {
-        $("body").remove("#filters-container");
+        $("#filters-container").remove();
         subtypesCollection.fetch.restore();
       });
 
