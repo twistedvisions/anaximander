@@ -38,9 +38,9 @@ require.config({
       "css": "libs/require-css/css"
     }
   },
-  cssDir:  '/base/public',
+  
+  cssDir:  "/base/public",
 
- 
   paths: {
     underscore: "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.0.0/lodash.min", // https://github.com/amdjs
     jquery: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
@@ -59,12 +59,9 @@ require.config({
     sha256: "./libs/sha256",
     cookies: "./libs/cookies",
     socketio: "../../node_modules/socket.io-client/dist/socket.io.min"
-
-    // app: "js"
   },
   
   deps: tests,
-
   
   callback: window.__karma__.start
 });

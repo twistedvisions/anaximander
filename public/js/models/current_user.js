@@ -7,9 +7,11 @@ define([
     "url": "/current-user",
     "logged-in": false,
     logout: function () {
-      $.post("/logout", _.bind(function () {
-        this.set("logged-in", false);
-      }, this));
+      if (this.get("logged-in")) {
+        $.post("/logout", _.bind(function () {
+          this.set("logged-in", false);
+        }, this));
+      }
     }
   });
   return CurrentUser;

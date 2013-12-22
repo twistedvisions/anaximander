@@ -54,36 +54,8 @@ require.config({
 });
 
 require([
-  "underscore",
-  "views/app",
-  "router",
-  "models/view_state",
-  "models/current_user",
-  "css!/css/anax"
-], function (_, AppView, Router, ViewState, User) {
-  var model = new ViewState({
-    date: [1963, 2013],
-    center: [53.24112905344493, 6.191539001464932],
-    zoom: 9,
-    radius: 10
-  });
-  var user = new User({
-    id: -1
-  });
-  user.fetch({
-    success: _.bind(function () {
-      var appView = new AppView({
-        model: model,
-        user: user
-      });
-      appView.render();
-      this.router = new Router(); 
-      this.router.init({
-        model: model
-      });
-    }, this),
-    failure: _.bind(function () {
-      console.log("failed to log in")
-    }, this)
-  });
+  "./startup"
+], function (App) {
+  var app = new App();
+  app.start();
 });
