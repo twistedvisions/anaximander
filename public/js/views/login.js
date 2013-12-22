@@ -56,28 +56,38 @@ define([
     },
 
     handleFacebookLogin: function () {
-
       when($.get("/auth/facebook", {})).then(
-        _.bind(function (result) {
-          var loginId = result.loginId;
-          cookies.set("login-id", loginId);
-          var socket = io.connect("http://localhost:8000");
-          socket.on("connect", function () {
-            socket.emit("register-login", {
-              key: loginId
-            });
-          });
-          socket.on("complete", _.bind(function (/*data*/) {
-            this.user.set("logged-in", true);
-          }, this));
-          window.open(result.location);
-          
-        }, this)
+        _.bind(this.handleAuthFacebook, this)
       );
+    },
+    handleAuthFacebook: function (result) {
+      var oldLoginId = cookies.get("login-id");
+      var loginId = result.loginId;
+      cookies.set("login-id", loginId);
+
+      if (this.socket) {
+        this.socket.emit("update-login", {
+          "old": oldLoginId,
+          "new": loginId
+        });
+      } else {
+        this.socket = io.connect("http://localhost:8000");
+        this.socket.on("connect", _.bind(this.handleWebSocketConnection, this, loginId));
+        this.socket.on("complete", _.bind(this.handleLoginCompletion, this));
+      }
+      window.open(result.location);
+    },
+    handleWebSocketConnection: function (loginId) {
+      this.socket.emit("register-login", {
+        key: loginId
+      });
+    },
+    handleLoginCompletion: function (/*data*/) {
+      this.user.set("logged-in", true);
     }
 
   });
 
   return Login;
 
-});
+}); 
