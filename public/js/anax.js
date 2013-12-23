@@ -54,7 +54,7 @@ require.config({
 });
 
 require([
-  "./startup"
+  "./anax_startup"
 ], function (App) {
   var app = new App();
   app.start();
