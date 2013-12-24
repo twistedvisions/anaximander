@@ -63,7 +63,7 @@ define([
     handleAuthFacebook: function (result) {
       var oldLoginId = cookies.get("login-id");
       var loginId = result.loginId;
-      cookies.set("login-id", loginId);
+      cookies.set("login-id", loginId, {secure: true});
 
       if (this.socket) {
         this.socket.emit("update-login", {

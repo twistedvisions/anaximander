@@ -97,6 +97,7 @@ define(
 
           this.setArgs[0].should.equal("login-id");
           this.setArgs[1].should.equal("someid");
+          this.setArgs[2].secure.should.equal(true);
         });
 
         it("should connect a websocket to tell it when the auth is complete", function () {
