@@ -3,10 +3,12 @@
 require("newrelic");
 
 var express = require("express");
+var https = require("https");
 var http = require("http");
 var lessMiddleware = require("less-middleware");
 var flash = require("connect-flash");
 var passport = require("passport");
+var fs = require("fs");
 
 var nconf = require("./lib/config");
 
@@ -19,47 +21,58 @@ winston.add(winston.transports.Console, {
   "colorize": true
 });
 
-var app = express();
+var options = {
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem")
+};
 
-var server = http.createServer(app);
+var secureApp = express();
+var unsecureApp = express();
 
-app.configure(function () {    
-  app.use(lessMiddleware({
+var secureServer = https.createServer(options, secureApp);
+var unsecureServer = http.createServer(secureApp);
+
+unsecureApp.get("*", function (req, res) {  
+  res.redirect(nconf.server.host + nconf.server.port + req.url);
+});
+
+secureApp.configure(function () {    
+  secureApp.use(lessMiddleware({
     src: __dirname + "/public",
     compress: true
   }));
 });
 
-app.use(express["static"](__dirname + "/public"));
-app.use(express.cookieParser());
-app.use(express.bodyParser());
-app.use(express.session({
-  secret: nconf.server.sessionSecret
+secureApp.use(express["static"](__dirname + "/public"));
+secureApp.use(express.cookieParser());
+secureApp.use(express.bodyParser());
+secureApp.use(express.session({
+  secret: nconf.auth.sessionSecret
 }));
-app.use(flash());
+secureApp.use(flash());
 
-
-app.use(passport.initialize());
-app.use(passport.session());
+secureApp.use(passport.initialize());
+secureApp.use(passport.session());
 
 require("./lib/rest/auth/localStrategy");
 require("./lib/rest/auth/facebookStrategy");
 require("./lib/rest/auth/serializeUser");
 require("./lib/rest/auth/deserializeUser");
 
-require("./lib/rest/getCurrentUser").init(app);
-require("./lib/rest/logout").init(app);
-require("./lib/rest/login").init(app);
-require("./lib/rest/register").init(app);
-new require("./lib/rest/login-facebook")(app, server);
+require("./lib/rest/getCurrentUser").init(secureApp);
+require("./lib/rest/logout").init(secureApp);
+require("./lib/rest/login").init(secureApp);
+require("./lib/rest/register").init(secureApp);
+new require("./lib/rest/login-facebook")(secureApp, secureServer);
 
-require("./lib/rest/getEvents").init(app);
-require("./lib/rest/saveEvent").init(app);
-require("./lib/rest/getPlaces").init(app);
-require("./lib/rest/getAttendee").init(app);
-require("./lib/rest/getTypes").init(app);
-require("./lib/rest/getSubtypes").init(app);
+require("./lib/rest/getEvents").init(secureApp);
+require("./lib/rest/saveEvent").init(secureApp);
+require("./lib/rest/getPlaces").init(secureApp);
+require("./lib/rest/getAttendee").init(secureApp);
+require("./lib/rest/getTypes").init(secureApp);
+require("./lib/rest/getSubtypes").init(secureApp);
 
-server.listen(nconf.server.port);
+unsecureServer.listen(nconf.server.unsecurePort);
+secureServer.listen(nconf.server.securePort);
 
-winston.info("Listening on port ", nconf.server.port);
+winston.info("Listening on port ", nconf.server.securePort);

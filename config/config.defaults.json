@@ -1,23 +1,35 @@
 {
   "development": {
+    "server": {
+      "host": "https://localhost:8000",
+      "securePort": 8000,
+      "unsecurePort": 8001
+    },
+    "database": {
+      "connection_string": ""
+    }
+  },
+  "test": {
+    "server": {
+      "host": "https://localhost:8000",
+      "securePort": 8000,
+      "unsecurePort": 8001
+    },
     "database": {
       "connection_string": ""
     }
   },
   "production": {
     "database": {
-      "connection_string": "",
-      "sessionSecret": ""
+      "connection_string": ""
     },
     "server": {
-      "port": 80
+      "host": "https://retred.org",
+      "unsecurePort": 80,
+      "securePort": 443
     }
   },
   "defaults": {
-    "server": {
-      "port": 8000,
-      "sessionSecret": "somesecret"
-    },
     "parser": {
       "data_file": "/home/pretzel/Downloads/dbpedia_data/3.9/mappingbased_properties_en.nq",
       "parallelism": 8,
