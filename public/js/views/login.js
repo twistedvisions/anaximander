@@ -10,7 +10,7 @@ define([
   "bootstrap",
   "css!/css/login"
 ], function ($, _, Backbone, when, io, cookies, LoginLocal, template) {
-
+  var loginIdCookieKey = "login-id";
   var Login = Backbone.View.extend({
     el: "#login-holder",
 
@@ -61,9 +61,9 @@ define([
       );
     },
     handleAuthFacebook: function (result) {
-      var oldLoginId = cookies.get("login-id");
+      var oldLoginId = cookies.get(loginIdCookieKey);
       var loginId = result.loginId;
-      cookies.set("login-id", loginId, {secure: true});
+      cookies.set(loginIdCookieKey, loginId, {secure: true});
 
       if (this.socket) {
         this.socket.emit("update-login", {
@@ -71,7 +71,13 @@ define([
           "new": loginId
         });
       } else {
-        this.socket = io.connect("http://localhost:8000");
+        var origin = [
+          window.location.protocol,
+          "//",
+          window.location.hostname,
+          (window.location.port ? ":" + window.location.port: "")
+        ].join("");
+        this.socket = io.connect(origin, {"force new connection": true});
         this.socket.on("connect", _.bind(this.handleWebSocketConnection, this, loginId));
         this.socket.on("complete", _.bind(this.handleLoginCompletion, this));
       }
@@ -83,7 +89,10 @@ define([
       });
     },
     handleLoginCompletion: function (/*data*/) {
+      cookies.expire(loginIdCookieKey, {secure: true});
       this.user.set("logged-in", true);
+      this.socket.disconnect();
+      this.socket = null;
     }
 
   });
