@@ -30,10 +30,10 @@ var secureApp = express();
 var unsecureApp = express();
 
 var secureServer = https.createServer(options, secureApp);
-var unsecureServer = http.createServer(secureApp);
+var unsecureServer = http.createServer(unsecureApp);
 
-unsecureApp.get("*", function (req, res) {  
-  res.redirect(nconf.server.host + nconf.server.port + req.url);
+unsecureApp.get("*", function (req, res) {
+  res.redirect(nconf.server.host + req.url);
 });
 
 secureApp.configure(function () {    
@@ -72,7 +72,7 @@ require("./lib/rest/getAttendee").init(secureApp);
 require("./lib/rest/getTypes").init(secureApp);
 require("./lib/rest/getSubtypes").init(secureApp);
 
-unsecureServer.listen(nconf.server.unsecurePort);
 secureServer.listen(nconf.server.securePort);
+unsecureServer.listen(nconf.server.unsecurePort);
 
 winston.info("Listening on port ", nconf.server.securePort);
