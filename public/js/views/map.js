@@ -19,6 +19,7 @@ define([
     initialize: function (opts) {
 
       this.mapObjects = {};
+      this.user = opts.user;
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.onLinkClick = _.bind(this.onLinkClick, this);
     },
@@ -91,9 +92,11 @@ define([
     },
 
     onClick: function (e) {
-      new OptionsMenu({
-        event: e
-      }).render();
+      if (this.user.get("logged-in")) {
+        new OptionsMenu({
+          event: e
+        }).render();
+      }
     },
 
     onBoundsChanged: function () {

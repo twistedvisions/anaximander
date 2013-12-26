@@ -39,6 +39,7 @@ define([
       require(["views/map"], _.bind(function (MapView) {
         this.mapView = new MapView({
           model: this.model,
+          user: this.user,
           eventLocationsCollection: this.eventLocationsCollection
         });
         this.mapView.render();

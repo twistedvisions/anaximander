@@ -1,12 +1,18 @@
 /*global sinon, describe, beforeEach, afterEach, it, google */
 /*jshint expr: true*/
 define(
-  ["jquery", "backbone", "views/map", "analytics", "styled_marker"], 
-  function ($, Backbone, Map, Analytics, StyledMarker) {
+  ["jquery", "backbone", "views/map", "analytics", "styled_marker", "views/options_menu"], 
+  function ($, Backbone, Map, Analytics, StyledMarker, OptionsMenu) {
     var model = new Backbone.Model({
       center: [1, 1],
       date: [1900, 2000],
       zoom: 3
+    });    
+    var userLoggedIn = new Backbone.Model({
+      "logged-in": true
+    });
+    var userLoggedOut = new Backbone.Model({
+      "logged-in": false
     });
     var collection = new Backbone.Collection();
     collection.start = function () {};
@@ -59,7 +65,7 @@ define(
 
         google.maps.event.triggers[2]();
 
-        Analytics.infoBoxShown.calledOnce.should.be.true;
+        Analytics.infoBoxShown.calledOnce.should.equal(true);
       });
 
       it("should track when a marker link is clicked on", function () {
@@ -73,7 +79,7 @@ define(
         
         this.map.onLinkClick();
 
-        Analytics.linkClicked.calledOnce.should.be.true;
+        Analytics.linkClicked.calledOnce.should.equal(true);
       });
     });
 
@@ -101,6 +107,26 @@ define(
             start_date: "1950-05-06"
           }]
         }).should.be.equal("#80007f");
+      });
+    });
+
+    describe("options menu", function () {
+      beforeEach(function () {
+        sinon.stub(OptionsMenu.prototype);
+      });
+      afterEach(function () {
+        sinon.restore(OptionsMenu.prototype);
+      });
+
+      it("should show the options menu when the user is logged in", function () {
+        var map = new Map({model: model, user: userLoggedIn});
+        map.onClick();
+        OptionsMenu.prototype.render.calledOnce.should.equal(true);
+      });
+      it("should not show the options menu when the user is not logged in", function () {
+        var map = new Map({model: model, user: userLoggedOut});
+        map.onClick();
+        OptionsMenu.prototype.render.calledOnce.should.equal(false);
       });
     });
   }
