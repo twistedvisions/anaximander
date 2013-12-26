@@ -40,9 +40,10 @@ describe("login", function () {
         message = msg;
       }
     };
-    login.authenticate(req, res, function () {}, null, {});
+    login.authenticate(req, res, function () {}, null, {id: 3});
     loggedIn.should.equal(true);
     should.exist(message);
+    message.id.should.equal(3);
   });
   
 });

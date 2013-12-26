@@ -42,6 +42,24 @@ define([], function () {
     },
     toggleSecondaryFilterSelection: function (data) {
       this.sendEvent(data, "toggleSecondaryFilterSelection");
+    },
+    loginChoiceShown: function (data) {
+      this.sendEvent(data, "loginChoiceShown");
+    },
+    loginAttempted: function (data) {
+      this.sendEvent(data, "loginAttempted");
+    },
+    loginSucceeded: function (data) {
+      this.sendEvent(data, "loginSucceeded");
+    },
+    loginFailed: function (data) {
+      this.sendEvent(data, "loginFailed");
+    },
+    logout: function (data) {
+      this.sendEvent(data, "logout");
+    },
+    register: function (data) {
+      this.sendEvent(data, "register");
     }
   };
 });

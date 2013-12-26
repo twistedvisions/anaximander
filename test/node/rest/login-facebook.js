@@ -5,6 +5,7 @@ var supertest = require("supertest");
 var express = require("express");
 var http = require("http");
 var _ = require("underscore");
+var passport = require("passport");
 var io = require("socket.io-client");
 var tryTest = require("../tryTest");
 var LoginFacebook = require("../../../lib/rest/login-facebook");
@@ -169,11 +170,16 @@ describe("LoginFacebook", function () {
       beforeEach(function () {
         this.app = express();
         this.app.use(express.cookieParser());
+        this.app.use(passport.initialize());
 
         var server = http.createServer(this.app);
 
         this.loginId = "someid";
         this.lf = new LoginFacebook(this.app, server);
+
+        sinon.stub(passport, "authenticate", function (strategy, f) {
+          f(null, {id: 1});
+        });
 
         this.req = supertest(this.app)
           .get("/auth/facebook/callback")
@@ -182,15 +188,17 @@ describe("LoginFacebook", function () {
 
       afterEach(function () {
         this.lf.shutdown();
+        passport.authenticate.restore();
       });
 
       it("should notify the browser when authorisation is complete", function (done) {
-        var requestName;
+        var requestName, requestData;
 
         this.lf.logins[this.loginId] = {
           socket: {
-            emit: function (_requestName) {
+            emit: function (_requestName, data) {
               requestName = _requestName;
+              requestData = data;
             },
             disconnect: function () {}
           }
@@ -200,6 +208,7 @@ describe("LoginFacebook", function () {
           .expect(200)
           .end(_.bind(function (/*err, res*/) {
             requestName.should.equal("complete");
+            requestData.should.eql({id: 1});
             done();
           }, this));
       });
@@ -225,13 +234,6 @@ describe("LoginFacebook", function () {
       });
 
       it("should redirect the open window to a page that closes itself", function (done) {
-        var authArgs;
-        sinon.stub(require("passport"), "authenticate", function () {
-          authArgs = arguments;
-          return function (req, res) {
-            res.send();
-          };
-        });
         var disconnected = false;
 
         this.lf.logins[this.loginId] = {
@@ -244,13 +246,11 @@ describe("LoginFacebook", function () {
         };
         
         this.req.expect(200).end(tryTest(
-          _.bind(function (/*err, res*/) {
-            authArgs[0].should.equal("facebook");
-            authArgs[1].successRedirect.should.equal("/fb_return.html");
-            authArgs[1].failureRedirect.should.equal("/fb_return.html");
+          _.bind(function (err, res) {
+            res.status.should.equal(302);
+            res.header.location.should.equal("/fb_return.html");
           }, this),
           function (ex) {
-            require("passport").authenticate.restore();
             done(ex);
           }
         ));

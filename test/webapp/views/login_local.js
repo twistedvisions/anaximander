@@ -1,9 +1,9 @@
-/*global describe, it, beforeEach, afterEach */
+/*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["chai", "jquery", "backbone", "views/login_local"], 
+  ["chai", "jquery", "backbone", "views/login_local", "analytics"], 
 
-  function (chai, $, Backbone, LoginLocal) {
+  function (chai, $, Backbone, LoginLocal, Analytics) {
     
     var should = chai.should();
     
@@ -19,16 +19,32 @@ define(
             "logged-in": false
           })
         });
+
+        sinon.stub(Analytics, "loginAttempted");
+        sinon.stub(Analytics, "loginSucceeded");
+        sinon.stub(Analytics, "loginFailed");
+        sinon.stub(Analytics, "register");
       });
 
       afterEach(function () {
         this.targetEl.remove();
+
+        Analytics.loginAttempted.restore();
+        Analytics.loginSucceeded.restore();
+        Analytics.loginFailed.restore();
+        Analytics.register.restore();
       });
 
       it("should attach a popover the the login local button", function () {
         should.not.exist(this.loginLocal.$("#login-retred").data()["bs.popover"]);
         this.loginLocal.render();
         should.exist(this.loginLocal.$("#login-retred").data()["bs.popover"]);
+      });
+
+      it("should track clicks to the login local button", function () {
+        this.loginLocal.handleLoginShown();
+        Analytics.loginAttempted.calledOnce.should.equal(true);
+        Analytics.loginAttempted.args[0][0].provider.should.equal("local");
       });
 
       describe("registration", function () {        
@@ -47,6 +63,13 @@ define(
           this.loginLocal.render();
           this.loginLocal.handleRegisterSuccess();
           this.loginLocal.user.get("logged-in").should.equal(true);
+        });
+
+        it("should track registration success", function () {
+          this.loginLocal.render();
+          this.loginLocal.handleRegisterSuccess();
+          Analytics.register.calledOnce.should.equal(true);
+          Analytics.register.args[0][0].provider.should.equal("local");
         });
 
         it("should show a message upon registration failure", function () {
@@ -85,6 +108,20 @@ define(
           this.loginLocal.handleLoginFailure({});
           this.loginLocal.$(".popover form .alert").text()
             .should.equal(this.loginLocal.loginFailedMessage);
+        });
+
+        it("should track login success", function () {
+          this.loginLocal.render();
+          this.loginLocal.handleLoginSuccess();
+          Analytics.loginSucceeded.calledOnce.should.equal(true);
+          Analytics.loginSucceeded.args[0][0].provider.should.equal("local");
+        });
+
+        it("should track login failure", function () {
+          this.loginLocal.render();
+          this.loginLocal.handleLoginFailure({});
+          Analytics.loginFailed.calledOnce.should.equal(true);
+          Analytics.loginFailed.args[0][0].provider.should.equal("local");
         });
         
       });

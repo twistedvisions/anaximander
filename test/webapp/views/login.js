@@ -1,9 +1,9 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["underscore", "jquery", "backbone", "views/login", "socketio", "cookies"], 
+  ["underscore", "jquery", "backbone", "views/login", "socketio", "cookies", "analytics"], 
 
-  function (_, $, Backbone, Login, socketio, cookies) {
+  function (_, $, Backbone, Login, socketio, cookies, Analytics) {
 
     beforeEach(function () {
       this.params = {
@@ -13,12 +13,14 @@ define(
         el: null,
         id: "login-holder"
       };
+      sinon.stub(Analytics, "loginChoiceShown");
     });
 
     afterEach(function () {
       if (this.el) {
         this.el.remove();
       }
+      Analytics.loginChoiceShown.restore();
     });
 
     var renderLogin = function () {
@@ -48,6 +50,13 @@ define(
         this.el.find("#login").trigger("click");
         this.el.find("#login-options").css("display").should.not.equal("none");
       });
+
+      it("should track clicks when the login button is clicked", function () {
+        _.bind(renderLogin, this)();
+        this.el.find("#login").trigger("click");
+        Analytics.loginChoiceShown.calledOnce.should.equal(true);
+      });
+
       it("should hide the login options when user has logged in", function () {
         _.bind(renderLogin, this)();
         this.el.find("#login-options").show();
@@ -75,18 +84,32 @@ define(
           sinon.stub(cookies, "set", _.bind(function () {
             this.setArgs = arguments;
           }, this));
+
+          sinon.stub(Analytics, "loginSucceeded");
+          sinon.stub(Analytics, "register");
+          sinon.stub(Analytics, "loginAttempted");
         });
         afterEach(function () {
           $.get.restore();
           window.open.restore();
           socketio.connect.restore();
           cookies.set.restore();
+          Analytics.loginSucceeded.restore();
+          Analytics.register.restore();
+          Analytics.loginAttempted.restore();
         });
 
         it("should call facebook-auth", function () {
           _.bind(renderLogin, this)();
           this.login.handleFacebookLogin();
           this.url.should.equal("/auth/facebook");
+        });
+
+        it("should track facebook-auth", function () {
+          _.bind(renderLogin, this)();
+          this.login.handleFacebookLogin();
+          Analytics.loginAttempted.calledOnce.should.equal(true);
+          Analytics.loginAttempted.args[0][0].provider.should.equal("facebook");
         });
 
         it("should set the login-id cookie", function () {
@@ -110,9 +133,31 @@ define(
 
         it("should set the user logged in when the auth is complete", function () {
           _.bind(renderLogin, this)();
+          this.login.socket = {
+            disconnect: function () {}
+          };
+
           this.login.user.get("logged-in").should.equal(false);
-          this.login.handleLoginCompletion();
+          this.login.handleLoginCompletion({registered: false});
           this.login.user.get("logged-in").should.equal(true);
+        });
+
+        it("should call analytics when the auth is complete when logged in", function () {
+          _.bind(renderLogin, this)();
+          this.login.socket = {
+            disconnect: function () {}
+          };
+          this.login.handleLoginCompletion({registered: false});
+          Analytics.loginSucceeded.calledOnce.should.equal(true);
+        });
+
+        it("should call analytics when the auth is complete when registered", function () {
+          _.bind(renderLogin, this)();
+          this.login.socket = {
+            disconnect: function () {}
+          };
+          this.login.handleLoginCompletion({registered: true});
+          Analytics.register.calledOnce.should.equal(true);
         });
 
         it("should handle aborting and restarting a login attempt", function () {

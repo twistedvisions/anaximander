@@ -5,10 +5,11 @@ define([
   "bootstrap",
   "sha256",
   "when",
+  "../analytics",
   "text!templates/login-retred.htm",
   "bootstrap",
   "css!/css/login"
-], function ($, _, Backbone, bootstrap, sha256, when, template) {
+], function ($, _, Backbone, bootstrap, sha256, when, Analytics, template) {
 
   var Login = Backbone.View.extend({
     registrationFailedMessage: "Registration failed",
@@ -31,6 +32,9 @@ define([
     },
 
     handleLoginShown: function () {
+      Analytics.loginAttempted({
+        provider: "local"
+      });
       this.$(".popover .register").on("click", _.bind(this.handleRegister, this));
       this.$(".popover .login").on("click", _.bind(this.handleLogin, this));
       this.$(".popover .dismiss").on("click", _.bind(this.handleClose, this));
@@ -49,6 +53,9 @@ define([
     },
 
     handleRegisterSuccess: function () {
+      Analytics.register({
+        provider: "local"
+      });
       this.$("#login-retred").popover("toggle");
       this.user.set("logged-in", true);
     },
@@ -68,12 +75,19 @@ define([
       e.preventDefault();
     },
 
-    handleLoginSuccess: function () {
+    handleLoginSuccess: function (user) {
+      Analytics.loginSucceeded(_.extend({
+        provider: "local"
+      }, user));
       this.$("#login-retred").popover("toggle");
       this.user.set("logged-in", true);
     },
 
     handleLoginFailure: function (err) {
+      Analytics.loginFailed({
+        provider: "local",
+        message: err.responseText
+      });
       this.handleFailedRequest(this.loginFailedMessage, err);
     },
 

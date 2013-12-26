@@ -18,6 +18,7 @@ describe("facebookStrategy", function () {
       tryTest(function (err, user) {
         should.not.exist(err);
         user.id.should.equal(2);
+        user.registered.should.equal(false);
       }, done));
     stubDb.setQueryValues(this, [
       [{id: 2}]
@@ -28,6 +29,7 @@ describe("facebookStrategy", function () {
       tryTest(function (err, user) {
         should.not.exist(err);
         user.id.should.equal(43);
+        user.registered.should.equal(true);
       }, done));
     stubDb.setQueryValues(this, [
       [],

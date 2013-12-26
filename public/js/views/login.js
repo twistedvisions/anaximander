@@ -5,11 +5,12 @@ define([
   "when",
   "socketio",
   "cookies",
+  "../analytics",
   "./login_local",
   "text!templates/login.htm",
   "bootstrap",
   "css!/css/login"
-], function ($, _, Backbone, when, io, cookies, LoginLocal, template) {
+], function ($, _, Backbone, when, io, cookies, Analytics, LoginLocal, template) {
   var loginIdCookieKey = "login-id";
   var Login = Backbone.View.extend({
     el: "#login-holder",
@@ -48,6 +49,7 @@ define([
     },
 
     handleLogin: function () {
+      Analytics.loginChoiceShown();
       this.$("#login-options").show();
     },
 
@@ -56,6 +58,9 @@ define([
     },
 
     handleFacebookLogin: function () {
+      Analytics.loginAttempted({
+        provider: "facebook"
+      });
       when($.get("/auth/facebook", {})).then(
         _.bind(this.handleAuthFacebook, this)
       );
@@ -88,7 +93,10 @@ define([
         key: loginId
       });
     },
-    handleLoginCompletion: function (/*data*/) {
+    handleLoginCompletion: function (user) {
+      Analytics[user.registered ? "register" : "loginSucceeded"](
+        _.extend({provider: "facebook"}, user)
+      );
       cookies.expire(loginIdCookieKey, {secure: true});
       this.user.set("logged-in", true);
       this.socket.disconnect();
