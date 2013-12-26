@@ -25,6 +25,7 @@ define([
       this.updateView();
       this.$("#login").on("click", _.bind(this.handleLogin, this));
       this.$("#logout").on("click", _.bind(this.handleLogout, this));
+      this.$("#cancel-login").on("click", _.bind(this.handleCancelLogin, this));
       this.user.on("change:logged-in", this.updateView, this);
       new LoginLocal({
         el: "#login-holder",
@@ -41,20 +42,30 @@ define([
       if (this.user.get("logged-in")) {
         this.$("#login").hide();
         this.$("#logout").show();
+        this.$("#cancel-login").hide();
         this.$("#login-options").hide();
       } else {
         this.$("#logout").hide();
         this.$("#login").show();
+        this.$("#cancel-login").hide();
       }
     },
 
     handleLogin: function () {
       Analytics.loginChoiceShown();
       this.$("#login-options").show();
+      this.$("#login").hide();
+      this.$("#cancel-login").show();
     },
 
     handleLogout: function () {
       this.user.logout();
+    },
+
+    handleCancelLogin: function () {
+      this.$("#login").show();
+      this.$("#cancel-login").hide();
+      this.$("#login-options").hide();
     },
 
     handleFacebookLogin: function () {

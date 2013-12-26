@@ -47,8 +47,23 @@ define(
       it("should show the login options when the login button is clicked", function () {
         _.bind(renderLogin, this)();
         this.el.find("#login-options").css("display").should.equal("none");
+        this.el.find("#cancel-login").css("display").should.equal("none");
         this.el.find("#login").trigger("click");
+        this.el.find("#cancel-login").css("display").should.not.equal("none");
         this.el.find("#login-options").css("display").should.not.equal("none");
+      });
+
+      it("should show cancel the login when the cancel-login button is clicked", function () {
+        _.bind(renderLogin, this)();
+        this.el.find("#login").css("display").should.not.equal("none");
+        this.el.find("#login").trigger("click");
+        this.el.find("#cancel-login").css("display").should.not.equal("none");
+        this.el.find("#login-options").css("display").should.not.equal("none");
+        this.el.find("#login").css("display").should.equal("none");
+        this.el.find("#cancel-login").trigger("click");
+        this.el.find("#login-options").css("display").should.equal("none");
+        this.el.find("#cancel-login").css("display").should.equal("none");
+        this.el.find("#login").css("display").should.not.equal("none");
       });
 
       it("should track clicks when the login button is clicked", function () {
