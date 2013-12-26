@@ -14,6 +14,8 @@ define([
   var Login = Backbone.View.extend({
     registrationFailedMessage: "Registration failed",
     loginFailedMessage: "Login failed",
+    noUsernameMessage: "a username must be given",
+    noPasswordMessage: "a password must be given",
 
     initialize: function (options) {
       this.user = options.user;
@@ -43,13 +45,22 @@ define([
     },
 
     handleRegister: function () {
-      when($.post("/register", {
-        username: this.$(".popover form input[name=username]").val(),
-        password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
-      })).then(
-        _.bind(this.handleRegisterSuccess, this), 
-        _.bind(this.handleRegisterFailure, this)
-      );
+      var username = this.$(".popover form input[name=username]").val();
+      var password = this.$(".popover form input[name=password]").val();
+
+      if (username.length === 0) {
+        this.handleFailedRequest(this.noUsernameMessage, {});
+      } else if (password.length === 0) {
+        this.handleFailedRequest(this.noPasswordMessage, {});
+      } else {
+        when($.post("/register", {
+          username: this.$(".popover form input[name=username]").val(),
+          password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
+        })).then(
+          _.bind(this.handleRegisterSuccess, this), 
+          _.bind(this.handleRegisterFailure, this)
+        );
+      }
     },
 
     handleRegisterSuccess: function () {
@@ -65,9 +76,11 @@ define([
     },
 
     handleLogin: function (e) {
+      var username = this.$(".popover form input[name=username]").val();
+      var password = this.$(".popover form input[name=password]").val();
       when($.post("/login", {
-        username: this.$(".popover form input[name=username]").val(),
-        password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
+        username: username,
+        password: sha256.SHA256(password).toString()
       })).then(
         _.bind(this.handleLoginSuccess, this),
         _.bind(this.handleLoginFailure, this)

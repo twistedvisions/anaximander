@@ -81,6 +81,26 @@ define(
             .should.equal(this.loginLocal.registrationFailedMessage);
         });
 
+        it("should show a message if no username", function () {
+          this.loginLocal.render();
+          this.loginLocal.$("#login-retred").popover("show");
+          this.loginLocal.$(".popover form input[name=username]").val("");
+          this.loginLocal.$(".popover form input[name=password]").val("some password");
+          this.loginLocal.$(".popover form .alert").text().should.equal("");
+          this.loginLocal.handleRegister();
+          this.loginLocal.$(".popover form .alert").text().should.equal(this.loginLocal.noUsernameMessage);
+        });
+
+        it("should show a message if no password", function () {
+          this.loginLocal.render();
+          this.loginLocal.$("#login-retred").popover("show");
+          this.loginLocal.$(".popover form input[name=username]").val("some username");
+          this.loginLocal.$(".popover form input[name=password]").val("");
+          this.loginLocal.$(".popover form .alert").text().should.equal("");
+          this.loginLocal.handleRegister();
+          this.loginLocal.$(".popover form .alert").text().should.equal(this.loginLocal.noPasswordMessage);
+        });
+
       });
 
       describe("logging in", function () {
