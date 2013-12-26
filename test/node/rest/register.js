@@ -107,6 +107,7 @@ describe("register", function () {
       [{id: 1}]
     ]);
   });
+
   it("should send a 422 if the user already exists", function (done) {
     tryTest(_.bind(function () {
       supertest(this.app)
@@ -125,5 +126,39 @@ describe("register", function () {
     stubDb.setQueryValues(this, [
       [{id: 1}]
     ]);
+  });
+
+  it("doesn't create an entry if the username doesn't exist", function (done) {
+    tryTest(_.bind(function () {
+      supertest(this.app)
+        .post("/register")
+        .send({
+          username: "",
+          password: "some password"
+        })
+        .end(function (err, res) {
+          tryTest(function () {
+            res.status.should.equal(400);
+            res.text.should.equal("a username must be given");
+          }, done)();
+        });
+    }, this), done, true)();
+  });
+
+  it("doesn't create an entry if the password doesn't exist", function (done) {
+    tryTest(_.bind(function () {
+      supertest(this.app)
+        .post("/register")
+        .send({
+          username: "some username",
+          password: ""
+        })
+        .end(function (err, res) {
+          tryTest(function () {
+            res.status.should.equal(400);
+            res.text.should.equal("a password must be given");
+          }, done)();
+        });
+    }, this), done, true)();
   });
 });
