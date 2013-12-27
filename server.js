@@ -11,8 +11,9 @@ var passport = require("passport");
 var fs = require("fs");
 
 var nconf = require("./lib/config");
-
 var winston = require("winston");
+
+var OpenIdProvider = require("./lib/rest/login-openid");
 
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
@@ -56,6 +57,7 @@ secureApp.use(passport.session());
 
 require("./lib/rest/auth/localStrategy");
 require("./lib/rest/auth/facebookStrategy");
+require("./lib/rest/auth/googleStrategy");
 require("./lib/rest/auth/serializeUser");
 require("./lib/rest/auth/deserializeUser");
 
@@ -63,7 +65,10 @@ require("./lib/rest/getCurrentUser").init(secureApp);
 require("./lib/rest/logout").init(secureApp);
 require("./lib/rest/login").init(secureApp);
 require("./lib/rest/register").init(secureApp);
-new require("./lib/rest/login-facebook")(secureApp, secureServer);
+
+var Provider = new OpenIdProvider(secureApp, secureServer);
+new Provider.provider("facebook");
+new Provider.provider("google");
 
 require("./lib/rest/getEvents").init(secureApp);
 require("./lib/rest/saveEvent").init(secureApp);

@@ -34,6 +34,7 @@ define([
       }).render();
 
       this.$("#login-facebook").on("click", _.bind(this.handleFacebookLogin, this));
+      this.$("#login-google").on("click", _.bind(this.handleGoogleLogin, this));
       
       return this.$el;
     },
@@ -77,6 +78,39 @@ define([
       );
     },
     handleAuthFacebook: function (result) {
+      var oldLoginId = cookies.get(loginIdCookieKey);
+      var loginId = result.loginId;
+      cookies.set(loginIdCookieKey, loginId, {secure: true});
+
+      if (this.socket) {
+        this.socket.emit("update-login", {
+          "old": oldLoginId,
+          "new": loginId
+        });
+      } else {
+        var origin = [
+          window.location.protocol,
+          "//",
+          window.location.hostname,
+          (window.location.port ? ":" + window.location.port: "")
+        ].join("");
+        this.socket = io.connect(origin, {"force new connection": true});
+        this.socket.on("connect", _.bind(this.handleWebSocketConnection, this, loginId));
+        this.socket.on("complete", _.bind(this.handleLoginCompletion, this));
+      }
+      window.open(result.location);
+    },
+
+
+    handleGoogleLogin: function () {
+      Analytics.loginAttempted({
+        provider: "google"
+      });
+      when($.get("/auth/google", {})).then(
+        _.bind(this.handleAuthGoogle, this)
+      );
+    },
+    handleAuthGoogle: function (result) {
       var oldLoginId = cookies.get(loginIdCookieKey);
       var loginId = result.loginId;
       cookies.set(loginIdCookieKey, loginId, {secure: true});

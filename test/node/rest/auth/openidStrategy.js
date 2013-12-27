@@ -1,20 +1,25 @@
 /*global describe, it, beforeEach, afterEach */
-var facebookStrategy = require("../../../../lib/rest/auth/facebookStrategy");
+var openidStrategy = require("../../../../lib/rest/auth/openidStrategy");
 var should = require("should");
 var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
 
-describe("facebookStrategy", function () {
+describe("openidStrategy", function () {
   
   beforeEach(function () {
     stubDb.setup(this);
+    this.facebookStrategy = openidStrategy(
+      "facebook", 
+      function (args) { return args[2].id; },
+      function (args) { return args[2]; }
+    );
   });
   afterEach(function () {
     stubDb.restore(this);
   });
 
   it("should callback if a user is found", function (done) {
-    facebookStrategy.facebookStrategyImpl(null, null, {id: 1}, 
+    this.facebookStrategy(null, null, {id: 1}, 
       tryTest(function (err, user) {
         should.not.exist(err);
         user.id.should.equal(2);
@@ -25,7 +30,7 @@ describe("facebookStrategy", function () {
     ]);
   });
   it("should create a new user if the user is unknown", function (done) {
-    facebookStrategy.facebookStrategyImpl(null, null, {id: 1}, 
+    this.facebookStrategy(null, null, {id: 1}, 
       tryTest(function (err, user) {
         should.not.exist(err);
         user.id.should.equal(43);
@@ -37,7 +42,7 @@ describe("facebookStrategy", function () {
     ]);
   });
   it("should callback with an error if the user cannot be added", function (done) {
-    facebookStrategy.facebookStrategyImpl(null, null, {id: 1}, tryTest(function (err, user) {
+    this.facebookStrategy(null, null, {id: 1}, tryTest(function (err, user) {
         should.exist(err.message);
         should.not.exist(user);
       }, done));
@@ -47,7 +52,7 @@ describe("facebookStrategy", function () {
     ]);
   });
   it("should callback with an error if an exception occurs running the add user query", function (done) {
-    facebookStrategy.facebookStrategyImpl(null, null, {id: 1}, tryTest(function (err, user) {
+    this.facebookStrategy(null, null, {id: 1}, tryTest(function (err, user) {
         should.exist(err.message);
         should.not.exist(user);
       }, done));
@@ -57,7 +62,7 @@ describe("facebookStrategy", function () {
     ]);
   });
   it("should callback with an error if an exception occurs running the get user query", function (done) {
-    facebookStrategy.facebookStrategyImpl(null, null, {id: 1}, tryTest(function (err, user) {
+    this.facebookStrategy(null, null, {id: 1}, tryTest(function (err, user) {
         should.exist(err.message);
         should.not.exist(user);
       }, done
