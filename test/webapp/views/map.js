@@ -1,8 +1,11 @@
 /*global sinon, describe, beforeEach, afterEach, it, google */
 /*jshint expr: true*/
 define(
-  ["jquery", "backbone", "views/map", "analytics", "styled_marker", "views/options_menu"], 
-  function ($, Backbone, Map, Analytics, StyledMarker, OptionsMenu) {
+  ["chai", "jquery", "backbone", "views/map", "analytics", "styled_marker", "views/options_menu"], 
+  function (chai, $, Backbone, Map, Analytics, StyledMarker, OptionsMenu) {
+    
+    var should = chai.should();
+
     var model = new Backbone.Model({
       center: [1, 1],
       date: [1900, 2000],
@@ -63,7 +66,7 @@ define(
           location: []
         });
 
-        google.maps.event.triggers[2]();
+        google.maps.event.triggers[3]();
 
         Analytics.infoBoxShown.calledOnce.should.equal(true);
       });
@@ -87,7 +90,7 @@ define(
           location: []
         });
 
-        google.maps.event.triggers[2]();
+        google.maps.event.triggers[3]();
         
         this.map.onLinkClick();
 
@@ -125,20 +128,24 @@ define(
     describe("options menu", function () {
       beforeEach(function () {
         sinon.stub(OptionsMenu.prototype);
+        this.clock = sinon.useFakeTimers();
       });
       afterEach(function () {
+        this.clock.restore();
         sinon.restore(OptionsMenu.prototype);
       });
 
       it("should show the options menu when the user is logged in", function () {
         var map = new Map({model: model, user: userLoggedIn});
         map.onClick();
+        this.clock.tick(200);
         OptionsMenu.prototype.render.calledOnce.should.equal(true);
       });
 
       it("should not show the options menu when the user is not logged in", function () {
         var map = new Map({model: model, user: userLoggedOut});
         map.onClick();
+        this.clock.tick(200);
         OptionsMenu.prototype.render.calledOnce.should.equal(false);
       });
 
@@ -146,6 +153,25 @@ define(
         var map = new Map({model: model, user: userLoggedIn});
         map.closeOpenWindows = sinon.stub();
         map.onClick();
+        this.clock.tick(200);
+        map.closeOpenWindows.calledOnce.should.equal(true);
+      });
+
+      it("should not fire if it was double clicked", function () {
+        var map = new Map({model: model, user: userLoggedIn});
+        map.closeOpenWindows = sinon.stub();
+        map.onClick();
+        map.onDblClick();
+        this.clock.tick(200);
+        should.not.exist(map.lastOptionsMenu);
+      });
+
+      it("should close open windows if it was double clicked", function () {
+        var map = new Map({model: model, user: userLoggedIn});
+        map.closeOpenWindows = sinon.stub();
+        map.onClick();
+        map.onDblClick();
+        this.clock.tick(200);
         map.closeOpenWindows.calledOnce.should.equal(true);
       });
 

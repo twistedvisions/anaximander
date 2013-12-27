@@ -89,16 +89,29 @@ define([
 
       google.maps.event.addListener(this.map, "bounds_changed", _.bind(this.onBoundsChanged, this));
       google.maps.event.addListener(this.map, "click", _.bind(this.onClick, this));
+      google.maps.event.addListener(this.map, "dblclick", _.bind(this.onDblClick, this));
     },
 
     onClick: function (e) {
-      if (this.user.get("logged-in")) {
-        this.closeOpenWindows()
-        this.lastOptionsMenu = new OptionsMenu({
-          event: e
-        });
-        this.lastOptionsMenu.render();
-      }
+      setTimeout(_.bind(function () {
+        if (!this.dblClicked) {
+          if (this.user.get("logged-in")) {
+            this.closeOpenWindows();
+            this.lastOptionsMenu = new OptionsMenu({
+              event: e
+            });
+            this.lastOptionsMenu.render();
+          }
+        }
+      }, this), 200);
+    },
+
+    onDblClick: function () {
+      this.dblClicked = true;
+      setTimeout(_.bind(function () {
+        this.dblClicked = false;
+      }, this), 500);
+      this.closeOpenWindows();
     },
 
     onBoundsChanged: function () {
