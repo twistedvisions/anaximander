@@ -93,9 +93,11 @@ define([
 
     onClick: function (e) {
       if (this.user.get("logged-in")) {
-        new OptionsMenu({
+        this.closeOpenWindows()
+        this.lastOptionsMenu = new OptionsMenu({
           event: e
-        }).render();
+        });
+        this.lastOptionsMenu.render();
       }
     },
 
@@ -150,9 +152,7 @@ define([
 
       google.maps.event.addListener(marker, "mouseover", _.bind(function () {
         analytics.infoBoxShown(result);
-        if (this.lastInfoWindow) {
-          this.lastInfoWindow.close();  
-        }
+        this.closeOpenWindows();
         var info = new google.maps.InfoWindow({
           content: this.getContent(result)
         });
@@ -218,6 +218,15 @@ define([
         fillOpacity: 0.5,
         map: this.map
       });
+    },
+
+    closeOpenWindows: function () {
+      if (this.lastInfoWindow) {
+        this.lastInfoWindow.close();  
+      }
+      if (this.lastOptionsMenu) {
+        this.lastOptionsMenu.close();
+      }
     }
   });
   return MapView;

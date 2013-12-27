@@ -36,6 +36,10 @@ define([
           }
         }
       }).render();
+      this.close();
+    },
+
+    close: function () {
       this.$el.remove();
     }
 

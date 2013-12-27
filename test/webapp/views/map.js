@@ -68,6 +68,18 @@ define(
         Analytics.infoBoxShown.calledOnce.should.equal(true);
       });
 
+      it("should close open windows when a marker is hovered over", function () {
+        this.map.render();
+        this.map.drawPoint({
+          events: [],
+          location: []
+        });
+
+        this.map.closeOpenWindows = sinon.stub();
+        google.maps.event.triggers[2]();
+        this.map.closeOpenWindows.calledOnce.should.equal(true);
+      });
+
       it("should track when a marker link is clicked on", function () {
         this.map.render();
         this.map.drawPoint({
@@ -123,11 +135,39 @@ define(
         map.onClick();
         OptionsMenu.prototype.render.calledOnce.should.equal(true);
       });
+
       it("should not show the options menu when the user is not logged in", function () {
         var map = new Map({model: model, user: userLoggedOut});
         map.onClick();
         OptionsMenu.prototype.render.calledOnce.should.equal(false);
       });
+
+      it("should close open windows when it shows the options menu", function () {
+        var map = new Map({model: model, user: userLoggedIn});
+        map.closeOpenWindows = sinon.stub();
+        map.onClick();
+        map.closeOpenWindows.calledOnce.should.equal(true);
+      });
+
+    });
+
+    describe("closeOpenWindows", function () {
+
+      it("should close an open info boxes", function () {
+        var map = new Map({model: model, user: userLoggedIn});
+        map.lastInfoWindow = {close: sinon.stub()};
+        map.closeOpenWindows();
+        map.lastInfoWindow.close.calledOnce.should.equal(true);
+      });
+
+      it("should close an existing options menu", function () {
+        var map = new Map({model: model, user: userLoggedIn});
+        map.lastOptionsMenu = {close: sinon.stub()};
+        map.closeOpenWindows();
+        map.lastOptionsMenu.close.calledOnce.should.equal(true);
+      });
+
     });
   }
+
 );
