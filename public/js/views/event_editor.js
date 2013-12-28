@@ -30,7 +30,7 @@ define([
       this.$el.find(".modal").modal();
       this.$el.find(".modal").modal("show");
 
-      this.$el.find("input.date").datepicker({ dateFormat: "dd/mm/yy" });  
+      this.$el.find("input.date").datepicker({ dateFormat: "yy-mm-dd" });  
       this.$el.find("input[data-key=start]").on("change", _.bind(this.updateEnd, this));  
       this.$el.find(".save").on("click", _.bind(this.handleSave, this));
       this.renderAttendees();
@@ -120,17 +120,14 @@ define([
         values.link = this.$el.find("input[data-key=link]").val();
         values.start = new Date(this.$el.find("input[data-key=start]").val());
         values.end = new Date(this.$el.find("input[data-key=end]").val());
-        values.place = this.$el.find("input[data-key=place]").select2("data");
+        values.place = this.getPlaceValue();
+
         values.attendees = this.$el.find("input[data-key=attendees]").select2("data");
-
-        values.place.name = values.place.text;
-        delete values.place.text;
-
-        values.attendees = _.map(values.attendees, function (attendee) {
+        values.attendees = _.map(values.attendees, _.bind(function (attendee) {
           attendee.name = attendee.text;
           delete attendee.text;
           return attendee;
-        });
+        }, this));
 
         var model = new Event(values);
         this.eventsCollection.add(model);
@@ -138,8 +135,15 @@ define([
           success: _.bind(this.handleSaveComplete, this),
           error: _.bind(this.handleSaveFail, this)
         });
-        analytics.eventAdded();
-      }
+        analytics.eventAdded(values);
+      } 
+    },
+
+    getPlaceValue: function () {
+      var place = this.$el.find("input[data-key=place]").select2("data");
+      place.name = place.text;
+      delete place.text;
+      return place;
     },
 
     handleSaveComplete: function () {

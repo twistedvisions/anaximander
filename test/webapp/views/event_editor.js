@@ -1,4 +1,4 @@
-/*global describe, it, sinon */
+/*global describe, it, beforeEach, afterEach, sinon */
 define(
 
   ["backbone", "views/event_editor", "analytics", "models/event"], 
@@ -28,28 +28,41 @@ define(
         editor.$("input.date").datepicker("hide");
         editor.$el.remove();
       });
+      
+      describe("saving", function () {
 
-      it("should track when an event is added", function () {
-        sinon.stub(Analytics, "eventAdded");
-        sinon.stub(Event.prototype, "save");
-        try {
-          var editor = new EventEditor({});
-          editor.render();
-          editor.$("input[data-key=name]").val("some name");
-          editor.$("input[data-key=link]").val("some link");
-          editor.$("input[data-key=start]").val("2012-12-04");
-          editor.$("input[data-key=end]").val("2012-12-05");
-          editor.$("input[data-key=place]").val("some place");
-          editor.handleSave();
-          Analytics.eventAdded.calledOnce.should.equal(true);
-        } finally {
+        beforeEach(function () {
+          sinon.stub(Analytics, "eventAdded");
+          sinon.stub(Event.prototype, "save");
+
+          this.editor = new EventEditor({});
+          this.editor.getPlaceValue = function () {
+            return {
+              name: "some place"
+            };
+          };
+          this.editor.render();
+          this.editor.$("input[data-key=name]").val("some name");
+          this.editor.$("input[data-key=link]").val("some link");
+          this.editor.$("input[data-key=start]").val("2012-12-04");
+          this.editor.$("input[data-key=end]").val("2012-12-05");
+          this.editor.$("input[data-key=place]").val("some place name");
+
+          this.editor.$("input[data-key=place]").select2("data", {id: 1, text: "some place"});
+        });
+
+        afterEach(function () {
           Analytics.eventAdded.restore();
           Event.prototype.save.restore();
-        }
-      });
+        });
 
+        it("should track when an event is added", function () {
+          this.editor.handleSave();
+          Analytics.eventAdded.calledOnce.should.equal(true);
+        });
+
+      });
     });
 
   }
-
 );

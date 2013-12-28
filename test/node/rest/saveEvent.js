@@ -169,6 +169,25 @@ describe("saveEvent", function () {
         );
         this.d[0].resolve({rows: [{id: 5}]});
       });
+      it("should handle quotes in the name", function (done) {
+        new saveEvent.EventSaver().createEvent({
+            name: "something happen's",
+            place_id: 1,
+            start_date: "2013-06-02",
+            end_date: "2013-06-02",
+            link: "http://some.wiki.page/ihope.html"
+          }
+        ).then(
+          tryTest(_.bind(function (id) {
+            id.should.be.above(0);
+            this.args[0][0].indexOf("something happen''s").should.not.equal(-1);
+          }, this), done), 
+          function (e) {
+            done(e);
+          }
+        );
+        this.d[0].resolve({rows: [{id: 5}]});
+      });
       ["name", "place_id", "start_date", "end_date", "link"].forEach(function (key) {
         it("should throw an exception if " + key + " cannot be found", function (done) {
           var obj = {
