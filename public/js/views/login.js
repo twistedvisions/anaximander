@@ -57,6 +57,7 @@ define([
     handleLogin: function () {
       Analytics.loginChoiceShown();
       this.$("#login-options").show();
+      this.$(".login-option").removeClass("loading");
       this.$("#login").hide();
       this.$("#cancel-login").show();
     },
@@ -72,6 +73,7 @@ define([
     },
 
     handleOpenidLogin: function (provider) {
+      this.$("#login-" + provider).addClass("loading");
       Analytics.loginAttempted({
         provider: provider
       });
@@ -101,7 +103,14 @@ define([
         this.socket.on("connect", _.bind(this.handleWebSocketConnection, this, loginId));
         this.socket.on("complete", _.bind(this.handleLoginCompletion, this, provider));
       }
-      window.open(result.location);
+
+      var sizes = {
+        google: "height=630,width=450",
+        twitter: "height=711,width=645",
+        facebook: "height=621,width=983",
+        github: "height=595,width=1023"
+      };
+      window.open(result.location, "", sizes[provider] + ",location=no,menubar=no");
     },
 
     handleWebSocketConnection: function (loginId) {
