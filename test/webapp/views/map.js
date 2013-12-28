@@ -23,6 +23,7 @@ define(
     describe("interaction", function () {
       beforeEach(function () {
         sinon.stub(Analytics, "infoBoxShown");
+        sinon.stub(Analytics, "optionsMenuShown");
         sinon.stub(Analytics, "linkClicked");
 
         sinon.stub(StyledMarker, "StyledMarker", function () {
@@ -39,6 +40,7 @@ define(
 
         this.map = new Map({
           model: model,
+          user: userLoggedIn,
           eventLocationsCollection: collection
         });
         sinon.stub(this.map, "getColor");
@@ -48,6 +50,7 @@ define(
       afterEach(function () {
         Analytics.infoBoxShown.restore();
         Analytics.linkClicked.restore();
+        Analytics.optionsMenuShown.restore();
         StyledMarker.StyledMarker.restore();
         StyledMarker.StyledIcon.restore();
       });
@@ -69,6 +72,19 @@ define(
         google.maps.event.triggers[3]();
 
         Analytics.infoBoxShown.calledOnce.should.equal(true);
+      });
+
+      it("should track when the menu is shown", function () {
+        this.clock = sinon.useFakeTimers();
+        try {
+
+          this.map.render();
+          this.map.onClick();
+          this.clock.tick(500);
+          Analytics.optionsMenuShown.calledOnce.should.equal(true);
+        } finally {
+          this.clock.restore();
+        }
       });
 
       it("should close open windows when a marker is hovered over", function () {

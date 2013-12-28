@@ -4,13 +4,14 @@ define([
   "backbone",
   "../models/event",
   "../collections/events",
+  "../analytics",
   "text!templates/event_editor.htm",
   "bootstrap",
   "jqueryui",
   "parsley",
   "css!/css/event_editor",
   "css!/css/select2-bootstrap"
-], function ($, _, Backbone, Event, EventsCollection, template) {
+], function ($, _, Backbone, Event, EventsCollection, analytics, template) {
 
   var EventEditor = Backbone.View.extend({
     className: "",
@@ -137,6 +138,7 @@ define([
           success: _.bind(this.handleSaveComplete, this),
           error: _.bind(this.handleSaveFail, this)
         });
+        analytics.eventAdded();
       }
     },
 

@@ -28,6 +28,15 @@ define([], function () {
     linkClicked: function (data) {
       this.sendEvent(data, "linkClicked");
     },
+    optionsMenuShown: function (data) {
+      this.sendEvent(data, "optionsMenuShown");
+    },
+    optionSelected: function (data) {
+      this.sendEvent(data, "optionSelected");
+    },
+    eventAdded: function (data) {
+      this.sendEvent(data, "eventAdded");
+    },
     showFilters: function (data) {
       this.sendEvent(data, "showFilters");
     },

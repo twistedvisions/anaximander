@@ -3,9 +3,10 @@ define([
   "underscore",
   "backbone",
   "./event_editor",
+  "../analytics",
   "text!templates/options_menu.htm",
   "css!/css/options_menu"
-], function ($, _, Backbone, EventEditor, template) {
+], function ($, _, Backbone, EventEditor, analytics, template) {
 
   var OptionsMenu = Backbone.View.extend({
     className: "options-menu dropdown show",
@@ -36,6 +37,7 @@ define([
           }
         }
       }).render();
+      analytics.optionSelected({option: "addEvent"});
       this.close();
     },
 

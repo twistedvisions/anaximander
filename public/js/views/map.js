@@ -101,6 +101,7 @@ define([
               event: e
             });
             this.lastOptionsMenu.render();
+            analytics.optionsMenuShown();
           }
         }
       }, this), 200);
