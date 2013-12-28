@@ -58,6 +58,7 @@ secureApp.use(passport.session());
 require("./lib/rest/auth/localStrategy");
 require("./lib/rest/auth/facebookStrategy");
 require("./lib/rest/auth/googleStrategy");
+require("./lib/rest/auth/twitterStrategy");
 require("./lib/rest/auth/serializeUser");
 require("./lib/rest/auth/deserializeUser");
 
@@ -69,6 +70,7 @@ require("./lib/rest/register").init(secureApp);
 var Provider = new OpenIdProvider(secureApp, secureServer);
 new Provider.provider("facebook");
 new Provider.provider("google");
+new Provider.provider("twitter");
 
 require("./lib/rest/getEvents").init(secureApp);
 require("./lib/rest/saveEvent").init(secureApp);

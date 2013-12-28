@@ -33,8 +33,9 @@ define([
         user: this.user
       }).render();
 
-      this.$("#login-facebook").on("click", _.bind(this.handleFacebookLogin, this));
-      this.$("#login-google").on("click", _.bind(this.handleGoogleLogin, this));
+      this.$("#login-facebook").on("click", _.bind(this.handleOpenidLogin, this, "facebook"));
+      this.$("#login-google").on("click", _.bind(this.handleOpenidLogin, this, "google"));
+      this.$("#login-twitter").on("click", _.bind(this.handleOpenidLogin, this, "twitter"));
       
       return this.$el;
     },
@@ -69,15 +70,16 @@ define([
       this.$("#login-options").hide();
     },
 
-    handleFacebookLogin: function () {
+    handleOpenidLogin: function (provider) {
       Analytics.loginAttempted({
-        provider: "facebook"
+        provider: provider
       });
-      when($.get("/auth/facebook", {})).then(
-        _.bind(this.handleAuthFacebook, this)
+      when($.get("/auth/" + provider, {})).then(
+        _.bind(this.handleAuth, this, provider)
       );
     },
-    handleAuthFacebook: function (result) {
+
+    handleAuth: function (provider, result) {
       var oldLoginId = cookies.get(loginIdCookieKey);
       var loginId = result.loginId;
       cookies.set(loginIdCookieKey, loginId, {secure: true});
@@ -96,51 +98,20 @@ define([
         ].join("");
         this.socket = io.connect(origin, {"force new connection": true});
         this.socket.on("connect", _.bind(this.handleWebSocketConnection, this, loginId));
-        this.socket.on("complete", _.bind(this.handleLoginCompletion, this));
+        this.socket.on("complete", _.bind(this.handleLoginCompletion, this, provider));
       }
       window.open(result.location);
     },
 
-
-    handleGoogleLogin: function () {
-      Analytics.loginAttempted({
-        provider: "google"
-      });
-      when($.get("/auth/google", {})).then(
-        _.bind(this.handleAuthGoogle, this)
-      );
-    },
-    handleAuthGoogle: function (result) {
-      var oldLoginId = cookies.get(loginIdCookieKey);
-      var loginId = result.loginId;
-      cookies.set(loginIdCookieKey, loginId, {secure: true});
-
-      if (this.socket) {
-        this.socket.emit("update-login", {
-          "old": oldLoginId,
-          "new": loginId
-        });
-      } else {
-        var origin = [
-          window.location.protocol,
-          "//",
-          window.location.hostname,
-          (window.location.port ? ":" + window.location.port: "")
-        ].join("");
-        this.socket = io.connect(origin, {"force new connection": true});
-        this.socket.on("connect", _.bind(this.handleWebSocketConnection, this, loginId));
-        this.socket.on("complete", _.bind(this.handleLoginCompletion, this));
-      }
-      window.open(result.location);
-    },
     handleWebSocketConnection: function (loginId) {
       this.socket.emit("register-login", {
         key: loginId
       });
     },
-    handleLoginCompletion: function (user) {
+
+    handleLoginCompletion: function (provider, user) {
       Analytics[user.registered ? "register" : "loginSucceeded"](
-        _.extend({provider: "facebook"}, user)
+        _.extend({provider: provider}, user)
       );
       cookies.expire(loginIdCookieKey, {secure: true});
       this.user.set("logged-in", true);

@@ -116,20 +116,20 @@ define(
 
         it("should call facebook-auth", function () {
           _.bind(renderLogin, this)();
-          this.login.handleFacebookLogin();
+          this.login.handleOpenidLogin("facebook");
           this.url.should.equal("/auth/facebook");
         });
 
         it("should track facebook-auth", function () {
           _.bind(renderLogin, this)();
-          this.login.handleFacebookLogin();
+          this.login.handleOpenidLogin("facebook");
           Analytics.loginAttempted.calledOnce.should.equal(true);
           Analytics.loginAttempted.args[0][0].provider.should.equal("facebook");
         });
 
         it("should set the login-id cookie", function () {
           _.bind(renderLogin, this)();
-          this.login.handleAuthFacebook({
+          this.login.handleAuth("facebook", {
             loginId: "someid"
           });
 
@@ -140,7 +140,7 @@ define(
 
         it("should connect a websocket to tell it when the auth is complete", function () {
           _.bind(renderLogin, this)();
-          this.login.handleAuthFacebook({
+          this.login.handleAuth("facebook", {
             loginId: "someid"
           });
           this.connected.should.equal(true);
@@ -153,7 +153,7 @@ define(
           };
 
           this.login.user.get("logged-in").should.equal(false);
-          this.login.handleLoginCompletion({registered: false});
+          this.login.handleLoginCompletion("facebook", {registered: false});
           this.login.user.get("logged-in").should.equal(true);
         });
 
@@ -162,7 +162,7 @@ define(
           this.login.socket = {
             disconnect: function () {}
           };
-          this.login.handleLoginCompletion({registered: false});
+          this.login.handleLoginCompletion("facebook", {registered: false});
           Analytics.loginSucceeded.calledOnce.should.equal(true);
         });
 
@@ -171,17 +171,17 @@ define(
           this.login.socket = {
             disconnect: function () {}
           };
-          this.login.handleLoginCompletion({registered: true});
+          this.login.handleLoginCompletion("facebook", {registered: true});
           Analytics.register.calledOnce.should.equal(true);
         });
 
         it("should handle aborting and restarting a login attempt", function () {
           _.bind(renderLogin, this)();
-          this.login.handleAuthFacebook({
+          this.login.handleAuth("facebook", {
             loginId: "someid"
           });
           this.emissions.length.should.equal(0);
-          this.login.handleAuthFacebook({
+          this.login.handleAuth("facebook", {
             loginId: "someotherid"
           });
           this.emissions.length.should.equal(1);
