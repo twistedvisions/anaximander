@@ -31,7 +31,7 @@ var teardownApp = function () {
   }
 };
 
-_.each(["facebook", "google"], function (provider) {
+_.each(["facebook", "google", "twitter", "github"], function (provider) {
 
   require("../../../lib/rest/auth/" + provider + "Strategy");
   

@@ -36,6 +36,7 @@ define([
       this.$("#login-facebook").on("click", _.bind(this.handleOpenidLogin, this, "facebook"));
       this.$("#login-google").on("click", _.bind(this.handleOpenidLogin, this, "google"));
       this.$("#login-twitter").on("click", _.bind(this.handleOpenidLogin, this, "twitter"));
+      this.$("#login-github").on("click", _.bind(this.handleOpenidLogin, this, "github"));
       
       return this.$el;
     },

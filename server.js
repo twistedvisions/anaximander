@@ -59,6 +59,8 @@ require("./lib/rest/auth/localStrategy");
 require("./lib/rest/auth/facebookStrategy");
 require("./lib/rest/auth/googleStrategy");
 require("./lib/rest/auth/twitterStrategy");
+require("./lib/rest/auth/githubStrategy");
+
 require("./lib/rest/auth/serializeUser");
 require("./lib/rest/auth/deserializeUser");
 
@@ -71,6 +73,7 @@ var Provider = new OpenIdProvider(secureApp, secureServer);
 new Provider.provider("facebook");
 new Provider.provider("google");
 new Provider.provider("twitter");
+new Provider.provider("github");
 
 require("./lib/rest/getEvents").init(secureApp);
 require("./lib/rest/saveEvent").init(secureApp);

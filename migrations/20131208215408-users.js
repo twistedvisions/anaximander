@@ -10,6 +10,7 @@ exports.up = function (db, callback) {
     facebook_id: {type: "string", notNull: false },
     google_id:   {type: "string", notNull: false },
     twitter_id:  {type: "string", notNull: false },
+    github_id:  {type: "string", notNull: false },
     email:       {type: "string", notNull: false, unique: true },
     name:        {type: "string", notNull: false }
   }, callback);
