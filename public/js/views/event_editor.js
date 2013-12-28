@@ -148,7 +148,7 @@ define([
 
     handleSaveComplete: function () {
       this.$el.find(".modal").modal("hide");
-      // this.$el.remove();
+      this.model.trigger("change");
     },
 
     handleSaveFail: function () {

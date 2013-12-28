@@ -98,7 +98,8 @@ define([
           if (this.user.get("logged-in")) {
             this.closeOpenWindows();
             this.lastOptionsMenu = new OptionsMenu({
-              event: e
+              event: e,
+              model: this.model
             });
             this.lastOptionsMenu.render();
             analytics.optionsMenuShown();

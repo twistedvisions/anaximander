@@ -30,6 +30,7 @@ define([
 
     handleAddEvent: function () {
       new EventEditor({
+        model: this.model,
         newEvent: {
           location: {
             lat: this.event.latLng.lat(),

@@ -35,7 +35,9 @@ define(
           sinon.stub(Analytics, "eventAdded");
           sinon.stub(Event.prototype, "save");
 
-          this.editor = new EventEditor({});
+          this.editor = new EventEditor({
+            model: new Backbone.Model()
+          });
           this.editor.getPlaceValue = function () {
             return {
               name: "some place"
@@ -59,6 +61,17 @@ define(
         it("should track when an event is added", function () {
           this.editor.handleSave();
           Analytics.eventAdded.calledOnce.should.equal(true);
+        });
+
+        it("should trigger a change on the model to say it needs updating", function () {
+          sinon.stub(this.editor.model, "trigger");
+          try {
+
+            this.editor.handleSaveComplete();
+            this.editor.model.trigger.calledWith("change").should.equal(true);
+          } finally {
+            this.editor.model.trigger.restore();
+          }
         });
 
       });

@@ -5,12 +5,7 @@ define(
   function (chai, $, Backbone, Map, Analytics, StyledMarker, OptionsMenu) {
     
     var should = chai.should();
-
-    var model = new Backbone.Model({
-      center: [1, 1],
-      date: [1900, 2000],
-      zoom: 3
-    });    
+ 
     var userLoggedIn = new Backbone.Model({
       "logged-in": true
     });
@@ -38,8 +33,14 @@ define(
         });
         google.maps.event.triggers = [];
 
+        this.model = new Backbone.Model({
+          center: [1, 1],
+          date: [1900, 2000],
+          zoom: 3
+        });   
+
         this.map = new Map({
-          model: model,
+          model: this.model,
           user: userLoggedIn,
           eventLocationsCollection: collection
         });
@@ -116,7 +117,7 @@ define(
 
     describe("getColor", function () {
       it("should be blue at the most recent end", function () {
-        var map = new Map({model: model});
+        var map = new Map({model: this.model});
         map.getColor({
           events: [{
             start_date: "2000-12-31"
@@ -124,7 +125,7 @@ define(
         }).should.be.equal("#0000ff");
       });
       it("should be red at the most distant end", function () {
-        var map = new Map({model: model});
+        var map = new Map({model: this.model});
         map.getColor({
           events: [{
             start_date: "1900-01-01"
@@ -132,12 +133,44 @@ define(
         }).should.be.equal("#ff0000");
       });
       it("should be a mixture in the middle", function () {
-        var map = new Map({model: model});
+        var map = new Map({model: this.model});
         map.getColor({
           events: [{
             start_date: "1950-05-06"
           }]
         }).should.be.equal("#80007f");
+      });
+    });
+
+    describe("mapNeedsUpdating", function () {
+      it("needs updating if the center has changed", function () {
+        var map = new Map({model: this.model});
+        map.getPosition = function () {
+          return [1, 1];
+        };
+        map.getZoom = function () {
+          return 3;
+        };
+        map.mapNeedsUpdating().should.equal(false);
+        map.getPosition = function () {
+          return [2, 1];
+        };
+        map.mapNeedsUpdating().should.equal(true);
+      });
+
+      it("needs updating if the zoom has changed", function () {
+        var map = new Map({model: this.model});
+        map.getPosition = function () {
+          return [1, 1];
+        };
+        map.getZoom = function () {
+          return 3;
+        };
+        map.mapNeedsUpdating().should.equal(false);
+        map.getZoom = function () {
+          return 5;
+        };
+        map.mapNeedsUpdating().should.equal(true);
       });
     });
 
@@ -152,21 +185,21 @@ define(
       });
 
       it("should show the options menu when the user is logged in", function () {
-        var map = new Map({model: model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedIn});
         map.onClick();
         this.clock.tick(200);
         OptionsMenu.prototype.render.calledOnce.should.equal(true);
       });
 
       it("should not show the options menu when the user is not logged in", function () {
-        var map = new Map({model: model, user: userLoggedOut});
+        var map = new Map({model: this.model, user: userLoggedOut});
         map.onClick();
         this.clock.tick(200);
         OptionsMenu.prototype.render.calledOnce.should.equal(false);
       });
 
       it("should close open windows when it shows the options menu", function () {
-        var map = new Map({model: model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedIn});
         map.closeOpenWindows = sinon.stub();
         map.onClick();
         this.clock.tick(200);
@@ -174,7 +207,7 @@ define(
       });
 
       it("should not fire if it was double clicked", function () {
-        var map = new Map({model: model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedIn});
         map.closeOpenWindows = sinon.stub();
         map.onClick();
         map.onDblClick();
@@ -183,7 +216,7 @@ define(
       });
 
       it("should close open windows if it was double clicked", function () {
-        var map = new Map({model: model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedIn});
         map.closeOpenWindows = sinon.stub();
         map.onClick();
         map.onDblClick();
@@ -196,14 +229,14 @@ define(
     describe("closeOpenWindows", function () {
 
       it("should close an open info boxes", function () {
-        var map = new Map({model: model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedIn});
         map.lastInfoWindow = {close: sinon.stub()};
         map.closeOpenWindows();
         map.lastInfoWindow.close.calledOnce.should.equal(true);
       });
 
       it("should close an existing options menu", function () {
-        var map = new Map({model: model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedIn});
         map.lastOptionsMenu = {close: sinon.stub()};
         map.closeOpenWindows();
         map.lastOptionsMenu.close.calledOnce.should.equal(true);
