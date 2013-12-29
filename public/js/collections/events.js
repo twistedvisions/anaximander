@@ -1,7 +1,7 @@
 define([
   "underscore",
   "backbone",
-  "../models/event"
+  "models/event"
 ], function (_, Backbone, Event) {
   
   var events = Backbone.Collection.extend({

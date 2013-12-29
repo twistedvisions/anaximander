@@ -5,7 +5,7 @@ define([
   "bootstrap",
   "sha256",
   "when",
-  "../analytics",
+  "analytics",
   "text!templates/login-retred.htm",
   "bootstrap",
   "css!/css/login"

@@ -3,7 +3,7 @@ define([
   "underscore",
   "backbone",
   "fuse",
-  "../analytics",
+  "analytics",
   "text!templates/filters.htm",
   "text!templates/filter.htm",
   "css!/css/filters"

@@ -2,8 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "./event_editor",
-  "../analytics",
+  "views/event_editor",
+  "analytics",
   "text!templates/options_menu.htm",
   "css!/css/options_menu"
 ], function ($, _, Backbone, EventEditor, analytics, template) {

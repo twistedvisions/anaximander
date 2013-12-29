@@ -5,9 +5,9 @@ define([
   "backbone",
   "bootstrap",
   "libs/when",
-  "../collections/event_locations",
-  "../collections/types",
-  "../collections/subtypes",
+  "collections/event_locations",
+  "collections/types",
+  "collections/subtypes",
   "text!templates/layout.htm"
 ], function ($, jqueryui, _, Backbone, Bootstrap, when, 
     EventLocationsCollection, TypeCollection, 

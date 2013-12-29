@@ -3,10 +3,10 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "../analytics",
+  "analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
-  "./options_menu",
+  "views/options_menu",
   "styled_marker",
   "chroma",
   "css!/css/map"

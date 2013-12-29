@@ -1,7 +1,7 @@
 define([
   "underscore",
   "backbone",
-  "../models/type"
+  "models/type"
 ], function (_, Backbone, Type) {
   
   var types = Backbone.Collection.extend({

@@ -5,8 +5,8 @@ define([
   "when",
   "socketio",
   "cookies",
-  "../analytics",
-  "./login_local",
+  "analytics",
+  "views/login_local",
   "text!templates/login.htm",
   "bootstrap",
   "css!/css/login"

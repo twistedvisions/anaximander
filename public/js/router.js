@@ -2,8 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "./utils/filter_url_serialiser",
-  "./analytics"
+  "utils/filter_url_serialiser",
+  "analytics"
 ], function ($, _, Backbone, FilterUrlSerialiser, analytics) {
   var Router = Backbone.Router.extend({
     

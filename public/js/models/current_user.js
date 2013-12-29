@@ -2,7 +2,7 @@ define([
   "underscore",
   "jquery",
   "backbone",
-  "../analytics"
+  "analytics"
 ], function (_, $, Backbone, Analytics) {
   var CurrentUser = Backbone.Model.extend({
     "url": "/current-user",

@@ -2,8 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "../utils/filter_url_serialiser",
-  "../models/event_location"
+  "utils/filter_url_serialiser",
+  "models/event_location"
 ], function ($, _, Backbone, FilterUrlSerialiser, EventLocation) {
   
   var Events = Backbone.Collection.extend({
