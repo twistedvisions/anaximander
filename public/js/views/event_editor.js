@@ -118,7 +118,7 @@ define([
       if (this.$("form").parsley("validate")) {
         var values = {};
         values.name = this.$el.find("input[data-key=name]").val();
-        values.link = this.$el.find("input[data-key=link]").val();
+        values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
         values.start = new Date(this.$el.find("input[data-key=start]").val());
         values.end = new Date(this.$el.find("input[data-key=end]").val());
         values.place = this.getPlaceValue();
@@ -138,6 +138,13 @@ define([
         });
         analytics.eventAdded(values);
       } 
+    },
+
+    wrapLink: function (link) {
+      if (!link.match(/(https?:)?\/\//)) {
+        return "//" + link;
+      }
+      return link;
     },
 
     getPlaceValue: function () {

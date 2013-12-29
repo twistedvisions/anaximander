@@ -87,6 +87,35 @@ define(
           this.editor.$(".error-message").css("display").should.equal("none");
         });
 
+        it("should prepend // if the url doesn't start with http or https", function () {
+
+          
+
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON()[0].link
+            .should.equal("//some link");
+        });
+
+        it("should not prepend // if the url starts with http", function () {
+          this.editor.$("input[data-key=link]").val("http://something.com");
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON()[0].link
+            .should.equal("http://something.com");
+        });
+
+        it("should not prepend // if the url starts with http", function () {
+          this.editor.$("input[data-key=link]").val("https://something.com");
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON()[0].link
+            .should.equal("https://something.com");
+        });
+
+        it("should not prepend // if the url starts with //", function () {
+          this.editor.$("input[data-key=link]").val("//something.com");
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON()[0].link
+            .should.equal("//something.com");
+        });
       });
     });
 
