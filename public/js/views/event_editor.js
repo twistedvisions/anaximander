@@ -114,6 +114,7 @@ define([
     },
 
     handleSave: function () {
+      this.$(".error-message").hide();
       if (this.$("form").parsley("validate")) {
         var values = {};
         values.name = this.$el.find("input[data-key=name]").val();
@@ -151,8 +152,9 @@ define([
       this.model.trigger("change");
     },
 
-    handleSaveFail: function () {
-      window.console.log(arguments);
+    handleSaveFail: function (model, res) {
+      this.$(".error-message").show();
+      this.$(".error-message").text(res.responseText.substring(0, 100));
     }
 
   });

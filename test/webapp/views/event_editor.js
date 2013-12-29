@@ -51,6 +51,7 @@ define(
           this.editor.$("input[data-key=place]").val("some place name");
 
           this.editor.$("input[data-key=place]").select2("data", {id: 1, text: "some place"});
+          this.editor.$("input[data-key=attendees]").select2("data", {id: 1, text: "some guy"});
         });
 
         afterEach(function () {
@@ -58,7 +59,7 @@ define(
           Event.prototype.save.restore();
         });
 
-        it("should track when an event is added", function () {
+        it("should track when an event is added", function () {          
           this.editor.handleSave();
           Analytics.eventAdded.calledOnce.should.equal(true);
         });
@@ -72,6 +73,18 @@ define(
           } finally {
             this.editor.model.trigger.restore();
           }
+        });
+
+        it("should show the error message if it fails", function () {
+          this.editor.handleSaveFail({}, {responseText: "some error message"});
+          this.editor.$(".error-message").css("display").should.not.equal("none");
+          this.editor.$(".error-message").text().should.equal("some error message");
+        });
+
+        it("should hide the error message when saving again", function () {
+          this.editor.$(".error-message").show();
+          this.editor.handleSave();
+          this.editor.$(".error-message").css("display").should.equal("none");
         });
 
       });
