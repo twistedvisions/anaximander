@@ -46,7 +46,8 @@ secureApp.configure(function () {
 
 secureApp.use(express["static"](__dirname + "/public"));
 secureApp.use(express.cookieParser());
-secureApp.use(express.bodyParser());
+secureApp.use(express.json());
+secureApp.use(express.urlencoded());
 secureApp.use(express.session({
   secret: nconf.auth.sessionSecret
 }));
