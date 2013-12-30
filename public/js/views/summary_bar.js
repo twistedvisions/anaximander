@@ -102,10 +102,13 @@ define([
         model: this.model,
         eventLocationsCollection: this.eventLocationsCollection
       });
-      this.login = new Login({
-        user: this.user
-      });
-      this.login.render();//.appendTo(this.$("#login-holder"));
+
+      if (this.user.hasPermission("login")) {
+        this.login = new Login({
+          user: this.user
+        });
+        this.login.render();//.appendTo(this.$("#login-holder"));
+      }
 
       this.eventLocationsCollection.on("reset", this.showStats, this);
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));

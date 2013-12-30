@@ -95,7 +95,7 @@ define([
     onClick: function (e) {
       setTimeout(_.bind(function () {
         if (!this.dblClicked) {
-          if (this.user.get("logged-in")) {
+          if (this.user.get("logged-in") && this.user.hasPermission("add-event")) {
             this.closeOpenWindows();
             this.lastOptionsMenu = new OptionsMenu({
               event: e,

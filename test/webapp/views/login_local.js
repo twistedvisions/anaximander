@@ -1,9 +1,9 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["chai", "jquery", "backbone", "views/login_local", "analytics"], 
+  ["chai", "jquery", "backbone", "views/login_local", "models/current_user", "analytics"], 
 
-  function (chai, $, Backbone, LoginLocal, Analytics) {
+  function (chai, $, Backbone, LoginLocal, CurrentUser, Analytics) {
     
     var should = chai.should();
     
@@ -15,7 +15,7 @@ define(
 
         this.loginLocal = new LoginLocal({
           el: "#some-container",
-          user: new Backbone.Model({
+          user: new CurrentUser({
             "logged-in": false
           })
         });
@@ -54,20 +54,28 @@ define(
           this.loginLocal.$("#login-retred").popover("show");
           this.loginLocal.$("#login-retred").data()["bs.popover"]
             .tip().hasClass("in").should.equal(true);
-          this.loginLocal.handleRegisterSuccess();
+          this.loginLocal.handleRegisterSuccess({});
           this.loginLocal.$("#login-retred").data()["bs.popover"]
             .tip().hasClass("in").should.equal(false);
         });
 
         it("should log the user in after registration success", function () {
           this.loginLocal.render();
-          this.loginLocal.handleRegisterSuccess();
+          this.loginLocal.handleRegisterSuccess({});
           this.loginLocal.user.get("logged-in").should.equal(true);
+        });
+
+        it("should set the user's permissions after registration success", function () {
+          this.loginLocal.render();
+          this.loginLocal.handleRegisterSuccess({
+            permissions: [{id: 1, name: "some-permission"}]
+          });
+          this.loginLocal.user.hasPermission("some-permission").should.equal(true);
         });
 
         it("should track registration success", function () {
           this.loginLocal.render();
-          this.loginLocal.handleRegisterSuccess();
+          this.loginLocal.handleRegisterSuccess({});
           Analytics.register.calledOnce.should.equal(true);
           Analytics.register.args[0][0].provider.should.equal("local");
         });
@@ -110,15 +118,23 @@ define(
           this.loginLocal.$("#login-retred").popover("show");
           this.loginLocal.$("#login-retred").data()["bs.popover"]
             .tip().hasClass("in").should.equal(true);
-          this.loginLocal.handleLoginSuccess();
+          this.loginLocal.handleLoginSuccess({});
           this.loginLocal.$("#login-retred").data()["bs.popover"]
             .tip().hasClass("in").should.equal(false);
         });
 
         it("should log the user in after login success", function () {
           this.loginLocal.render();
-          this.loginLocal.handleLoginSuccess();
+          this.loginLocal.handleLoginSuccess({});
           this.loginLocal.user.get("logged-in").should.equal(true);
+        });
+
+        it("should set the user's permissions after login success", function () {
+          this.loginLocal.render();
+          this.loginLocal.handleLoginSuccess({
+            permissions: [{id: 1, name: "some-permission"}]
+          });
+          this.loginLocal.user.hasPermission("some-permission").should.equal(true);
         });
 
         it("should show a message upon login failure", function () {
@@ -132,7 +148,7 @@ define(
 
         it("should track login success", function () {
           this.loginLocal.render();
-          this.loginLocal.handleLoginSuccess();
+          this.loginLocal.handleLoginSuccess({});
           Analytics.loginSucceeded.calledOnce.should.equal(true);
           Analytics.loginSucceeded.args[0][0].provider.should.equal("local");
         });

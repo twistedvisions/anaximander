@@ -63,12 +63,11 @@ define([
       }
     },
 
-    handleRegisterSuccess: function () {
+    handleRegisterSuccess: function (user) {
       Analytics.register({
         provider: "local"
       });
-      this.$("#login-retred").popover("toggle");
-      this.user.set("logged-in", true);
+      this.logUserIn(user);
     },
 
     handleRegisterFailure: function (err) {
@@ -92,8 +91,13 @@ define([
       Analytics.loginSucceeded(_.extend({
         provider: "local"
       }, user));
+      this.logUserIn(user);
+    },
+
+    logUserIn: function (user) {
       this.$("#login-retred").popover("toggle");
       this.user.set("logged-in", true);
+      this.user.set("permissions", user.permissions);
     },
 
     handleLoginFailure: function (err) {

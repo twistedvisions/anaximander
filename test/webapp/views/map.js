@@ -1,17 +1,28 @@
 /*global sinon, describe, beforeEach, afterEach, it, google */
 /*jshint expr: true*/
 define(
-  ["chai", "jquery", "backbone", "views/map", "analytics", "styled_marker", "views/options_menu"], 
-  function (chai, $, Backbone, Map, Analytics, StyledMarker, OptionsMenu) {
+  ["chai", "jquery", "backbone", "views/map", "analytics", 
+   "styled_marker", "views/options_menu", "models/current_user"], 
+  function (chai, $, Backbone, Map, Analytics, 
+      StyledMarker, OptionsMenu, CurrentUser) {
     
     var should = chai.should();
  
-    var userLoggedIn = new Backbone.Model({
+    var userLoggedInWithAddEventPermission = new CurrentUser({
+      "logged-in": true,
+      permissions: [
+        {name: "add-event"}
+      ]
+    });
+
+    var userLoggedIn = new CurrentUser({
       "logged-in": true
     });
-    var userLoggedOut = new Backbone.Model({
+
+    var userLoggedOut = new CurrentUser({
       "logged-in": false
     });
+
     var collection = new Backbone.Collection();
     collection.start = function () {};
 
@@ -41,7 +52,7 @@ define(
 
         this.map = new Map({
           model: this.model,
-          user: userLoggedIn,
+          user: userLoggedInWithAddEventPermission,
           eventLocationsCollection: collection
         });
         sinon.stub(this.map, "getColor");
@@ -184,11 +195,19 @@ define(
         sinon.restore(OptionsMenu.prototype);
       });
 
-      it("should show the options menu when the user is logged in", function () {
-        var map = new Map({model: this.model, user: userLoggedIn});
+      it("should show the options menu when the user is logged in and has permission", function () {
+        var map = new Map({model: this.model, user: userLoggedInWithAddEventPermission});
         map.onClick();
         this.clock.tick(200);
         OptionsMenu.prototype.render.calledOnce.should.equal(true);
+      });
+
+
+      it("should not show the options menu when the user is logged in and without permission", function () {
+        var map = new Map({model: this.model, user: userLoggedIn});
+        map.onClick();
+        this.clock.tick(200);
+        OptionsMenu.prototype.render.calledOnce.should.equal(false);
       });
 
       it("should not show the options menu when the user is not logged in", function () {
@@ -199,7 +218,7 @@ define(
       });
 
       it("should close open windows when it shows the options menu", function () {
-        var map = new Map({model: this.model, user: userLoggedIn});
+        var map = new Map({model: this.model, user: userLoggedInWithAddEventPermission});
         map.closeOpenWindows = sinon.stub();
         map.onClick();
         this.clock.tick(200);

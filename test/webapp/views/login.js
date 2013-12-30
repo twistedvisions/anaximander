@@ -1,11 +1,9 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["chai", "underscore", "jquery", "backbone", "views/login", "socketio", "cookies", "analytics"], 
+  ["underscore", "jquery", "backbone", "views/login", "socketio", "cookies", "analytics"], 
 
-  function (chai, _, $, Backbone, Login, socketio, cookies, Analytics) {
-
-    var should = chai.should();
+  function (_, $, Backbone, Login, socketio, cookies, Analytics) {
     
     beforeEach(function () {
       this.params = {

@@ -125,6 +125,7 @@ define([
       );
       cookies.expire(loginIdCookieKey, {secure: true});
       this.user.set("logged-in", true);
+      this.user.set("permissions", user.permissions);
       this.socket.disconnect();
       this.socket = null;
     }

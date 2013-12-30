@@ -1,9 +1,11 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 define(
 
-  ["backbone", "views/summary_bar", "jquery"], 
+  ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user"], 
 
-  function (Backbone, SummaryBar, $) {
+  function (chai, Backbone, SummaryBar, $, CurrentUser) {
+
+    var should = chai.should();
 
     beforeEach(function () {
       $("body").append("<div id='summary-bar'></div>");
@@ -13,7 +15,7 @@ define(
         zoom: 3,
         filterState: new Backbone.Collection()
       });
-      this.user = new Backbone.Model({
+      this.user = new CurrentUser({
         "logged-in": false
       });
 
@@ -86,6 +88,33 @@ define(
         });
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(true);
+      });
+    });
+
+    describe("login", function () {
+      it("should not show if the user does not have the permission", function () {
+        var summaryBar = new SummaryBar({
+          model: this.model,
+          user: this.user,
+          eventLocationsCollection: this.collection
+        }); 
+        summaryBar.render();
+        should.not.exist(summaryBar.login);
+      });
+      it("should show if the user if the user has permission", function () {
+        this.userWhoCanLogin = new CurrentUser({
+          "logged-in": false,
+          permissions: [
+            {id: 1, name: "login"}
+          ]
+        });
+        var summaryBar = new SummaryBar({
+          model: this.model,
+          user: this.userWhoCanLogin,
+          eventLocationsCollection: this.collection
+        }); 
+        summaryBar.render();
+        should.exist(summaryBar.login);
       });
     });
   }

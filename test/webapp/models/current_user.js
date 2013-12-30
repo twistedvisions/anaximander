@@ -34,6 +34,31 @@ define(
         $.post.called.should.equal(false);
       });
 
+      it("should index permissions", function () {
+        var user = new CurrentUser({
+          "logged-in": false,
+          permissions: [
+            {id: 1, name: "name1"},
+            {id: 2, name: "name2"}
+          ]
+        });
+        user.get("permissionMap").should.eql({
+          name1:  {id: 1, name: "name1"},
+          name2:  {id: 2, name: "name2"}
+        });
+      });
+
+      it("should get permissions", function () {
+        var user = new CurrentUser({
+          "logged-in": false,
+          permissions: [
+            {id: 1, name: "name1"},
+            {id: 2, name: "name2"}
+          ]
+        });
+        user.hasPermission("name1").should.equal(true);
+        user.hasPermission("name3").should.equal(false);
+      });
     });
   }
 );

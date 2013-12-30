@@ -14,8 +14,13 @@ define([
       zoom: 9,
       radius: 10
     });
+    var permissions = [];
+    if (window.location.href.indexOf("login") > -1) {
+      permissions = [{id: 1, name: "login"}];
+    }
     this.user = new User({
-      id: -1
+      id: -1,
+      permissions: permissions
     });
   };
   App.prototype.start = function () {

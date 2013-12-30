@@ -5,10 +5,13 @@ var supertest = require("supertest");
 var express = require("express");
 var http = require("http");
 var _ = require("underscore");
+var when = require("when");
 var passport = require("passport");
 var io = require("socket.io-client");
 var tryTest = require("../tryTest");
 var OpenIdProvider = require("../../../lib/rest/login-openid");
+
+var userPermissions = require("../../../lib/rest/util/userPermissions");
 
 var setupApp = function (provider, useClock) {
   if (useClock) {
@@ -41,14 +44,20 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
 
         beforeEach(function () {
           _.bind(setupApp, this)(provider);
+          sinon.stub(passport, "authenticate", function () {
+            return function (req, res) {
+              res.setHeader("Location", "some location");
+              res.end();
+            };
+          });
         });
 
         afterEach(function () {
           _.bind(teardownApp, this)();
+          passport.authenticate.restore();
         });
 
         it("should send a response to the user with a login page and authAttempt id", function (done) {
-          
           supertest(this.app)
             .get("/auth/" + provider)
             .expect("Content-Type", /json/)
@@ -200,6 +209,15 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
             f(null, {id: 1});
           });
 
+          sinon.stub(userPermissions, "get", function () {
+            var d = when.defer();
+            d.resolve([
+              {id: 1, name: "some user permission"},
+              {id: 2, name: "some global permission"}
+            ]);
+            return d.promise;
+          });
+
           this.req = supertest(this.app)
             .get("/auth/" + provider + "/callback")
             .set("Cookie", ["login-id=" + this.loginId]);
@@ -207,6 +225,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
 
         afterEach(function () {
           passport.authenticate.restore();
+          userPermissions.get.restore();
           _.bind(teardownApp, this)();
         });
 
@@ -227,7 +246,11 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
             .expect(200)
             .end(_.bind(function (/*err, res*/) {
               requestName.should.equal("complete");
-              requestData.should.eql({id: 1});
+              //todo: make sure it tests permissions too
+              requestData.should.eql({id: 1, permissions: [
+                {id: 1, name: "some user permission"},
+                {id: 2, name: "some global permission"}
+              ]});
               done();
             }, this));
         });
