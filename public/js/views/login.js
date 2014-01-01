@@ -42,11 +42,11 @@ define([
     },
 
     updateView: function () {
+      this.$("#login-options").hide();
       if (this.user.get("logged-in")) {
         this.$("#login").hide();
         this.$("#logout").show();
         this.$("#cancel-login").hide();
-        this.$("#login-options").hide();
       } else {
         this.$("#logout").hide();
         this.$("#login").show();
