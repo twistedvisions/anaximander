@@ -145,7 +145,7 @@ define([
       var place = this.data[id].place;
       this.model.set(this.data[id].place, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
-      this.model.trigger("change change:filterState");
+      this.model.trigger("change change:filterState change:date");
        
     },
 
