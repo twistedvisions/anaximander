@@ -15,6 +15,21 @@
       "securePort": 8000,
       "unsecurePort": 8001
     },
+    "auth": {
+      "sessionSecret": "somesecret",
+      "facebook": {
+        "clientId": "123",
+        "clientSecret": "123456"
+      },
+      "twitter": {
+        "consumerKey": "123",
+        "consumerSecret": "123456"
+      },
+      "github": {
+        "clientId": "123",
+        "clientSecret": "123456"
+      }
+    },
     "database": {
       "connection_string": ""
     }
