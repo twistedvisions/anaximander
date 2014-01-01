@@ -24,7 +24,12 @@ winston.add(winston.transports.Console, {
 
 var options = {
   key: fs.readFileSync("key.pem"),
-  cert: fs.readFileSync("cert.pem")
+  cert: fs.readFileSync("cert.pem"),
+  ca: [
+    fs.readFileSync("AddTrustExternalCARoot.crt"),
+    fs.readFileSync("PositiveSSLCA2.crt"),
+    fs.readFileSync("retred_org.crt")
+  ]
 };
 
 var secureApp = express();
