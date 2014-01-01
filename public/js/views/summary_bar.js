@@ -3,12 +3,13 @@ define([
   "underscore",
   "backbone",
   "select2",
-  "./filters",
-  "../utils/filter_url_serialiser",
-  "../analytics",
+  "views/filters",
+  "views/login",
+  "utils/filter_url_serialiser",
+  "analytics",
   "text!templates/summary_bar.htm",
   "css!/css/summary_bar"
-], function ($, _, Backbone, Select2, Filters, FilterUrlSerialiser,
+], function ($, _, Backbone, Select2, Filters, Login, FilterUrlSerialiser,
     analytics, template) {
 
   var SummaryBar = Backbone.View.extend({
@@ -90,7 +91,8 @@ define([
     },
 
     initialize: function (opts) {      
-      this.eventsCollection = opts.eventsCollection;
+      this.eventLocationsCollection = opts.eventLocationsCollection;
+      this.user = opts.user;
     },
 
     render: function () {
@@ -98,10 +100,17 @@ define([
       setTimeout(_.bind(this.showSelector, this), 100);
       this.filters = new Filters({
         model: this.model,
-        eventsCollection: this.eventsCollection
+        eventLocationsCollection: this.eventLocationsCollection
       });
 
-      this.eventsCollection.on("reset", this.showStats, this);
+      if (this.user.hasPermission("login")) {
+        this.login = new Login({
+          user: this.user
+        });
+        this.login.render();//.appendTo(this.$("#login-holder"));
+      }
+
+      this.eventLocationsCollection.on("reset", this.showStats, this);
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));
       this.model.on("change", this.setFilterButtonHighlighting, this);
       this.setFilterButtonHighlighting();
@@ -136,12 +145,12 @@ define([
       var place = this.data[id].place;
       this.model.set(this.data[id].place, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
-      this.model.trigger("change");
+      this.model.trigger("change change:filterState");
        
     },
 
     showStats: function () {
-      var results = this.eventsCollection.lastResults;
+      var results = this.eventLocationsCollection.lastResults;
       this.$el.find("#locations-shown").text(this.getLocationCount(results));
       this.$el.find("#events-shown").text(this.getEventCount(results));
     },

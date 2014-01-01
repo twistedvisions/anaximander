@@ -1,3 +1,12 @@
+CREATE TABLE registered_user
+(
+  id SERIAL,
+  username character varying(64) NOT NULL,
+  password character varying(64) NOT NULL,
+  salt character varying(64) NOT NULL,
+  CONSTRAINT registered_user_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE thing_type
 (
   id SERIAL,
@@ -37,7 +46,6 @@ CREATE TABLE event
   place_id bigint NOT NULL REFERENCES thing(id),
   start_date timestamp,
   end_date timestamp,
-  attendee_count INT,
   link character varying(200),
   CONSTRAINT event_pkey PRIMARY KEY (id)
 );

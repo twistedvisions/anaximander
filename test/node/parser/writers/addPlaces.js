@@ -2,6 +2,7 @@
 var sinon = require("sinon");
 var when = require("when");
 var should = require("should");
+var tryTest = require("../../tryTest");
 var db = require("../../../../lib/db");
 var addPlaces = require("../../../../lib/parser/writers/addPlaces");
 
@@ -61,15 +62,12 @@ describe("addPlaces", function () {
   it("should create an id for each place from the database", function (done) {
     should.not.exist(job.data.value.id);
     should.not.exist(job.value);
-    addPlaces(job).then(function () {
-      var ex;
-      try {
+    addPlaces(job).then(
+      tryTest(function () {
         should.exist(job.value.id);
-      } catch (e) {
-        ex = e;
-      }
-      done(ex);
-    }, function (err) {
+      },
+      done
+    ), function (err) {
       done(err);
     });
   });

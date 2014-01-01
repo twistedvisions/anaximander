@@ -1,9 +1,11 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 define(
 
-  ["backbone", "views/summary_bar", "jquery"], 
+  ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user"], 
 
-  function (Backbone, SummaryBar, $) {
+  function (chai, Backbone, SummaryBar, $, CurrentUser) {
+
+    var should = chai.should();
 
     beforeEach(function () {
       $("body").append("<div id='summary-bar'></div>");
@@ -13,12 +15,15 @@ define(
         zoom: 3,
         filterState: new Backbone.Collection()
       });
+      this.user = new CurrentUser({
+        "logged-in": false
+      });
 
       this.collection = new Backbone.Collection();
     });
 
     afterEach(function () {
-      $("body").remove("#summary-bar");
+      $("#summary-bar").remove();
     });
 
     describe("interaction", function () {
@@ -26,7 +31,8 @@ define(
         var clock = sinon.useFakeTimers();
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          user: this.user,
+          eventLocationsCollection: this.collection
         });    
         summaryBar.render();
         clock.tick(200);
@@ -46,7 +52,8 @@ define(
       it("should show the correct amount of locations", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          user: this.user,
+          eventLocationsCollection: this.collection
         });    
         summaryBar.getLocationCount(results).should.equal(2);
       });
@@ -54,7 +61,8 @@ define(
       it("should show the correct amount of events", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          user: this.user,
+          eventLocationsCollection: this.collection
         });    
         
         summaryBar.getEventCount(results).should.equal(3);
@@ -65,7 +73,8 @@ define(
       it("should not be highlighted when there are no filters selected", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          user: this.user,
+          eventLocationsCollection: this.collection
         }); 
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(false);
@@ -74,10 +83,38 @@ define(
         this.model.get("filterState").reset({id: 1});
         var summaryBar = new SummaryBar({
           model: this.model,
-          eventsCollection: this.collection
+          user: this.user,
+          eventLocationsCollection: this.collection
         });
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(true);
+      });
+    });
+
+    describe("login", function () {
+      it("should not show if the user does not have the permission", function () {
+        var summaryBar = new SummaryBar({
+          model: this.model,
+          user: this.user,
+          eventLocationsCollection: this.collection
+        }); 
+        summaryBar.render();
+        should.not.exist(summaryBar.login);
+      });
+      it("should show if the user if the user has permission", function () {
+        this.userWhoCanLogin = new CurrentUser({
+          "logged-in": false,
+          permissions: [
+            {id: 1, name: "login"}
+          ]
+        });
+        var summaryBar = new SummaryBar({
+          model: this.model,
+          user: this.userWhoCanLogin,
+          eventLocationsCollection: this.collection
+        }); 
+        summaryBar.render();
+        should.exist(summaryBar.login);
       });
     });
   }

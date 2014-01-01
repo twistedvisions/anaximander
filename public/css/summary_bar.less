@@ -33,30 +33,43 @@
   #selector-holder {
     float: left;
     margin-right: 20px;
-    margin-top: 7px;
+    margin-top: 3px;
 
     .select2-container {
       width: 250px;
+
+      .select2-chosen {
+        font-size: 12px;
+      }
     }
   }
 
-  #social {
+  #right-buttons {
+
     float: right;
     padding-right: 10px;
-    margin-top: -1;
 
-    div {
-      margin-bottom: 3px;
+    > div {
+      float: left;
     }
 
-    #github {
-      float: right;
-    }
+    #social {
 
-    #github a {
-      text-decoration: underline;
-      text-decoration-style: dotted;
-      color: #053FFA;
+      margin-top: -1;
+
+      div {
+        margin-bottom: 3px;
+      }
+
+      #github {
+        float: right;
+      }
+
+      #github a {
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        color: #053FFA;
+      }
     }
   }
 }

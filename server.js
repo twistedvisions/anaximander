@@ -1,18 +1,20 @@
-/*global console, __dirname*/
+/*global __dirname*/
 
 require("newrelic");
-var _ = require("underscore");
 
-var fs = require("fs");
 var express = require("express");
+var https = require("https");
+var http = require("http");
 var lessMiddleware = require("less-middleware");
-
-var db = require("./lib/db");
+var flash = require("connect-flash");
+var passport = require("passport");
+var fs = require("fs");
 
 var nconf = require("./lib/config");
-
-
 var winston = require("winston");
+
+var OpenIdProvider = require("./lib/rest/login-openid");
+
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
   "level": "warn", 
@@ -20,55 +22,73 @@ winston.add(winston.transports.Console, {
   "colorize": true
 });
 
-var getEventTypes = _.template(fs.readFileSync("db_templates/get_event_types.sql").toString());
-var getEventSubtypes = _.template(fs.readFileSync("db_templates/get_event_subtypes.sql").toString());
-var app = express();
+var options = {
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+  ca: [
+    fs.readFileSync("AddTrustExternalCARoot.crt"),
+    fs.readFileSync("PositiveSSLCA2.crt"),
+    fs.readFileSync("retred_org.crt")
+  ]
+};
 
-app.configure(function () {    
-  app.use(lessMiddleware({
+var secureApp = express();
+var unsecureApp = express();
+
+var secureServer = https.createServer(options, secureApp);
+var unsecureServer = http.createServer(unsecureApp);
+
+unsecureApp.get("*", function (req, res) {
+  res.redirect(nconf.server.host + req.url);
+});
+
+secureApp.configure(function () {    
+  secureApp.use(lessMiddleware({
     src: __dirname + "/public",
     compress: true
   }));
 });
 
-app.use(express["static"](__dirname + "/public"));
+secureApp.use(express["static"](__dirname + "/public"));
+secureApp.use(express.cookieParser());
+secureApp.use(express.json());
+secureApp.use(express.urlencoded());
+secureApp.use(express.session({
+  secret: nconf.auth.sessionSecret
+}));
+secureApp.use(flash());
 
-require("./lib/rest/getEvents").init(app);
+secureApp.use(passport.initialize());
+secureApp.use(passport.session());
 
-app.get("/type", function (req, res) {
-  db.runQuery(
-    getEventTypes({})
-  ).then(
-    function (result) {
-      res.send(result.rows);
-    }, 
-    function () {
-      winston.error("failed to process /type request", arguments);
-      console.log("err", arguments);
-    }
-  );
-});
+require("./lib/rest/auth/localStrategy");
+require("./lib/rest/auth/facebookStrategy");
+require("./lib/rest/auth/googleStrategy");
+require("./lib/rest/auth/twitterStrategy");
+require("./lib/rest/auth/githubStrategy");
 
-app.get("/type/:id/type", function (req, res) {
-  db.runQuery(
-    getEventSubtypes({
-      parent_type: req.param("id")
-    })
-  ).then(
-    function (result) {
-      result.rows = _.map(result.rows, function (row) {
-        row.parent_type = parseInt(row.parent_type, 10);
-        return row;
-      });
-      res.send(result.rows);
-    }, 
-    function () {
-      winston.error("failed to process /type/:id/type request", arguments);
-      console.log("err", arguments);
-    }
-  );
-});
+require("./lib/rest/auth/serializeUser");
+require("./lib/rest/auth/deserializeUser");
 
-app.listen(nconf.server.port);
+require("./lib/rest/getCurrentUser").init(secureApp);
+require("./lib/rest/logout").init(secureApp);
+require("./lib/rest/login").init(secureApp);
+require("./lib/rest/register").init(secureApp);
 
-winston.info("Listening on port ", nconf.server.port);
+var Provider = new OpenIdProvider(secureApp, secureServer);
+new Provider.provider("facebook");
+new Provider.provider("google");
+new Provider.provider("twitter");
+new Provider.provider("github");
+
+require("./lib/rest/getEvents").init(secureApp);
+require("./lib/rest/saveEvent").init(secureApp);
+require("./lib/rest/getPlaces").init(secureApp);
+require("./lib/rest/getAttendee").init(secureApp);
+require("./lib/rest/getTypes").init(secureApp);
+require("./lib/rest/getSubtypes").init(secureApp);
+
+secureServer.listen(nconf.server.securePort);
+unsecureServer.listen(nconf.server.unsecurePort);
+
+winston.info("Listening on port ", nconf.server.securePort);

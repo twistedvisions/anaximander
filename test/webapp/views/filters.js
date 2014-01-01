@@ -8,7 +8,7 @@ define(
       zoom: 3,
       filterState: new Backbone.Collection()
     });
-    var eventsCollection = new Backbone.Collection();
+    
     var typesCollection = new Backbone.Collection();
     var subtypesCollection = new Backbone.Collection();
     subtypesCollection.setParentType = function () {};
@@ -49,7 +49,6 @@ define(
         });
         this.filters = new Filters({
           model: model,
-          eventsCollection: eventsCollection,
           typesCollection: typesCollection,
           subtypesCollection: subtypesCollection
         });
@@ -57,7 +56,7 @@ define(
       });
 
       afterEach(function () {
-        $("body").remove("#filters-container");
+        $("#filters-container").remove();
         subtypesCollection.fetch.restore();
       });
 
@@ -221,6 +220,7 @@ define(
           describe("toggling visible filter selection", function () {
             beforeEach(function () {
               this.filters.render();
+              this.filters.$el.show();
               this.filters.showSecondaryFilters(typesCollection.get(1));
               this.filters.$("#secondary-filter").val("name");
               this.filters._filterSecondaryFilters();

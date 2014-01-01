@@ -1,0 +1,60 @@
+
+
+#login-holder {
+
+  > div {
+    float: left;
+  }
+
+  #login-activation {
+    padding-top: 10px;
+    padding-right: 10px;
+    .login-btn {
+      color: #333;
+      text-decoration: none;
+    }
+
+    .login-btn:hover {
+      color: #000;
+      text-decoration: none;
+    }
+  }
+
+  #login-options {
+    float: left;
+    width: 60px;
+    display: none;
+
+    .login-option {
+      height: 20px;
+      width: 20px;
+      display: inline-block;
+      float: left;
+      background-size: 15px 15px;
+      background-repeat: no-repeat;
+      &.loading {
+        background-image: url(/img/loading.gif) !important;
+      }
+    }
+    #login-retred {
+      background-image: url(/img/retred.png);
+    }
+    #login-facebook {
+      background-image: url(/img/facebook.png);
+    }
+    #login-google {
+      background-image: url(/img/google.png);
+    }
+    #login-twitter {
+      background-image: url(/img/twitter.png);
+    }
+    #login-github {
+      background-image: url(/img/github.png);
+    }
+  }
+  .popover {
+    .alert {
+      display: none;
+    }
+  }
+}

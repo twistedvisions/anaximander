@@ -3,7 +3,7 @@ define([
   "underscore",
   "backbone",
   "fuse",
-  "../analytics",
+  "analytics",
   "text!templates/filters.htm",
   "text!templates/filter.htm",
   "css!/css/filters"
@@ -13,7 +13,6 @@ define([
     el: "#filters-container",
 
     initialize: function (opts) {      
-      this.eventsCollection = opts.eventsCollection;
       this.typesCollection = opts.typesCollection;
       this.subtypesCollection = opts.subtypesCollection;
     },
@@ -23,6 +22,12 @@ define([
       this.updatePrimaryFilters();
       this.filterSecondaryFilters();
       this.$("#toggle-selection").on("click", _.bind(this.toggleVisible, this));
+      this.model.on("change:filterState", function () {
+        this.updatePrimaryFilters();
+        if (this.lastPrimarySelected) {
+          this.showSecondaryFilters(this.lastPrimarySelected);
+        }
+      }, this);
       return this.$el;
     },
 
@@ -153,6 +158,7 @@ define([
     },
 
     showSecondaryFilters: function (filter) {
+      this.lastPrimarySelected = filter;
       this.$(".primary .filter").removeClass("selected");
       this.$(".primary .filter[data-id=" + filter.get("id") + "]").addClass("selected");
       this.$("#secondary-filter").select();

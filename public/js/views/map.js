@@ -3,13 +3,14 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "../analytics",
+  "analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
         "&sensor=false!callback",
+  "views/options_menu",
   "styled_marker",
   "chroma",
   "css!/css/map"
-], function ($, _, Backbone, analytics, maps, StyledMarker, chroma) {
+], function ($, _, Backbone, analytics, maps, OptionsMenu, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
     
@@ -18,7 +19,8 @@ define([
     initialize: function (opts) {
 
       this.mapObjects = {};
-      this.eventsCollection = opts.eventsCollection;
+      this.user = opts.user;
+      this.eventLocationsCollection = opts.eventLocationsCollection;
       this.onLinkClick = _.bind(this.onLinkClick, this);
     },
 
@@ -26,8 +28,8 @@ define([
       
       this.drawMap();
       this.model.on("change", this.update, this);
-      this.eventsCollection.on("reset", this.redrawMarkers, this);
-      this.eventsCollection.start();
+      this.eventLocationsCollection.on("reset", this.redrawMarkers, this);
+      this.eventLocationsCollection.start();
     },
 
     redrawMarkers: function (newMarkers) {
@@ -86,6 +88,32 @@ define([
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
       google.maps.event.addListener(this.map, "bounds_changed", _.bind(this.onBoundsChanged, this));
+      google.maps.event.addListener(this.map, "click", _.bind(this.onClick, this));
+      google.maps.event.addListener(this.map, "dblclick", _.bind(this.onDblClick, this));
+    },
+
+    onClick: function (e) {
+      setTimeout(_.bind(function () {
+        if (!this.dblClicked) {
+          if (this.user.get("logged-in") && this.user.hasPermission("add-event")) {
+            this.closeOpenWindows();
+            this.lastOptionsMenu = new OptionsMenu({
+              event: e,
+              model: this.model
+            });
+            this.lastOptionsMenu.render();
+            analytics.optionsMenuShown();
+          }
+        }
+      }, this), 200);
+    },
+
+    onDblClick: function () {
+      this.dblClicked = true;
+      setTimeout(_.bind(function () {
+        this.dblClicked = false;
+      }, this), 500);
+      this.closeOpenWindows();
     },
 
     onBoundsChanged: function () {
@@ -139,9 +167,7 @@ define([
 
       google.maps.event.addListener(marker, "mouseover", _.bind(function () {
         analytics.infoBoxShown(result);
-        if (this.lastInfoWindow) {
-          this.lastInfoWindow.close();  
-        }
+        this.closeOpenWindows();
         var info = new google.maps.InfoWindow({
           content: this.getContent(result)
         });
@@ -207,6 +233,15 @@ define([
         fillOpacity: 0.5,
         map: this.map
       });
+    },
+
+    closeOpenWindows: function () {
+      if (this.lastInfoWindow) {
+        this.lastInfoWindow.close();  
+      }
+      if (this.lastOptionsMenu) {
+        this.lastOptionsMenu.close();
+      }
     }
   });
   return MapView;

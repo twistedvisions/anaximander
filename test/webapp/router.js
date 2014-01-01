@@ -1,4 +1,4 @@
-/*global sinon, describe, before, after, afterEach, it */
+/*global sinon, describe, before, after, beforeEach, afterEach, it */
 /*jshint expr: true*/
 define(
   ["backbone", "router"], 
@@ -40,6 +40,49 @@ define(
         });
         after(function () {
           sinon.restore(Backbone.history.getFragment);
+        });
+      });
+      describe("startup", function () {
+        beforeEach(function () {
+          if (window.navigator && window.navigator.geolocation) {
+            sinon.stub(window.navigator.geolocation, "getCurrentPosition");
+          } else {
+            this.oldGeolocationObject = window.navigator.geolocation;
+            window.navigator.geolocation = {
+              getCurrentPosition: function () {}
+            };
+          }
+        });
+        afterEach(function () {
+          if (navigator.geolocation.getCurrentPosition.restore) {
+            navigator.geolocation.getCurrentPosition.restore();
+          } else {
+            window.navigator.geolocation = this.oldGeolocationObject;
+          }
+        });
+        it("should get the user's position if no position is set in the url", function () {
+          var model = new Backbone.Model({
+            center: [1, 2],
+            date: [1900, 2000],
+            zoom: 3,
+            filterState: new Backbone.Collection()
+          });
+          
+          var router = new Router();
+          router.setFromUrl = false;
+          router.init({model: model});
+        });
+        it("should not get the user's position if a position is set in the url", function () {
+          var model = new Backbone.Model({
+            center: [1, 2],
+            date: [1900, 2000],
+            zoom: 3,
+            filterState: new Backbone.Collection()
+          });
+          
+          var router = new Router();
+          router.setFromUrl = true;
+          router.init({model: model});
         });
       });
     });

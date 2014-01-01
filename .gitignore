@@ -3,3 +3,4 @@ bower_components
 node_modules
 public/js/settings.js
 public/css/*.css
+newrelic_agent.log

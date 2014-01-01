@@ -28,6 +28,15 @@ define([], function () {
     linkClicked: function (data) {
       this.sendEvent(data, "linkClicked");
     },
+    optionsMenuShown: function (data) {
+      this.sendEvent(data, "optionsMenuShown");
+    },
+    optionSelected: function (data) {
+      this.sendEvent(data, "optionSelected");
+    },
+    eventAdded: function (data) {
+      this.sendEvent(data, "eventAdded");
+    },
     showFilters: function (data) {
       this.sendEvent(data, "showFilters");
     },
@@ -42,6 +51,24 @@ define([], function () {
     },
     toggleSecondaryFilterSelection: function (data) {
       this.sendEvent(data, "toggleSecondaryFilterSelection");
+    },
+    loginChoiceShown: function (data) {
+      this.sendEvent(data, "loginChoiceShown");
+    },
+    loginAttempted: function (data) {
+      this.sendEvent(data, "loginAttempted");
+    },
+    loginSucceeded: function (data) {
+      this.sendEvent(data, "loginSucceeded");
+    },
+    loginFailed: function (data) {
+      this.sendEvent(data, "loginFailed");
+    },
+    logout: function (data) {
+      this.sendEvent(data, "logout");
+    },
+    register: function (data) {
+      this.sendEvent(data, "register");
     }
   };
 });
