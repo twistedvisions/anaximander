@@ -14,7 +14,7 @@ exports.up = function (db, callback) {
       google_id:     {type: "string",  notNull: false },
       twitter_id:    {type: "string",  notNull: false },
       github_id:     {type: "string",  notNull: false },
-      email:         {type: "string",  notNull: false, unique: true },
+      email:         {type: "string",  notNull: false },
       name:          {type: "string",  notNull: false }
     }),
 
