@@ -8,8 +8,8 @@ define([
   var DateSliderView = Backbone.View.extend({
     el: "#slider-range",
 
-    initialize: function () {      
-      
+    initialize: function () {
+
     },
 
     render: function () {
@@ -30,7 +30,7 @@ define([
     },
 
     getTimeRange: function () {
-      return [$("#slider-range").slider("values", 0), 
+      return [$("#slider-range").slider("values", 0),
               $("#slider-range").slider("values", 1)];
     },
 

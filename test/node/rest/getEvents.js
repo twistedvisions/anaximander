@@ -50,7 +50,7 @@ describe("getEvents", function () {
 
     => thing_id 5,6,7,8
 
-    */    
+    */
     it("should filter out a single primary", function () {
       getEvents.generateEventFilters({
         typeFilters: [{id: 1}],
@@ -74,7 +74,7 @@ describe("getEvents", function () {
       [ ] Secondary2 (2)
       [ ] Secondary3 (3)
 
-    => thing_id 4,5,6,7,8    
+    => thing_id 4,5,6,7,8
     */
     it("should allow you to view only values that have no specified secondary", function () {
       getEvents.generateEventFilters({
@@ -96,7 +96,7 @@ describe("getEvents", function () {
 
     => thing_id 1,2,5,6,7,8
 
-    */    
+    */
     it("should allow you to specify only a single secondary", function () {
       getEvents.generateEventFilters({
         typeFilters: [],
@@ -135,7 +135,7 @@ describe("getEvents", function () {
       [X] Secondary2 (2)
       [X] Secondary3 (3)
 
-    where (thing_type = 1 and thing_subtype is not null) 
+    where (thing_type = 1 and thing_subtype is not null)
     or (thing_type not in (1))
     => thing_id 1,2,3,5,6,7,8
     */
@@ -169,7 +169,7 @@ describe("getEvents", function () {
         "and (" +
           "(thing.type_id not in (2)) and " +
           "((" + "(thing.type_id = 1) and " +
-                      "((thing_subtype.thing_type_id not in (3)))" + 
+                      "((thing_subtype.thing_type_id not in (3)))" +
                 ") or " +
                 "(thing.type_id not in (1)))" +
         ")"
@@ -218,9 +218,9 @@ describe("getEvents", function () {
         "and (" +
           "(thing.type_id not in (2)) and " +
           "((" + "(thing.type_id = 1) and " +
-                      "(" + 
-                        "(thing_subtype.thing_type_id not in (3)) or " + 
-                        "(thing_subtype.thing_type_id is null)" + 
+                      "(" +
+                        "(thing_subtype.thing_type_id not in (3)) or " +
+                        "(thing_subtype.thing_type_id is null)" +
                       ")" +
                  ") or " +
                  "(thing.type_id not in (1)))" +
@@ -251,7 +251,7 @@ describe("getEvents", function () {
           "(thing.type_id not in (2)) and " +
           "(" +
             "(" + "(thing.type_id = 1) and " +
-                  "(thing_subtype.thing_type_id is not null)" + 
+                  "(thing_subtype.thing_type_id is not null)" +
             ") or " +
             "(thing.type_id not in (1))" +
           ")" +
@@ -289,15 +289,15 @@ describe("getEvents", function () {
       query.should.equal(
         "and ((" +
               "(" + "(thing.type_id = 1) and " +
-                    "(" + 
-                          "(thing_subtype.thing_type_id not in (2))" + 
+                    "(" +
+                          "(thing_subtype.thing_type_id not in (2))" +
                           " or (thing_subtype.thing_type_id is null)" +
                     ")" +
-              ") " + 
+              ") " +
               "or " +
               "(" + "(thing.type_id = 2) and " +
-                    "(" + 
-                          "(thing_subtype.thing_type_id not in (4))" + 
+                    "(" +
+                          "(thing_subtype.thing_type_id not in (4))" +
                           " or (thing_subtype.thing_type_id is null)" +
                     ")" +
               ") " +
@@ -331,23 +331,23 @@ describe("getEvents", function () {
 
       query.should.equal(
         "and (" +
-              "(" + 
-                "(" + 
+              "(" +
+                "(" +
                   "(" + "(thing.type_id = 2) and " +
-                        "(" + 
-                              "(thing_subtype.thing_type_id not in (4))" + 
+                        "(" +
+                              "(thing_subtype.thing_type_id not in (4))" +
                               " or (thing_subtype.thing_type_id is null)" +
                         ")" +
                   ") " +
                   "or (thing.type_id not in (2))" +
-                ")" + 
-              ") " + 
+                ")" +
+              ") " +
               "and " +
               "(" +
-                "(" + 
+                "(" +
                   "(thing.type_id = 1) and " +
                   "(thing_subtype.thing_type_id is not null)" +
-                ") " + 
+                ") " +
                 "or (thing.type_id not in (1))" +
               ")" +
             ")"

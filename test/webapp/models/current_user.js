@@ -1,6 +1,6 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
-  ["jquery", "models/current_user", "analytics"], 
+  ["jquery", "models/current_user", "analytics"],
   function ($, CurrentUser, Analytics) {
     describe("current user", function () {
 

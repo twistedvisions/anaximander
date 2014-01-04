@@ -23,7 +23,7 @@ describe("adding events", function () {
 
       return d.promise;
     });
-    
+
   });
 
   describe("getDate", function () {
@@ -59,7 +59,7 @@ describe("adding events", function () {
 
     it("should combine normal dates", function () {
       var timestamp = addEvent.combineDateTime(
-        "2013-12-13", 
+        "2013-12-13",
         "09:34"
       );
       timestamp.should.equal("2013-12-13 09:34");
@@ -67,7 +67,7 @@ describe("adding events", function () {
 
     it("should handle BCE dates", function () {
       var timestamp = addEvent.combineDateTime(
-        "-0046-12-13", 
+        "-0046-12-13",
         "09:34"
       );
       timestamp.should.equal("0046-12-13 09:34 BC");

@@ -5,9 +5,9 @@ define([
   "utils/filter_url_serialiser",
   "models/event_location"
 ], function ($, _, Backbone, FilterUrlSerialiser, EventLocation) {
-  
+
   var Events = Backbone.Collection.extend({
-    
+
     model: EventLocation,
 
     initialize: function (options) {
@@ -49,17 +49,17 @@ define([
           return isBc ? year.substring(1) : year;
         };
         $.get(
-          "/location", 
+          "/location",
           {
-            lat: position[0], 
-            lon: position[1], 
+            lat: position[0],
+            lon: position[1],
             bounds: bounds,
-            start: getStartOfYear(timeRange[0]), 
+            start: getStartOfYear(timeRange[0]),
             end: getEndOfYear(timeRange[1]),
             typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
             subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
             notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
-          }, 
+          },
           _.bind(this.handleResults, this)
         );
       }
@@ -91,7 +91,7 @@ define([
     },
 
     combineEventsAtTheSamePlace: function (results) {
-      
+
       var locations = {};
       _.each(results, function (result) {
         var location = JSON.stringify(result.location[0]);
@@ -102,7 +102,7 @@ define([
       _.each(locations, function (location) {
         location.sort(function (a, b) {
           a = new Date(a.start_date).getTime();
-          b = new Date(b.start_date).getTime(); 
+          b = new Date(b.start_date).getTime();
           return (a - b) / Math.abs(a - b);
         });
       });

@@ -1,7 +1,7 @@
 /*global describe, beforeEach, it */
 define(
 
-  ["backbone", "utils/filter_url_serialiser"], 
+  ["backbone", "utils/filter_url_serialiser"],
 
   function (Backbone, FilterUrlSerialiser) {
 
@@ -34,7 +34,7 @@ define(
 
       it("should return <id>:u,<id> when an unspecified and a secondary", function () {
         this.model.get("filterState").set(
-          [{id: -1, parent_type: 1}, {id: 2, parent_type: 1}], 
+          [{id: -1, parent_type: 1}, {id: 2, parent_type: 1}],
           {remove: false}
         );
         FilterUrlSerialiser.serialise(this.model).should.equal("1:u,2");
@@ -47,11 +47,11 @@ define(
 
       it("should return handle a combination of everything", function () {
         this.model.get("filterState").set([
-          {id: 1}, 
-          {id: -2, parent_type: 2}, 
-          {id: -3, parent_type: 3}, 
-          {id: 4, parent_type: 3}, 
-          {id: 6, parent_type: 5}, 
+          {id: 1},
+          {id: -2, parent_type: 2},
+          {id: -3, parent_type: 3},
+          {id: 4, parent_type: 3},
+          {id: 6, parent_type: 5},
           {id: 7, parent_type: 5}
         ], {remove: false});
         FilterUrlSerialiser.serialise(this.model).should.equal("1:*;2:u;3:u,4;5:6,7");
@@ -70,7 +70,7 @@ define(
         var json = JSON.stringify(this.model.get("filterState").toJSON());
         json.should.equal("[{\"id\":1}]");
       });
-  
+
       it("should produce a not specified filter when string is <id>:u", function () {
         FilterUrlSerialiser.deserialise("1:u", this.model);
         var json = JSON.stringify(this.model.get("filterState").toJSON());
@@ -99,11 +99,11 @@ define(
         FilterUrlSerialiser.deserialise("1:*;2:u;3:u,4;5:6,7", this.model);
         var json = JSON.stringify(this.model.get("filterState").toJSON());
         json.should.equal("[" + [
-          "{\"id\":1}", 
-          "{\"id\":-2,\"parent_type\":2}", 
-          "{\"id\":-3,\"parent_type\":3}", 
-          "{\"id\":4,\"parent_type\":3}", 
-          "{\"id\":6,\"parent_type\":5}", 
+          "{\"id\":1}",
+          "{\"id\":-2,\"parent_type\":2}",
+          "{\"id\":-3,\"parent_type\":3}",
+          "{\"id\":4,\"parent_type\":3}",
+          "{\"id\":6,\"parent_type\":5}",
           "{\"id\":7,\"parent_type\":5}",
         ].join(",") + "]");
 

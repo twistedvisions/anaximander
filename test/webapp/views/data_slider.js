@@ -1,7 +1,7 @@
 /*global sinon, describe, it */
 define(
 
-  ["backbone", "views/date_slider"], 
+  ["backbone", "views/date_slider"],
 
   function (Backbone, DateSlider) {
 
@@ -19,7 +19,7 @@ define(
         dateSlider.$el.slider = sinon.stub();
         dateSlider.getTimeRange = sinon.stub();
         dateSlider.update = sinon.stub();
-        
+
         dateSlider.render();
         dateSlider.sliderChanged();
         window.lastEvent.should.equal("slider");

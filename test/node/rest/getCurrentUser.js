@@ -17,7 +17,7 @@ describe("getCurrentUser", function () {
       return d.promise;
     });
   });
-  
+
   afterEach(function () {
     userPermissions.get.restore();
   });
@@ -38,7 +38,7 @@ describe("getCurrentUser", function () {
               done();
             }
           };
-          handler(req, res);          
+          handler(req, res);
         }
       };
       getCurrentUser.init(app);
@@ -74,10 +74,10 @@ describe("getCurrentUser", function () {
               }, done)();
             }
           };
-          handler(req, res);          
+          handler(req, res);
         }
       };
       getCurrentUser.init(app);
-    }); 
+    });
   });
 });

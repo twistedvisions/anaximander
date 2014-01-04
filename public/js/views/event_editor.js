@@ -16,7 +16,7 @@ define([
   var EventEditor = Backbone.View.extend({
     className: "",
 
-    initialize: function (options) {      
+    initialize: function (options) {
       this.newEvent = options.newEvent;
       this.eventsCollection = new EventsCollection();
     },
@@ -30,8 +30,8 @@ define([
       this.$el.find(".modal").modal();
       this.$el.find(".modal").modal("show");
 
-      this.$el.find("input.date").datepicker({ dateFormat: "yy-mm-dd" });  
-      this.$el.find("input[data-key=start]").on("change", _.bind(this.updateEnd, this));  
+      this.$el.find("input.date").datepicker({ dateFormat: "yy-mm-dd" });
+      this.$el.find("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$el.find(".save").on("click", _.bind(this.handleSave, this));
       this.renderAttendees();
 
@@ -48,7 +48,7 @@ define([
     setValues: function () {
       if (this.newEvent) {
         $.get(
-          "/place", 
+          "/place",
           {
             lat: this.newEvent.location.lat,
             lon: this.newEvent.location.lon
@@ -137,7 +137,7 @@ define([
           error: _.bind(this.handleSaveFail, this)
         });
         analytics.eventAdded(values);
-      } 
+      }
     },
 
     wrapLink: function (link) {

@@ -56,7 +56,7 @@ describe("register", function () {
     }, this), done, true)();
 
     stubDb.setQueryValues(this, [
-      [], 
+      [],
       [{id: 1}]
     ]);
   });
@@ -79,7 +79,7 @@ describe("register", function () {
         }, done)();
       }
     };
-    
+
     register.handleRegister(req, res);
 
     stubDb.setQueryValues(this, [

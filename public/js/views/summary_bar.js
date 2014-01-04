@@ -17,9 +17,9 @@ define([
 
     data: {
       1: {
-        id: 1, 
-        text: "Victorian England", 
-        link: "http://en.wikipedia.org/wiki/Victorian_era", 
+        id: 1,
+        text: "Victorian England",
+        link: "http://en.wikipedia.org/wiki/Victorian_era",
         place: {
           center: [52.264713902112014, 0.5846995246856856],
           zoom: 7,
@@ -27,9 +27,9 @@ define([
         }
       },
       2: {
-        id: 2, 
+        id: 2,
         text: "American frontier",
-        link: "http://en.wikipedia.org/wiki/American_frontier", 
+        link: "http://en.wikipedia.org/wiki/American_frontier",
         place: {
           center: [40.28361442093428, -104.2341023312701],
           zoom: 5,
@@ -90,7 +90,7 @@ define([
       }
     },
 
-    initialize: function (opts) {      
+    initialize: function (opts) {
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.user = opts.user;
     },
@@ -130,7 +130,7 @@ define([
     },
 
     showSelector: function () {
-      
+
       this.placeSelector = this.$el.find("#place-selector");
       this.placeSelector.select2({
         placeholder: "Explore a period",
@@ -146,7 +146,7 @@ define([
       this.model.set(this.data[id].place, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
       this.model.trigger("change change:filterState change:date");
-       
+
     },
 
     showStats: function () {

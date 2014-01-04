@@ -5,11 +5,11 @@ var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
 
 describe("openidStrategy", function () {
-  
+
   beforeEach(function () {
     stubDb.setup(this);
     this.facebookStrategy = openidStrategy(
-      "facebook", 
+      "facebook",
       function (args) { return args[2].id; },
       function (args) { return args[2]; }
     );
@@ -19,7 +19,7 @@ describe("openidStrategy", function () {
   });
 
   it("should callback if a user is found", function (done) {
-    this.facebookStrategy(null, null, {id: 1}, 
+    this.facebookStrategy(null, null, {id: 1},
       tryTest(function (err, user) {
         should.not.exist(err);
         user.id.should.equal(2);
@@ -30,7 +30,7 @@ describe("openidStrategy", function () {
     ]);
   });
   it("should create a new user if the user is unknown", function (done) {
-    this.facebookStrategy(null, null, {id: 1}, 
+    this.facebookStrategy(null, null, {id: 1},
       tryTest(function (err, user) {
         should.not.exist(err);
         user.id.should.equal(43);

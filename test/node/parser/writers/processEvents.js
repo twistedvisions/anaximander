@@ -10,7 +10,7 @@ var getPlace = require("../../../../lib/parser/writers/getPlace");
 var processEvents = require("../../../../lib/parser/writers/processEvents");
 
 describe("processing events", function () {
-  
+
   var personJob, placeJob, organisationJob;
 
   beforeEach(function () {
@@ -108,7 +108,7 @@ describe("processing events", function () {
     processEvents(personJob).then(
       tryTest(function () {
         should.exist(personJob.value.id);
-      }, 
+      },
       done
     ), done);
   });
@@ -117,9 +117,9 @@ describe("processing events", function () {
     processEvents(personJob).then(
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
-          "Person1", personJob, 
+          "Person1", personJob,
           "born", ["<http://dbpedia.org/ontology/birthPlace>"],
-          ["<http://dbpedia.org/ontology/birthDate>", 
+          ["<http://dbpedia.org/ontology/birthDate>",
            "<http://dbpedia.org/ontology/birthYear>"]).should.equal(true);
       },
       done
@@ -131,7 +131,7 @@ describe("processing events", function () {
     processEvents(personJob).then(
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
-          "Person1", personJob, 
+          "Person1", personJob,
           "died", ["<http://dbpedia.org/ontology/deathPlace>"],
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.equal(true);
@@ -144,7 +144,7 @@ describe("processing events", function () {
     processEvents(placeJob).then(
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
-          "Place1", placeJob, 
+          "Place1", placeJob,
           "founded as a place", null,
           ["<http://dbpedia.org/ontology/foundingDate>",
            "<http://dbpedia.org/ontology/foundingYear>"]).should.equal(true);
@@ -157,8 +157,8 @@ describe("processing events", function () {
     processEvents(organisationJob).then(
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
-          "Organisation1", organisationJob, 
-          "founded as an organisation", 
+          "Organisation1", organisationJob,
+          "founded as an organisation",
           [
             "<http://dbpedia.org/ontology/locationCity>",
             "<http://dbpedia.org/ontology/locationCountry>",
@@ -178,8 +178,8 @@ describe("processing events", function () {
     processEvents(organisationJob).then(
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
-          "Organisation1", organisationJob, 
-          "went extinct as an organisation", 
+          "Organisation1", organisationJob,
+          "went extinct as an organisation",
           [
             "<http://dbpedia.org/ontology/locationCity>",
             "<http://dbpedia.org/ontology/locationCountry>",

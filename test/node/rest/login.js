@@ -20,7 +20,7 @@ describe("login", function () {
       return d.promise;
     });
   });
-  
+
   afterEach(function () {
     userPermissions.get.restore();
   });
@@ -70,7 +70,7 @@ describe("login", function () {
         done();
       }, this));
     });
-    
+
     it("should send an id if the user can login", function (done) {
       this.d.then(_.bind(function () {
         should.exist(this.message);

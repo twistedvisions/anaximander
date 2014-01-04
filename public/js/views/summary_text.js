@@ -8,8 +8,8 @@ define([
   var SummaryTextView = Backbone.View.extend({
     el: "#info-panel",
 
-    initialize: function () {      
-      
+    initialize: function () {
+
     },
 
     render: function () {

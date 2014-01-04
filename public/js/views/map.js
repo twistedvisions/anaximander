@@ -4,7 +4,7 @@ define([
   "underscore",
   "backbone",
   "analytics",
-  "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
+  "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
         "&sensor=false!callback",
   "views/options_menu",
   "styled_marker",
@@ -13,7 +13,7 @@ define([
 ], function ($, _, Backbone, analytics, maps, OptionsMenu, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
-    
+
     el: "#map-canvas",
 
     initialize: function (opts) {
@@ -25,7 +25,7 @@ define([
     },
 
     render: function () {
-      
+
       this.drawMap();
       this.model.on("change", this.update, this);
       this.eventLocationsCollection.on("reset", this.redrawMarkers, this);
@@ -42,7 +42,7 @@ define([
         delete this.mapObjects[result];
       }, this);
       _.each(toRender, function (result) {
-        var resultObj = JSON.parse(result);       
+        var resultObj = JSON.parse(result);
         var mapObject = this.drawResult(resultObj);
         mapObject.setMap(this.map);
         this.mapObjects[result] = mapObject;
@@ -67,14 +67,14 @@ define([
 
     mapNeedsUpdating: function () {
       var modelPosition = {
-        center: this.model.get("center"), 
+        center: this.model.get("center"),
         zoom: this.model.get("zoom")
       };
       var mapPosition = {
         center: this.getPosition(),
         zoom: this.getZoom()
       };
-      
+
       return JSON.stringify(modelPosition) !== JSON.stringify(mapPosition);
     },
 
@@ -82,7 +82,7 @@ define([
       var center = this.model.get("center");
       var mapOptions = {
         zoom: this.model.get("zoom"),
-        center: new google.maps.LatLng(center[0], center[1]), 
+        center: new google.maps.LatLng(center[0], center[1]),
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
       this.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
@@ -147,8 +147,8 @@ define([
     },
 
     drawResult: function (resultObj) {
-      // return (resultObj.location.length === 1) ? 
-      //     this.drawPoint(resultObj) : 
+      // return (resultObj.location.length === 1) ?
+      //     this.drawPoint(resultObj) :
       //     this.drawShape(resultObj);
       return this.drawPoint(resultObj);
     },
@@ -191,7 +191,7 @@ define([
       var start = new Date(range[0], 0, 1);
       var end = new Date(range[1], 12, 31);
 
-      var diff = (end.getTime() - eventTime.getTime()) / 
+      var diff = (end.getTime() - eventTime.getTime()) /
                  (end.getTime() - start.getTime());
 
       var blue = Math.ceil(255 - 255 * diff);
@@ -205,7 +205,7 @@ define([
     onLinkClick: function () {
       analytics.linkClicked(this.lastInfoWindow.result);
     },
-    
+
     getContent: function (result) {
       return "<p>" + _.map(result.events, this.getEventText).join("<p>");
     },
@@ -213,10 +213,10 @@ define([
     getEventText: function (event) {
       var date = new Date(event.start_date);
       return [
-        "<a class=\"event_link\" href=\"" + encodeURI(event.event_link) + "\" target=\"_blank\" >" + 
+        "<a class=\"event_link\" href=\"" + encodeURI(event.event_link) + "\" target=\"_blank\" >" +
         event.event_name + "</a>",
-        date.getDate() + "/" + (date.getMonth() + 1) + "/" + 
-        Math.abs(date.getFullYear()) + 
+        date.getDate() + "/" + (date.getMonth() + 1) + "/" +
+        Math.abs(date.getFullYear()) +
         (date.getFullYear() < 0 ? " BC" : "")
       ].join("<br/>");
     },
@@ -237,7 +237,7 @@ define([
 
     closeOpenWindows: function () {
       if (this.lastInfoWindow) {
-        this.lastInfoWindow.close();  
+        this.lastInfoWindow.close();
       }
       if (this.lastOptionsMenu) {
         this.lastOptionsMenu.close();

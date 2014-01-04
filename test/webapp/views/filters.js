@@ -1,6 +1,6 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 define(
-  ["jquery", "underscore", "backbone", "views/filters"], 
+  ["jquery", "underscore", "backbone", "views/filters"],
   function ($, _, Backbone, Filters) {
     var model = new Backbone.Model({
       center: [1, 1],
@@ -8,7 +8,7 @@ define(
       zoom: 3,
       filterState: new Backbone.Collection()
     });
-    
+
     var typesCollection = new Backbone.Collection();
     var subtypesCollection = new Backbone.Collection();
     subtypesCollection.setParentType = function () {};
@@ -18,11 +18,11 @@ define(
     subtypesCollection.updateData = function (opts) {
       return this.fetch(opts);
     };
-    
+
     describe("filter view", function () {
       beforeEach(function () {
         $("body").append("<div id='filters-container'></div>");
-        
+
         typesCollection.reset([
           {
             id: 1,
@@ -158,7 +158,7 @@ define(
           this.filters.render();
           this.filters.showSecondaryFilters(typesCollection.get(1));
           this.filters.checkSecondary(
-            new Backbone.Model({id: 3, parent_type: 1}), 
+            new Backbone.Model({id: 3, parent_type: 1}),
             {
               currentTarget: $(this.filters.$el.find(".secondary label").first().children()[0])
             }
@@ -176,7 +176,7 @@ define(
           this.filters.$el.find(".secondary input:checked").length.should.equal(0);
           this.filters.$el.find(".secondary input").first().prop("checked", true);
           this.filters.checkSecondary(
-            new Backbone.Model({id: 3, parent_type: 1}), 
+            new Backbone.Model({id: 3, parent_type: 1}),
             {
               currentTarget: $(this.filters.$el.find(".secondary label").first().children()[0])
             }
@@ -243,7 +243,7 @@ define(
               this.filters.toggleVisible();
               this.filters.$(".secondary .filter input[type=checkbox]:checked").length.should.equal(1);
             });
-            
+
             it("will unselect selected visible filters", function () {
               this.filters.$(".secondary .filter:visible").length.should.equal(2);
               this.filters.$(".secondary .filter:visible:nth(0) input[type=checkbox]").prop("checked", true);
@@ -262,7 +262,7 @@ define(
               this.filters.$(".secondary .filter input[type=checkbox]:checked").length.should.equal(1);
             });
           });
-        }); 
+        });
       });
 
 

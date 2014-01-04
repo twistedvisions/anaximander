@@ -8,7 +8,7 @@ describe("userPermissions", function () {
   beforeEach(function () {
     stubDb.setup(this);
   });
-  
+
   afterEach(function () {
     stubDb.restore(this);
   });

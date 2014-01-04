@@ -35,7 +35,7 @@ describe("saveEvent", function () {
         new saveEvent.EventSaver().ensurePlace({id: 3}).then(
           tryTest(function () {
             self.args[0][1].should.equal("find_place_by_id");
-          }, done), 
+          }, done),
           done
         );
         this.d[0].resolve({rows: [{id: 1}]});
@@ -45,7 +45,7 @@ describe("saveEvent", function () {
         new saveEvent.EventSaver().ensurePlace({id: 4}).then(
           function () {
             done({message: "should not succeed"});
-          }, 
+          },
           tryTest(function (e) {
             should.exist(e);
           }, done)
@@ -76,7 +76,7 @@ describe("saveEvent", function () {
         new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
           function () {
             done({message: "should not succeed"});
-          }, 
+          },
           tryTest(function (e) {
             should.exist(e);
           }, done)
@@ -92,7 +92,7 @@ describe("saveEvent", function () {
           tryTest(function () {
             self.args[0][1].should.equal("find_thing_by_id");
             self.args[1][1].should.equal("find_thing_by_id");
-          }, done), 
+          }, done),
           done
         );
         this.d[0].resolve({rows: [{id: 3}]});
@@ -103,7 +103,7 @@ describe("saveEvent", function () {
         new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(
           function () {
             done({message: "should not succeed"});
-          }, 
+          },
           tryTest(function (e) {
             should.exist(e);
           }, done)
@@ -140,7 +140,7 @@ describe("saveEvent", function () {
         new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
           function () {
             done({message: "should not succeed"});
-          }, 
+          },
           tryTest(function (e) {
             should.exist(e);
           }, done)
@@ -162,14 +162,14 @@ describe("saveEvent", function () {
         ).then(
           tryTest(function (id) {
             id.should.be.above(0);
-          }, done), 
+          }, done),
           function (e) {
             done(e);
           }
         );
         this.d[0].resolve({rows: [{id: 5}]});
       });
-      
+
       ["name", "place_id", "start_date", "end_date", "link"].forEach(function (key) {
         it("should throw an exception if " + key + " cannot be found", function (done) {
           var obj = {
@@ -183,7 +183,7 @@ describe("saveEvent", function () {
           new saveEvent.EventSaver().createEvent(obj).then(
             function () {
               done({message: "should not succeed"});
-            }, 
+            },
             tryTest(function (e) {
               should.exist(e);
             }, done)
@@ -200,7 +200,7 @@ describe("saveEvent", function () {
           }).then(
             function () {
               done({message: "should not succeed"});
-            }, 
+            },
             tryTest(function (e) {
               should.exist(e);
             }, done)
@@ -217,7 +217,7 @@ describe("saveEvent", function () {
         ).then(
           function () {
             done({message: "should not succeed"});
-          }, 
+          },
           tryTest(function (e) {
             should.exist(e);
           }, done)
@@ -233,7 +233,7 @@ describe("saveEvent", function () {
           tryTest(function () {
             self.args[0][1].should.equal("save_event_participant");
             self.args[1][1].should.equal("save_event_participant");
-          }, done), 
+          }, done),
           function (e) {
             done(e);
           }
@@ -254,7 +254,7 @@ describe("saveEvent", function () {
       stubDb.restore(this);
     });
     it("should do the entire save in a transaction", function (done) {
-      
+
       var req = {
         body: {
           name: "a test",
@@ -262,7 +262,7 @@ describe("saveEvent", function () {
           start: "2013-03-12T00:00:00.000Z",
           end: "2013-03-12T00:00:00.000Z",
           place: {
-            id: 58365, 
+            id: 58365,
             name: "Sneem"
           },
           attendees: [{
@@ -283,7 +283,7 @@ describe("saveEvent", function () {
         _.bind(function () {
           this.db.startTransaction.callCount.should.equal(1);
           this.db.endTransaction.callCount.should.equal(1);
-        }, this), done)); 
+        }, this), done));
       stubDb.setQueryValues(this, [
         [{id: 1}],
         [{id: 2}],
@@ -298,7 +298,7 @@ describe("saveEvent", function () {
           start: "2013-03-12T00:00:00.000Z",
           end: "2013-03-12T00:00:00.000Z",
           place: {
-            id: 58365, 
+            id: 58365,
             name: "Sneem"
           },
           attendees: [{
@@ -316,12 +316,12 @@ describe("saveEvent", function () {
       new saveEvent.EventSaver().saveEvent(req, res).then(
         function () {
           done({message: "shouldn't get here"});
-        }, 
+        },
         tryTest(_.bind(function () {
           this.db.startTransaction.callCount.should.equal(1);
           this.db.endTransaction.callCount.should.equal(0);
           this.db.rollbackTransaction.callCount.should.equal(1);
-        }, this), done) 
+        }, this), done)
       );
 
       stubDb.setQueryValues(this, [

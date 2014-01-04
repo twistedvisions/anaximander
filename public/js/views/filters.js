@@ -12,7 +12,7 @@ define([
   var Filters = Backbone.View.extend({
     el: "#filters-container",
 
-    initialize: function (opts) {      
+    initialize: function (opts) {
       this.typesCollection = opts.typesCollection;
       this.subtypesCollection = opts.subtypesCollection;
     },
@@ -180,12 +180,12 @@ define([
       var isParentUnselected = this.filterStateExists(parentTypeId);
       this._showSecondaryFilter(isParentUnselected, secondary, template, new Backbone.Model({
         id: -parentTypeId,
-        parent_type: parentTypeId,  
+        parent_type: parentTypeId,
         name: "Not Specified",
         not_specified: true
       }));
       this.subtypesCollection.forEach(
-        _.bind(this._showSecondaryFilter, 
+        _.bind(this._showSecondaryFilter,
           this, isParentUnselected, secondary, template)
       );
       this.updateVisibleSecondaryFilters();

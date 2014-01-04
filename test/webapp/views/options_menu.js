@@ -1,7 +1,7 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 /*jshint expr: true*/
 define(
-  ["jquery", "backbone", "views/options_menu", "analytics"], 
+  ["jquery", "backbone", "views/options_menu", "analytics"],
   function ($, Backbone, OptionsMenu, Analytics) {
     
     var collection = new Backbone.Collection();
@@ -18,7 +18,7 @@ define(
         
       it("should track when the add event option is selected", function () {
         var optionsMenu = new OptionsMenu({event: {latLng: {
-          lat: function () {}, 
+          lat: function () {},
           lng: function () {}
         }}});
         optionsMenu.handleAddEvent();

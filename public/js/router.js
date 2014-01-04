@@ -6,7 +6,7 @@ define([
   "analytics"
 ], function ($, _, Backbone, FilterUrlSerialiser, analytics) {
   var Router = Backbone.Router.extend({
-    
+
     routes: {
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView",
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView"
@@ -30,7 +30,7 @@ define([
       }
 
       this.model.set(data);
-      this.model.trigger("change:filterState");  
+      this.model.trigger("change:filterState");
     },
 
     init: function (options) {

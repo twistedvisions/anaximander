@@ -10,8 +10,8 @@ var bcrypt = require("bcrypt");
 var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
 
-describe("localStrategy", function () {  
-  
+describe("localStrategy", function () {
+
   beforeEach(function () {
     stubDb.setup(this);
   });
@@ -20,7 +20,7 @@ describe("localStrategy", function () {
   });
 
   it("should callback with an error if the user cannot be found", function (done) {
-    localStrategy.localStrategyImpl(null, null, 
+    localStrategy.localStrategyImpl(null, null,
       tryTest(function (err, user, message) {
       should.not.exist(err);
       user.should.equal(false);
@@ -31,14 +31,14 @@ describe("localStrategy", function () {
     ]);
   });
   it("should callback if a user's can be found and their password matches", function (done) {
-    
+
     var username = "a";
     var plaintext = "abc";
 
     bcrypt.genSalt(10, _.bind(function (err, salt) {
       bcrypt.hash(plaintext, salt, _.bind(function (err, password) {
 
-        localStrategy.localStrategyImpl(username, plaintext, 
+        localStrategy.localStrategyImpl(username, plaintext,
           tryTest(function (err, user, message) {
             should.not.exist(err);
             user.id.should.equal(3);
@@ -49,7 +49,7 @@ describe("localStrategy", function () {
         stubDb.setQueryValues(this, [
           [{
             id: 3,
-            username: username, 
+            username: username,
             password: password
           }]
         ]);
@@ -78,18 +78,18 @@ describe("localStrategy", function () {
     stubDb.setQueryValues(this, [
       [{
         id: 4,
-        username: username, 
+        username: username,
         password: "some pass"
       }]
     ]);
-  
+
   });
 
   it("should callback with an message if the password does not match", function (done) {
     var username = "a";
     var plaintext = "abc";
 
-    localStrategy.localStrategyImpl(username, plaintext, 
+    localStrategy.localStrategyImpl(username, plaintext,
       tryTest(function (err, user, message) {
         should.not.exist(err);
         user.should.equal(false);
@@ -100,15 +100,15 @@ describe("localStrategy", function () {
     stubDb.setQueryValues(this, [
       [{
         id: 5,
-        username: username, 
+        username: username,
         password: "some password"
       }]
     ]);
   });
 
   it("should callback with an error if an exception occurs running the query", function (done) {
-    
-    localStrategy.localStrategyImpl(null, null, 
+
+    localStrategy.localStrategyImpl(null, null,
       tryTest(function (err, user, message) {
         should.exist(err);
         should.not.exist(user);

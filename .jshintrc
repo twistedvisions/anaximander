@@ -10,6 +10,7 @@
   "shadow"        : true,
   "unused"        : true,
   "undef"         : true,
+  "trailing"      : true,
   "globals": {
     "require": true, 
     "define": true,

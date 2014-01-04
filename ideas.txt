@@ -1,0 +1,58 @@
+Adding a thing:
+
+ 1. Log in
+ 2. Find a place
+ 3. Add an event
+   * Set time range
+   * Name it
+   *** categorise it ***
+ 4. Chose participants
+   - look up or
+   - if a participant doesn't exist:
+     * create it
+     *** categorise it ***
+
+Editing
+
+ 1. Events can be modfied by logged in users
+ 2. Changes go to a wiki-like table maintain the user who edited and the changes they made
+
+ Things that can be edited:
+
+  thing: name/type/link
+  thing_type: name/parent_type
+  place: location
+  thing_subtype: adding/removing
+  event: name/place/start/end/link
+  event_participant: add/remove
+
+Need to keep a history of changes
+Each change needs to able to be reverted to or re-performed after it has been reverted, (unless forked - ie no merging, but can see history after a fork has occurrred)
+
+
+Searching
+
+Phase I
+-------
+
+Moderation
+ * When an event/thing is added by default it is notable, unless opt-ed out
+ * A admin list exists where new events are shown
+   * on this list things may be marked as non-notable
+
+Phase II
+--------
+
+Moderation
+ * When an event/thing is added by default it is non-notable
+ * A user may ask for a event/thing to be made notable
+ * It will go on a queue of notable-requested things
+ * People with moderation rights for that category of thing will review it and determine if it is notable
+ * Meta-moderation will exist to moderate other moderations
+
+Sharing:
+ * Events can be shared with "friends"
+ * Can share all events by event type
+
+Media:
+ * add photos/video to events

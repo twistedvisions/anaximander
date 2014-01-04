@@ -23,7 +23,7 @@ var setupApp = function (provider, useClock) {
   this.server = http.createServer(this.app);
 
   this.Provider = new OpenIdProvider(this.app, this.server);
- 
+
   this.lf = new this.Provider.provider(provider);
 };
 
@@ -37,7 +37,7 @@ var teardownApp = function () {
 _.each(["facebook", "google", "twitter", "github"], function (provider) {
 
   require("../../../lib/rest/auth/" + provider + "Strategy");
-  
+
   describe("LoginOpenId via " + provider, function () {
     describe("auth", function () {
       describe("/auth/" + provider, function () {
@@ -75,7 +75,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
           _.bind(setupApp, this)(provider);
           var port = 5000;
           this.server.listen(port);
-     
+
           var socketURL = "http://0.0.0.0:" + port;
           var options = {
             transports: ["websocket"],
@@ -89,7 +89,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
         });
 
         it("should allow the browser to create a websocket keyed by authAttempt id", function (done) {
-          
+
           var loginId = "a7c5be80-68c4-11e3-961e-19bf02deeb36";
 
           var callRegister = tryTest(
@@ -160,7 +160,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
       });
 
       describe("open connections", function () {
-        
+
         var oneMinute = 60 * 1000;
 
         beforeEach(function () {
@@ -186,7 +186,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
           disconnected.should.equal(true);
         });
 
-        
+
         it("should leave open connections that are not too old", function () {
           this.Provider.logins[1] = {
             socket: {
@@ -266,7 +266,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
               }
             }
           };
-          
+
           this.req.expect(200)
             .end(_.bind(function (/*err, res*/) {
               disconnected.should.equal(true);
@@ -286,7 +286,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
               }
             }
           };
-          
+
           this.req.expect(200).end(tryTest(
             _.bind(function (err, res) {
               res.status.should.equal(302);

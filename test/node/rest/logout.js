@@ -8,7 +8,7 @@ describe("logout", function () {
     var req = {
       logout: function () {
         loggedOut = true;
-      }, 
+      },
       user: {id: 4}
     };
     var res = {

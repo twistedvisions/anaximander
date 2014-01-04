@@ -1,12 +1,12 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["chai", "jquery", "backbone", "views/login_local", "models/current_user", "analytics"], 
+  ["chai", "jquery", "backbone", "views/login_local", "models/current_user", "analytics"],
 
   function (chai, $, Backbone, LoginLocal, CurrentUser, Analytics) {
-    
+
     var should = chai.should();
-    
+
     describe("interaction", function () {
 
       beforeEach(function () {
@@ -47,9 +47,9 @@ define(
         Analytics.loginAttempted.args[0][0].provider.should.equal("local");
       });
 
-      describe("registration", function () {        
+      describe("registration", function () {
 
-        it("should hide the popup after registration success", function () { 
+        it("should hide the popup after registration success", function () {
           this.loginLocal.render();
           this.loginLocal.$("#login-retred").popover("show");
           this.loginLocal.$("#login-retred").data()["bs.popover"]
@@ -159,7 +159,7 @@ define(
           Analytics.loginFailed.calledOnce.should.equal(true);
           Analytics.loginFailed.args[0][0].provider.should.equal("local");
         });
-        
+
       });
 
       it("should allow a user to cancel logging in by pressing the close button", function () {

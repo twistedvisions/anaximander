@@ -49,9 +49,9 @@ module.exports = {
       while ((lastResolved < self.d.length) && (lastResolved < values.length)) {
         value = values[lastResolved];
         if (value["throw"]) {
-          self.d[lastResolved].reject(value["throw"]);  
+          self.d[lastResolved].reject(value["throw"]);
         } else {
-          self.d[lastResolved].resolve({rows: value});  
+          self.d[lastResolved].resolve({rows: value});
         }
         lastResolved += 1;
       }

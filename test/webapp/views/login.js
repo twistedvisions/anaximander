@@ -1,10 +1,10 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["underscore", "jquery", "backbone", "views/login", "socketio", "cookies", "analytics"], 
+  ["underscore", "jquery", "backbone", "views/login", "socketio", "cookies", "analytics"],
 
   function (_, $, Backbone, Login, socketio, cookies, Analytics) {
-    
+
     beforeEach(function () {
       this.params = {
         user: new Backbone.Model({

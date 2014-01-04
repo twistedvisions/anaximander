@@ -1,6 +1,6 @@
 /*global sinon, describe, it */
 define(
-  ["chai", "anax_startup"], 
+  ["chai", "anax_startup"],
   function (chai, App) {
     var should = chai.should();
     describe("anax", function () {

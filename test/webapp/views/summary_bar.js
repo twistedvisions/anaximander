@@ -1,7 +1,7 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 define(
 
-  ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user"], 
+  ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user"],
 
   function (chai, Backbone, SummaryBar, $, CurrentUser) {
 
@@ -33,7 +33,7 @@ define(
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
-        });    
+        });
         summaryBar.render();
         clock.tick(200);
         sinon.stub(summaryBar.placeSelector, "select2", function () {
@@ -54,7 +54,7 @@ define(
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
-        });    
+        });
         summaryBar.getLocationCount(results).should.equal(2);
       });
 
@@ -63,7 +63,7 @@ define(
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
-        });    
+        });
         
         summaryBar.getEventCount(results).should.equal(3);
       });
@@ -75,7 +75,7 @@ define(
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
-        }); 
+        });
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(false);
       });
@@ -97,7 +97,7 @@ define(
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
-        }); 
+        });
         summaryBar.render();
         should.not.exist(summaryBar.login);
       });
@@ -112,7 +112,7 @@ define(
           model: this.model,
           user: this.userWhoCanLogin,
           eventLocationsCollection: this.collection
-        }); 
+        });
         summaryBar.render();
         should.exist(summaryBar.login);
       });

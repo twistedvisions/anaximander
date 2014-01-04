@@ -57,7 +57,7 @@ define([
           username: this.$(".popover form input[name=username]").val(),
           password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
         })).then(
-          _.bind(this.handleRegisterSuccess, this), 
+          _.bind(this.handleRegisterSuccess, this),
           _.bind(this.handleRegisterFailure, this)
         );
       }
@@ -114,16 +114,16 @@ define([
         movePopup = true;
       }
 
-      var oldMargin = 
-        parseInt(this.$(".popover form .alert").css("margin-top"), 10) + 
+      var oldMargin =
+        parseInt(this.$(".popover form .alert").css("margin-top"), 10) +
         parseInt(this.$(".popover form .alert").css("margin-bottom"), 10);
 
       this.$(".popover form .alert").text(err.responseText || defaultErrorMessage);
       this.$(".popover form .alert").show();
 
       if (movePopup) {
-        this.$(".popover").css("top", 
-          parseInt(this.$(".popover").css("top"), 10) - 
+        this.$(".popover").css("top",
+          parseInt(this.$(".popover").css("top"), 10) -
           (
             parseInt(this.$(".popover form .alert").css("height"), 10) +
             oldMargin

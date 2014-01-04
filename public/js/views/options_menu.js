@@ -11,7 +11,7 @@ define([
   var OptionsMenu = Backbone.View.extend({
     className: "options-menu dropdown show",
 
-    initialize: function (options) {      
+    initialize: function (options) {
       this.event = options.event;
     },
 

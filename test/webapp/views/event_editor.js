@@ -1,7 +1,7 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["backbone", "views/event_editor", "analytics", "models/event"], 
+  ["backbone", "views/event_editor", "analytics", "models/event"],
 
   function (Backbone, EventEditor, Analytics, Event) {
 
@@ -28,7 +28,7 @@ define(
         editor.$("input.date").datepicker("hide");
         editor.$el.remove();
       });
-      
+
       describe("saving", function () {
 
         beforeEach(function () {
@@ -59,7 +59,7 @@ define(
           Event.prototype.save.restore();
         });
 
-        it("should track when an event is added", function () {          
+        it("should track when an event is added", function () {
           this.editor.handleSave();
           Analytics.eventAdded.calledOnce.should.equal(true);
         });
@@ -89,7 +89,7 @@ define(
 
         it("should prepend // if the url doesn't start with http or https", function () {
 
-          
+
 
           this.editor.handleSave();
           this.editor.eventsCollection.toJSON()[0].link

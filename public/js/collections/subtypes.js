@@ -3,11 +3,11 @@ define([
   "backbone",
   "models/type"
 ], function (_, Backbone, Type) {
-  
+
   var types = Backbone.Collection.extend({
-    
+
     model: Type,
-    
+
     url: function () {
       return "type/" + this.parentType.get("id") + "/type";
     },

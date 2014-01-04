@@ -18,7 +18,7 @@ describe("db connector", function () {
 
       sinon.stub(pg, "connect", function (err, cb) {
         cb(
-          null, 
+          null,
           //connection api
           {
             query: function (queryString, cb) {
@@ -28,7 +28,7 @@ describe("db connector", function () {
               };
             },
             x: 11
-          }, 
+          },
           //close connection callback
           function () {}
         );
@@ -69,7 +69,7 @@ describe("db connector", function () {
               },
               errorHandler
             );
-          }, 
+          },
           errorHandler
         );
       });
@@ -89,7 +89,7 @@ describe("db connector", function () {
               },
               errorHandler
             );
-          }, 
+          },
           errorHandler
         );
       });

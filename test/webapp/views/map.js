@@ -1,9 +1,9 @@
 /*global sinon, describe, beforeEach, afterEach, it, google */
 /*jshint expr: true*/
 define(
-  ["chai", "jquery", "backbone", "views/map", "analytics", 
-   "styled_marker", "views/options_menu", "models/current_user"], 
-  function (chai, $, Backbone, Map, Analytics, 
+  ["chai", "jquery", "backbone", "views/map", "analytics",
+   "styled_marker", "views/options_menu", "models/current_user"],
+  function (chai, $, Backbone, Map, Analytics,
       StyledMarker, OptionsMenu, CurrentUser) {
     
     var should = chai.should();
@@ -48,7 +48,7 @@ define(
           center: [1, 1],
           date: [1900, 2000],
           zoom: 3
-        });   
+        });
 
         this.map = new Map({
           model: this.model,

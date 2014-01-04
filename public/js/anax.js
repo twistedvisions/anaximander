@@ -12,7 +12,7 @@ require.config({
       exports: "$"
     },
     "styled_marker": {
-      deps: ["async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey + 
+      deps: ["async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
         "&sensor=false!callback"],
       exports: "StyledMarker"
     },

@@ -35,7 +35,7 @@ define([
       user: this.user
     });
     appView.render();
-    this.router = new Router(); 
+    this.router = new Router();
     this.router.init({
       model: this.model
     });

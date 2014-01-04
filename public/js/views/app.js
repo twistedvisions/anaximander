@@ -9,12 +9,12 @@ define([
   "collections/types",
   "collections/subtypes",
   "text!templates/layout.htm"
-], function ($, jqueryui, _, Backbone, Bootstrap, when, 
-    EventLocationsCollection, TypeCollection, 
+], function ($, jqueryui, _, Backbone, Bootstrap, when,
+    EventLocationsCollection, TypeCollection,
     SubtypeCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
-    
+
     initialize: function (options) {
       this.eventLocationsCollection = new EventLocationsCollection({state: this.model});
       this.typesCollection = new TypeCollection();
@@ -35,7 +35,7 @@ define([
           typesLoaded.reject();
         }
       });
-      
+
       require(["views/map"], _.bind(function (MapView) {
         this.mapView = new MapView({
           model: this.model,

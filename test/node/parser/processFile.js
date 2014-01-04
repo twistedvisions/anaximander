@@ -26,7 +26,7 @@ describe("processFile", function () {
   ].join("\n") + "\n";
 
   before(function () {
-    fs = require("fs"); 
+    fs = require("fs");
     sinon.stub(fs, "createReadStream", function () {
       var EventEmitter = require("events").EventEmitter;
       var x = new EventEmitter();
@@ -42,14 +42,14 @@ describe("processFile", function () {
 
   beforeEach(function () {
     jobs = {};
-    kue = require("kue"); 
+    kue = require("kue");
     sinon.stub(kue, "createQueue", function () {
       var queue = function () {};
       queue.create = function (type, data) {
         data = _.clone(data);
         data.value = JSON.parse(unescape(data.value));
         jobs[unescape(data.key)] = data;
-        return queue; 
+        return queue;
       };
       queue.priority = function () {return queue; };
       queue.save = function () {return queue; };
@@ -57,7 +57,7 @@ describe("processFile", function () {
     });
 
   });
-  
+
   it("should process the first 4 lines bar 1", function (done) {
     processFile("", 100, 0, 5, true, true).then(
       tryTest(function () {
@@ -103,7 +103,7 @@ describe("processFile", function () {
         should.exists(
           jobs["<http://dbpedia.org/resource/Name8>"].link
         );
-      }, 
+      },
       done
     ));
   });

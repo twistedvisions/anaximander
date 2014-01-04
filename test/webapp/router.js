@@ -1,7 +1,7 @@
 /*global sinon, describe, before, after, beforeEach, afterEach, it */
 /*jshint expr: true*/
 define(
-  ["backbone", "router"], 
+  ["backbone", "router"],
   function (Backbone, Router) {
     afterEach(function () {
       Backbone.history.stop();
@@ -33,7 +33,7 @@ define(
             zoom: 3,
             filterState: new Backbone.Collection()
           });
-          
+
           var router = new Router();
           router.init({model: model});
           window.lastEvent.should.equal("url_change");
@@ -67,7 +67,7 @@ define(
             zoom: 3,
             filterState: new Backbone.Collection()
           });
-          
+
           var router = new Router();
           router.setFromUrl = false;
           router.init({model: model});
@@ -79,7 +79,7 @@ define(
             zoom: 3,
             filterState: new Backbone.Collection()
           });
-          
+
           var router = new Router();
           router.setFromUrl = true;
           router.init({model: model});
