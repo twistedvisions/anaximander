@@ -9,7 +9,7 @@ define([
 ], function (_, AppView, Router, ViewState, User) {
   var App = function () {
     this.model = new ViewState({
-      date: [1963, 2013],
+      date: [1963, 2014],
       center: [53.24112905344493, 6.191539001464932],
       zoom: 9,
       radius: 10
