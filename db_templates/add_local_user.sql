@@ -1,3 +1,3 @@
 insert into registered_user (username, password)
-values ('<%= username %>', '<%= password %>')
+values ($1, $2)
 returning id;

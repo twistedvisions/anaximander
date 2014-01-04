@@ -8,7 +8,7 @@ select
   ST_AsText(place.location) as location,
   ST_Distance (
     place.location,
-    ST_Point(<%= lon %>, <%= lat %>)
+    ST_Point($1, $2)
   ) as distance
 from thing as place_thing
 inner join place on place.thing_id = place_thing.id 
@@ -22,16 +22,16 @@ inner join thing_type on thing.type_id = thing_type.id
   ""
 ) %>
 where  ST_Covers (
-  ST_GeographyFromText('POLYGON((
-    <%= ne_lon %> <%= ne_lat %>,
-    <%= ne_lon %> <%= sw_lat %>,
-    <%= sw_lon %> <%= sw_lat %>,
-    <%= sw_lon %> <%= ne_lat %>,
-    <%= ne_lon %> <%= ne_lat %>))'),
+  ST_GeographyFromText('POLYGON((' ||
+    $3 || ' ' || $4 || ',' ||
+    $3 || ' ' || $6 || ',' ||
+    $5 || ' ' || $6 || ',' ||
+    $5 || ' ' || $4 || ',' ||
+    $3 || ' ' || $4 || '))'),
   place.location
 )
-and event.start_date >= '<%= start %>'
-and event.end_date <= '<%= end %>'
+and event.start_date >= $7
+and event.end_date <= $8
 <%= eventFilters %>
 group by thing.name, thing_type.name, place_thing.name,
   event.name,

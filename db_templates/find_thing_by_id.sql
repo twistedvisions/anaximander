@@ -1,1 +1,1 @@
-select id, name, link, type_id from thing where id = <%= id %>;
+select id, name, link, type_id from thing where id = $1;

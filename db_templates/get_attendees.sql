@@ -5,6 +5,6 @@ select
 from thing 
 inner join thing_type on thing.type_id = thing_type.id
 where thing.type_id != 3
-and lower(thing.name) like lower('%<%= query %>%')
+and lower(thing.name) like lower('%' || $1 || '%')
 order by thing.name asc
 limit 50

@@ -34,7 +34,7 @@ describe("saveEvent", function () {
         var self = this;
         new saveEvent.EventSaver().ensurePlace({id: 3}).then(
           tryTest(function () {
-            self.args[0][0].indexOf("select").should.not.equal(-1);
+            self.args[0][1].should.equal("find_place_by_id");
           }, done), 
           done
         );
@@ -57,7 +57,7 @@ describe("saveEvent", function () {
         var self = this;
         new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
           tryTest(function () {
-            self.args[0][0].indexOf("insert").should.not.equal(-1);
+            self.args[0][1].should.equal("save_thing");
           }, done
         ), done);
         this.d[0].resolve({rows: [{id: 1}]});
@@ -90,8 +90,8 @@ describe("saveEvent", function () {
         var self = this;
         new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(
           tryTest(function () {
-            self.args[0][0].indexOf("select").should.not.equal(-1);
-            self.args[1][0].indexOf("select").should.not.equal(-1);
+            self.args[0][1].should.equal("find_thing_by_id");
+            self.args[1][1].should.equal("find_thing_by_id");
           }, done), 
           done
         );
@@ -116,8 +116,8 @@ describe("saveEvent", function () {
         var self = this;
         new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
           tryTest(function () {
-            self.args[0][0].indexOf("select").should.not.equal(-1);
-            self.args[1][0].indexOf("insert").should.not.equal(-1);
+            self.args[0][1].should.equal("find_thing_by_id");
+            self.args[1][1].should.equal("save_thing");
           }, done),
           done
         );
@@ -169,25 +169,7 @@ describe("saveEvent", function () {
         );
         this.d[0].resolve({rows: [{id: 5}]});
       });
-      it("should handle quotes in the name", function (done) {
-        new saveEvent.EventSaver().createEvent({
-            name: "something happen's",
-            place_id: 1,
-            start_date: "2013-06-02",
-            end_date: "2013-06-02",
-            link: "http://some.wiki.page/ihope.html"
-          }
-        ).then(
-          tryTest(_.bind(function (id) {
-            id.should.be.above(0);
-            this.args[0][0].indexOf("something happen''s").should.not.equal(-1);
-          }, this), done), 
-          function (e) {
-            done(e);
-          }
-        );
-        this.d[0].resolve({rows: [{id: 5}]});
-      });
+      
       ["name", "place_id", "start_date", "end_date", "link"].forEach(function (key) {
         it("should throw an exception if " + key + " cannot be found", function (done) {
           var obj = {
@@ -249,8 +231,8 @@ describe("saveEvent", function () {
         var self = this;
         new saveEvent.EventSaver().addAttendees([{id: 3}, {id: 4}], 5).then(
           tryTest(function () {
-            self.args[0][0].indexOf("insert").should.not.equal(-1);
-            self.args[1][0].indexOf("insert").should.not.equal(-1);
+            self.args[0][1].should.equal("save_event_participant");
+            self.args[1][1].should.equal("save_event_participant");
           }, done), 
           function (e) {
             done(e);

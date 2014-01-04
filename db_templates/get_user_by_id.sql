@@ -1,3 +1,3 @@
 select id 
 from registered_user
-where id = <%= id %>
+where id = $1
