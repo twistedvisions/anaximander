@@ -1,10 +1,8 @@
-/*global describe, before, after, it, beforeEach, afterEach */
+/*global describe, it, beforeEach, afterEach */
 /*jshint expr: true*/
 var sinon = require("sinon");
 var _ = require("underscore");
 var should = require("should");
-var db;
-
 
 describe("db connector", function () {
   beforeEach(function () {
