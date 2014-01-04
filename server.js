@@ -17,8 +17,8 @@ var OpenIdProvider = require("./lib/rest/login-openid");
 
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
-  "level": "warn", 
-  "timestamp": true, 
+  "level": "warn",
+  "timestamp": true,
   "colorize": true
 });
 
@@ -42,7 +42,7 @@ unsecureApp.get("*", function (req, res) {
   res.redirect(nconf.server.host + req.url);
 });
 
-secureApp.configure(function () {    
+secureApp.configure(function () {
   secureApp.use(lessMiddleware({
     src: __dirname + "/public",
     compress: true
@@ -53,8 +53,11 @@ secureApp.use(express["static"](__dirname + "/public"));
 secureApp.use(express.cookieParser());
 secureApp.use(express.json());
 secureApp.use(express.urlencoded());
-secureApp.use(express.session({
-  secret: nconf.auth.sessionSecret
+secureApp.use(express.cookieSession({
+  secret: nconf.auth.sessionSecret,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
 secureApp.use(flash());
 
