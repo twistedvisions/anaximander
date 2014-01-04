@@ -15,7 +15,8 @@ exports.up = function (db, callback) {
       twitter_id:    {type: "string",  notNull: false },
       github_id:     {type: "string",  notNull: false },
       email:         {type: "string",  notNull: false },
-      name:          {type: "string",  notNull: false }
+      name:          {type: "string",  notNull: false },
+      registration_date: {type: "timestamp",  notNull: true }
     }),
 
     db.createTable.bind(db, "permission", {
