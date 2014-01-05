@@ -77,7 +77,10 @@ define(
       it("should track when a marker is hovered over", function () {
         this.map.render();
         this.map.drawPoint({
-          events: [],
+          events: [{
+            distance: 1,
+            location: [1, 2]
+          }],
           location: []
         });
 
@@ -114,7 +117,10 @@ define(
       it("should track when a marker link is clicked on", function () {
         this.map.render();
         this.map.drawPoint({
-          events: [],
+          events: [{
+            distance: 1,
+            location: [1, 2]
+          }],
           location: []
         });
 
@@ -123,6 +129,38 @@ define(
         this.map.onLinkClick({target: {}});
 
         Analytics.linkClicked.calledOnce.should.equal(true);
+      });
+    });
+
+    describe("info box", function () {
+      it("should send summary information to analytics", function () {
+        var data = this.map.getInfoBoxData({
+          location: [1, 2],
+          events: [{
+            distance: 3,
+            start_date: "1900-01-01T00:00:00.000Z",
+            end_date: "1900-01-01T23:59:00.000Z",
+            thing_type: "a",
+            event_name: "x"
+          }, {
+            distance: 3,
+            start_date: "1950-01-01T00:00:00.000Z",
+            end_date: "1950-01-01T23:59:00.000Z",
+            thing_type: "a",
+            event_name: "y"
+          }, {
+            distance: 3,
+            start_date: "1990-01-01T00:00:00.000Z",
+            end_date: "1990-01-01T23:59:00.000Z",
+            thing_type: "b",
+            event_name: "z"
+          }]
+        });
+        data.distance.should.equal(3);
+        data.thingTypes.should.eql(["a", "b"]);
+        data.eventNames.should.eql(["x", "y", "z"]);
+        data.startDate.should.equal("1900-01-01T00:00:00.000Z");
+        data.endDate.should.equal("1990-01-01T23:59:00.000Z");
       });
     });
 

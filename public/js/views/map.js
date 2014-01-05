@@ -166,7 +166,7 @@ define([
       });
 
       google.maps.event.addListener(marker, "mouseover", _.bind(function () {
-        analytics.infoBoxShown(result);
+        analytics.infoBoxShown(this.getInfoBoxData(result));
         this.closeOpenWindows();
         var info = new google.maps.InfoWindow({
           content: this.getContent(result)
@@ -182,6 +182,21 @@ define([
 
       return marker;
 
+    },
+
+    getInfoBoxData: function (results) {
+      var data = {};
+      data.lat = results.location[0];
+      data.lon = results.location[1];
+      data.distance = results.events[0].distance;
+      data.thingTypes = _.unique(_.pluck(results.events, "thing_type"));
+      data.eventNames = _.unique(_.pluck(results.events, "event_name"));
+      var getDate = function (x) {
+        return new Date(x).getTime();
+      };
+      data.startDate = _.min(_.pluck(results.events, "start_date"), getDate);
+      data.endDate = _.max(_.pluck(results.events, "end_date"), getDate);
+      return data;
     },
 
     getColor: function (result) {
