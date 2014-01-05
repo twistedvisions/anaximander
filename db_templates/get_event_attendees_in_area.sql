@@ -22,11 +22,11 @@ inner join thing_type on thing.type_id = thing_type.id
   ""
 ) %>
 where  ST_Covers (
-  ST_GeographyFromText($3),
+  ST_GeographyFromText('<%= boundingBox %>'),
   place.location
 )
-and event.start_date >= $4
-and event.end_date <= $5
+and event.start_date >= $3
+and event.end_date <= $4
 <%= eventFilters %>
 group by thing.name, thing_type.name, place_thing.name,
   event.name,
