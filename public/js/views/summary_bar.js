@@ -136,17 +136,23 @@ define([
         placeholder: "Explore a period",
         data: _.values(this.data)
       });
+
+      this.placeSelector.on("select2-open", _.bind(this.placeSelectorOpened, this));
       this.placeSelector.on("change", _.bind(this.handleChange, this));
+    },
+
+    placeSelectorOpened: function () {
+      analytics.periodSelectorOpened();
     },
 
     handleChange: function () {
       window.lastEvent = "period_selector";
       var id = this.placeSelector.select2("val");
+      analytics.periodSelected(this.data[id]);
       var place = this.data[id].place;
       this.model.set(this.data[id].place, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
       this.model.trigger("change change:filterState change:date");
-
     },
 
     showStats: function () {

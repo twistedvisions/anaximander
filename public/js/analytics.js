@@ -28,6 +28,12 @@ define([], function () {
     linkClicked: function (data) {
       this.sendEvent(data, "linkClicked");
     },
+    periodSelectorOpened: function (data) {
+      this.sendEvent(data, "periodSelectorOpened");
+    },
+    periodSelected: function (data) {
+      this.sendEvent(data, "periodSelected");
+    },
     optionsMenuShown: function (data) {
       this.sendEvent(data, "optionsMenuShown");
     },

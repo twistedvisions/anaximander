@@ -1,9 +1,9 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 define(
 
-  ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user"],
+  ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user", "analytics"],
 
-  function (chai, Backbone, SummaryBar, $, CurrentUser) {
+  function (chai, Backbone, SummaryBar, $, CurrentUser, analytics) {
 
     var should = chai.should();
 
@@ -27,28 +27,46 @@ define(
     });
 
     describe("interaction", function () {
-      it("should set lastEvent to 'period_selector'", function () {
-        var clock = sinon.useFakeTimers();
-        var summaryBar = new SummaryBar({
+      beforeEach(function () {
+        this.clock = sinon.useFakeTimers();
+        this.summaryBar = new SummaryBar({
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
         });
-        summaryBar.render();
-        clock.tick(200);
-        sinon.stub(summaryBar.placeSelector, "select2", function () {
+        this.summaryBar.render();
+        this.clock.tick(200);
+        sinon.stub(this.summaryBar.placeSelector, "select2", function () {
           return 2;
         });
-        summaryBar.handleChange();
+        sinon.stub(analytics, "periodSelectorOpened");
+        sinon.stub(analytics, "periodSelected");
+      });
+      afterEach(function () {
+        this.summaryBar.placeSelector.select2.restore();
+        this.clock.restore();
+        analytics.periodSelectorOpened.restore();
+        analytics.periodSelected.restore();
+      });
+      it("should track users clicking on the period selector", function () {
+        this.summaryBar.placeSelectorOpened();
+        analytics.periodSelectorOpened.calledOnce.should.equal(true);
+      });
+      it("should track users selecting a period", function () {
+        this.summaryBar.handleChange();
+        analytics.periodSelected.calledOnce.should.equal(true);
+      });
+
+      it("should set lastEvent to 'period_selector'", function () {
+        this.summaryBar.handleChange();
         window.lastEvent.should.equal("period_selector");
-        summaryBar.placeSelector.select2.restore();
       });
     });
 
     describe("results", function () {
-      
+
       var results = [[1, 2], [3]];
-      
+
       it("should show the correct amount of locations", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
@@ -64,7 +82,7 @@ define(
           user: this.user,
           eventLocationsCollection: this.collection
         });
-        
+
         summaryBar.getEventCount(results).should.equal(3);
       });
     });
