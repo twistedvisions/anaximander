@@ -1,12 +1,3 @@
-CREATE TABLE registered_user
-(
-  id SERIAL,
-  username character varying(64) NOT NULL,
-  password character varying(64) NOT NULL,
-  salt character varying(64) NOT NULL,
-  CONSTRAINT registered_user_pkey PRIMARY KEY (id)
-);
-
 CREATE TABLE thing_type
 (
   id SERIAL,
@@ -39,7 +30,7 @@ CREATE TABLE thing_subtype
   CONSTRAINT thing_subtype_pkey PRIMARY KEY (thing_id, thing_type_id)
 );
 
-CREATE TABLE event 
+CREATE TABLE event
 (
   id SERIAL,
   name character varying(300) NOT NULL,
