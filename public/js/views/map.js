@@ -166,6 +166,9 @@ define([
       });
 
       google.maps.event.addListener(marker, "mouseover", _.bind(function () {
+        setTimeout(_.bind(function () {
+          analytics.infoBoxShown(this.getInfoBoxData(result));
+        }, this), 500);
         analytics.infoBoxShown(this.getInfoBoxData(result));
         this.closeOpenWindows();
         var info = new google.maps.InfoWindow({
