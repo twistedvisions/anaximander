@@ -1,8 +1,8 @@
-select 
-  thing.name as thing_name, 
+select
+  thing.name as thing_name,
   thing_type.name as thing_type,
   event.name as event_name,
-  event.link as event_link, 
+  event.link as event_link,
   event.start_date,
   event.end_date,
   ST_AsText(place.location) as location,
@@ -11,31 +11,26 @@ select
     ST_Point($1, $2)
   ) as distance
 from thing as place_thing
-inner join place on place.thing_id = place_thing.id 
+inner join place on place.thing_id = place_thing.id
 inner join event on event.place_id = place_thing.id
 inner join event_participant on event_participant.event_id = event.id
 inner join thing on event_participant.thing_id = thing.id
 inner join thing_type on thing.type_id = thing_type.id
 <%= (
-  eventFilters.length > 0 ? 
-  "left join thing_subtype on thing.id = thing_subtype.thing_id" : 
+  eventFilters.length > 0 ?
+  "left join thing_subtype on thing.id = thing_subtype.thing_id" :
   ""
 ) %>
 where  ST_Covers (
-  ST_GeographyFromText('POLYGON((' ||
-    $3 || ' ' || $4 || ',' ||
-    $3 || ' ' || $6 || ',' ||
-    $5 || ' ' || $6 || ',' ||
-    $5 || ' ' || $4 || ',' ||
-    $3 || ' ' || $4 || '))'),
+  ST_GeographyFromText($3),
   place.location
 )
-and event.start_date >= $7
-and event.end_date <= $8
+and event.start_date >= $4
+and event.end_date <= $5
 <%= eventFilters %>
 group by thing.name, thing_type.name, place_thing.name,
   event.name,
-  event.link, 
+  event.link,
   event.start_date,
   event.end_date,
   place.location
