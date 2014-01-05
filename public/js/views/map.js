@@ -174,8 +174,9 @@ define([
         info.open(this.map, marker);
         info.result = result;
         this.lastInfoWindow = info;
-
-        $(".event_link").on("click", this.onLinkClick);
+        setTimeout(_.bind(function () {
+          $(".event_link").on("click", this.onLinkClick);
+        }, this), 100);
 
       }, this));
 
@@ -202,8 +203,8 @@ define([
       return color.hex();
     },
 
-    onLinkClick: function () {
-      analytics.linkClicked(this.lastInfoWindow.result);
+    onLinkClick: function (e) {
+      analytics.linkClicked($(e.target).data());
     },
 
     getContent: function (result) {
@@ -212,8 +213,18 @@ define([
 
     getEventText: function (event) {
       var date = new Date(event.start_date);
+      var attributes = [];
+      attributes.push("class=\"event_link\"");
+      attributes.push("href=\"" + encodeURI(event.event_link) + "\"");
+      attributes.push("target=\"_blank\"");
+      attributes.push("data-name=\"" + event.event_name + "\"");
+      attributes.push("data-link=\"" + event.event_link + "\"");
+      attributes.push("data-lat=\"" + event.location[0][0] + "\"");
+      attributes.push("data-lon=\"" + event.location[0][1] + "\"");
+      attributes.push("data-start-date=\"" + event.start_date + "\"");
+      attributes.push("data-end-date=\"" + event.end_date + "\"");
       return [
-        "<a class=\"event_link\" href=\"" + encodeURI(event.event_link) + "\" target=\"_blank\" >" +
+        "<a " + attributes.join(" ") + " >" +
         event.event_name + "</a>",
         date.getDate() + "/" + (date.getMonth() + 1) + "/" +
         Math.abs(date.getFullYear()) +

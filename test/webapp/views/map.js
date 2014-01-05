@@ -5,9 +5,9 @@ define(
    "styled_marker", "views/options_menu", "models/current_user"],
   function (chai, $, Backbone, Map, Analytics,
       StyledMarker, OptionsMenu, CurrentUser) {
-    
+
     var should = chai.should();
- 
+
     var userLoggedInWithAddEventPermission = new CurrentUser({
       "logged-in": true,
       permissions: [
@@ -66,7 +66,7 @@ define(
         StyledMarker.StyledMarker.restore();
         StyledMarker.StyledIcon.restore();
       });
-        
+
 
       it("should set lastEvent to 'map'", function () {
         this.map.render();
@@ -119,10 +119,31 @@ define(
         });
 
         google.maps.event.triggers[3]();
-        
-        this.map.onLinkClick();
+
+        this.map.onLinkClick({target: {}});
 
         Analytics.linkClicked.calledOnce.should.equal(true);
+      });
+    });
+
+    describe("marker links", function () {
+      it("should contain the event data in the dataset", function () {
+        var event = {
+          event_name: "some name",
+          event_link: "http://something.com/blah",
+          start_date: "2013-03-02",
+          end_date: "2013-04-03",
+          location: [[20, -53]]
+        };
+        var text = this.map.getEventText(event);
+        var el = $(text);
+        var dataset = el.data();
+        dataset.name.should.equal(event.event_name);
+        dataset.link.should.equal(event.event_link);
+        dataset.lat.should.equal(event.location[0][0]);
+        dataset.lon.should.equal(event.location[0][1]);
+        dataset.startDate.should.equal(event.start_date);
+        dataset.endDate.should.equal(event.end_date);
       });
     });
 
