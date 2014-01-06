@@ -54,6 +54,7 @@ define(
       });
       it("should track users selecting a period", function () {
         this.summaryBar.handleChange();
+        this.clock.tick(1200);
         analytics.periodSelected.calledOnce.should.equal(true);
       });
 
