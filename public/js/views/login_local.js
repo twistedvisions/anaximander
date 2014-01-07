@@ -64,9 +64,9 @@ define([
     },
 
     handleRegisterSuccess: function (user) {
-      Analytics.register({
+      Analytics.register(_.extend({
         provider: "local"
-      });
+      }, user));
       this.logUserIn(user);
     },
 

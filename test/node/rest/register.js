@@ -50,7 +50,7 @@ describe("register", function () {
         .expect(200)
         .end(function (err, res) {
           tryTest(function () {
-            res.text.should.equal("ok");
+            res.text.should.eql("{\"id\":1}");
           }, done)();
         });
     }, this), done, true)();

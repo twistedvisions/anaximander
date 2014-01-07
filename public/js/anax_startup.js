@@ -5,8 +5,9 @@ define([
   "router",
   "models/view_state",
   "models/current_user",
+  "analytics",
   "css!/css/anax"
-], function (_, AppView, Router, ViewState, User) {
+], function (_, AppView, Router, ViewState, User, Analytics) {
   var App = function () {
     this.model = new ViewState({
       date: [1963, 2014],
@@ -29,12 +30,13 @@ define([
       failure: _.bind(this.handleUserFetchFailure, this)
     });
   };
-  App.prototype.handleUserFetchSuccess = function () {
+  App.prototype.handleUserFetchSuccess = function (user) {
     var appView = new AppView({
       model: this.model,
       user: this.user
     });
     appView.render();
+    Analytics.loginSucceeded(user.toJSON());
     this.router = new Router();
     this.router.init({
       model: this.model

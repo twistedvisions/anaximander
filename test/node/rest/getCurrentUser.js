@@ -30,11 +30,14 @@ describe("getCurrentUser", function () {
             isAuthenticated: function () {
               return isAuthenticated;
             },
-            user: {id: 1}
+            user: {id: 1, name: "john"}
           };
           var res = {
             send: function (value) {
               (value["logged-in"] === isAuthenticated).should.equal(true);
+              if (isAuthenticated) {
+                value.name.should.equal("john");
+              }
               done();
             }
           };

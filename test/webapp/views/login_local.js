@@ -75,9 +75,10 @@ define(
 
         it("should track registration success", function () {
           this.loginLocal.render();
-          this.loginLocal.handleRegisterSuccess({});
+          this.loginLocal.handleRegisterSuccess({id: 1});
           Analytics.register.calledOnce.should.equal(true);
           Analytics.register.args[0][0].provider.should.equal("local");
+          Analytics.register.args[0][0].id.should.equal(1);
         });
 
         it("should show a message upon registration failure", function () {
