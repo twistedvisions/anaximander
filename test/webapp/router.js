@@ -18,7 +18,21 @@ define(
         router.init({model: model});
         var navigate = sinon.stub(router, "navigate");
         model.set("zoom", 2);
-        navigate.calledOnce.should.be.true;
+        navigate.calledOnce.should.equal(true);
+      });
+      describe("routes", function () {
+        it("should call filteredHighlightedMapView with no filter or highlights from mapView");
+        it("should call filteredHighlightedMapView with a filter but no highlights from filteredMapView");
+        it("should call filteredHighlightedMapView with highlights but no filter from highlightedMapView");
+      });
+      describe("process changes", function () {
+        it("should navigate with a center value");
+        it("should navigate with the dates value");
+        it("should navigate with the zoom value");
+        it("should navigate with filterstate value if it is set");
+        it("should not navigate with filterstate value if it is not set");
+        it("should navigate with highlights value if it is set");
+        it("should not navigate with highlights value if it is not set");
       });
       describe("interaction", function () {
         before(function () {

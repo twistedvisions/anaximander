@@ -28,11 +28,11 @@ define([
 
       this.drawMap();
       this.model.on("change", this.update, this);
-      this.eventLocationsCollection.on("reset", this.redrawMarkers, this);
+      this.eventLocationsCollection.on("reset", this.drawNewMarkers, this);
       this.eventLocationsCollection.start();
     },
 
-    redrawMarkers: function (newMarkers) {
+    drawNewMarkers: function (newMarkers) {
       var toRemove = newMarkers[0];
       var toRender = newMarkers[1];
 
@@ -41,12 +41,27 @@ define([
         mapObject.setMap(null);
         delete this.mapObjects[result];
       }, this);
+
       _.each(toRender, function (result) {
         var resultObj = JSON.parse(result);
         var mapObject = this.drawResult(resultObj);
         mapObject.setMap(this.map);
         this.mapObjects[result] = mapObject;
       }, this);
+    },
+
+    redrawMarkers: function () {
+      var newMapObjects = {};
+
+      _.each(this.mapObjects, function (mapObject, result) {
+        mapObject.setMap(null);
+        var resultObj = JSON.parse(result);
+        var newMapObject = this.drawResult(resultObj);
+        newMapObject.setMap(this.map);
+        newMapObjects[result] = newMapObject;
+      }, this);
+
+      this.mapObjects = newMapObjects;
     },
 
     update: function () {
@@ -57,25 +72,46 @@ define([
       if (this.mapNeedsUpdating()) {
         var center = this.model.get("center");
         this.map.panTo(new google.maps.LatLng(center[0], center[1]));
-        this.map.setZoom(this.model.get("zoom"));
+        if (this.model.get("zoom") === -1) {
+          //TODO: make sure this bounds is the same type of bounds as in
+          //getBounds() in this file
+          var newBounds = this.model.get("bounds");
+          var boundsObj = new google.maps.LatLngBounds();
+          boundsObj.extend(new google.maps.LatLng(newBounds[0].lat, newBounds[0].lon));
+          boundsObj.extend(new google.maps.LatLng(newBounds[1].lat, newBounds[1].lon));
+          this.map.fitBounds(boundsObj);
+          this.model.set("zoom", this.map.getZoom());
+          this.model.set("bounds", null);
+        } else {
+          this.map.setZoom(this.model.get("zoom"));
+        }
+
         this.locationChanged = true;
         setTimeout(_.bind(function () {
           this.locationChanged = false;
         }, this), 200);
+        this.lastModelPosition = this.getModelPosition();
+      }
+      if (this.mapNeedsRedrawing()) {
+        this.redrawMarkers();
+        this.lastHighlights = this.model.get("highlights");
       }
     },
 
     mapNeedsUpdating: function () {
-      var modelPosition = {
-        center: this.model.get("center"),
-        zoom: this.model.get("zoom")
-      };
-      var mapPosition = {
-        center: this.getPosition(),
-        zoom: this.getZoom()
-      };
+      return !_.isEqual(this.getModelPosition(), this.lastModelPosition);
+    },
 
-      return JSON.stringify(modelPosition) !== JSON.stringify(mapPosition);
+    getModelPosition: function () {
+      return {
+        center: this.model.get("center"),
+        zoom: this.model.get("zoom"),
+        date: this.model.get("date")
+      };
+    },
+
+    mapNeedsRedrawing: function () {
+      return this.model.get("highlights") !== this.lastHighlights;
     },
 
     drawMap: function () {
@@ -155,12 +191,11 @@ define([
 
     drawPoint: function (result) {
       var marker;
-
       marker = new StyledMarker.StyledMarker({
         styleIcon: new StyledMarker.StyledIcon(StyledMarker.StyledIconTypes.MARKER, {
-          color: this.getColor(result),
+          color: this.getColor(result, this.isDimmed(result.events)),
           fore: "#eeeeee",
-          text: result.events.length.toString()
+          text: this.getMarkerText(result.events)
         }),
         position: new google.maps.LatLng(result.location[0], result.location[1])
       });
@@ -187,6 +222,14 @@ define([
 
     },
 
+    getMarkerText: function (events) {
+      if (events.length >= 100) {
+        return "∞";
+      } else {
+        return events.length.toString();
+      }
+    },
+
     getInfoBoxData: function (results) {
       var data = {};
       data.lat = results.location[0];
@@ -202,23 +245,32 @@ define([
       return data;
     },
 
-    getColor: function (result) {
-
-      var eventTime = new Date(_.last(result.events).start_date);
-
+    getColor: function (result, isDimmed) {
+      var eventTime = new Date(_.first(result.events).start_date);
       var range = this.model.get("date");
       var start = new Date(range[0], 0, 1);
       var end = new Date(range[1], 12, 31);
 
-      var diff = (end.getTime() - eventTime.getTime()) /
-                 (end.getTime() - start.getTime());
+      var diff = 1 - ((end.getTime() - eventTime.getTime()) /
+                      (end.getTime() - start.getTime()));
 
-      var blue = Math.ceil(255 - 255 * diff);
-      var red = Math.floor(255 * diff);
+      var scale = chroma.scale(["red", "blue"]);
+      var color = scale(diff);
 
-      var color = chroma.color("rgb(" + [red, 0, blue].join(",") + ")");
+      if (isDimmed) {
+        color = color.desaturate(30);
+        color = color.brighter(30);
+      }
 
       return color.hex();
+    },
+
+    isDimmed: function (events) {
+      var highlights = this.model.get("highlights") || false;
+      var isHighlighted = highlights &&
+        _.intersection(highlights, _.pluck(events, "thing_id").concat(_.pluck(events, "place_thing_id"))).length > 0;
+
+      return highlights && (highlights.length > 0) && !isHighlighted;
     },
 
     onLinkClick: function (e) {

@@ -1,0 +1,54 @@
+#search-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 16px;
+  form {
+    height: 16px;
+    margin-bottom: 0;
+    #search {
+      border: 1;
+      padding: 0 0 0 3px;
+      width: 100%;
+      font-size: 10px;
+      height: 16px;
+      line-height: 16px;
+    }
+  }
+  .search-results {
+    width: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: none;
+
+    li:nth-child(odd) {
+      background-color: #fcfcff
+    }
+    li {
+      a {
+        display: inline;
+        color: #428bca;
+        padding: 0;
+      }
+    }
+    .name {
+      font-size: 14px;
+      max-width: 170px;
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .type-name {
+      font-style: italic;
+      font-size: 10px;
+      float: right;
+      margin-top: 4px;
+      margin-right: 4px;
+    }
+    .date {
+      font-size: 10px;
+    }
+  }
+}

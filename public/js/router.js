@@ -9,19 +9,37 @@ define([
 
     routes: {
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView"
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter/highlights/:highlights": "filteredHighlightedMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/highlights/:highlights": "highlightedMapView"
     },
 
     mapView: function (lat, lon, zoom, start, end) {
-      this.filteredMapView(lat, lon, zoom, start, end, null);
-      this.setFromUrl = true;
+      this.filteredHighlightedMapView(lat, lon, zoom, start, end, null, null);
     },
     filteredMapView: function (lat, lon, zoom, start, end, filters) {
+      this.filteredHighlightedMapView(lat, lon, zoom, start, end, filters, null);
+    },
+
+    highlightedMapView: function (lat, lon, zoom, start, end, highlights) {
+      this.filteredHighlightedMapView(lat, lon, zoom, start, end, null, highlights);
+    },
+
+    filteredHighlightedMapView: function (lat, lon, zoom, start, end, filters, highlights) {
+
+      this.setFromUrl = true;
+
       var data = {
-        date: [start, end],
-        center: [lat, lon],
+        date: [parseInt(start, 10), parseInt(end, 10)],
+        center: [parseFloat(lat), parseFloat(lon)],
         zoom: parseInt(zoom, 10)
       };
+
+      if (highlights) {
+        data.highlights = JSON.parse(highlights);
+      } else {
+        data.highlights = [];
+      }
 
       window.lastEvent = "url_change";
 
@@ -55,6 +73,7 @@ define([
       var center = this.model.get("center");
       var zoom = this.model.get("zoom");
       var filterState = this.model.get("filterState").toJSON();
+      var highlights = this.model.get("highlights");
       var filters = "";
       var location = [
         "lat", center[0],
@@ -68,6 +87,11 @@ define([
         location.push("filter");
         filters = FilterUrlSerialiser.serialise(this.model);
         location.push(filters);
+      }
+
+      if (highlights && highlights.length > 0) {
+        location.push("highlights");
+        location.push(JSON.stringify(highlights));
       }
 
       this.navigate(location.join("/"));

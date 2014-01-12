@@ -108,6 +108,8 @@ define(
         summaryBar.render();
         summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(true);
       });
+      it("should send analytics when clicked");
+      it("should trigger the resize even on window when clicked");
     });
 
     describe("login", function () {

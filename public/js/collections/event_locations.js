@@ -71,7 +71,6 @@ define([
 
       var oldResultsAsKeys = _.map(this.lastResults, this.makeKey, this);
       var newResultsAsKeys = _.map(results, this.makeKey, this);
-
       var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
       var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
 
@@ -85,7 +84,7 @@ define([
       return JSON.stringify({
         location: result[0].location[0],
         events: _.map(result, function (r) {
-          return r;
+          return _.omit(r, "distance");
         })
       });
     },

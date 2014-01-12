@@ -132,6 +132,86 @@ define(
       });
     });
 
+    describe("drawNewMarkers", function () {
+      it("should remove necessary mapobjects");
+      it("should add necessary mapobjects");
+    });
+    describe("redrawMarkers", function () {
+      it("should leave the same amount of markers");
+      it("should call draw result on each marker");
+    });
+    describe("updateLocation", function () {
+      describe("when the map needs updating", function () {
+        it("should pan to the model's center");
+        it("should change the zoom if it is set");
+        describe("when zoom is -1", function () {
+          it("should change the zoom given by the bounds");
+          it("should set the zoom on the model");
+          it("should delete the bounds from the model");
+        });
+        it("should set this.locationChanged");
+        it("should remember the last position to which it was navigated");
+      });
+      describe("when the map needs redrawing", function () {
+        it("should redraw the markers");
+        it("should the last highlighted ids");
+      });
+    });
+    describe("getBounds", function () {
+      it("should get the bounds from the map as a nested array");
+    });
+
+    describe("mapNeedsUpdating", function () {
+      it("needs updating if the center has changed", function () {
+        var map = new Map({model: this.model});
+        map.getPosition = function () {
+          return [1, 1];
+        };
+        map.getZoom = function () {
+          return 3;
+        };
+        map.mapNeedsUpdating().should.equal(false);
+        map.getPosition = function () {
+          return [2, 1];
+        };
+        map.mapNeedsUpdating().should.equal(true);
+      });
+
+      it("needs updating if the zoom has changed", function () {
+        var map = new Map({model: this.model});
+        map.getPosition = function () {
+          return [1, 1];
+        };
+        map.getZoom = function () {
+          return 3;
+        };
+        map.mapNeedsUpdating().should.equal(false);
+        map.getZoom = function () {
+          return 5;
+        };
+        map.mapNeedsUpdating().should.equal(true);
+      });
+
+      it("needs updating if the date has changed");
+    });
+
+    describe("mapNeedsRedrawing", function () {
+      it("needs redrawing when highlights have been set");
+      it("needs redrawing when highlights have been added");
+      it("needs redrawing when highlights have been removed");
+    });
+
+    describe("getMarkerText", function () {
+      it("should be the number of elements in the marker when there are 2 digits");
+      it("should be infinity when there are more than 2 digits");
+    });
+
+    describe("isDimmed", function () {
+      it("should be dimmed when there are things to highlight, but not in this marker");
+      it("should not be dimmed when there are things to highlight that are in this marker");
+      it("should not be dimmed when there are no things to highlight");
+    });
+
     describe("info box", function () {
       it("should send summary information to analytics", function () {
         var data = this.map.getInfoBoxData({
@@ -210,38 +290,7 @@ define(
           }]
         }).should.be.equal("#80007f");
       });
-    });
-
-    describe("mapNeedsUpdating", function () {
-      it("needs updating if the center has changed", function () {
-        var map = new Map({model: this.model});
-        map.getPosition = function () {
-          return [1, 1];
-        };
-        map.getZoom = function () {
-          return 3;
-        };
-        map.mapNeedsUpdating().should.equal(false);
-        map.getPosition = function () {
-          return [2, 1];
-        };
-        map.mapNeedsUpdating().should.equal(true);
-      });
-
-      it("needs updating if the zoom has changed", function () {
-        var map = new Map({model: this.model});
-        map.getPosition = function () {
-          return [1, 1];
-        };
-        map.getZoom = function () {
-          return 3;
-        };
-        map.mapNeedsUpdating().should.equal(false);
-        map.getZoom = function () {
-          return 5;
-        };
-        map.mapNeedsUpdating().should.equal(true);
-      });
+      it("should be washed out if it is dimmed");
     });
 
     describe("options menu", function () {

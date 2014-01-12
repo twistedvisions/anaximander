@@ -127,6 +127,7 @@ define([
     showFilters: function () {
       analytics.showFilters();
       $("body").toggleClass("filters-visible");
+      $(window).trigger("resize");
     },
 
     showSelector: function () {
