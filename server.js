@@ -1,4 +1,4 @@
-/*global __dirname*/
+/*global __dirname, process*/
 
 require("newrelic");
 
@@ -17,7 +17,7 @@ var OpenIdProvider = require("./lib/rest/login-openid");
 
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
-  "level": "warn",
+  "level": process.argv[2] === "debug" ? "verbose" : "warn",
   "timestamp": true,
   "colorize": true
 });
@@ -81,15 +81,16 @@ require("./lib/rest/register").init(secureApp);
 var Provider = new OpenIdProvider(secureApp, secureServer);
 new Provider.provider("facebook");
 new Provider.provider("google");
-new Provider.provider("twitter");
+new Provider.provider("twitter")
 new Provider.provider("github");
 
-require("./lib/rest/getEvents").init(secureApp);
-require("./lib/rest/saveEvent").init(secureApp);
-require("./lib/rest/getPlaces").init(secureApp);
 require("./lib/rest/getAttendee").init(secureApp);
-require("./lib/rest/getTypes").init(secureApp);
+require("./lib/rest/getEvents").init(secureApp);
+require("./lib/rest/getPlaces").init(secureApp);
 require("./lib/rest/getSubtypes").init(secureApp);
+require("./lib/rest/getTypes").init(secureApp);
+require("./lib/rest/saveEvent").init(secureApp);
+require("./lib/rest/search").init(secureApp);
 
 secureServer.listen(nconf.server.securePort);
 unsecureServer.listen(nconf.server.unsecurePort);
