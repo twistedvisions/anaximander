@@ -1,38 +1,97 @@
 /*global sinon, describe, before, after, beforeEach, afterEach, it */
 /*jshint expr: true*/
 define(
-  ["backbone", "router"],
-  function (Backbone, Router) {
-    afterEach(function () {
-      Backbone.history.stop();
-    });
+  ["underscore", "backbone", "router",
+   "utils/filter_url_serialiser"],
+  function (_, Backbone, Router, FilterUrlSerialiser) {
     describe("router", function () {
-      it("should navigate on model changes", function () {
-        var model = new Backbone.Model({
+
+      beforeEach(function () {
+        this.model = new Backbone.Model({
           center: [1, 1],
           date: [1900, 2000],
           zoom: 3,
           filterState: new Backbone.Collection()
         });
-        var router = new Router();
-        router.init({model: model});
-        var navigate = sinon.stub(router, "navigate");
-        model.set("zoom", 2);
+        this.router = new Router();
+      });
+
+      afterEach(function () {
+        Backbone.history.stop();
+      });
+
+      it("should navigate on model changes", function () {
+        this.router.init({model: this.model});
+        var navigate = sinon.stub(this.router, "navigate");
+        this.model.set("zoom", 2);
         navigate.calledOnce.should.equal(true);
       });
       describe("routes", function () {
-        it("should call filteredHighlightedMapView with no filter or highlights from mapView");
-        it("should call filteredHighlightedMapView with a filter but no highlights from filteredMapView");
-        it("should call filteredHighlightedMapView with highlights but no filter from highlightedMapView");
+        beforeEach(function () {
+          sinon.stub(this.router, "filteredHighlightedMapView");
+        });
+        afterEach(function () {
+          this.router.filteredHighlightedMapView.restore();
+        });
+        it("should call filteredHighlightedMapView with no filter or highlights from mapView", function () {
+          this.router.mapView(1, 2, 3, 4, 5);
+          this.router.filteredHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, null).should.equal(true);
+        });
+        it("should call filteredHighlightedMapView with a filter but no highlights from filteredMapView", function () {
+          this.router.filteredMapView(1, 2, 3, 4, 5, "some filters");
+          this.router.filteredHighlightedMapView.calledWith(1, 2, 3, 4, 5, "some filters", null).should.equal(true);
+        });
+        it("should call filteredHighlightedMapView with highlights but no filter from highlightedMapView", function () {
+          this.router.highlightedMapView(1, 2, 3, 4, 5, "[1]");
+          this.router.filteredHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "[1]").should.equal(true);
+        });
       });
       describe("process changes", function () {
-        it("should navigate with a center value");
-        it("should navigate with the dates value");
-        it("should navigate with the zoom value");
-        it("should navigate with filterstate value if it is set");
-        it("should not navigate with filterstate value if it is not set");
-        it("should navigate with highlights value if it is set");
-        it("should not navigate with highlights value if it is not set");
+        beforeEach(function () {
+          this.router = new Router();
+          sinon.stub(this.router, "filteredHighlightedMapView");
+          sinon.stub(this.router, "navigate", _.bind(function (location) {
+            this.location = location;
+          }, this));
+        });
+        it("should navigate with a center value", function () {
+          this.model.set("center", [10, -20]);
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /lat\/10\/lon\/-20/.test(this.location).should.equal(true);
+        });
+        it("should navigate with the dates value", function () {
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /start\/1900\/end\/2000/.test(this.location).should.equal(true);
+        });
+        it("should navigate with the zoom value", function () {
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /zoom\/3\//.test(this.location).should.equal(true);
+        });
+        it("should navigate with filterstate value if it is set", function () {
+          FilterUrlSerialiser.deserialise("1:u", this.model);
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /filter\/1:u/.test(this.location).should.equal(true);
+        });
+        it("should not navigate with filterstate value if it is not set", function () {
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /filter\//.test(this.location).should.equal(false);
+        });
+        it("should navigate with highlights value if it is set", function () {
+          this.model.set("highlights", [1]);
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /highlights\/\[1\]/.test(this.location).should.equal(true);
+        });
+        it("should not navigate with highlights value if it is not set", function () {
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /highlights\//.test(this.location).should.equal(false);
+        });
       });
       describe("interaction", function () {
         before(function () {

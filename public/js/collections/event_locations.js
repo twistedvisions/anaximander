@@ -29,33 +29,15 @@ define([
         var timeRange = this.state.get("date");
         var bounds = this.state.get("bounds");
         var filterState = this.state.get("filterState");
-        var pad = function (n, width, z) {
-          z = z || "0";
-          n = n + "";
-          return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-        };
-        var formatYear = function (year) {
-          return pad(Math.abs(year), 4, 0);
-        };
-        var getStartOfYear = function (year) {
-          return formatYearAsTimestamp(year, "-01-01 00:00");
-        };
-        var getEndOfYear = function (year) {
-          return formatYearAsTimestamp(year, "-12-31 23:59");
-        };
-        var formatYearAsTimestamp = function (year, suffix) {
-          var isBc = year < 0;
-          year = formatYear(year) + suffix + (isBc ? " BC" : "");
-          return isBc ? year.substring(1) : year;
-        };
+
         $.get(
           "/location",
           {
             lat: position[0],
             lon: position[1],
             bounds: bounds,
-            start: getStartOfYear(timeRange[0]),
-            end: getEndOfYear(timeRange[1]),
+            start: this.getStartOfYear(timeRange[0]),
+            end: this.getEndOfYear(timeRange[1]),
             typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
             subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
             notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
@@ -63,6 +45,31 @@ define([
           _.bind(this.handleResults, this)
         );
       }
+    },
+
+    getStartOfYear: function (year) {
+      return this.formatYearAsTimestamp(year, "-01-01 00:00");
+    },
+
+    getEndOfYear: function (year) {
+      return this.formatYearAsTimestamp(year, "-12-31 23:59");
+    },
+
+    //TODO: refactor out these into a different utils file
+    formatYearAsTimestamp: function (year, suffix) {
+      var isBc = year < 0;
+      year = this.formatYear(year) + suffix + (isBc ? " BC" : "");
+      return isBc ? year.substring(1) : year;
+    },
+
+    formatYear: function (year) {
+      return this.pad(Math.abs(year), year < 0 ? 5 : 4, 0);
+    },
+
+    pad: function (n, width, z) {
+      z = z || "0";
+      n = n + "";
+      return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     },
 
     handleResults: function (results) {
@@ -74,6 +81,8 @@ define([
       var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
       var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
 
+      //todo: be better off storing last results as keys
+      //so don't need to make it twice?
       this.lastResults = results;
 
       this.trigger("reset", [toRemove, toRender]);

@@ -89,27 +89,45 @@ define(
     });
 
     describe("filter button", function () {
-      it("should not be highlighted when there are no filters selected", function () {
-        var summaryBar = new SummaryBar({
+      beforeEach(function () {
+        this.summaryBar = new SummaryBar({
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
         });
-        summaryBar.render();
-        summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(false);
+        sinon.stub(analytics, "showFilters");
+      });
+      afterEach(function () {
+        analytics.showFilters.restore();
+      });
+      it("should not be highlighted when there are no filters selected", function () {
+        this.summaryBar.render();
+        this.summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(false);
       });
       it("should be highlighted when there are filters selected", function () {
         this.model.get("filterState").reset({id: 1});
-        var summaryBar = new SummaryBar({
+        this.summaryBar = new SummaryBar({
           model: this.model,
           user: this.user,
           eventLocationsCollection: this.collection
         });
-        summaryBar.render();
-        summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(true);
+        this.summaryBar.render();
+        this.summaryBar.$("#filter-toggle").hasClass("highlight").should.equal(true);
       });
-      it("should send analytics when clicked");
-      it("should trigger the resize even on window when clicked");
+      it("should send analytics when clicked", function () {
+        this.summaryBar.showFilters();
+        analytics.showFilters.calledOnce.should.equal(true);
+      });
+      it("should trigger the resize event on window when clicked", function () {
+        var listenerCalled = false;
+        var listener = function () {
+          listenerCalled = true;
+        };
+        $(window).on("resize", listener);
+        this.summaryBar.showFilters();
+        $(window).off("resize", listener);
+        listenerCalled.should.equal(true);
+      });
     });
 
     describe("login", function () {

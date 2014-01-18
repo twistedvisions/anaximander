@@ -88,9 +88,6 @@ define(
         });
 
         it("should prepend // if the url doesn't start with http or https", function () {
-
-
-
           this.editor.handleSave();
           this.editor.eventsCollection.toJSON()[0].link
             .should.equal("//some link");

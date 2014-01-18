@@ -16,6 +16,11 @@ define(function () {
               };
             },
             LatLng: function () {},
+            LatLngBounds: function () {
+              return {
+                extend: function () {}
+              };
+            },
             Point: {},
             Marker: function () {},
             MVCObject: function () {},

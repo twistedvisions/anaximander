@@ -71,7 +71,10 @@ define([
     updateLocation: function () {
       if (this.mapNeedsUpdating()) {
         var center = this.model.get("center");
-        this.map.panTo(new google.maps.LatLng(center[0], center[1]));
+        var mapCenter = this.map.getCenter();
+        if ((mapCenter.lat() !== center[0]) || (mapCenter.lng() !== center[1])) {
+          this.map.panTo(new google.maps.LatLng(center[0], center[1]));
+        }
         if (this.model.get("zoom") === -1) {
           //TODO: make sure this bounds is the same type of bounds as in
           //getBounds() in this file
@@ -83,7 +86,9 @@ define([
           this.model.set("zoom", this.map.getZoom());
           this.model.set("bounds", null);
         } else {
-          this.map.setZoom(this.model.get("zoom"));
+          if (this.map.getZoom() !== this.model.get("zoom")) {
+            this.map.setZoom(this.model.get("zoom"));
+          }
         }
 
         this.locationChanged = true;
