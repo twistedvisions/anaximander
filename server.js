@@ -81,7 +81,7 @@ require("./lib/rest/register").init(secureApp);
 var Provider = new OpenIdProvider(secureApp, secureServer);
 new Provider.provider("facebook");
 new Provider.provider("google");
-new Provider.provider("twitter")
+new Provider.provider("twitter");
 new Provider.provider("github");
 
 require("./lib/rest/getAttendee").init(secureApp);
@@ -90,7 +90,8 @@ require("./lib/rest/getPlaces").init(secureApp);
 require("./lib/rest/getSubtypes").init(secureApp);
 require("./lib/rest/getTypes").init(secureApp);
 require("./lib/rest/saveEvent").init(secureApp);
-require("./lib/rest/search").init(secureApp);
+
+new (require("./lib/rest/search"))(secureApp);
 
 secureServer.listen(nconf.server.securePort);
 unsecureServer.listen(nconf.server.unsecurePort);
