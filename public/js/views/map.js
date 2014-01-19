@@ -103,8 +103,9 @@ define([
       }
     },
 
+
     mapNeedsUpdating: function () {
-      return !_.isEqual(this.getModelPosition(), this.lastModelPosition);
+      return !this.dontRedraw && !_.isEqual(this.getModelPosition(), this.lastModelPosition);
     },
 
     getModelPosition: function () {
@@ -161,11 +162,13 @@ define([
       if (!this.locationChanged) {
         window.lastEvent = "map";
       }
+      this.dontRedraw = true;
       this.model.set({
         "bounds": this.getBounds(),
         "center": this.getPosition(),
         "zoom": this.getZoom()
       });
+      this.dontRedraw = false;
     },
 
     getPosition: function () {

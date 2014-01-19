@@ -33,9 +33,43 @@ define(
           date: [1900, 2000],
           zoom: 3
         });
-        this.map = new Map({model: this.model});
+        this.map = new Map({
+          model: this.model,
+          eventLocationsCollection: new (Backbone.Collection.extend({
+            start: function () {}
+          }))()
+        });
+        this.mockMap = function (opts) {
+          this.map.map = _.extend({
+            panTo: sinon.stub(),
+            getBounds: function () {
+              return {
+                getNorthEast: function () {
+                  return {
+                    lat: function () { return  10; },
+                    lng: function () { return -20; }
+                  };
+                },
+                getSouthWest: function () {
+                  return {
+                    lat: function () { return -30; },
+                    lng: function () { return  40; }
+                  };
+                }
+              };
+            },
+            getCenter: function () {
+              return {
+                lat: function () { return -10; },
+                lng: function () { return  10; }
+              };
+            },
+            getZoom: sinon.stub(),
+            setZoom: sinon.stub(),
+            fitBounds: sinon.stub()
+          }, opts || {});
+        };
       });
-
       describe("interaction", function () {
         beforeEach(function () {
           sinon.stub(Analytics, "infoBoxShown");
@@ -216,13 +250,8 @@ define(
             eventLocationsCollection: collection
           });
 
-          this.map.map = {
-            panTo: sinon.stub(),
-            getCenter: sinon.stub(),
-            getZoom: sinon.stub(),
-            setZoom: sinon.stub(),
-            fitBounds: sinon.stub()
-          };
+          this.mockMap({getCenter: sinon.stub()});
+
           this.map.map.getCenter.returns({
             lat: function () { return 15; },
             lng: function () { return -25; }
@@ -325,6 +354,38 @@ define(
             this.map.updateLocation();
             this.map.lastHighlights.should.eql([1]);
           });
+        });
+      });
+      describe("onBoundsChanged", function () {
+        it("should set the last postion to 'map'", function () {
+          this.mockMap();
+          window.lastEvent = "x";
+          this.map.onBoundsChanged();
+          window.lastEvent.should.equal("map");
+        });
+        it("should not set the last postion to 'map' if locationChanged is true", function () {
+          this.mockMap();
+          this.map.locationChanged = true;
+          window.lastEvent = "x";
+          this.map.onBoundsChanged();
+          window.lastEvent.should.not.equal("map");
+        });
+        it("should set the model from the map", function () {
+          this.mockMap();
+          sinon.stub(this.map.model, "set");
+          this.map.onBoundsChanged();
+          this.map.model.set.calledOnce.should.equal(true);
+        });
+        it("should not reposition the map", function () {
+          this.map.getZoom = function () {
+            return 8;
+          };
+          this.mockMap();
+          sinon.spy(this.map, "mapNeedsRedrawing");
+          this.map.render();
+          this.map.onBoundsChanged();
+          this.map.mapNeedsRedrawing.calledOnce.should.equal(true);
+          this.map.mapNeedsRedrawing.returned(false).should.equal(true);
         });
       });
       describe("getPosition", function () {
