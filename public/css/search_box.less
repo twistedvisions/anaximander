@@ -9,18 +9,27 @@
     margin-bottom: 0;
     #search {
       border: 1;
-      padding: 0 0 0 3px;
+      padding: 0 16px 0 3px;
       width: 100%;
       font-size: 10px;
       height: 16px;
       line-height: 16px;
     }
   }
+  .search-button {
+    position: absolute;
+    right: 0;
+    margin-top: 1px;
+    margin-right: 3px;
+  }
   &.loading {
     #search {
       background-image: url(/img/loading.gif) !important;
       background-position: right center;
       background-repeat: no-repeat;
+    }
+    .search-button {
+      display: none;
     }
   }
   .search-results {

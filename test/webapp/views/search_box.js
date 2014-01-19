@@ -23,6 +23,14 @@ define(
           this.el.find("form").trigger("submit");
           this.searchBox.handleSearchSubmit.calledOnce.should.equal(true);
         });
+        it("should submit a request when the search-button is clicked", function () {
+          sinon.stub(this.searchBox, "handleSearchSubmit", function (e) {
+            e.preventDefault();
+          });
+          this.el = this.searchBox.render();
+          this.el.find(".search-button").trigger("click");
+          this.searchBox.handleSearchSubmit.calledOnce.should.equal(true);
+        });
         it("should show a loading image when the form is submitted", function () {
           sinon.stub(this.searchBox, "handleSearchSubmit", function (e) {
             e.preventDefault();

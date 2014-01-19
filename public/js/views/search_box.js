@@ -22,6 +22,7 @@ define([
     render: function () {
       this.$el.html(template);
       this.$("form").on("submit", _.bind(this.handleSearchSubmit, this));
+      this.$(".search-button").on("click", _.bind(this.handleSearchSubmit, this));
       this.$(_.bind(function () {
         this.$("#search").focus();
       }, this));
