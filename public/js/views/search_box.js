@@ -5,14 +5,17 @@ define([
   "analytics",
   "utils/filter_url_serialiser",
   "text!templates/search_box.htm",
+  "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "css!/css/search_box"
-], function ($, _, Backbone, Analytics, FilterUrlSerialiser, template, searchResult) {
+], function ($, _, Backbone, Analytics, FilterUrlSerialiser, template,
+    searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
     el: "#search-box",
 
     initialize: function () {
+      this.searchSummaryTemplate = _.template(searchSummary);
       this.searchResultTemplate = _.template(searchResult);
     },
 
@@ -23,7 +26,7 @@ define([
         this.$("#search").focus();
       }, this));
       this.$("#search").focus();
-      $("#search-box").on("hidden.bs.dropdown", _.bind(this.hideSearchResults, this));
+      $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
       $(window).on("resize", _.bind(this.handleBodyResize, this));
       return this.$el;
     },
@@ -71,6 +74,9 @@ define([
     },
 
     renderSearchEntries: function (searchEntries) {
+      searchEntries.unshift(this.searchSummaryTemplate({
+        searchEntries: searchEntries.length
+      }));
       this.$(".dropdown-menu").html(searchEntries);
     },
 
@@ -86,10 +92,15 @@ define([
       this.handleBodyResize();
     },
 
+    bsHideSearchResults: function (e) {
+      e.preventDefault();
+    },
+
     hideSearchResults: function () {
       $("body").removeClass("search-visible");
       this.toggleDropdown();
       this.dropdownVisible = false;
+      this.model.set("highlights", []);
     },
 
     toggleDropdown: function () {
@@ -99,6 +110,7 @@ define([
     bindEventsToSearchEntries: function () {
       this.$(".dropdown-menu li").on("click", _.bind(this.resultSelected, this));
       this.$(".dropdown-menu li .name a").on("click", _.bind(this.preventEventPropagation, this));
+      this.$(".dropdown-menu li .hide-button").on("click", _.bind(this.hideSearchResults, this));
     },
 
     preventEventPropagation: function (e) {

@@ -35,17 +35,17 @@ define(
           }
         });
 
-        it("should hide search results when the dropdown is hidden", function () {
-          sinon.stub(this.searchBox, "hideSearchResults");
+        it("should do nothing when the dropdown is hidden", function () {
+          sinon.stub(this.searchBox, "bsHideSearchResults");
 
           this.parentEl = $("<div id='search-box'></div>");
           this.parentEl.appendTo(document.body);
           this.el = this.searchBox.render();
           this.el.appendTo(this.parentEl);
           try {
-            this.searchBox.hideSearchResults.calledOnce.should.equal(false);
-            $("#search-box").trigger("hidden.bs.dropdown");
-            this.searchBox.hideSearchResults.calledOnce.should.equal(true);
+            this.searchBox.bsHideSearchResults.calledOnce.should.equal(false);
+            $("#search-box").trigger("hide.bs.dropdown");
+            this.searchBox.bsHideSearchResults.calledOnce.should.equal(true);
           } finally {
             this.parentEl.remove();
           }
@@ -133,12 +133,23 @@ define(
           });
         });
         describe("renderSearchEntries", function () {
+          it("should put a summary at the top", function () {
+            var el = $("<div class=\"new-el-class\"></div>");
+            var sb_el = this.searchBox.render();
+            sb_el.appendTo(document.body);
+            try {
+              this.searchBox.renderSearchEntries([el]);
+              this.searchBox.$(".dropdown-menu .search-summary").length.should.equal(1);
+            } finally {
+              sb_el.remove();
+            }
+          });
           it("should add the entries to the drop down", function () {
             var el = $("<div class=\"new-el-class\"></div>");
             var sb_el = this.searchBox.render();
             sb_el.appendTo(document.body);
             try {
-              this.searchBox.renderSearchEntries(el);
+              this.searchBox.renderSearchEntries([el]);
               this.searchBox.$(".dropdown-menu .new-el-class").length.should.equal(1);
             } finally {
               sb_el.remove();
@@ -163,6 +174,16 @@ define(
             this.searchBox.$(".dropdown-menu li a").click();
             this.searchBox.resultSelected.calledOnce.should.equal(false);
             this.searchBox.preventEventPropagation.calledOnce.should.equal(true);
+          });
+          it("should hide the search box when the close button is clicked", function () {
+            sinon.stub(this.searchBox, "hideSearchResults");
+            sinon.stub(this.searchBox, "resultSelected");
+            this.searchBox.render();
+            this.searchBox.$(".dropdown-menu").html("<li><div class='hide-button'><a>text</a></div></li>");
+            this.searchBox.bindEventsToSearchEntries();
+            this.searchBox.hideSearchResults.calledOnce.should.equal(false);
+            this.searchBox.$(".dropdown-menu li a").click();
+            this.searchBox.hideSearchResults.calledOnce.should.equal(true);
           });
         });
         describe("showSearchResults", function () {
@@ -223,9 +244,12 @@ define(
       });
 
       describe("hideSearchResults", function () {
+        beforeEach(function () {
+          this.searchBox.model = new Backbone.Model();
+        });
         it("should toggle the drop down", function () {
           sinon.stub(this.searchBox, "toggleDropdown");
-          this.searchBox.showSearchResults();
+          this.searchBox.hideSearchResults();
           this.searchBox.toggleDropdown.calledOnce.should.equal(true);
         });
         it("should set a variable flagging it is closed", function () {
@@ -237,6 +261,12 @@ define(
           $("body").addClass("search-visible");
           this.searchBox.hideSearchResults();
           $("body.search-visible").length.should.equal(0);
+        });
+        it("should unset the highlights", function () {
+          this.searchBox.model.set("highlights", [123]);
+          this.searchBox.model.get("highlights").length.should.equal(1);
+          this.searchBox.hideSearchResults();
+          this.searchBox.model.get("highlights").length.should.equal(0);
         });
       });
 
