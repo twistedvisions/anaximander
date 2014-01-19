@@ -128,6 +128,14 @@ define(
         $(window).off("resize", listener);
         listenerCalled.should.equal(true);
       });
+      it("should trigger 'force-change' on the model", function () {
+        var called = false;
+        this.summaryBar.model.on("force-change", function () {
+          called = true;
+        });
+        this.summaryBar.showFilters();
+        called.should.equal(true);
+      });
     });
 
     describe("login", function () {

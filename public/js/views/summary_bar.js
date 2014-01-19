@@ -128,6 +128,7 @@ define([
       analytics.showFilters();
       $("body").toggleClass("filters-visible");
       $(window).trigger("resize");
+      this.model.trigger("force-change");
     },
 
     showSelector: function () {
