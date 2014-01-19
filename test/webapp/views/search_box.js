@@ -20,6 +20,14 @@ define(
           this.el.find("form").trigger("submit");
           this.searchBox.handleSearchSubmit.calledOnce.should.equal(true);
         });
+        it("should show a loading image when the form is submitted", function () {
+          sinon.stub(this.searchBox, "handleSearchSubmit", function (e) {
+            e.preventDefault();
+          });
+          this.el = this.searchBox.render();
+          this.el.find("form").trigger("submit");
+          this.searchBox.$el.hasClass("loading");
+        });
         it("should focus the input when loaded", function () {
           try {
             this.el = this.searchBox.render();
@@ -35,8 +43,8 @@ define(
           }
         });
 
-        it("should do nothing when the dropdown is hidden", function () {
-          sinon.stub(this.searchBox, "bsHideSearchResults");
+        it("should do nothing when the bootstrap triggers a hide dropdown message", function () {
+          sinon.spy(this.searchBox, "bsHideSearchResults");
 
           this.parentEl = $("<div id='search-box'></div>");
           this.parentEl.appendTo(document.body);
@@ -44,8 +52,12 @@ define(
           this.el.appendTo(this.parentEl);
           try {
             this.searchBox.bsHideSearchResults.calledOnce.should.equal(false);
+            var stub = sinon.stub();
+            $("#search-box").on("hidden.bs.dropdown", stub);
+            this.searchBox.dropdownVisible = true;
             $("#search-box").trigger("hide.bs.dropdown");
             this.searchBox.bsHideSearchResults.calledOnce.should.equal(true);
+            stub.calledOnce.should.equal(false);
           } finally {
             this.parentEl.remove();
           }
@@ -160,7 +172,7 @@ define(
           it("should bind events to clicking on the drop down", function () {
             sinon.stub(this.searchBox, "resultSelected");
             this.searchBox.render();
-            this.searchBox.$(".dropdown-menu").html("<li/>");
+            this.searchBox.$(".dropdown-menu").html("<li class='search-result'/>");
             this.searchBox.bindEventsToSearchEntries();
             this.searchBox.$(".dropdown-menu li").click();
             this.searchBox.resultSelected.calledOnce.should.equal(true);
@@ -223,6 +235,11 @@ define(
           this.searchBox.formatResults.calledWith(this.searchEntry)
             .should.equal(true);
         });
+        it("should hide the loading icon", function () {
+          this.searchBox.$el.addClass("loading");
+          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.$el.hasClass("loading").should.equal(false);
+        });
         it("should create drop down entries for each result", function () {
           sinon.spy(this.searchBox, "generateSearchEntry");
           this.searchBox.handleSearchResults([this.searchEntry]);
@@ -267,6 +284,29 @@ define(
           this.searchBox.model.get("highlights").length.should.equal(1);
           this.searchBox.hideSearchResults();
           this.searchBox.model.get("highlights").length.should.equal(0);
+        });
+
+        describe("bsHideSearchResults", function () {
+          it("should prevent propagation when the dropdown is visible", function () {
+            this.searchBox.dropdownVisible = true;
+            var called = false;
+            this.searchBox.bsHideSearchResults({
+              preventDefault: function () {
+                called = true;
+              }
+            });
+            called.should.equal(true);
+          });
+          it("should not prevent propagation when the dropdown is not visible", function () {
+            this.searchBox.dropdownVisible = false;
+            var called = false;
+            this.searchBox.bsHideSearchResults({
+              preventDefault: function () {
+                called = true;
+              }
+            });
+            called.should.equal(false);
+          });
         });
       });
 

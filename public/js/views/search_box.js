@@ -44,6 +44,7 @@ define([
     //TODO: refactor this out into a collection
     handleSearchSubmit: function (e) {
       e.preventDefault();
+      this.showLoadingState();
       this.doSearch(this.$("#search").val());
     },
 
@@ -58,7 +59,16 @@ define([
       var searchEntries = _.map(formattedResults, this.generateSearchEntry, this);
       this.renderSearchEntries(searchEntries);
       this.bindEventsToSearchEntries();
+      this.hideLoadingState();
       this.showSearchResults();
+    },
+
+    showLoadingState: function () {
+      this.$el.addClass("loading");
+    },
+
+    hideLoadingState: function () {
+      this.$el.removeClass("loading");
     },
 
     formatResults: function (x) {
@@ -93,13 +103,15 @@ define([
     },
 
     bsHideSearchResults: function (e) {
-      e.preventDefault();
+      if (this.dropdownVisible) {
+        e.preventDefault();
+      }
     },
 
     hideSearchResults: function () {
       $("body").removeClass("search-visible");
-      this.toggleDropdown();
       this.dropdownVisible = false;
+      this.toggleDropdown();
       this.model.set("highlights", []);
     },
 
@@ -108,7 +120,7 @@ define([
     },
 
     bindEventsToSearchEntries: function () {
-      this.$(".dropdown-menu li").on("click", _.bind(this.resultSelected, this));
+      this.$(".dropdown-menu li.search-result").on("click", _.bind(this.resultSelected, this));
       this.$(".dropdown-menu li .name a").on("click", _.bind(this.preventEventPropagation, this));
       this.$(".dropdown-menu li .hide-button").on("click", _.bind(this.hideSearchResults, this));
     },
