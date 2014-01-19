@@ -22,3 +22,5 @@ group by t.id, thing_type.name
 order by
   event_count desc,
   thing_name asc
+
+limit 500;
