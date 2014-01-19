@@ -107,6 +107,7 @@ define([
       this.toggleDropdown();
       $("body").addClass("search-visible");
       this.handleBodyResize();
+      this.model.trigger("force-change");
     },
 
     bsHideSearchResults: function (e) {
@@ -120,6 +121,7 @@ define([
       this.dropdownVisible = false;
       this.toggleDropdown();
       this.model.set("highlights", []);
+      this.model.trigger("force-change");
     },
 
     toggleDropdown: function () {

@@ -1,3 +1,4 @@
+/*global sinon*/
 define(function () {
   return {
     load: function (name, req, onLoad) {
@@ -47,7 +48,8 @@ define(function () {
               triggers: [],
               addListener: function (obj, event, cb) {
                 this.triggers.push(cb);
-              }
+              },
+              trigger: sinon.stub()
             }
           }
         };

@@ -28,6 +28,7 @@ define([
 
       this.drawMap();
       this.model.on("change", this.update, this);
+      this.model.on("force-change", this.forceUpdate, this);
       this.eventLocationsCollection.on("reset", this.drawNewMarkers, this);
       this.eventLocationsCollection.start();
     },
@@ -64,6 +65,10 @@ define([
       this.mapObjects = newMapObjects;
     },
 
+    forceUpdate: function () {
+      google.maps.event.trigger(this.map, "resize");
+    },
+
     update: function () {
       this.updateLocation();
     },
@@ -95,12 +100,12 @@ define([
         setTimeout(_.bind(function () {
           this.locationChanged = false;
         }, this), 200);
-        this.lastModelPosition = this.getModelPosition();
       }
       if (this.mapNeedsRedrawing()) {
         this.redrawMarkers();
         this.lastHighlights = this.model.get("highlights");
       }
+      this.lastModelPosition = this.getModelPosition();
     },
 
 

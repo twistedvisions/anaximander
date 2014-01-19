@@ -170,6 +170,13 @@ define(
 
           Analytics.linkClicked.calledOnce.should.equal(true);
         });
+
+        it("should force an update when the force-change event occurs on the model", function () {
+          this.map.forceUpdate = sinon.stub();
+          this.map.render();
+          this.map.model.trigger("force-change");
+          this.map.forceUpdate.calledOnce.should.equal(true);
+        });
       });
 
       describe("marker manipulation", function () {
@@ -238,6 +245,14 @@ define(
             this.map.redrawMarkers();
             this.newMapObject.setMap.calledWith("someMap").should.equal(true);
           });
+        });
+      });
+
+      describe("forceUpdate", function () {
+        it("should trigger a reset on the map", function () {
+          this.map.forceUpdate();
+          google.maps.event.trigger.calledOnce.should.equal(true);
+          google.maps.event.trigger.args[0][1].should.equal("resize");
         });
       });
       describe("updateLocation", function () {
@@ -329,11 +344,6 @@ define(
             this.map.updateLocation();
             this.map.locationChanged.should.equal(true);
           });
-          it("should remember the last position to which it was navigated", function () {
-            this.map.lastModelPosition = null;
-            this.map.updateLocation();
-            this.map.lastModelPosition.should.eql(this.map.getModelPosition());
-          });
         });
         describe("when the map needs redrawing", function () {
           beforeEach(function () {
@@ -354,6 +364,23 @@ define(
             this.map.updateLocation();
             this.map.lastHighlights.should.eql([1]);
           });
+        });
+      });
+      describe("when nothing needs redrawing", function () {
+        beforeEach(function () {
+            sinon.stub(this.map, "mapNeedsUpdating", function () {
+              return false;
+            });
+            sinon.stub(this.map, "mapNeedsRedrawing", function () {
+              return false;
+            });
+            sinon.stub(this.map, "redrawMarkers");
+            this.map.model.set("highlights", [1]);
+          });
+        it("should remember the last position to which it was navigated", function () {
+          this.map.lastModelPosition = null;
+          this.map.updateLocation();
+          this.map.lastModelPosition.should.eql(this.map.getModelPosition());
         });
       });
       describe("onBoundsChanged", function () {

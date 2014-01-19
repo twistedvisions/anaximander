@@ -250,6 +250,14 @@ define(
             this.searchBox.showSearchResults();
             this.searchBox.toggleDropdown.calledOnce.should.equal(true);
           });
+          it("should force the model to be changed", function () {
+            var called = false;
+            this.searchBox.model.on("force-change", function () {
+              called = true;
+            });
+            this.searchBox.showSearchResults();
+            called.should.equal(true);
+          });
         });
 
         it("should format each result", function () {
@@ -307,6 +315,14 @@ define(
           this.searchBox.model.get("highlights").length.should.equal(1);
           this.searchBox.hideSearchResults();
           this.searchBox.model.get("highlights").length.should.equal(0);
+        });
+        it("should force the model to be changed", function () {
+          var called = false;
+          this.searchBox.model.on("force-change", function () {
+            called = true;
+          });
+          this.searchBox.hideSearchResults();
+          called.should.equal(true);
         });
 
         describe("bsHideSearchResults", function () {
