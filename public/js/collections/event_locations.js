@@ -75,9 +75,9 @@ define([
     handleResults: function (results) {
       this.queryPending = false;
       results = this.combineEventsAtTheSamePlace(_.cloneDeep(results));
-
       var oldResultsAsKeys = _.map(this.lastResults, this.makeKey, this);
       var newResultsAsKeys = _.map(results, this.makeKey, this);
+
       var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
       var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
 
@@ -111,7 +111,7 @@ define([
         location.sort(function (a, b) {
           a = new Date(a.start_date).getTime();
           b = new Date(b.start_date).getTime();
-          return (a - b) / Math.abs(a - b);
+          return a > b ? 1 : (a === b ? 0 : -1);
         });
       });
       return locations;

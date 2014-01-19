@@ -95,7 +95,6 @@ define(
           ]
         );
       });
-      it("should sort things right - the order looks wrong below");
       it("should sort the events within the location by the date of the start_time", function () {
         var result = this.events.combineEventsAtTheSamePlace([{
           location: [[10, -20]],
@@ -112,13 +111,13 @@ define(
             [
               {
                 location: [[10, -20]],
-                start_date: "1900-01-03 00:02"
+                start_date: "1900-01-01 00:00"
               }, {
                 location: [[10, -20]],
                 start_date: "1900-01-02 00:01"
               }, {
                 location: [[10, -20]],
-                start_date: "1900-01-01 00:00"
+                start_date: "1900-01-03 00:02"
               }
             ]
           ]
@@ -161,29 +160,29 @@ define(
           [
             {
               location: [[10, -20]],
-              start_date: "1900-01-01 00:00"
+              start_date: "1900-01-01T00:00:00.000Z"
             }, {
               location: [[10, -20]],
-              start_date: "1900-01-01 00:01"
+              start_date: "1900-01-01T00:01:00.000Z"
             }
           ],
           [
             {
               location: [[10, -21]],
-              start_date: "1900-01-01 00:01"
+              start_date: "1900-01-01T00:01:00.000Z"
             }
           ]
         ];
 
         this.events.handleResults([{
           location: [[10, -20]],
-          start_date: "1900-01-01 00:00"
+          start_date: "1900-01-01T00:00:00.000Z"
         }, {
           location: [[10, -20]],
-          start_date: "1900-01-01 00:01"
+          start_date: "1900-01-01T00:01:00.000Z"
         }, {
           location: [[10, -22]],
-          start_date: "1900-01-01 00:01"
+          start_date: "1900-01-01T00:01:00.000Z"
         }]);
 
         //todo: why this mismatching double arrays around location?
@@ -191,7 +190,7 @@ define(
           location: [10, -21],
           events: [{
             location: [[10, -21]],
-            start_date: "1900-01-01 00:01"
+            start_date: "1900-01-01T00:01:00.000Z"
           }]
         })]);
 
@@ -201,29 +200,29 @@ define(
           [
             {
               location: [[10, -20]],
-              start_date: "1900-01-01 00:00"
+              start_date: "1900-01-01T00:00:00.000Z"
             }, {
               location: [[10, -20]],
-              start_date: "1900-01-01 00:01"
+              start_date: "1900-01-01T00:01:00.000Z"
             }
           ],
           [
             {
               location: [[10, -21]],
-              start_date: "1900-01-01 00:01"
+              start_date: "1900-01-01T00:01:00.000Z"
             }
           ]
         ];
 
         this.events.handleResults([{
           location: [[10, -20]],
-          start_date: "1900-01-01 00:00"
+          start_date: "1900-01-01T00:00:00.000Z"
         }, {
           location: [[10, -20]],
-          start_date: "1900-01-01 00:01"
+          start_date: "1900-01-01T00:01:00.000Z"
         }, {
           location: [[10, -22]],
-          start_date: "1900-01-01 00:01"
+          start_date: "1900-01-01T00:01:00.000Z"
         }]);
 
         //todo: why this mismatching double arrays around location?
@@ -231,7 +230,7 @@ define(
           location: [10, -22],
           events: [{
             location: [[10, -22]],
-            start_date: "1900-01-01 00:01"
+            start_date: "1900-01-01T00:01:00.000Z"
           }]
         })]);
       });
