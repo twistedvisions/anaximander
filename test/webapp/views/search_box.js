@@ -4,7 +4,10 @@ define(
   function ($, Backbone, SearchBox, FilterUrlSerialiser) {
     describe("search box", function () {
       beforeEach(function () {
-        this.searchBox = new SearchBox({el: null});
+        this.searchBox = new SearchBox({
+          el: null,
+          model: new Backbone.Model()
+        });
       });
       afterEach(function () {
         if (this.el) {
@@ -57,6 +60,26 @@ define(
             this.searchBox.dropdownVisible = true;
             $("#search-box").trigger("hide.bs.dropdown");
             this.searchBox.bsHideSearchResults.calledOnce.should.equal(true);
+            stub.calledOnce.should.equal(false);
+          } finally {
+            this.parentEl.remove();
+          }
+        });
+
+        it("should do nothing when the bootstrap triggers a show dropdown message", function () {
+          sinon.spy(this.searchBox, "bsShowSearchResults");
+
+          this.parentEl = $("<div id='search-box'></div>");
+          this.parentEl.appendTo(document.body);
+          this.el = this.searchBox.render();
+          this.el.appendTo(this.parentEl);
+          try {
+            this.searchBox.bsShowSearchResults.calledOnce.should.equal(false);
+            var stub = sinon.stub();
+            $("#search-box").on("shown.bs.dropdown", stub);
+            this.searchBox.dropdownVisible = true;
+            $("#search-box").trigger("show.bs.dropdown");
+            this.searchBox.bsShowSearchResults.calledOnce.should.equal(true);
             stub.calledOnce.should.equal(false);
           } finally {
             this.parentEl.remove();
@@ -307,6 +330,29 @@ define(
             });
             called.should.equal(false);
           });
+        });
+      });
+
+      describe("bsShowSearchResults", function () {
+        it("should prevent propagation when the dropdown is not visible", function () {
+          this.searchBox.dropdownVisible = false;
+          var called = false;
+          this.searchBox.bsShowSearchResults({
+            preventDefault: function () {
+              called = true;
+            }
+          });
+          called.should.equal(true);
+        });
+        it("should not prevent propagation when the dropdown is visible", function () {
+          this.searchBox.dropdownVisible = true;
+          var called = false;
+          this.searchBox.bsShowSearchResults({
+            preventDefault: function () {
+              called = true;
+            }
+          });
+          called.should.equal(false);
         });
       });
 

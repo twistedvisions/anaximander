@@ -27,6 +27,7 @@ define([
       }, this));
       this.$("#search").focus();
       $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
+      $("#search-box").on("show.bs.dropdown", _.bind(this.bsShowSearchResults, this));
       $(window).on("resize", _.bind(this.handleBodyResize, this));
       return this.$el;
     },
@@ -88,6 +89,12 @@ define([
         searchEntries: searchEntries.length
       }));
       this.$(".dropdown-menu").html(searchEntries);
+    },
+
+    bsShowSearchResults: function (e) {
+      if (!this.dropdownVisible) {
+        e.preventDefault();
+      }
     },
 
     showSearchResults: function () {
