@@ -64,6 +64,7 @@ define(
                 lng: function () { return  10; }
               };
             },
+            setCenter: sinon.stub(),
             getZoom: sinon.stub(),
             setZoom: sinon.stub(),
             fitBounds: sinon.stub()
@@ -250,9 +251,19 @@ define(
 
       describe("forceUpdate", function () {
         it("should trigger a reset on the map", function () {
+          this.mockMap();
           this.map.forceUpdate();
           google.maps.event.trigger.calledOnce.should.equal(true);
           google.maps.event.trigger.args[0][1].should.equal("resize");
+        });
+        it("should remember the center position", function () {
+          this.mockMap();
+          var centerValue = {};
+          this.map.map.getCenter = function () {
+            return centerValue;
+          };
+          this.map.forceUpdate();
+          this.map.map.setCenter.calledWith(centerValue).should.equal(true);
         });
       });
       describe("updateLocation", function () {
