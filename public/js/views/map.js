@@ -171,9 +171,19 @@ define([
     getPosition: function () {
       var mce = this.map.getCenter();
       return [
-        mce.lat(),
-        mce.lng()
+        this.normalisePosition(mce.lat()),
+        this.normalisePosition(mce.lng())
       ];
+    },
+
+    normalisePosition: function (x) {
+      while (x < 180) {
+        x += 360;
+      }
+      while (x > 180) {
+        x -= 360;
+      }
+      return x;
     },
 
     getBounds: function () {

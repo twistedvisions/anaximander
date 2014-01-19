@@ -342,6 +342,11 @@ define(
             [-10, 10]
           );
         });
+        it("should get the midpoint closest to 0", function () {
+          this.searchBox.extractCenter(10, -100, -30, 120).should.eql(
+            [-10, 10]
+          );
+        });
         it("should create a bounds that is 10% greater than the bounding box", function () {
           this.searchBox.extractBound([{}, {}], "lat", 10, 20).should.eql(
             [{lat: 9}, {lat: 21}]

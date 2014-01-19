@@ -327,6 +327,20 @@ define(
           });
         });
       });
+      describe("getPosition", function () {
+        it("should return the position exactly when 0 >= x > 180", function () {
+          this.map.normalisePosition(90).should.equal(90);
+        });
+        it("should return the position exactly when -180 > x >= 0", function () {
+          this.map.normalisePosition(-90).should.equal(-90);
+        });
+        it("should normalise the postition when x < -180", function () {
+          this.map.normalisePosition(-270).should.equal(90);
+        });
+        it("should normalise the postition when x > 180", function () {
+          this.map.normalisePosition(270).should.equal(-90);
+        });
+      });
       describe("getBounds", function () {
         it("should get the bounds from the map as a nested array", function () {
           this.map.map = {
