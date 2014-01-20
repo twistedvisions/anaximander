@@ -82,6 +82,7 @@ define([
       this.bindEventsToSearchEntries();
       this.hideLoadingState();
       this.showSearchResults();
+      this.highlightSelectedResult();
     },
 
     showLoadingState: function () {
@@ -182,7 +183,16 @@ define([
       }
 
       this.setModelData(modelData);
+      this.highlightSelectedResult();
+    },
 
+    highlightSelectedResult: function () {
+      this.$(".search-result").removeClass("selected");
+      var highlights = this.model.get("highlights");
+      if (highlights && highlights.length > 0) {
+        var id = highlights[0].id;
+        this.$(".search-result[data-id=" + id + "]").addClass("selected");
+      }
     },
 
     extractData: function (e) {

@@ -202,6 +202,7 @@ define(
       describe("searchResults", function () {
         beforeEach(function () {
           this.searchEntry = {
+            thing_id: 2343,
             thing_name: "thing_name",
             thing_link: "http://somewhere.com",
             thing_type_name: "thing_type_name",
@@ -352,6 +353,12 @@ define(
           this.searchBox.showSearchResults.calledOnce
             .should.equal(true);
         });
+        it("should highlight the selected search result", function () {
+          sinon.spy(this.searchBox, "highlightSelectedResult");
+          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.highlightSelectedResult.calledOnce
+            .should.equal(true);
+        });
       });
 
       describe("hideSearchResults", function () {
@@ -490,7 +497,7 @@ define(
           this.searchBox.extractBoundingBoxData(modelData, {area: [{lat: 10, lon: -20}, {lat: 11, lon: -21}]});
           modelData.zoom.should.equal(-1);
         });
-        it("should set the highlights to the id of the clicked result", function () {
+        it("should set the highlight's id to that of the clicked result", function () {
           sinon.stub(this.searchBox, "extractData", function () {
             return {
               area: [{lat: 10, lon: -20}],
@@ -551,8 +558,52 @@ define(
           this.searchBox.setModelData();
           called.should.equal(true);
         });
-      });
 
+        it("should highlight the selected event", function () {
+          sinon.stub(this.searchBox, "extractData", function () {
+            return {
+              area: [{lat: 10, lon: -20}],
+              thing_id: 123
+            };
+          });
+          sinon.stub(this.searchBox, "extractDate");
+          sinon.stub(this.searchBox, "setModelData");
+          sinon.stub(this.searchBox, "highlightSelectedResult");
+          this.searchBox.resultSelected();
+          this.searchBox.highlightSelectedResult.calledOnce
+            .should.equal(true);
+        });
+      });
+      describe("highlightSelectedResult", function () {
+        it("should remove any previous selection", function () {
+          this.searchBox.render();
+          var el = $("<li class='search-result selected'></li>");
+          this.searchBox.renderSearchEntries([el]);
+          this.searchBox.$(".search-result.selected").length.should.equal(1);
+          this.searchBox.highlightSelectedResult();
+          this.searchBox.$(".search-result.selected").length.should.equal(0);
+        });
+        it("should select the first highlight if it exists", function () {
+          this.searchBox.render();
+          var el = $("<li class='search-result' data-id='3'></li>");
+          this.searchBox.renderSearchEntries([el]);
+          this.searchBox.$(".search-result.selected").length.should.equal(0);
+          this.searchBox.model.set("highlights", [{id: 3}]);
+          this.searchBox.highlightSelectedResult();
+          this.searchBox.$(".search-result[data-id=3].selected").length.should.equal(1);
+
+        });
+        it("should not select anything if there are no highlights", function () {
+          this.searchBox.render();
+          var el = $("<li class='search-result' data-id='3'></li>");
+          this.searchBox.renderSearchEntries([el]);
+          this.searchBox.$(".search-result.selected").length.should.equal(0);
+          this.searchBox.model.set("highlights", []);
+          this.searchBox.highlightSelectedResult();
+          this.searchBox.$(".search-result.selected").length.should.equal(0);
+
+        });
+      });
     });
   }
 );

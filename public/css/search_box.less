@@ -56,23 +56,29 @@
         margin-right: 4px
       }
     }
-    .name {
-      font-size: 14px;
-      max-width: 170px;
-      display: inline-block;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-    .type-name {
-      font-style: italic;
-      font-size: 10px;
-      float: right;
-      margin-top: 4px;
-      margin-right: 4px;
-    }
-    .date {
-      font-size: 10px;
+    .search-result {
+      &.selected .name {
+        font-weight: bold;
+      }
+      .name {
+        cursor: pointer;
+        font-size: 14px;
+        max-width: 170px;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .type-name {
+        font-style: italic;
+        font-size: 10px;
+        float: right;
+        margin-top: 4px;
+        margin-right: 4px;
+      }
+      .date {
+        font-size: 10px;
+      }
     }
   }
 }
