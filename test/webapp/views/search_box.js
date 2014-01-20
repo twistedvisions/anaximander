@@ -379,6 +379,12 @@ define(
           this.searchBox.hideSearchResults();
           this.searchBox.model.get("highlights").length.should.equal(0);
         });
+        it("should unset the query", function () {
+          this.searchBox.model.set("query", "some search");
+          this.searchBox.model.get("query").length.should.not.equal(0);
+          this.searchBox.hideSearchResults();
+          this.searchBox.model.get("query").length.should.equal(0);
+        });
         it("should force the model to be changed", function () {
           var called = false;
           this.searchBox.model.on("force-change", function () {

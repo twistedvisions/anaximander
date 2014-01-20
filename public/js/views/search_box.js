@@ -140,6 +140,7 @@ define([
       $("body").removeClass("search-visible");
       this.dropdownVisible = false;
       this.toggleDropdown();
+      this.model.set("query", "");
       this.model.set("highlights", []);
       this.model.trigger("force-change");
     },
