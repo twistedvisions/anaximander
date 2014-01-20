@@ -385,6 +385,18 @@ define(
           this.searchBox.hideSearchResults();
           this.searchBox.model.get("query").length.should.equal(0);
         });
+        it("should persist the query string in the text box", function () {
+          this.searchBox.render();
+          this.searchBox.model.set("query", "some search");
+          this.searchBox.hideSearchResults();
+          this.searchBox.$("#search").val().should.equal("some search");
+        });
+        it("should not persist the query string in the text box if it is empty", function () {
+          this.searchBox.render();
+          this.searchBox.model.set("query", null);
+          this.searchBox.hideSearchResults();
+          this.searchBox.$("#search").val().should.equal("");
+        });
         it("should force the model to be changed", function () {
           var called = false;
           this.searchBox.model.on("force-change", function () {

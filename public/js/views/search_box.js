@@ -140,9 +140,13 @@ define([
       $("body").removeClass("search-visible");
       this.dropdownVisible = false;
       this.toggleDropdown();
+      var queryString = this.model.get("query");
       this.model.set("query", "");
       this.model.set("highlights", []);
       this.model.trigger("force-change");
+      if (queryString) {
+        this.$("#search").val(queryString);
+      }
     },
 
     toggleDropdown: function () {
