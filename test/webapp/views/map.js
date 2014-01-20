@@ -246,6 +246,30 @@ define(
             this.map.redrawMarkers();
             this.newMapObject.setMap.calledWith("someMap").should.equal(true);
           });
+          it("should show the highlights", function () {
+            sinon.stub(this.map, "showHighlights");
+            this.map.redrawMarkers();
+            this.map.showHighlights.calledOnce.should.equal(true);
+          });
+        });
+      });
+
+      describe("showHighlights", function () {
+        it("should clear any existing highlights", function () {
+          var setMap = sinon.stub();
+          this.map.paths = [{setMap: setMap}];
+          this.map.showHighlights();
+          this.map.paths.should.eql([]);
+          setMap.calledWith(null).should.equal(true);
+        });
+        it("should create a path for each highlight", function () {
+          this.map.model.set("highlights", [{
+            id: 1,
+            points: [{lat: 10, lon: -20}]
+          }]);
+          this.map.paths = [];
+          this.map.showHighlights();
+          this.map.paths.length.should.equal(1);
         });
       });
 
@@ -560,19 +584,19 @@ define(
 
       describe("isDimmed", function () {
         it("should be dimmed when there are things to highlight, but not in this marker", function () {
-          this.model.set("highlights", [1]);
+          this.model.set("highlights", [{id: 1}]);
           this.map.isDimmed([{thing_id: 2}]).should.equal(true);
         });
         it("should be dimmed when there are places to highlight, but not in this marker", function () {
-          this.model.set("highlights", [1]);
+          this.model.set("highlights", [{id: 1}]);
           this.map.isDimmed([{place_thing_id: 2}]).should.equal(true);
         });
         it("should not be dimmed when there are things to highlight that are in this marker", function () {
-          this.model.set("highlights", [1]);
+          this.model.set("highlights", [{id: 1}]);
           this.map.isDimmed([{thing_id: 1}]).should.equal(false);
         });
         it("should not be dimmed when there are places to highlight that are in this marker", function () {
-          this.model.set("highlights", [1]);
+          this.model.set("highlights", [{id: 1}]);
           this.map.isDimmed([{place_thing_id: 1}]).should.equal(false);
         });
         it("should not be dimmed when there are no things to highlight", function () {

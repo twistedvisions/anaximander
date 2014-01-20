@@ -82,7 +82,7 @@ define(
           /filter\//.test(this.location).should.equal(false);
         });
         it("should navigate with highlights value if it is set", function () {
-          this.model.set("highlights", [1]);
+          this.model.set("highlights", [{id: 1}]);
           this.router.init({model: this.model});
           this.router.handleChange();
           /highlights\/\[1\]/.test(this.location).should.equal(true);

@@ -6,7 +6,8 @@ select
   thing_type.name as thing_type_name,
   min(e.start_date) as start_date,
   max(e.end_date) as end_date,
-  ST_Extent(p.location) as area
+  ST_Extent(p.location) as area,
+  ST_AsGeoJSON(ST_MakeLine(p.location)) as points
 
 from thing t
 inner join thing_type on thing_type.id = t.type_id

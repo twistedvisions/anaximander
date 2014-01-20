@@ -55,7 +55,6 @@ describe("search", function () {
           this.result = _result;
         }, this)
       };
-
     });
     it("should combine the results of the queries", function () {
       Search.prototype.handleSearchResults.call(this, this.res, [
@@ -113,6 +112,28 @@ describe("search", function () {
       ]);
       this.result.should.eql([
         getResultRow(1, {area: [{lat: -20, lon: 10}, {lat: -20, lon: 10.1}]})
+      ]);
+    });
+    it("should return points if they exist", function () {
+      var dbPoints = {
+        "type": "LineString",
+        "coordinates": [
+          [-20, 10],
+          [40, -30]
+        ]
+      };
+
+      Search.prototype.handleSearchResults.call(this, this.res, [
+        {rows: [getRow(1, {points: JSON.stringify(dbPoints)})]},
+        {rows: []}
+      ]);
+      this.result.should.eql([
+        getResultRow(1, {
+          points: [
+            {lat: 10, lon: -20},
+            {lat: -30, lon: 40}
+          ]
+        })
       ]);
     });
   });

@@ -23,6 +23,11 @@ define(function () {
               };
             },
             Point: {},
+            Polyline: function () {
+              return {
+                setMap: function () {}
+              };
+            },
             Marker: function () {},
             MVCObject: function () {},
             MapTypeId: {},

@@ -430,14 +430,42 @@ define(
         it("should set the highlights to the id of the clicked result", function () {
           sinon.stub(this.searchBox, "extractData", function () {
             return {
-              area: [10, -20],
+              area: [{lat: 10, lon: -20}],
               thing_id: 123
             };
           });
           sinon.stub(this.searchBox, "extractDate");
           sinon.stub(this.searchBox, "setModelData");
           this.searchBox.resultSelected();
-          this.searchBox.setModelData.args[0][0].highlights.should.eql([123]);
+          this.searchBox.setModelData.args[0][0].highlights[0].id
+            .should.equal(123);
+        });
+        it("should set the highlights points from the points of the clicked result", function () {
+          sinon.stub(this.searchBox, "extractData", function () {
+            return {
+              points: [{lat: 11, lon: -21}],
+              area: [{lat: 10, lon: -20}],
+              thing_id: 123
+            };
+          });
+          sinon.stub(this.searchBox, "extractDate");
+          sinon.stub(this.searchBox, "setModelData");
+          this.searchBox.resultSelected();
+          this.searchBox.setModelData.args[0][0].highlights[0].points
+            .should.eql([{lat: 11, lon: -21}]);
+        });
+        it("should set the highlights points from the area of the clicked result if there are no points", function () {
+          sinon.stub(this.searchBox, "extractData", function () {
+            return {
+              area: [{lat: 10, lon: -20}],
+              thing_id: 123
+            };
+          });
+          sinon.stub(this.searchBox, "extractDate");
+          sinon.stub(this.searchBox, "setModelData");
+          this.searchBox.resultSelected();
+          this.searchBox.setModelData.args[0][0].highlights[0].points
+            .should.eql([{lat: 10, lon: -20}]);
         });
         it("should remove all filters", function () {
           this.searchBox.model = new Backbone.Model({

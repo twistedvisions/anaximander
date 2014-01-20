@@ -146,7 +146,10 @@ define([
       var modelData = {};
 
       modelData.date = this.extractDate(data);
-      modelData.highlights = [data.thing_id];
+      modelData.highlights = [{
+        id: data.thing_id,
+        points: data.points || data.area
+      }];
 
       if (data.area.length === 1) {
         this.extractPointData(modelData, data);

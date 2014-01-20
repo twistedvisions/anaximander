@@ -62,7 +62,36 @@ define([
         newMapObjects[result] = newMapObject;
       }, this);
 
+      this.showHighlights();
+
       this.mapObjects = newMapObjects;
+    },
+
+    showHighlights: function () {
+      var highlights = this.model.get("highlights");
+
+      if (this.paths) {
+        _.each(this.paths, function (path) {
+          path.setMap(null);
+        });
+      }
+      if (highlights) {
+        this.paths = _.map(highlights, function (highlight) {
+          var points = _.map(highlight.points, function (point) {
+            return new google.maps.LatLng(point.lat, point.lon);
+          });
+          var path = new google.maps.Polyline({
+            path: points,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          path.setMap(this.map);
+          return path;
+        }, this);
+      } else {
+        this.paths = [];
+      }
     },
 
     forceUpdate: function () {
@@ -292,8 +321,13 @@ define([
 
     isDimmed: function (events) {
       var highlights = this.model.get("highlights") || false;
-      var isHighlighted = highlights &&
-        _.intersection(highlights, _.pluck(events, "thing_id").concat(_.pluck(events, "place_thing_id"))).length > 0;
+
+      var isHighlighted =
+        highlights &&
+        _.intersection(
+          _.pluck(highlights, "id"),
+          _.pluck(events, "thing_id").concat(_.pluck(events, "place_thing_id"))
+        ).length > 0;
 
       return highlights && (highlights.length > 0) && !isHighlighted;
     },

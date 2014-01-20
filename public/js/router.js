@@ -36,7 +36,11 @@ define([
       };
 
       if (highlights) {
-        data.highlights = JSON.parse(highlights);
+        data.highlights = _.map(JSON.parse(highlights), function (highlight) {
+          return {
+            id: highlight
+          };
+        });
       } else {
         data.highlights = [];
       }
@@ -91,7 +95,7 @@ define([
 
       if (highlights && highlights.length > 0) {
         location.push("highlights");
-        location.push(JSON.stringify(highlights));
+        location.push(JSON.stringify(_.pluck(highlights, "id")));
       }
 
       this.navigate(location.join("/"));
