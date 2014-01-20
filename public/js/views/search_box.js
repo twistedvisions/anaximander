@@ -3,13 +3,14 @@ define([
   "underscore",
   "backbone",
   "analytics",
+  "utils/position",
   "utils/filter_url_serialiser",
   "text!templates/search_box.htm",
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "css!/css/search_box"
-], function ($, _, Backbone, Analytics, FilterUrlSerialiser, template,
-    searchSummary, searchResult) {
+], function ($, _, Backbone, Analytics, Position, FilterUrlSerialiser,
+    template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
     el: "#search-box",
@@ -187,23 +188,8 @@ define([
       var lon2 = data.area[1].lon;
 
       modelData.zoom = -1;
-      modelData.center = this.extractCenter(lat1, lon1, lat2, lon2);
+      modelData.center = Position.getCenter(lat1, lon1, lat2, lon2);
       modelData.bounds = this.extractBounds(lat1, lon1, lat2, lon2);
-    },
-
-    extractCenter: function (lat1, lon1, lat2, lon2) {
-      var midPoint = function (points) {
-        return _.reduce(
-            points,
-            function (a, b) { return a + b; },
-            0
-          ) / points.length;
-      };
-      return [
-        midPoint([lat1, lat2]),
-        midPoint([lon1, lon2])
-      ];
-
     },
 
     extractBounds: function (lat1, lon1, lat2, lon2) {

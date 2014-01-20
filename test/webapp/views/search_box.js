@@ -407,16 +407,6 @@ define(
           this.searchBox.extractPointData(modelData, {area: [{lat: 10, lon: -20}]});
           modelData.zoom.should.equal(12);
         });
-        it("should calculate the midpoint if the bounding box is not a point", function () {
-          this.searchBox.extractCenter(10, -20, -30, 40).should.eql(
-            [-10, 10]
-          );
-        });
-        it("should get the midpoint closest to 0", function () {
-          this.searchBox.extractCenter(10, -100, -30, 120).should.eql(
-            [-10, 10]
-          );
-        });
         it("should create a bounds that is 10% greater than the bounding box", function () {
           this.searchBox.extractBound([{}, {}], "lat", 10, 20).should.eql(
             [{lat: 9}, {lat: 21}]

@@ -7,10 +7,12 @@ define([
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
         "&sensor=false!callback",
   "views/options_menu",
+  "utils/position",
   "styled_marker",
   "chroma",
   "css!/css/map"
-], function ($, _, Backbone, analytics, maps, OptionsMenu, StyledMarker, chroma) {
+], function ($, _, Backbone, analytics, maps, OptionsMenu,
+    Position, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
 
@@ -210,19 +212,9 @@ define([
     getPosition: function () {
       var mce = this.map.getCenter();
       return [
-        this.normalisePosition(mce.lat()),
-        this.normalisePosition(mce.lng())
+        Position.normalisePosition(mce.lat()),
+        Position.normalisePosition(mce.lng())
       ];
-    },
-
-    normalisePosition: function (x) {
-      while (x < 180) {
-        x += 360;
-      }
-      while (x > 180) {
-        x -= 360;
-      }
-      return x;
     },
 
     getBounds: function () {
