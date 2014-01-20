@@ -1,7 +1,7 @@
 /*global describe, beforeEach, afterEach, it */
 var sinon = require("sinon");
 var when = require("when");
-var db = require("../../../../lib/db");
+var db = require("../../../../lib/parser/raw_db");
 var addEvent = require("../../../../lib/parser/writers/addEvent");
 
 describe("adding events", function () {
