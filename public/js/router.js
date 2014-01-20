@@ -10,29 +10,36 @@ define([
     routes: {
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView",
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter/highlights/:highlights": "filteredHighlightedMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/highlights/:highlights": "highlightedMapView"
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/query/:query": "queryMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/query/:query/highlights/:highlights": "queryHighlightedMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter/query/:query/highlights/:highlights": "filteredQueryHighlightedMapView"
     },
 
     mapView: function (lat, lon, zoom, start, end) {
-      this.filteredHighlightedMapView(lat, lon, zoom, start, end, null, null);
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, null, null);
     },
+
     filteredMapView: function (lat, lon, zoom, start, end, filters) {
-      this.filteredHighlightedMapView(lat, lon, zoom, start, end, filters, null);
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, filters, null, null);
     },
 
-    highlightedMapView: function (lat, lon, zoom, start, end, highlights) {
-      this.filteredHighlightedMapView(lat, lon, zoom, start, end, null, highlights);
+    queryMapView: function (lat, lon, zoom, start, end, query) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, query, null);
     },
 
-    filteredHighlightedMapView: function (lat, lon, zoom, start, end, filters, highlights) {
+    queryHighlightedMapView: function (lat, lon, zoom, start, end, query, highlights) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, query, highlights);
+    },
+
+    filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, filters, query, highlights) {
 
       this.setFromUrl = true;
 
       var data = {
         date: [parseInt(start, 10), parseInt(end, 10)],
         center: [parseFloat(lat), parseFloat(lon)],
-        zoom: parseInt(zoom, 10)
+        zoom: parseInt(zoom, 10),
+        query: decodeURIComponent(query)
       };
 
       if (highlights) {
@@ -76,6 +83,7 @@ define([
       var date = this.model.get("date");
       var center = this.model.get("center");
       var zoom = this.model.get("zoom");
+      var query = this.model.get("query");
       var filterState = this.model.get("filterState").toJSON();
       var highlights = this.model.get("highlights");
       var filters = "";
@@ -88,20 +96,29 @@ define([
       ];
 
       if (filterState.length > 0) {
+
         location.push("filter");
         filters = FilterUrlSerialiser.serialise(this.model);
         location.push(filters);
-      }
 
-      if (highlights && highlights.length > 0) {
-        location.push("highlights");
-        location.push(JSON.stringify(_.pluck(highlights, "id")));
+      } else if (query) {
+
+        location.push("query");
+        location.push(encodeURIComponent(query));
+
+        if (highlights && highlights.length > 0) {
+
+          location.push("highlights");
+          location.push(JSON.stringify(_.pluck(highlights, "id")));
+
+        }
       }
 
       this.navigate(location.join("/"));
 
       this.sendAnalytics(center, zoom, date);
     },
+
     sendAnalytics: _.debounce(function (center, zoom, date) {
       analytics.navigation({
         lat: center[0],
@@ -111,6 +128,7 @@ define([
         end: parseInt(date[1], 10)
       });
     }, 500)
+
   });
 
   return Router;

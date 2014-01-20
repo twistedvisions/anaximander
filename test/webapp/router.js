@@ -28,28 +28,32 @@ define(
       });
       describe("routes", function () {
         beforeEach(function () {
-          sinon.stub(this.router, "filteredHighlightedMapView");
+          sinon.stub(this.router, "filteredQueryHighlightedMapView");
         });
         afterEach(function () {
-          this.router.filteredHighlightedMapView.restore();
+          this.router.filteredQueryHighlightedMapView.restore();
         });
-        it("should call filteredHighlightedMapView with no filter or highlights from mapView", function () {
+        it("should call filteredQueryHighlightedMapView with no filter, query or highlights from mapView", function () {
           this.router.mapView(1, 2, 3, 4, 5);
-          this.router.filteredHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, null).should.equal(true);
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, null).should.equal(true);
         });
-        it("should call filteredHighlightedMapView with a filter but no highlights from filteredMapView", function () {
+        it("should call filteredQueryHighlightedMapView with a filter but no query or highlights from filteredMapView", function () {
           this.router.filteredMapView(1, 2, 3, 4, 5, "some filters");
-          this.router.filteredHighlightedMapView.calledWith(1, 2, 3, 4, 5, "some filters", null).should.equal(true);
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, "some filters", null, null).should.equal(true);
         });
-        it("should call filteredHighlightedMapView with highlights but no filter from highlightedMapView", function () {
-          this.router.highlightedMapView(1, 2, 3, 4, 5, "[1]");
-          this.router.filteredHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "[1]").should.equal(true);
+        it("should call filteredQueryHighlightedMapView with query but no filter or highlights from queryMapView", function () {
+          this.router.queryMapView(1, 2, 3, 4, 5, "searchString");
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "searchString", null).should.equal(true);
+        });
+        it("should call filteredQueryHighlightedMapView with query and highlights but no filter from queryHighlightedMapView", function () {
+          this.router.queryHighlightedMapView(1, 2, 3, 4, 5, "searchString", "[1]");
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "searchString", "[1]").should.equal(true);
         });
       });
       describe("process changes", function () {
         beforeEach(function () {
           this.router = new Router();
-          sinon.stub(this.router, "filteredHighlightedMapView");
+          sinon.stub(this.router, "filteredQueryHighlightedMapView");
           sinon.stub(this.router, "navigate", _.bind(function (location) {
             this.location = location;
           }, this));
@@ -81,8 +85,9 @@ define(
           this.router.handleChange();
           /filter\//.test(this.location).should.equal(false);
         });
-        it("should navigate with highlights value if it is set", function () {
+        it("should navigate with highlights value if it and query is set", function () {
           this.model.set("highlights", [{id: 1}]);
+          this.model.set("query", "searchString");
           this.router.init({model: this.model});
           this.router.handleChange();
           /highlights\/\[1\]/.test(this.location).should.equal(true);
@@ -91,6 +96,23 @@ define(
           this.router.init({model: this.model});
           this.router.handleChange();
           /highlights\//.test(this.location).should.equal(false);
+        });
+        it("should not navigate with highlights value if no query is set", function () {
+          this.model.set("highlights", [{id: 1}]);
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /highlights\/\[1\]/.test(this.location).should.equal(false);
+        });
+        it("should navigate with the query value if it is set", function () {
+          this.model.set("query", "some search string");
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /query\/some%20search%20string/.test(this.location).should.equal(true);
+        });
+        it("should not navigate with query value if it is not set", function () {
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /query\//.test(this.location).should.equal(false);
         });
       });
       describe("interaction", function () {

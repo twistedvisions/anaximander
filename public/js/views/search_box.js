@@ -27,11 +27,23 @@ define([
       this.$(_.bind(function () {
         this.$("#search").focus();
       }, this));
+      this.model.on("change:query", this.updateQuery, this);
       this.$("#search").focus();
       $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
       $("#search-box").on("show.bs.dropdown", _.bind(this.bsShowSearchResults, this));
       $(window).on("resize", _.bind(this.handleBodyResize, this));
+      this.updateQuery();
       return this.$el;
+    },
+
+    updateQuery: function () {
+      var queryString = this.model.get("query");
+      this.$("#search").val(queryString ? queryString : "");
+      if (queryString) {
+        this.search();
+      } else {
+        this.hideSearchResults();
+      }
     },
 
     handleBodyResize: function () {
@@ -47,8 +59,14 @@ define([
     //TODO: refactor this out into a collection
     handleSearchSubmit: function (e) {
       e.preventDefault();
+      this.search();
+    },
+
+    search: function () {
+      var queryString = this.$("#search").val();
+      this.model.set("query", queryString);
       this.showLoadingState();
-      this.doSearch(this.$("#search").val());
+      this.doSearch(queryString);
     },
 
     doSearch: function (searchString) {

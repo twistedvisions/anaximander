@@ -93,6 +93,54 @@ define(
             this.parentEl.remove();
           }
         });
+
+        it("should listen to query change events on the model", function () {
+          sinon.stub(this.searchBox, "updateQuery");
+          this.searchBox.render();
+          this.searchBox.updateQuery.reset();
+          this.searchBox.updateQuery.calledOnce.should.equal(false);
+          this.searchBox.model.set("query", "something");
+          this.searchBox.updateQuery.calledOnce.should.equal(true);
+        });
+
+        it("should update its visual state when it loads", function () {
+          sinon.stub(this.searchBox, "updateQuery");
+          this.searchBox.render();
+          this.searchBox.updateQuery.calledOnce.should.equal(true);
+        });
+      });
+
+      describe("updateQuery", function () {
+        it("should set the query string if it is set", function () {
+          this.searchBox.model.set("query", "");
+          this.searchBox.render();
+          this.searchBox.$("#search").val().should.equal("");
+          this.searchBox.model.set("query", "some value");
+          this.searchBox.updateQuery();
+          this.searchBox.$("#search").val().should.equal("some value");
+        });
+        it("should clear the query string if it is not set", function () {
+          this.searchBox.model.set("query", "some value");
+          this.searchBox.render();
+          this.searchBox.$("#search").val().should.equal("some value");
+          this.searchBox.model.set("query", "");
+          this.searchBox.updateQuery();
+          this.searchBox.$("#search").val().should.equal("");
+        });
+        it("search for the query if it is set", function () {
+          this.searchBox.render();
+          this.searchBox.model.set("query", "some value");
+          sinon.stub(this.searchBox, "search");
+          this.searchBox.updateQuery();
+          this.searchBox.search.calledOnce.should.equal(true);
+        });
+        it("should hide the search results if the query string is not set", function () {
+          this.searchBox.render();
+          this.searchBox.model.set("query", "");
+          sinon.stub(this.searchBox, "hideSearchResults");
+          this.searchBox.updateQuery();
+          this.searchBox.hideSearchResults.calledOnce.should.equal(true);
+        });
       });
 
       describe("handleBodyResize", function () {
@@ -131,9 +179,9 @@ define(
           this.el = this.searchBox.render();
           this.el.appendTo(document.body);
           this.searchBox.$.get = sinon.stub();
+          sinon.stub(this.searchBox, "doSearch");
         });
         it("should send the text in the input to the search request", function () {
-          sinon.stub(this.searchBox, "doSearch");
           this.searchBox.$("#search").val("some search string");
           this.searchBox.handleSearchSubmit({preventDefault: function () {}});
           this.searchBox.doSearch.calledWith("some search string").should.equal(true);
@@ -144,6 +192,11 @@ define(
             called = true;
           }});
           called.should.equal(true);
+        });
+        it("should set the model", function () {
+          this.searchBox.$("#search").val("some search string");
+          this.searchBox.handleSearchSubmit({preventDefault: function () {}});
+          this.searchBox.model.get("query").should.equal("some search string");
         });
       });
       describe("searchResults", function () {
@@ -224,6 +277,8 @@ define(
             this.searchBox.render();
             this.searchBox.$(".dropdown-menu").html("<li><div class='hide-button'><a>text</a></div></li>");
             this.searchBox.bindEventsToSearchEntries();
+            //it will have been called once when it renders if no query in the model
+            this.searchBox.hideSearchResults.reset();
             this.searchBox.hideSearchResults.calledOnce.should.equal(false);
             this.searchBox.$(".dropdown-menu li a").click();
             this.searchBox.hideSearchResults.calledOnce.should.equal(true);
