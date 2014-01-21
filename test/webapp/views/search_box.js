@@ -1,7 +1,7 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
-  ["jquery", "backbone", "views/search_box", "utils/filter_url_serialiser"],
-  function ($, Backbone, SearchBox, FilterUrlSerialiser) {
+  ["underscore", "jquery", "backbone", "views/search_box", "utils/filter_url_serialiser"],
+  function (_, $, Backbone, SearchBox, FilterUrlSerialiser) {
     describe("search box", function () {
       beforeEach(function () {
         this.searchBox = new SearchBox({
@@ -591,7 +591,6 @@ define(
           this.searchBox.model.set("highlights", [{id: 3}]);
           this.searchBox.highlightSelectedResult();
           this.searchBox.$(".search-result[data-id=3].selected").length.should.equal(1);
-
         });
         it("should not select anything if there are no highlights", function () {
           this.searchBox.render();
@@ -601,7 +600,44 @@ define(
           this.searchBox.model.set("highlights", []);
           this.searchBox.highlightSelectedResult();
           this.searchBox.$(".search-result.selected").length.should.equal(0);
+        });
+        describe("scrolling into view", function () {
+          beforeEach(function () {
+            this.parentEl = $("<div id='search-box'></div>");
+            this.parentEl.appendTo(document.body);
+            this.el = this.searchBox.render();
+            this.el.appendTo(this.parentEl);
 
+            var i = 0;
+            var els = _.times(40, function () {
+              i += 1;
+              return $("<li style='height=20;' class='search-result' data-id='" + i + "'>text</li>");
+            });
+            this.searchBox.showSearchResults();
+            this.searchBox.renderSearchEntries(els);
+            this.searchBox.$(".search-results").height(100);
+          });
+          afterEach(function () {
+            this.parentEl.remove();
+          });
+          it("should scroll the result into view if it is above the visible area", function () {
+            this.searchBox.$(".search-results").scrollTop(500);
+            this.searchBox.model.set("highlights", [{id: 1}]);
+            this.searchBox.highlightSelectedResult();
+            this.searchBox.$(".search-results").scrollTop().should.equal(0);
+          });
+          it("should scroll the result into view if it is below the visible area", function () {
+            this.searchBox.$(".search-results").scrollTop().should.equal(0);
+            this.searchBox.model.set("highlights", [{id: 30}]);
+            this.searchBox.highlightSelectedResult();
+            this.searchBox.$(".search-results").scrollTop().should.be.greaterThan(0);
+          });
+          it("should not scroll the result into view if it is visible", function () {
+            this.searchBox.$(".search-results").scrollTop(30);
+            this.searchBox.model.set("highlights", [{id: 1}]);
+            this.searchBox.highlightSelectedResult();
+            this.searchBox.$(".search-results").scrollTop().should.equal(30);
+          });
         });
       });
     });

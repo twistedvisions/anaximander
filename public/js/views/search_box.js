@@ -191,7 +191,14 @@ define([
       var highlights = this.model.get("highlights");
       if (highlights && highlights.length > 0) {
         var id = highlights[0].id;
-        this.$(".search-result[data-id=" + id + "]").addClass("selected");
+        var el = this.$(".search-result[data-id=" + id + "]");
+        el.addClass("selected");
+
+        var list = this.$(".search-results");
+        var top = el.position().top;
+        if ((top < 0) || (top > list.height())) {
+          list.scrollTop(list.scrollTop() + el.position().top - 100);
+        }
       }
     },
 
