@@ -171,10 +171,7 @@ define([
       var modelData = {};
 
       modelData.date = this.extractDate(data);
-      modelData.highlights = [{
-        id: data.thing_id,
-        points: data.points || data.area
-      }];
+      modelData.highlights = this.getHighlightsFromJSON(data);
 
       if (data.area.length === 1) {
         this.extractPointData(modelData, data);
@@ -183,6 +180,7 @@ define([
       }
 
       this.setModelData(modelData);
+
       this.highlightSelectedResult();
     },
 
@@ -194,12 +192,22 @@ define([
         var el = this.$(".search-result[data-id=" + id + "]");
         el.addClass("selected");
 
+        var data = el.data("result");
+        this.model.set("highlights", this.getHighlightsFromJSON(data));
+
         var list = this.$(".search-results");
         var top = el.position().top;
         if ((top < 0) || (top > list.height())) {
           list.scrollTop(list.scrollTop() + el.position().top - 100);
         }
       }
+    },
+
+    getHighlightsFromJSON: function (data) {
+      return [{
+        id: data.thing_id,
+        points: data.points || data.area
+      }];
     },
 
     extractData: function (e) {

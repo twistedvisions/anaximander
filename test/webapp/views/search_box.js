@@ -584,6 +584,7 @@ define(
           this.searchBox.$(".search-result.selected").length.should.equal(0);
         });
         it("should select the first highlight if it exists", function () {
+          sinon.stub(this.searchBox, "getHighlightsFromJSON");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='3'></li>");
           this.searchBox.renderSearchEntries([el]);
@@ -601,8 +602,20 @@ define(
           this.searchBox.highlightSelectedResult();
           this.searchBox.$(".search-result.selected").length.should.equal(0);
         });
+        it.only("should update the highlights from the selected element", function () {
+          sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
+            return [{id: 1, points: "a point"}];
+          });
+          this.searchBox.render();
+          var el = $("<li class='search-result' data-id='1'></li>");
+          this.searchBox.renderSearchEntries([el]);
+          this.searchBox.model.set("highlights", [{id: 1}]);
+          this.searchBox.highlightSelectedResult();
+          this.searchBox.model.get("highlights")[0].points.should.equal("a point");
+        });
         describe("scrolling into view", function () {
           beforeEach(function () {
+            sinon.stub(this.searchBox, "getHighlightsFromJSON");
             this.parentEl = $("<div id='search-box'></div>");
             this.parentEl.appendTo(document.body);
             this.el = this.searchBox.render();
