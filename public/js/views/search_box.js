@@ -4,12 +4,13 @@ define([
   "backbone",
   "analytics",
   "utils/position",
+  "utils/scroll",
   "utils/filter_url_serialiser",
   "text!templates/search_box.htm",
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "css!/css/search_box"
-], function ($, _, Backbone, Analytics, Position, FilterUrlSerialiser,
+], function ($, _, Backbone, Analytics, Position, Scroll, FilterUrlSerialiser,
     template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
@@ -195,11 +196,7 @@ define([
         var data = el.data("result");
         this.model.set("highlights", this.getHighlightsFromJSON(data));
 
-        var list = this.$(".search-results");
-        var top = el.position().top;
-        if ((top < 0) || (top > list.height())) {
-          list.scrollTop(list.scrollTop() + el.position().top - 100);
-        }
+        Scroll.intoView(el, this.$(".search-results"), 100);
       }
     },
 

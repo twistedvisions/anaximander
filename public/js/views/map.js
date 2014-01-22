@@ -8,11 +8,12 @@ define([
         "&sensor=false!callback",
   "views/options_menu",
   "utils/position",
+  "utils/scroll",
   "styled_marker",
   "chroma",
   "css!/css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
-    Position, StyledMarker, chroma) {
+    Position, Scroll, StyledMarker, chroma) {
 
   var MapView = Backbone.View.extend({
 
@@ -246,26 +247,40 @@ define([
         position: new google.maps.LatLng(result.location[0], result.location[1])
       });
 
-      google.maps.event.addListener(marker, "mouseover", _.bind(function () {
-        setTimeout(_.bind(function () {
-          analytics.infoBoxShown(this.getInfoBoxData(result));
-        }, this), 1000);
-        analytics.infoBoxShown(this.getInfoBoxData(result));
-        this.closeOpenWindows();
-        var info = new google.maps.InfoWindow({
-          content: this.getContent(result)
-        });
-        info.open(this.map, marker);
-        info.result = result;
-        this.lastInfoWindow = info;
-        setTimeout(_.bind(function () {
-          $(".event_link").on("click", this.onLinkClick);
-        }, this), 100);
-
-      }, this));
+      google.maps.event.addListener(marker, "mouseover",
+        _.bind(this.mouseOverMarker, this, marker, result)
+      );
 
       return marker;
 
+    },
+
+    mouseOverMarker: function (marker, infoBoxData) {
+      setTimeout(_.bind(function () {
+        analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
+      }, this), 1000);
+      analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
+      this.closeOpenWindows();
+      var info = new google.maps.InfoWindow({
+        content: this.getContent(infoBoxData)
+      });
+      info.open(this.map, marker);
+      info.result = infoBoxData;
+      this.lastInfoWindow = info;
+      setTimeout(_.bind(this.afterMouseOverMarker, this), 100);
+    },
+
+    afterMouseOverMarker: function () {
+      $(".event_link").on("click", this.onLinkClick);
+
+      var highlights = this.model.get("highlights");
+      if (highlights && highlights.length > 0) {
+        // TODO: rename to event-link
+        var el = $("a.event_link[data-thing-id=" + highlights[0].id + "]").parent();
+        if (el && el.length) {
+          Scroll.intoView(el, el.parent().parent(), 50);
+        }
+      }
     },
 
     getMarkerText: function (events) {
@@ -329,15 +344,21 @@ define([
     },
 
     getContent: function (result) {
-      return "<p>" + _.map(result.events, this.getEventText).join("<p>");
+      return "<p>" + _.map(result.events, this.getEventText, this).join("<p>");
     },
 
     getEventText: function (event) {
       var date = new Date(event.start_date);
       var attributes = [];
-      attributes.push("class=\"event_link\"");
+      var highlights = this.model.get("highlights");
+      var highlighted =
+        highlights &&
+        highlights.length > 0 &&
+        highlights[0].id === event.thing_id;
+      attributes.push("class=\"event_link" + (highlighted ? " highlight" : "") + "\"");
       attributes.push("href=\"" + encodeURI(event.event_link) + "\"");
       attributes.push("target=\"_blank\"");
+      attributes.push("data-thing-id=\"" + event.thing_id + "\"");
       attributes.push("data-name=\"" + event.event_name + "\"");
       attributes.push("data-link=\"" + event.event_link + "\"");
       attributes.push("data-lat=\"" + event.location[0][0] + "\"");

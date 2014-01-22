@@ -2,9 +2,10 @@
 /*jshint expr: true*/
 define(
   ["chai", "jquery", "underscore", "backbone", "views/map", "analytics",
-   "styled_marker", "views/options_menu", "models/current_user"],
+   "styled_marker", "views/options_menu", "models/current_user",
+   "utils/scroll"],
   function (chai, $, _, Backbone, Map, Analytics,
-      StyledMarker, OptionsMenu, CurrentUser) {
+      StyledMarker, OptionsMenu, CurrentUser, Scroll) {
 
     var should = chai.should();
 
@@ -115,21 +116,6 @@ define(
           window.lastEvent.should.equal("map");
         });
 
-        it("should track when a marker is hovered over", function () {
-          this.map.render();
-          this.map.drawPoint({
-            events: [{
-              distance: 1,
-              location: [1, 2]
-            }],
-            location: []
-          });
-
-          google.maps.event.triggers[3]();
-
-          Analytics.infoBoxShown.calledOnce.should.equal(true);
-        });
-
         it("should track when the menu is shown", function () {
           this.clock = sinon.useFakeTimers();
           try {
@@ -143,40 +129,73 @@ define(
           }
         });
 
-        it("should close open windows when a marker is hovered over", function () {
-          this.map.render();
-          this.map.drawPoint({
-            events: [],
-            location: []
-          });
-
-          this.map.closeOpenWindows = sinon.stub();
-          google.maps.event.triggers[2]();
-          this.map.closeOpenWindows.calledOnce.should.equal(true);
-        });
-
-        it("should track when a marker link is clicked on", function () {
-          this.map.render();
-          this.map.drawPoint({
-            events: [{
-              distance: 1,
-              location: [1, 2]
-            }],
-            location: []
-          });
-
-          google.maps.event.triggers[3]();
-
-          this.map.onLinkClick({target: {}});
-
-          Analytics.linkClicked.calledOnce.should.equal(true);
-        });
-
         it("should force an update when the force-change event occurs on the model", function () {
           this.map.forceUpdate = sinon.stub();
           this.map.render();
           this.map.model.trigger("force-change");
           this.map.forceUpdate.calledOnce.should.equal(true);
+        });
+        describe("markers", function () {
+
+          it("should close open windows when a marker is hovered over", function () {
+            this.map.render();
+            this.map.drawPoint({
+              events: [],
+              location: []
+            });
+
+            this.map.closeOpenWindows = sinon.stub();
+            google.maps.event.triggers[2]();
+            this.map.closeOpenWindows.calledOnce.should.equal(true);
+          });
+
+          it("should track when a marker is hovered over", function () {
+            this.map.render();
+            this.map.drawPoint({
+              events: [{
+                distance: 1,
+                location: [1, 2]
+              }],
+              location: []
+            });
+
+            google.maps.event.triggers[3]();
+
+            Analytics.infoBoxShown.calledOnce.should.equal(true);
+          });
+
+          it("should track when a marker link is clicked on", function () {
+            this.map.render();
+            this.map.drawPoint({
+              events: [{
+                distance: 1,
+                location: [1, 2]
+              }],
+              location: []
+            });
+
+            google.maps.event.triggers[3]();
+
+            this.map.onLinkClick({target: {}});
+
+            Analytics.linkClicked.calledOnce.should.equal(true);
+          });
+
+          it("should scroll the highlighted result into view", function () {
+            var el;
+            try {
+              el = $("<div><a class='event_link' data-thing-id='123'></a></div>");
+              el.appendTo(document.body);
+              sinon.stub(Scroll, "intoView");
+              this.map.render();
+              this.map.model.set("highlights", [{id: 123}]);
+              this.map.afterMouseOverMarker();
+              Scroll.intoView.calledOnce.should.equal(true);
+            } finally {
+              Scroll.intoView.restore();
+              el.remove();
+            }
+          });
         });
       });
 
@@ -624,23 +643,37 @@ define(
       });
 
       describe("marker links", function () {
-        it("should contain the event data in the dataset", function () {
-          var event = {
+        beforeEach(function () {
+          this.event = {
+            thing_id: 123,
             event_name: "some name",
             event_link: "http://something.com/blah",
             start_date: "2013-03-02",
             end_date: "2013-04-03",
             location: [[20, -53]]
           };
-          var text = this.map.getEventText(event);
+        });
+        it("should contain the event data in the dataset", function () {
+          var text = this.map.getEventText(this.event);
           var el = $(text);
           var dataset = el.data();
-          dataset.name.should.equal(event.event_name);
-          dataset.link.should.equal(event.event_link);
-          dataset.lat.should.equal(event.location[0][0]);
-          dataset.lon.should.equal(event.location[0][1]);
-          dataset.startDate.should.equal(event.start_date);
-          dataset.endDate.should.equal(event.end_date);
+          dataset.thingId.should.equal(this.event.thing_id);
+          dataset.name.should.equal(this.event.event_name);
+          dataset.link.should.equal(this.event.event_link);
+          dataset.lat.should.equal(this.event.location[0][0]);
+          dataset.lon.should.equal(this.event.location[0][1]);
+          dataset.startDate.should.equal(this.event.start_date);
+          dataset.endDate.should.equal(this.event.end_date);
+        });
+        it("should be highlighted when the thing id matches the model's highlights", function () {
+          this.map.model.set("highlights", [{id: 123}]);
+          var text = this.map.getEventText(this.event);
+          $(text).hasClass("highlight").should.equal(true);
+        });
+        it("should not be highlighted when the thing id does not match the model's highlights", function () {
+          this.map.model.set("highlights", [{id: 124}]);
+          var text = this.map.getEventText(this.event);
+          $(text).hasClass("highlight").should.equal(false);
         });
       });
 

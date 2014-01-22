@@ -1,7 +1,8 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
-  ["underscore", "jquery", "backbone", "views/search_box", "utils/filter_url_serialiser"],
-  function (_, $, Backbone, SearchBox, FilterUrlSerialiser) {
+  ["underscore", "jquery", "backbone", "views/search_box",
+    "utils/filter_url_serialiser", "utils/scroll"],
+  function (_, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll) {
     describe("search box", function () {
       beforeEach(function () {
         this.searchBox = new SearchBox({
@@ -602,7 +603,7 @@ define(
           this.searchBox.highlightSelectedResult();
           this.searchBox.$(".search-result.selected").length.should.equal(0);
         });
-        it.only("should update the highlights from the selected element", function () {
+        it("should update the highlights from the selected element", function () {
           sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
             return [{id: 1, points: "a point"}];
           });
@@ -613,44 +614,19 @@ define(
           this.searchBox.highlightSelectedResult();
           this.searchBox.model.get("highlights")[0].points.should.equal("a point");
         });
-        describe("scrolling into view", function () {
-          beforeEach(function () {
-            sinon.stub(this.searchBox, "getHighlightsFromJSON");
-            this.parentEl = $("<div id='search-box'></div>");
-            this.parentEl.appendTo(document.body);
-            this.el = this.searchBox.render();
-            this.el.appendTo(this.parentEl);
-
-            var i = 0;
-            var els = _.times(40, function () {
-              i += 1;
-              return $("<li style='height=20;' class='search-result' data-id='" + i + "'>text</li>");
-            });
-            this.searchBox.showSearchResults();
-            this.searchBox.renderSearchEntries(els);
-            this.searchBox.$(".search-results").height(100);
-          });
-          afterEach(function () {
-            this.parentEl.remove();
-          });
-          it("should scroll the result into view if it is above the visible area", function () {
-            this.searchBox.$(".search-results").scrollTop(500);
+        it("should scroll the element into view", function () {
+          sinon.stub(Scroll, "intoView");
+          sinon.stub(this.searchBox, "getHighlightsFromJSON");
+          try {
+            this.searchBox.render();
+            var el = $("<li class='search-result' data-id='1'></li>");
+            this.searchBox.renderSearchEntries([el]);
             this.searchBox.model.set("highlights", [{id: 1}]);
             this.searchBox.highlightSelectedResult();
-            this.searchBox.$(".search-results").scrollTop().should.equal(0);
-          });
-          it("should scroll the result into view if it is below the visible area", function () {
-            this.searchBox.$(".search-results").scrollTop().should.equal(0);
-            this.searchBox.model.set("highlights", [{id: 30}]);
-            this.searchBox.highlightSelectedResult();
-            this.searchBox.$(".search-results").scrollTop().should.be.greaterThan(0);
-          });
-          it("should not scroll the result into view if it is visible", function () {
-            this.searchBox.$(".search-results").scrollTop(30);
-            this.searchBox.model.set("highlights", [{id: 1}]);
-            this.searchBox.highlightSelectedResult();
-            this.searchBox.$(".search-results").scrollTop().should.equal(30);
-          });
+            Scroll.intoView.calledOnce.should.equal(true);
+          } finally {
+            Scroll.intoView.restore();
+          }
         });
       });
     });
