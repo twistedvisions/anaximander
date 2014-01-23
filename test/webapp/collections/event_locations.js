@@ -266,16 +266,5 @@ define(
         JSON.parse(this.lastReset[1][0]).location[1].should.not.equal(-20);
       });
     });
-    describe("formatYearAsTimestamp", function () {
-      it("should pad the year so it is 4 digits when the year is < 100AD", function () {
-        this.events.formatYearAsTimestamp(99, "").should.equal("0099");
-      });
-      it("should pad the year so it is 4 digits when the year is < 1000AD", function () {
-        this.events.formatYearAsTimestamp(999, "").should.equal("0999");
-      });
-      it("should format the year appropriately when it is BC", function () {
-        this.events.formatYearAsTimestamp(-48, "").should.equal("0048 BC");
-      });
-    });
   }
 );

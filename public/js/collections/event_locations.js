@@ -3,8 +3,9 @@ define([
   "underscore",
   "backbone",
   "utils/filter_url_serialiser",
+  "utils/date",
   "models/event_location"
-], function ($, _, Backbone, FilterUrlSerialiser, EventLocation) {
+], function ($, _, Backbone, FilterUrlSerialiser, date, EventLocation) {
 
   var Events = Backbone.Collection.extend({
 
@@ -48,28 +49,11 @@ define([
     },
 
     getStartOfYear: function (year) {
-      return this.formatYearAsTimestamp(year, "-01-01 00:00");
+      return date.formatYearAsTimestamp(year, "-01-01 00:00");
     },
 
     getEndOfYear: function (year) {
-      return this.formatYearAsTimestamp(year, "-12-31 23:59");
-    },
-
-    //TODO: refactor out these into a different utils file
-    formatYearAsTimestamp: function (year, suffix) {
-      var isBc = year < 0;
-      year = this.formatYear(year) + suffix + (isBc ? " BC" : "");
-      return isBc ? year.substring(1) : year;
-    },
-
-    formatYear: function (year) {
-      return this.pad(Math.abs(year), year < 0 ? 5 : 4, 0);
-    },
-
-    pad: function (n, width, z) {
-      z = z || "0";
-      n = n + "";
-      return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+      return date.formatYearAsTimestamp(year, "-12-31 23:59");
     },
 
     handleResults: function (results) {
