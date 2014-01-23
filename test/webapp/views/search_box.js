@@ -628,6 +628,53 @@ define(
             Scroll.intoView.restore();
           }
         });
+        it("should call resetHighlight if the highlight has a reset value", function () {
+          sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
+            return [{id: 1, points: "a point"}];
+          });
+          sinon.stub(this.searchBox, "resetHighlight");
+          this.searchBox.render();
+          var el = $("<li class='search-result' data-id='1'></li>");
+          this.searchBox.renderSearchEntries([el]);
+          this.searchBox.model.set("highlights", [{id: 1, reset: true}]);
+          this.searchBox.highlightSelectedResult();
+          this.searchBox.resetHighlight.calledOnce.should.equal(true);
+        });
+      });
+      describe("resetHighlight", function () {
+        it("should only change things if there is more than one location associated with the thing", function () {
+          sinon.stub(this.searchBox, "extractBoundingBoxData");
+          var date = new Date(2014, 0, 1);
+          this.searchBox.model.set("date", [1900, 1901]);
+          this.searchBox.resetHighlight({
+            area: [{}],
+            start_date: date,
+            end_date: date
+          });
+          this.searchBox.model.get("date").should.eql([1900, 1901]);
+        });
+        it("should set the date on the model", function () {
+          sinon.stub(this.searchBox, "extractBoundingBoxData");
+          var date = new Date(2014, 0, 1);
+          this.searchBox.model.set("date", [1900, 1901]);
+          this.searchBox.resetHighlight({
+            area: [{}, {}],
+            start_date: date,
+            end_date: date
+          });
+          this.searchBox.model.get("date").should.eql([2014, 2014]);
+        });
+        it("should set the bounds on the model", function () {
+          sinon.stub(this.searchBox, "extractBoundingBoxData");
+          var date = new Date(2014, 0, 1);
+          this.searchBox.model.set("date", [1900, 1901]);
+          this.searchBox.resetHighlight({
+            area: [{}, {}],
+            start_date: date,
+            end_date: date
+          });
+          this.searchBox.extractBoundingBoxData.calledOnce.should.equal(true);
+        });
       });
     });
   }

@@ -11,9 +11,10 @@ define([
   "utils/scroll",
   "styled_marker",
   "chroma",
+  "text!templates/info_window_entry.htm",
   "css!/css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
-    Position, Scroll, StyledMarker, chroma) {
+    Position, Scroll, StyledMarker, chroma, infoWindowEntryTemplate) {
 
   var MapView = Backbone.View.extend({
 
@@ -24,7 +25,7 @@ define([
       this.mapObjects = {};
       this.user = opts.user;
       this.eventLocationsCollection = opts.eventLocationsCollection;
-      this.onLinkClick = _.bind(this.onLinkClick, this);
+      this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
     },
 
     render: function () {
@@ -271,16 +272,26 @@ define([
     },
 
     afterMouseOverMarker: function () {
-      $(".event_link").on("click", this.onLinkClick);
+      $(".event-link").on("click", _.bind(this.onLinkClick, this));
+      $(".search").on("click", _.bind(this.onSearchClick, this));
 
       var highlights = this.model.get("highlights");
       if (highlights && highlights.length > 0) {
-        // TODO: rename to event-link
-        var el = $("a.event_link[data-thing-id=" + highlights[0].id + "]").parent();
+        var el = $(".event-entry[data-thing-id=" + highlights[0].id + "]");
         if (el && el.length) {
-          Scroll.intoView(el, el.parent().parent(), 50);
+          Scroll.intoView(el, el.parent().parent().parent(), 50);
         }
       }
+    },
+
+    onSearchClick: function (e) {
+      var data = this.getMarkerData(e);
+      this.model.set("query", data.thingName);
+      this.model.set("highlights", [{id: data.thingId, reset: true}]);
+    },
+
+    getMarkerData: function (e) {
+      return $(e.target).parent().data();
     },
 
     getMarkerText: function (events) {
@@ -340,38 +351,24 @@ define([
     },
 
     onLinkClick: function (e) {
-      analytics.linkClicked($(e.target).data());
+      analytics.linkClicked($(e.target).parent().data());
     },
 
     getContent: function (result) {
-      return "<p>" + _.map(result.events, this.getEventText, this).join("<p>");
+      return "<p>" + _.map(result.events, this.getInfoWindowEntry, this).join("<p>");
     },
 
-    getEventText: function (event) {
-      var date = new Date(event.start_date);
-      var attributes = [];
+    getInfoWindowEntry: function (event) {
       var highlights = this.model.get("highlights");
       var highlighted =
         highlights &&
         highlights.length > 0 &&
         highlights[0].id === event.thing_id;
-      attributes.push("class=\"event_link" + (highlighted ? " highlight" : "") + "\"");
-      attributes.push("href=\"" + encodeURI(event.event_link) + "\"");
-      attributes.push("target=\"_blank\"");
-      attributes.push("data-thing-id=\"" + event.thing_id + "\"");
-      attributes.push("data-name=\"" + event.event_name + "\"");
-      attributes.push("data-link=\"" + event.event_link + "\"");
-      attributes.push("data-lat=\"" + event.location[0][0] + "\"");
-      attributes.push("data-lon=\"" + event.location[0][1] + "\"");
-      attributes.push("data-start-date=\"" + event.start_date + "\"");
-      attributes.push("data-end-date=\"" + event.end_date + "\"");
-      return [
-        "<a " + attributes.join(" ") + " >" +
-        event.event_name + "</a>",
-        date.getDate() + "/" + (date.getMonth() + 1) + "/" +
-        Math.abs(date.getFullYear()) +
-        (date.getFullYear() < 0 ? " BC" : "")
-      ].join("<br/>");
+
+      return this.infoWindowEntryTemplate(_.extend({
+        date: new Date(event.start_date),
+        highlighted: highlighted
+      }, event));
     },
 
     drawShape: function (result) {

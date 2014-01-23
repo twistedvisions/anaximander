@@ -189,7 +189,8 @@ define([
       this.$(".search-result").removeClass("selected");
       var highlights = this.model.get("highlights");
       if (highlights && highlights.length > 0) {
-        var id = highlights[0].id;
+        var highlight = highlights[0];
+        var id = highlight.id;
         var el = this.$(".search-result[data-id=" + id + "]");
         el.addClass("selected");
 
@@ -197,6 +198,22 @@ define([
         this.model.set("highlights", this.getHighlightsFromJSON(data));
 
         Scroll.intoView(el, this.$(".search-results"), 100);
+
+        if (highlight.reset) {
+          this.resetHighlight(data);
+        }
+      }
+    },
+
+    resetHighlight: function (data) {
+      if (data.area.length > 1) {
+        var modelData = {};
+        modelData.date = [
+          data.start_date.getFullYear(),
+          data.end_date.getFullYear()
+        ];
+        this.extractBoundingBoxData(modelData, data);
+        this.model.set(modelData);
       }
     },
 

@@ -29,6 +29,16 @@ define(
     describe("map", function () {
 
       beforeEach(function () {
+        this.sampleEvent = {
+          distance: 1,
+          event_link: "somelink",
+          event_name: "some event",
+          thing_name: "some thing",
+          start_date: "2014-01-01T01:00:00.000Z",
+          end_date: "2014-01-01T23:00:00.000Z",
+          thing_id: 123,
+          location: [1, 2]
+        };
         this.model = new Backbone.Model({
           center: [1, 1],
           date: [1900, 2000],
@@ -149,13 +159,35 @@ define(
             this.map.closeOpenWindows.calledOnce.should.equal(true);
           });
 
+          it("should call onLinkClick when a link is clicked", function () {
+            var el = $("<div class='event-link'>");
+            sinon.stub(this.map, "onLinkClick");
+            try {
+              el.appendTo(document.body);
+              this.map.afterMouseOverMarker();
+              el.click();
+              this.map.onLinkClick.calledOnce.should.equal(true);
+            } finally {
+              el.remove();
+            }
+          });
+          it("should call onSearchClick when the search button is clicked", function () {
+            var el = $("<div class='search'>");
+            sinon.stub(this.map, "onSearchClick");
+            try {
+              el.appendTo(document.body);
+              this.map.afterMouseOverMarker();
+              el.click();
+              this.map.onSearchClick.calledOnce.should.equal(true);
+            } finally {
+              el.remove();
+            }
+          });
+
           it("should track when a marker is hovered over", function () {
             this.map.render();
             this.map.drawPoint({
-              events: [{
-                distance: 1,
-                location: [1, 2]
-              }],
+              events: [this.sampleEvent],
               location: []
             });
 
@@ -167,10 +199,7 @@ define(
           it("should track when a marker link is clicked on", function () {
             this.map.render();
             this.map.drawPoint({
-              events: [{
-                distance: 1,
-                location: [1, 2]
-              }],
+              events: [this.sampleEvent],
               location: []
             });
 
@@ -184,7 +213,7 @@ define(
           it("should scroll the highlighted result into view", function () {
             var el;
             try {
-              el = $("<div><a class='event_link' data-thing-id='123'></a></div>");
+              el = $("<div class='event-entry' data-thing-id='123'></div>");
               el.appendTo(document.body);
               sinon.stub(Scroll, "intoView");
               this.map.render();
@@ -196,6 +225,39 @@ define(
               el.remove();
             }
           });
+        });
+      });
+
+      describe("onSearchClick", function () {
+        it("should set the model query to the event's thing's name", function () {
+          sinon.stub(this.map, "getMarkerData", function () {
+            return {
+              thingName: "thing name"
+            };
+          });
+          this.map.onSearchClick();
+
+          this.model.get("query").should.equal("thing name");
+        });
+        it("should set the model's highlights to the event's thing's id", function () {
+          sinon.stub(this.map, "getMarkerData", function () {
+            return {
+              thingId: 1234
+            };
+          });
+          this.map.onSearchClick();
+
+          this.model.get("highlights")[0].id.should.equal(1234);
+        });
+        it("should set the reset flag on the model's highlights", function () {
+          sinon.stub(this.map, "getMarkerData", function () {
+            return {
+              thingId: 1234
+            };
+          });
+          this.map.onSearchClick();
+
+          this.model.get("highlights")[0].reset.should.equal(true);
         });
       });
 
@@ -647,6 +709,7 @@ define(
           this.event = {
             thing_id: 123,
             event_name: "some name",
+            thing_name: "some thing",
             event_link: "http://something.com/blah",
             start_date: "2013-03-02",
             end_date: "2013-04-03",
@@ -654,9 +717,10 @@ define(
           };
         });
         it("should contain the event data in the dataset", function () {
-          var text = this.map.getEventText(this.event);
+          var text = this.map.getInfoWindowEntry(this.event);
           var el = $(text);
           var dataset = el.data();
+
           dataset.thingId.should.equal(this.event.thing_id);
           dataset.name.should.equal(this.event.event_name);
           dataset.link.should.equal(this.event.event_link);
@@ -667,13 +731,13 @@ define(
         });
         it("should be highlighted when the thing id matches the model's highlights", function () {
           this.map.model.set("highlights", [{id: 123}]);
-          var text = this.map.getEventText(this.event);
-          $(text).hasClass("highlight").should.equal(true);
+          var text = this.map.getInfoWindowEntry(this.event);
+          $(text).find(".event-link").hasClass("highlight").should.equal(true);
         });
         it("should not be highlighted when the thing id does not match the model's highlights", function () {
           this.map.model.set("highlights", [{id: 124}]);
-          var text = this.map.getEventText(this.event);
-          $(text).hasClass("highlight").should.equal(false);
+          var text = this.map.getInfoWindowEntry(this.event);
+          $(text).find(".event-link").hasClass("highlight").should.equal(false);
         });
       });
 
