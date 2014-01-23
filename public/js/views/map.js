@@ -116,8 +116,6 @@ define([
           this.map.panTo(new google.maps.LatLng(center[0], center[1]));
         }
         if (this.model.get("zoom") === -1) {
-          //TODO: make sure this bounds is the same type of bounds as in
-          //getBounds() in this file
           var newBounds = this.model.get("bounds");
           var boundsObj = new google.maps.LatLngBounds();
           boundsObj.extend(new google.maps.LatLng(newBounds[0].lat, newBounds[0].lon));
@@ -223,7 +221,10 @@ define([
       var bounds = this.map.getBounds();
       var ne = bounds.getNorthEast();
       var sw = bounds.getSouthWest();
-      return [[ne.lat(), ne.lng()], [sw.lat(), sw.lng()]];
+      return [
+        {lat: ne.lat(), lon: ne.lng()},
+        {lat: sw.lat(), lon: sw.lng()}
+      ];
     },
 
     getZoom: function () {

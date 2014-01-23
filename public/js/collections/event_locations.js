@@ -36,7 +36,10 @@ define([
           {
             lat: position[0],
             lon: position[1],
-            bounds: bounds,
+            bounds: [
+              [bounds[0].lat, bounds[0].lon],
+              [bounds[1].lat, bounds[1].lon]
+            ],
             start: this.getStartOfYear(timeRange[0]),
             end: this.getEndOfYear(timeRange[1]),
             typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),

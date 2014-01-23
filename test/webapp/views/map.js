@@ -551,7 +551,7 @@ define(
               };
             }
           };
-          this.map.getBounds().should.eql([[10, -20], [-30, 40]]);
+          this.map.getBounds().should.eql([{lat: 10, lon: -20}, {lat: -30, lon: 40}]);
         });
       });
 

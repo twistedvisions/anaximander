@@ -10,7 +10,7 @@ define(
         center: [-10, 12],
         date: [1900, 2000],
         zoom: 3,
-        bounds: [[10, -20], [-20, 34]],
+        bounds: [{lat: 10, lon: -20}, {lat: -20, lon: 34}],
         filterState: new Backbone.Collection()
       });
       FilterUrlSerialiser.deserialise("1:u;3:*;4:11", this.model);
