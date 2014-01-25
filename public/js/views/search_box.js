@@ -233,6 +233,7 @@ define([
         this.extractBoundingBoxData(modelData, data);
       }
 
+      window.lastEvent = "search";
       this.setModelData(modelData);
 
       this.highlightSelectedResult();

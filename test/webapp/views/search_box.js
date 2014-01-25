@@ -463,81 +463,91 @@ define(
       });
 
       describe("resultSelected", function () {
-        it("should set the model's end/start date a minimum of 10 years distant", function () {
-          var date = this.searchBox.extractDate({
-            start_date: new Date(2000, 0, 1),
-            end_date: new Date(2002, 0, 1)
+        describe("extractDate", function () {
+          it("should set the model's end/start date a minimum of 10 years distant", function () {
+            var date = this.searchBox.extractDate({
+              start_date: new Date(2000, 0, 1),
+              end_date: new Date(2002, 0, 1)
+            });
+            date[0].should.equal(1996);
+            date[1].should.equal(2006);
           });
-          date[0].should.equal(1996);
-          date[1].should.equal(2006);
-        });
-        it("should set the model's start and end date directly if they are more than 10 years apart", function () {
-          var date = this.searchBox.extractDate({
-            start_date: new Date(1900, 0, 1),
-            end_date: new Date(2002, 0, 1)
+          it("should set the model's start and end date directly if they are more than 10 years apart", function () {
+            var date = this.searchBox.extractDate({
+              start_date: new Date(1900, 0, 1),
+              end_date: new Date(2002, 0, 1)
+            });
+            date[0].should.equal(1900);
+            date[1].should.equal(2002);
           });
-          date[0].should.equal(1900);
-          date[1].should.equal(2002);
         });
-        it("should set the center to be the location of the bounding box if the bounding box is a point", function () {
-          var modelData = {};
-          this.searchBox.extractPointData(modelData, {area: [{lat: 10, lon: -20}]});
-          modelData.center.should.eql([10, -20]);
+        describe("extractPointData", function () {
+          it("should set the center to be the location of the bounding box if the bounding box is a point", function () {
+            var modelData = {};
+            this.searchBox.extractPointData(modelData, {area: [{lat: 10, lon: -20}]});
+            modelData.center.should.eql([10, -20]);
+          });
+          it("should set the zoom to be 12 if the bounding box is a point", function () {
+            var modelData = {};
+            this.searchBox.extractPointData(modelData, {area: [{lat: 10, lon: -20}]});
+            modelData.zoom.should.equal(12);
+          });
         });
-        it("should set the zoom to be 12 if the bounding box is a point", function () {
-          var modelData = {};
-          this.searchBox.extractPointData(modelData, {area: [{lat: 10, lon: -20}]});
-          modelData.zoom.should.equal(12);
+        describe("bounds", function () {
+          it("should create a bounds that is 10% greater than the bounding box", function () {
+            this.searchBox.extractBound([{}, {}], "lat", 10, 20).should.eql(
+              [{lat: 9}, {lat: 21}]
+            );
+          });
+          it("should set the zoom to be -1 if the bounding box is not a point", function () {
+            var modelData = {};
+            this.searchBox.extractBoundingBoxData(modelData, {area: [{lat: 10, lon: -20}, {lat: 11, lon: -21}]});
+            modelData.zoom.should.equal(-1);
+          });
         });
-        it("should create a bounds that is 10% greater than the bounding box", function () {
-          this.searchBox.extractBound([{}, {}], "lat", 10, 20).should.eql(
-            [{lat: 9}, {lat: 21}]
-          );
-        });
-        it("should set the zoom to be -1 if the bounding box is not a point", function () {
-          var modelData = {};
-          this.searchBox.extractBoundingBoxData(modelData, {area: [{lat: 10, lon: -20}, {lat: 11, lon: -21}]});
-          modelData.zoom.should.equal(-1);
-        });
-        it("should set the highlight's id to that of the clicked result", function () {
-          sinon.stub(this.searchBox, "extractData", function () {
-            return {
+        describe("integration", function () {
+          beforeEach(function () {
+            this.data = {
               area: [{lat: 10, lon: -20}],
               thing_id: 123
             };
+            sinon.stub(this.searchBox, "extractData", _.bind(function () {
+              return this.data;
+            }, this));
+            sinon.stub(this.searchBox, "extractDate");
+            sinon.stub(this.searchBox, "setModelData");
           });
-          sinon.stub(this.searchBox, "extractDate");
-          sinon.stub(this.searchBox, "setModelData");
-          this.searchBox.resultSelected();
-          this.searchBox.setModelData.args[0][0].highlights[0].id
-            .should.equal(123);
-        });
-        it("should set the highlights points from the points of the clicked result", function () {
-          sinon.stub(this.searchBox, "extractData", function () {
-            return {
+          it("should set the lastEvent to 'search'", function () {
+            window.lastEvent = "";
+            this.searchBox.resultSelected();
+            window.lastEvent.should.equal("search");
+          });
+          it("should set the highlight's id to that of the clicked result", function () {
+            this.searchBox.resultSelected();
+            this.searchBox.setModelData.args[0][0].highlights[0].id
+              .should.equal(123);
+          });
+          it("should set the highlights points from the points of the clicked result", function () {
+            this.data = {
               points: [{lat: 11, lon: -21}],
               area: [{lat: 10, lon: -20}],
               thing_id: 123
             };
+            this.searchBox.resultSelected();
+            this.searchBox.setModelData.args[0][0].highlights[0].points
+              .should.eql([{lat: 11, lon: -21}]);
           });
-          sinon.stub(this.searchBox, "extractDate");
-          sinon.stub(this.searchBox, "setModelData");
-          this.searchBox.resultSelected();
-          this.searchBox.setModelData.args[0][0].highlights[0].points
-            .should.eql([{lat: 11, lon: -21}]);
-        });
-        it("should set the highlights points from the area of the clicked result if there are no points", function () {
-          sinon.stub(this.searchBox, "extractData", function () {
-            return {
-              area: [{lat: 10, lon: -20}],
-              thing_id: 123
-            };
+          it("should set the highlights points from the area of the clicked result if there are no points", function () {
+            this.searchBox.resultSelected();
+            this.searchBox.setModelData.args[0][0].highlights[0].points
+              .should.eql([{lat: 10, lon: -20}]);
           });
-          sinon.stub(this.searchBox, "extractDate");
-          sinon.stub(this.searchBox, "setModelData");
-          this.searchBox.resultSelected();
-          this.searchBox.setModelData.args[0][0].highlights[0].points
-            .should.eql([{lat: 10, lon: -20}]);
+          it("should highlight the selected event", function () {
+            sinon.stub(this.searchBox, "highlightSelectedResult");
+            this.searchBox.resultSelected();
+            this.searchBox.highlightSelectedResult.calledOnce
+              .should.equal(true);
+          });
         });
         it("should remove all filters", function () {
           this.searchBox.model = new Backbone.Model({
@@ -559,21 +569,6 @@ define(
           this.searchBox.model.on("change", handler);
           this.searchBox.setModelData();
           called.should.equal(true);
-        });
-
-        it("should highlight the selected event", function () {
-          sinon.stub(this.searchBox, "extractData", function () {
-            return {
-              area: [{lat: 10, lon: -20}],
-              thing_id: 123
-            };
-          });
-          sinon.stub(this.searchBox, "extractDate");
-          sinon.stub(this.searchBox, "setModelData");
-          sinon.stub(this.searchBox, "highlightSelectedResult");
-          this.searchBox.resultSelected();
-          this.searchBox.highlightSelectedResult.calledOnce
-            .should.equal(true);
         });
       });
       describe("highlightSelectedResult", function () {
