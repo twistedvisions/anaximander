@@ -39,7 +39,7 @@ define([
         date: [parseInt(start, 10), parseInt(end, 10)],
         center: [parseFloat(lat), parseFloat(lon)],
         zoom: parseInt(zoom, 10),
-        query: decodeURIComponent(query)
+        query: query && decodeURIComponent(query)
       };
 
       if (highlights) {

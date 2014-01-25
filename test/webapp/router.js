@@ -50,6 +50,13 @@ define(
           this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "searchString", "[1]").should.equal(true);
         });
       });
+      describe("filteredQueryHighlightedMapView", function () {
+        it("should not set the query when the parameter is null", function () {
+          this.router.model = new Backbone.Model();
+          this.router.filteredQueryHighlightedMapView(1, 2, 3, 4, 5, null, null, null);
+          (this.router.model.get("query") === null).should.equal(true);
+        });
+      });
       describe("process changes", function () {
         beforeEach(function () {
           this.router = new Router();
@@ -110,6 +117,7 @@ define(
           /query\/some%20search%20string/.test(this.location).should.equal(true);
         });
         it("should not navigate with query value if it is not set", function () {
+          this.model.set("query", null);
           this.router.init({model: this.model});
           this.router.handleChange();
           /query\//.test(this.location).should.equal(false);
