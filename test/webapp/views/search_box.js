@@ -266,6 +266,7 @@ define(
           it("should prevent clicking on links from closing the dropdown", function () {
             sinon.spy(this.searchBox, "preventEventPropagation");
             sinon.stub(this.searchBox, "resultSelected");
+            sinon.stub(this.searchBox, "getSearchLinkDataFromEvent");
             this.searchBox.render();
             this.searchBox.$(".dropdown-menu").html("<li><div class='name'><a>text</a></div></li>");
             this.searchBox.bindEventsToSearchEntries();
@@ -771,6 +772,7 @@ define(
         it("should track when a user clicks on a search link", function () {
           sinon.spy(this.searchBox, "preventEventPropagation");
           sinon.stub(this.searchBox, "resultSelected");
+          sinon.stub(this.searchBox, "getSearchLinkDataFromEvent");
           this.searchBox.render();
           this.searchBox.$(".dropdown-menu").html("<li><div class='name'><a>text</a></div></li>");
           this.searchBox.bindEventsToSearchEntries();

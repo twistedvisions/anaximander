@@ -208,7 +208,10 @@ define([
     },
 
     getSearchLinkDataFromEvent: function (e) {
-      return $(e.target).parent().parent().data();
+      var data = $(e.target).parent().parent().parent().data().result;
+      delete data.area;
+      delete data.points;
+      return data;
     },
 
     preventEventPropagation: function (e) {
