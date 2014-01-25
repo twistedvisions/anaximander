@@ -59,18 +59,20 @@ define([
       });
     },
 
-    searchBoxTyped: function () {
+    searchBoxTyped: function (e) {
       var text = this.$("#search").val();
-      if (this.searchBoxClear) {
-        if (text.length !== 0) {
-          this.searchBoxClear = false;
-          Analytics.searchBoxCharacterTyped({text: text});
+      if (e.keyCode !== 13) {
+        if (this.searchBoxClear) {
+          if (text.length !== 0) {
+            this.searchBoxClear = false;
+            Analytics.searchBoxCharacterTyped({text: text});
+          }
+        } else if (text.length === 5) {
+          Analytics.searchBoxStringTyped({text: text});
+        } else if (text.length === 0) {
+          this.searchBoxClear = true;
+          Analytics.searchBoxCleared();
         }
-      } else if (text.length === 5) {
-        Analytics.searchBoxStringTyped({text: text});
-      } else if (text.length === 0) {
-        this.searchBoxClear = true;
-        Analytics.searchBoxCleared();
       }
     },
 

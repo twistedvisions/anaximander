@@ -700,6 +700,12 @@ define(
           this.searchBox.$("#search").trigger("keyup");
           Analytics.searchBoxCharacterTyped.calledOnce.should.equal(true);
         });
+        it("should track a key when enter was typed in the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$("#search").val("");
+          this.searchBox.$("#search").trigger("keyup", {keyCode: 13});
+          Analytics.searchBoxCharacterTyped.calledOnce.should.equal(false);
+        });
         it("should not track when a second character is typed in the search box", function () {
           this.searchBox.render();
           this.searchBox.$("#search").val("s");
