@@ -69,6 +69,7 @@ define([
       } else if (text.length === 5) {
         Analytics.searchBoxStringTyped({text: text});
       } else if (text.length === 0) {
+        this.searchBoxClear = true;
         Analytics.searchBoxCleared();
       }
     },

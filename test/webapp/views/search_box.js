@@ -724,9 +724,11 @@ define(
             search.val(search.val() + character);
             search.trigger("keyup");
           });
+          this.searchBox.searchBoxClear = false;
           search.val("");
           search.trigger("keyup");
           Analytics.searchBoxCleared.calledOnce.should.equal(true);
+          this.searchBox.searchBoxClear.should.equal(true);
         });
         it("should track when someone pastes text into the search box", function () {
           this.searchBox.render();
