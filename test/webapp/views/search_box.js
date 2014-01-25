@@ -1,8 +1,8 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
   ["underscore", "jquery", "backbone", "views/search_box",
-    "utils/filter_url_serialiser", "utils/scroll"],
-  function (_, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll) {
+    "utils/filter_url_serialiser", "utils/scroll", "analytics"],
+  function (_, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll, Analytics) {
     describe("search box", function () {
       beforeEach(function () {
         this.searchBox = new SearchBox({
@@ -196,7 +196,7 @@ define(
         });
         it("should set the model", function () {
           this.searchBox.$("#search").val("some search string");
-          this.searchBox.handleSearchSubmit({preventDefault: function () {}});
+          this.searchBox.handleSearchSubmit({type: "submit", preventDefault: function () {}});
           this.searchBox.model.get("query").should.equal("some search string");
         });
       });
@@ -674,6 +674,133 @@ define(
             end_date: date
           });
           this.searchBox.extractBoundingBoxData.calledOnce.should.equal(true);
+        });
+      });
+      describe("analytics", function () {
+        var analyticsCalls = [
+          "searchBoxCharacterTyped",
+          "searchBoxStringTyped",
+          "searchBoxCleared",
+          "searchEntryLinkClicked",
+          "searchEntryClicked",
+          "hideSearchResults",
+          "searchSubmitted",
+          "searchPasted",
+          "searchCopied"
+        ];
+        beforeEach(function () {
+          _.each(analyticsCalls, function (name) {
+            sinon.stub(Analytics, name);
+          });
+        });
+        afterEach(function () {
+          _.each(analyticsCalls, function (name) {
+            Analytics[name].restore();
+          });
+        });
+        it("should track when a character is typed in the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$("#search").val("s");
+          this.searchBox.$("#search").trigger("keypress");
+          Analytics.searchBoxCharacterTyped.calledOnce.should.equal(true);
+        });
+        it("should not track when a second character is typed in the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$("#search").val("s");
+          this.searchBox.$("#search").trigger("keypress");
+          this.searchBox.$("#search").val("so");
+          this.searchBox.$("#search").trigger("keypress");
+          Analytics.searchBoxCharacterTyped.calledOnce.should.equal(true);
+        });
+        it("should track when 5 characters are typed in the search box", function () {
+          this.searchBox.render();
+          var search = this.searchBox.$("#search");
+          _.each(["s", "o", "m", "e", "t"], function (character) {
+            search.val(search.val() + character);
+            search.trigger("keypress");
+          });
+          Analytics.searchBoxStringTyped.calledOnce.should.equal(true);
+        });
+        it("should track when someone removes all text from the search box", function () {
+          this.searchBox.render();
+          var search = this.searchBox.$("#search");
+          _.each(["s", "o", "m", "e"], function (character) {
+            search.val(search.val() + character);
+            search.trigger("keypress");
+          });
+          search.val("");
+          search.trigger("keypress");
+          Analytics.searchBoxCleared.calledOnce.should.equal(true);
+        });
+        it("should track when someone pastes text into the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$("#search").val("some search");
+          this.searchBox.$("#search").trigger("paste");
+          Analytics.searchPasted.calledWith({
+            text: "some search"
+          }).should.equal(true);
+        });
+        it("should track when someone copies text from the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$("#search").val("some search");
+          this.searchBox.$("#search").trigger("copy", {type: "copy"});
+          Analytics.searchCopied.calledWith({
+            text: "some search",
+            type: "copy"
+          }).should.equal(true);
+        });
+        it("should track when someone cuts text from the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$("#search").val("some search");
+          this.searchBox.$("#search").trigger("cut", {type: "cut"});
+          Analytics.searchCopied.calledWith({
+            text: "some search",
+            type: "cut"
+          }).should.equal(true);
+        });
+        it("should track when someone submits a search by hitting enter", function () {
+          this.searchBox.handleSearchSubmit({type: "submit", preventDefault: sinon.stub()});
+          Analytics.searchSubmitted.calledOnce.should.equal(true);
+          Analytics.searchSubmitted.args[0][0].type.should.equal("keyboard");
+        });
+        it("should track when someone submits a search by hitting the search button", function () {
+          this.searchBox.handleSearchSubmit({type: "click", preventDefault: sinon.stub()});
+          Analytics.searchSubmitted.calledOnce.should.equal(true);
+          Analytics.searchSubmitted.args[0][0].type.should.equal("mouse");
+        });
+        it("should track when a user clicks on a search link", function () {
+          sinon.spy(this.searchBox, "preventEventPropagation");
+          sinon.stub(this.searchBox, "resultSelected");
+          this.searchBox.render();
+          this.searchBox.$(".dropdown-menu").html("<li><div class='name'><a>text</a></div></li>");
+          this.searchBox.bindEventsToSearchEntries();
+          this.searchBox.$(".dropdown-menu li a").click();
+          Analytics.searchEntryLinkClicked.calledOnce.should.equal(true);
+        });
+        it("should track when a user clicks on a search entry", function () {
+          sinon.stub(this.searchBox, "extractData", function () {
+            return {
+              area: [[]]
+            };
+          });
+          sinon.stub(this.searchBox, "extractDate");
+          sinon.stub(this.searchBox, "extractPointData");
+          sinon.stub(this.searchBox, "setModelData");
+          sinon.stub(this.searchBox, "getHighlightsFromJSON");
+
+          this.searchBox.render();
+          this.searchBox.$(".dropdown-menu").html("<li class='search-result'/>");
+          this.searchBox.bindEventsToSearchEntries();
+          this.searchBox.$(".dropdown-menu li").click();
+          Analytics.searchEntryClicked.calledOnce.should.equal(true);
+        });
+        it("should track when a user closes the search box", function () {
+          this.searchBox.render();
+          this.searchBox.$(".dropdown-menu").html("<li><span class='hide-button'>x</span></li>");
+          this.searchBox.bindEventsToSearchEntries();
+          Analytics.hideSearchResults.reset();
+          this.searchBox.$(".dropdown-menu li .hide-button").click();
+          Analytics.hideSearchResults.calledOnce.should.equal(true);
         });
       });
     });

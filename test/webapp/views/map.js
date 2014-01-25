@@ -210,6 +210,20 @@ define(
             Analytics.linkClicked.calledOnce.should.equal(true);
           });
 
+          it("should track when a marker search is clicked on", function () {
+            try {
+              sinon.stub(Analytics, "mapEntrySearched");
+              var data = {someKey: "some value"};
+              sinon.stub(this.map, "getMarkerData", function () {
+                return data;
+              });
+              this.map.onSearchClick();
+              Analytics.mapEntrySearched.calledWith(data).should.equal(true);
+            } finally {
+              Analytics.mapEntrySearched.restore();
+            }
+          });
+
           it("should scroll the highlighted result into view", function () {
             var el;
             try {

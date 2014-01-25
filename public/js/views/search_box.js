@@ -32,9 +32,45 @@ define([
       this.$("#search").focus();
       $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
       $("#search-box").on("show.bs.dropdown", _.bind(this.bsShowSearchResults, this));
+      this.addAnalytics();
       $(window).on("resize", _.bind(this.handleBodyResize, this));
       this.updateQuery();
       return this.$el;
+    },
+
+    addAnalytics: function () {
+      this.searchBoxClear = true;
+      this.$("#search").on("keypress", _.bind(this.searchBoxTyped, this));
+      this.$("#search").on("paste", _.bind(this.handleSearchPaste, this));
+      this.$("#search").on("copy", _.bind(this.handleSearchCopy, this));
+      this.$("#search").on("cut", _.bind(this.handleSearchCopy, this));
+    },
+
+    handleSearchPaste: function (/* e */) {
+      var text = this.$("#search").val();
+      Analytics.searchPasted({text: text});
+    },
+
+    handleSearchCopy: function (e) {
+      var text = this.$("#search").val();
+      Analytics.searchCopied({
+        text: text,
+        type: e.type
+      });
+    },
+
+    searchBoxTyped: function () {
+      var text = this.$("#search").val();
+      if (this.searchBoxClear) {
+        if (text.length !== 0) {
+          this.searchBoxClear = false;
+          Analytics.searchBoxCharacterTyped({text: text});
+        }
+      } else if (text.length === 5) {
+        Analytics.searchBoxStringTyped({text: text});
+      } else if (text.length === 0) {
+        Analytics.searchBoxCleared();
+      }
     },
 
     updateQuery: function () {
@@ -57,10 +93,12 @@ define([
       return $("#map-holder");
     },
 
-    //TODO: refactor this out into a collection
     handleSearchSubmit: function (e) {
       e.preventDefault();
       this.search();
+      Analytics.searchSubmitted({
+        type: e.type === "submit" ? "keyboard" : "mouse"
+      });
     },
 
     search: function () {
@@ -71,6 +109,7 @@ define([
     },
 
     doSearch: function (searchString) {
+      //TODO: refactor this out into a collection
       $.get("/search", {
         string: searchString
       }, _.bind(this.handleSearchResults, this));
@@ -149,6 +188,7 @@ define([
       if (queryString) {
         this.$("#search").val(queryString);
       }
+      Analytics.hideSearchResults();
     },
 
     toggleDropdown: function () {
@@ -157,8 +197,18 @@ define([
 
     bindEventsToSearchEntries: function () {
       this.$(".dropdown-menu li.search-result").on("click", _.bind(this.resultSelected, this));
-      this.$(".dropdown-menu li .name a").on("click", _.bind(this.preventEventPropagation, this));
+      this.$(".dropdown-menu li .name a").on("click", _.bind(this.searchLinkClicked, this));
       this.$(".dropdown-menu li .hide-button").on("click", _.bind(this.hideSearchResults, this));
+    },
+
+    searchLinkClicked: function (e) {
+      this.preventEventPropagation(e);
+      var data = this.getSearchLinkDataFromEvent(e);
+      Analytics.searchEntryLinkClicked(data);
+    },
+
+    getSearchLinkDataFromEvent: function (e) {
+      return $(e.target).parent().parent().data();
     },
 
     preventEventPropagation: function (e) {
@@ -183,6 +233,7 @@ define([
       this.setModelData(modelData);
 
       this.highlightSelectedResult();
+      Analytics.searchEntryClicked(data);
     },
 
     highlightSelectedResult: function () {

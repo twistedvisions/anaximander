@@ -289,6 +289,7 @@ define([
       var data = this.getMarkerData(e);
       this.model.set("query", data.thingName);
       this.model.set("highlights", [{id: data.thingId, reset: true}]);
+      analytics.mapEntrySearched(data);
     },
 
     getMarkerData: function (e) {
