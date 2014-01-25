@@ -100,8 +100,14 @@ define([
 
     forceUpdate: function () {
       var center = this.map.getCenter();
+      window.lastEvent = "resize";
       google.maps.event.trigger(this.map, "resize");
       this.map.setCenter(center);
+      setTimeout(function () {
+        if (window.lastEvent === "resize") {
+          window.lastEvent = "";
+        }
+      }, 1000);
     },
 
     update: function () {
@@ -198,7 +204,7 @@ define([
     },
 
     onBoundsChanged: function () {
-      if (!this.locationChanged) {
+      if (!this.locationChanged && (window.lastEvent !== "resize")) {
         window.lastEvent = "map";
       }
       this.dontRedraw = true;

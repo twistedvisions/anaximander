@@ -384,6 +384,35 @@ define(
           this.map.forceUpdate();
           this.map.map.setCenter.calledWith(centerValue).should.equal(true);
         });
+        it("should set the lastEvent to resize", function () {
+          this.mockMap();
+          this.map.forceUpdate();
+          window.lastEvent.should.equal("resize");
+        });
+        it("should unset the lastEvent after some time if it is still resize", function () {
+          this.mockMap();
+          this.clock = sinon.useFakeTimers();
+          try {
+            this.map.forceUpdate();
+            this.clock.tick(1200);
+            window.lastEvent.should.equal("");
+          } finally {
+            this.clock.restore();
+          }
+        });
+        it("should not unset the lastEvent after some time if it is not resize", function () {
+          this.mockMap();
+
+          this.clock = sinon.useFakeTimers();
+          try {
+            this.map.forceUpdate();
+            window.lastEvent = "something else";
+            this.clock.tick(1200);
+            window.lastEvent.should.equal("something else");
+          } finally {
+            this.clock.restore();
+          }
+        });
       });
       describe("updateLocation", function () {
 
