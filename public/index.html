@@ -3,40 +3,6 @@
     <meta name="google" value="notranslate" />
     <title>Retred: event mapping with Wikipedia</title>
     <link rel="shortcut icon" href="/favicon.ico" />
-    <script>
-      var debounce = function(func, wait, immediate) {
-        var result;
-        var timeout = null;
-        return function() {
-          var context = this, args = arguments;
-          var later = function() {
-            timeout = null;
-            if (!immediate) result = func.apply(context, args);
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) result = func.apply(context, args);
-          return result;
-        };
-      };
-      window.universal_variable = {
-        events: {
-          listeners: [],
-          push: function (data) {
-            this.last_value = data;
-            _.each(this.listeners, function (cb) {
-              cb(data);
-            });
-          },
-          on: function (type, cb) {
-            if (type === "change") {
-              this.listeners.push(debounce(cb, 1000));
-            }
-          }
-        }
-      };
-    </script>
     <script src='//d3c3cq33003psk.cloudfront.net/opentag-82113-782996.js'>
     </script>
     <script src="js/settings.js"></script>
