@@ -179,7 +179,8 @@ define([
             this.closeOpenWindows();
             this.lastOptionsMenu = new OptionsMenu({
               event: e,
-              model: this.model
+              model: this.model,
+              parent: this.$el
             });
             this.lastOptionsMenu.render();
             analytics.optionsMenuShown();
