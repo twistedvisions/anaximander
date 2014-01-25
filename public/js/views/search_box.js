@@ -40,7 +40,7 @@ define([
 
     addAnalytics: function () {
       this.searchBoxClear = true;
-      this.$("#search").on("keypress", _.bind(this.searchBoxTyped, this));
+      this.$("#search").on("keyup", _.bind(this.searchBoxTyped, this));
       this.$("#search").on("paste", _.bind(this.handleSearchPaste, this));
       this.$("#search").on("copy", _.bind(this.handleSearchCopy, this));
       this.$("#search").on("cut", _.bind(this.handleSearchCopy, this));

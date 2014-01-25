@@ -701,15 +701,15 @@ define(
         it("should track when a character is typed in the search box", function () {
           this.searchBox.render();
           this.searchBox.$("#search").val("s");
-          this.searchBox.$("#search").trigger("keypress");
+          this.searchBox.$("#search").trigger("keyup");
           Analytics.searchBoxCharacterTyped.calledOnce.should.equal(true);
         });
         it("should not track when a second character is typed in the search box", function () {
           this.searchBox.render();
           this.searchBox.$("#search").val("s");
-          this.searchBox.$("#search").trigger("keypress");
+          this.searchBox.$("#search").trigger("keyup");
           this.searchBox.$("#search").val("so");
-          this.searchBox.$("#search").trigger("keypress");
+          this.searchBox.$("#search").trigger("keyup");
           Analytics.searchBoxCharacterTyped.calledOnce.should.equal(true);
         });
         it("should track when 5 characters are typed in the search box", function () {
@@ -717,7 +717,7 @@ define(
           var search = this.searchBox.$("#search");
           _.each(["s", "o", "m", "e", "t"], function (character) {
             search.val(search.val() + character);
-            search.trigger("keypress");
+            search.trigger("keyup");
           });
           Analytics.searchBoxStringTyped.calledOnce.should.equal(true);
         });
@@ -726,10 +726,10 @@ define(
           var search = this.searchBox.$("#search");
           _.each(["s", "o", "m", "e"], function (character) {
             search.val(search.val() + character);
-            search.trigger("keypress");
+            search.trigger("keyup");
           });
           search.val("");
-          search.trigger("keypress");
+          search.trigger("keyup");
           Analytics.searchBoxCleared.calledOnce.should.equal(true);
         });
         it("should track when someone pastes text into the search box", function () {
