@@ -259,9 +259,6 @@ define([
     },
 
     mouseOverMarker: function (marker, infoBoxData) {
-      setTimeout(_.bind(function () {
-        analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
-      }, this), 1000);
       analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
       this.closeOpenWindows();
       var info = new google.maps.InfoWindow({
