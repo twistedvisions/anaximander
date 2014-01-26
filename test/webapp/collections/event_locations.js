@@ -18,6 +18,20 @@ define(
         state: this.model
       });
     });
+    describe("start", function () {
+      var keys = ["center", "date", "bounds", "filterState"];
+      _.each(keys, function (key) {
+        it("should update on " + key + "'s change event", function () {
+          sinon.stub(this.events, "updateData");
+          this.events.getDebouncedUpdateData = _.bind(function () {
+            return this.updateData;
+          }, this.events);
+          this.events.start();
+          this.events.state.set(key, "some value");
+          this.events.updateData.calledOnce.should.equal(true);
+        });
+      });
+    });
     describe("request", function () {
       beforeEach(function () {
         sinon.stub($, "get");

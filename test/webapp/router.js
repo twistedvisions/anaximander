@@ -56,6 +56,45 @@ define(
           this.router.filteredQueryHighlightedMapView(1, 2, 3, 4, 5, null, null, null);
           (this.router.model.get("query") === null).should.equal(true);
         });
+        it("should not trigger an event if nothing has changed", function () {
+          var changeCalled = false;
+          this.model.set("query", null);
+          this.model.set("highlights", []);
+          this.router.model = this.model;
+          this.router.model.on("change", function () {
+            changeCalled = true;
+          });
+          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, null, null, null);
+          changeCalled.should.equal(false);
+        });
+        _.each(["date", "center", "zoom", "query"], function (key) {
+          it("should not set '" + key + "' on the model if it has not changed", function () {
+            this.router.model = this.model;
+            this.model.set("query", "some query");
+            sinon.stub(this.router.model, "set");
+            this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, null, "some query", null);
+            (this.router.model.set.args[0][0][key] === undefined).should.equal(true);
+          });
+        });
+        it("should trigger an event if the filterState has changed", function () {
+          this.router.model = this.model;
+          var called = false;
+          this.model.on("change:filterState", function () {
+            called = true;
+          });
+          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, "1:*", "some query", null);
+          called.should.equal(true);
+        });
+        it("should not trigger an event if the filterState has not changed", function () {
+          this.router.model = this.model;
+          var called = false;
+          FilterUrlSerialiser.deserialise("1:*", this.model);
+          this.model.on("change:filterState", function () {
+            called = true;
+          });
+          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, "1:*", "some query", null);
+          called.should.equal(false);
+        });
       });
       describe("process changes", function () {
         beforeEach(function () {

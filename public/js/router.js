@@ -42,24 +42,64 @@ define([
         query: query && decodeURIComponent(query)
       };
 
+      this.getHighlightChange(data, highlights);
+
+      window.lastEvent = "url_change";
+
+      var oldFilters = "";
+      var newFilters = "";
+      if (filters) {
+        oldFilters = this.model.get("filterState").toJSON();
+        FilterUrlSerialiser.deserialise(filters, this.model);
+        newFilters = this.model.get("filterState").toJSON();
+      }
+
+      this.removeUnchangedData(data);
+
+      this.model.set(data);
+      if (!_.isEqual(oldFilters, newFilters)) {
+        this.model.trigger("change:filterState");
+      }
+    },
+
+    getHighlightChange: function (data, highlights) {
       if (highlights) {
         data.highlights = _.map(JSON.parse(highlights), function (highlight) {
           return {
             id: highlight
           };
         });
+        if (_.isEqual(
+            _.pluck(data.highlights, "id"),
+            _.pluck(this.model.get("highlights"), "id")
+           )) {
+          delete data.highlights;
+        }
       } else {
         data.highlights = [];
       }
+    },
 
-      window.lastEvent = "url_change";
-
-      if (filters) {
-        FilterUrlSerialiser.deserialise(filters, this.model);
+    removeUnchangedData: function (data) {
+      if (this.model.get("date") &&
+          (data.date[0] === this.model.get("date")[0]) &&
+          (data.date[1] === this.model.get("date")[1])) {
+        delete data.date;
       }
 
-      this.model.set(data);
-      this.model.trigger("change:filterState");
+      if (this.model.get("center") &&
+          (data.center[0] === this.model.get("center")[0]) &&
+          (data.center[1] === this.model.get("center")[1])) {
+        delete data.center;
+      }
+
+      if (data.zoom === this.model.get("zoom")) {
+        delete data.zoom;
+      }
+
+      if (data.query === this.model.get("query")) {
+        delete data.query;
+      }
     },
 
     init: function (options) {

@@ -20,7 +20,16 @@ define([
     },
 
     start: function () {
-      this.state.on("change", _.debounce(this.updateData, 500), this);
+      var changeEvents = ["center", "date", "bounds", "filterState"];
+      var bindString = _.map(changeEvents, function (event) {
+        return "change:" + event;
+      }).join(" ");
+      this.state.on(bindString, this.getDebouncedUpdateData(), this);
+    },
+
+    //Need to do this to facilitate testing.
+    getDebouncedUpdateData: function () {
+      return _.debounce(this.updateData, 500);
     },
 
     updateData: function () {
