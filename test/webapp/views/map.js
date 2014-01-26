@@ -160,6 +160,21 @@ define(
             this.map.closeOpenWindows.calledOnce.should.equal(true);
           });
 
+          it("should show a summary", function () {
+            sinon.stub(this.map, "getInfoWindowSummary");
+            sinon.stub(this.map, "getInfoBoxData");
+            this.map.mouseOverMarker(null, {});
+            this.map.getInfoWindowSummary.calledOnce.should.equal(true);
+          });
+
+          it("should show an entry for each event", function () {
+            sinon.stub(this.map, "getInfoWindowSummary");
+            sinon.stub(this.map, "getInfoWindowEntry");
+            sinon.stub(this.map, "getInfoBoxData");
+            this.map.mouseOverMarker(null, {events: [{}, {}]});
+            this.map.getInfoWindowEntry.calledTwice.should.equal(true);
+          });
+
           it("should call onLinkClick when a link is clicked", function () {
             var el = $("<div class='event-link'>");
             sinon.stub(this.map, "onLinkClick");

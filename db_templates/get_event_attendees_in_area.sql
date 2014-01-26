@@ -2,6 +2,7 @@ select
   thing.id as thing_id,
   place_thing.id as place_thing_id,
   thing.name as thing_name,
+  place_thing.name as place_thing_name,
   thing_type.name as thing_type,
   event.id as event_id,
   event.name as event_name,

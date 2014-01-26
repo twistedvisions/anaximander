@@ -11,10 +11,12 @@ define([
   "utils/scroll",
   "styled_marker",
   "chroma",
+  "text!templates/info_window_summary.htm",
   "text!templates/info_window_entry.htm",
   "css!/css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
-    Position, Scroll, StyledMarker, chroma, infoWindowEntryTemplate) {
+    Position, Scroll, StyledMarker, chroma,
+    infoWindowSummaryTemplate, infoWindowEntryTemplate) {
 
   var MapView = Backbone.View.extend({
 
@@ -27,6 +29,7 @@ define([
       this.lastHighlight = {};
       this.lastModelPosition = {};
       this.eventLocationsCollection = opts.eventLocationsCollection;
+      this.infoWindowSummaryTemplate = _.template(infoWindowSummaryTemplate);
       this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
     },
 
@@ -286,18 +289,31 @@ define([
       info.open(this.map, marker);
       info.result = infoBoxData;
       this.lastInfoWindow = info;
-      setTimeout(_.bind(this.afterMouseOverMarker, this), 100);
+      setTimeout(_.bind(this.afterMouseOverMarker, this), 10);
     },
 
     afterMouseOverMarker: function () {
       $(".event-link").on("click", _.bind(this.onLinkClick, this));
       $(".search").on("click", _.bind(this.onSearchClick, this));
 
+      if ($(".content-holder").height() === 200) {
+        //This is an ugly hack to allow us to put scroll bars on.
+        //Without it some weird thing happens where the scroll
+        //height takes into account the width with the scrollbars
+        //so it shows them unnecessarily
+        $(".gm-style-iw").addClass("fix-height");
+        //This is an ugly hack to make the InfoWindow allow
+        //us to chose the width of the box without it taking it into account
+        setTimeout(function () {
+          $(".gm-style-iw").addClass("fix-height2");
+        }, 10);
+      }
+
       var highlight = this.model.get("highlight");
       if (highlight.id) {
         var el = $(".event-entry[data-thing-id=" + highlight.id + "]");
         if (el && el.length) {
-          Scroll.intoView(el, el.parent().parent().parent(), 50);
+          Scroll.intoView(el, el.parent().parent(), 50);
         }
       }
     },
@@ -372,7 +388,19 @@ define([
     },
 
     getContent: function (result) {
-      return "<p>" + _.map(result.events, this.getInfoWindowEntry, this).join("<p>");
+      var content = [
+        "<div>",
+        this.getInfoWindowSummary(result),
+        "<div class='content-holder'><div class='content'>",
+        "<p>" + _.map(result.events, this.getInfoWindowEntry, this).join("<p>"),
+        "</div></div></div>"
+      ].join("");
+      return content;
+    },
+
+    getInfoWindowSummary: function (result) {
+      var name = result.events[0].place_thing_name;
+      return this.infoWindowSummaryTemplate({name: name});
     },
 
     getInfoWindowEntry: function (event) {

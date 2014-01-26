@@ -18,6 +18,46 @@
 }
 
 .gm-style .gm-style-iw {
+  overflow: hidden !important;
+  &.fix-height {
+    .content-holder {
+      padding-top: 20px;
+      .content {
+        overflow-y: auto;
+      }
+    }
+  }
+  &.fix-height2 {
+    width: 200px !important;
+    .content-holder {
+      position: absolute;
+    }
+  }
+
+
+
+  > div {
+    overflow: hidden !important;
+    height: 100%;
+    > div {
+      max-height: 200px;
+      .summary {
+        height: 20px;
+        overflow: hidden;
+        .name {
+          font-weight: bold;
+        }
+      }
+      .content-holder {
+        height: 100%;
+        top: 0;
+        width: 100%;
+        .content {
+          height: 100%;
+        }
+      }
+    }
+  }
   max-height: 200px;
   .event-link {
     display: block;
