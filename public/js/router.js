@@ -9,28 +9,90 @@ define([
 
     routes: {
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView"
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/query/:query": "queryMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/query/:query/highlight/:highlight": "queryHighlightedMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter/query/:query/highlight/:highlight": "filteredQueryHighlightedMapView"
     },
 
     mapView: function (lat, lon, zoom, start, end) {
-      this.filteredMapView(lat, lon, zoom, start, end, null);
-      this.setFromUrl = true;
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, null, null);
     },
+
     filteredMapView: function (lat, lon, zoom, start, end, filters) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, filters, null, null);
+    },
+
+    queryMapView: function (lat, lon, zoom, start, end, query) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, query, null);
+    },
+
+    queryHighlightedMapView: function (lat, lon, zoom, start, end, query, highlight) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, query, highlight);
+    },
+
+    filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, filters, query, highlight) {
+
+      this.setFromUrl = true;
+
       var data = {
-        date: [start, end],
-        center: [lat, lon],
-        zoom: parseInt(zoom, 10)
+        date: [parseInt(start, 10), parseInt(end, 10)],
+        center: [parseFloat(lat), parseFloat(lon)],
+        zoom: parseInt(zoom, 10),
+        query: query && decodeURIComponent(query)
       };
+
+      this.getHighlightChange(data, highlight);
 
       window.lastEvent = "url_change";
 
+      var oldFilters = "";
+      var newFilters = "";
       if (filters) {
+        oldFilters = this.model.get("filterState").toJSON();
         FilterUrlSerialiser.deserialise(filters, this.model);
+        newFilters = this.model.get("filterState").toJSON();
       }
 
+      this.removeUnchangedData(data);
+
       this.model.set(data);
-      this.model.trigger("change:filterState");
+      if (!_.isEqual(oldFilters, newFilters)) {
+        this.model.trigger("change:filterState");
+      }
+    },
+
+    getHighlightChange: function (data, highlight) {
+      if (highlight) {
+        data.highlight = {id: parseInt(highlight, 10)};
+        if (data.highlight.id === this.model.get("highlight").id) {
+          delete data.highlight;
+        }
+      } else {
+        data.highlight = {};
+      }
+    },
+
+    removeUnchangedData: function (data) {
+      if (this.model.get("date") &&
+          (data.date[0] === this.model.get("date")[0]) &&
+          (data.date[1] === this.model.get("date")[1])) {
+        delete data.date;
+      }
+
+      if (this.model.get("center") &&
+          (data.center[0] === this.model.get("center")[0]) &&
+          (data.center[1] === this.model.get("center")[1])) {
+        delete data.center;
+      }
+
+      if (data.zoom === this.model.get("zoom")) {
+        delete data.zoom;
+      }
+
+      if (data.query === this.model.get("query")) {
+        delete data.query;
+      }
     },
 
     init: function (options) {
@@ -54,7 +116,9 @@ define([
       var date = this.model.get("date");
       var center = this.model.get("center");
       var zoom = this.model.get("zoom");
+      var query = this.model.get("query");
       var filterState = this.model.get("filterState").toJSON();
+      var highlight = this.model.get("highlight");
       var filters = "";
       var location = [
         "lat", center[0],
@@ -65,15 +129,29 @@ define([
       ];
 
       if (filterState.length > 0) {
+
         location.push("filter");
         filters = FilterUrlSerialiser.serialise(this.model);
         location.push(filters);
+
+      } else if (query) {
+
+        location.push("query");
+        location.push(encodeURIComponent(query));
+
+        if (highlight) {
+
+          location.push("highlight");
+          location.push(highlight.id);
+
+        }
       }
 
       this.navigate(location.join("/"));
 
       this.sendAnalytics(center, zoom, date);
     },
+
     sendAnalytics: _.debounce(function (center, zoom, date) {
       analytics.navigation({
         lat: center[0],
@@ -83,6 +161,7 @@ define([
         end: parseInt(date[1], 10)
       });
     }, 500)
+
   });
 
   return Router;

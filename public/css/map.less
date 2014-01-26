@@ -4,12 +4,31 @@
   height: 100%;
   overflow: hidden;
   padding-bottom: 50px;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 
 .filters-visible #map-holder {
   padding-bottom: 250px;
 }
 
-.gm-style-iw {
+.search-visible #map-holder {
+  padding-left: 250px;
+}
+
+.gm-style .gm-style-iw {
   max-height: 200px;
+  .event-link {
+    display: block;
+    max-width: 180px;
+
+    &.highlight {
+      font-weight: bold !important;
+    }
+  }
+  .search {
+    margin-right: 4px;
+    font-size: 10px;
+  }
 }

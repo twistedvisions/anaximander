@@ -1,0 +1,22 @@
+<span
+  class="event-entry"
+  data-name="<%= event_name %>"
+  data-thing-id="<%= thing_id %>"
+  data-thing-name="<%= thing_name %>"
+  data-link="<%= event_link %>"
+  data-lat="<%= location[0][0] %>"
+  data-lon="<%= location[0][1] %>"
+  data-start-date="<%= start_date %>"
+  data-end-date="<%= end_date %>"
+>
+  <a class="event-link <%= (highlighted ? " highlight" : "") %> "
+      href="<%= encodeURI(event_link) %>"
+      target="_blank"
+  >
+    <%= event_name %>
+  </a>
+  <span class="search glyphicon glyphicon-search"></span>
+  <span class="date">
+    <%= date.getDate() %>/<%= (date.getMonth() + 1)%>/<%= Math.abs(date.getFullYear()) %> <%= (date.getFullYear() < 0 ? " BC" : "") %>
+  </span>
+</span>

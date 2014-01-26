@@ -1,3 +1,4 @@
+/*global sinon*/
 define(function () {
   return {
     load: function (name, req, onLoad) {
@@ -16,7 +17,18 @@ define(function () {
               };
             },
             LatLng: function () {},
+            LatLngBounds: function () {
+              return {
+                extend: function () {}
+              };
+            },
             Point: {},
+            Polyline: function (args) {
+              window.google.maps.Polyline.args = args;
+              return {
+                setMap: function () {}
+              };
+            },
             Marker: function () {},
             MVCObject: function () {},
             MapTypeId: {},
@@ -42,7 +54,8 @@ define(function () {
               triggers: [],
               addListener: function (obj, event, cb) {
                 this.triggers.push(cb);
-              }
+              },
+              trigger: sinon.stub()
             }
           }
         };

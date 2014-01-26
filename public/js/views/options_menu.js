@@ -13,16 +13,17 @@ define([
 
     initialize: function (options) {
       this.event = options.event;
+      this.parent = options.parent;
     },
 
     render: function () {
       this.$el.html(template);
       this.$(".add-event").on("click", _.bind(this.handleAddEvent, this));
-
       if (this.event) {
+        var parentPosition = this.parent.position();
         this.$el.appendTo($("body")).css({
-          left: this.event.pixel.x,
-          top: this.event.pixel.y
+          left: this.event.pixel.x + parentPosition.left,
+          top: this.event.pixel.y + parentPosition.top
         });
       }
       return this.$el;

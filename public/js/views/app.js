@@ -45,6 +45,11 @@ define([
         this.mapView.render();
       }, this));
 
+      require(["views/search_box"], _.bind(function (SearchBoxView) {
+        this.searchBoxView = new SearchBoxView({model: this.model});
+        this.searchBoxView.render();
+      }, this));
+
       require(["views/date_slider"], _.bind(function (DateSliderView) {
         this.dateSliderView = new DateSliderView({model: this.model});
         this.dateSliderView.render();

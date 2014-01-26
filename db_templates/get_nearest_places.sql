@@ -1,8 +1,8 @@
-select 
-  place_thing.id as id, 
-  place_thing.name as name, 
+select
+  place_thing.id as id,
+  place_thing.name as name,
   ST_AsText(place.location) as location,
-  ST_Distance (
+  ST_Distance_Sphere (
     place.location,
     ST_Point($1, $2)
   ) as distance

@@ -5,7 +5,7 @@ define(
 
   function (Backbone, EventEditor, Analytics, Event) {
 
-    describe("interaction", function () {
+    describe("event editor", function () {
 
       it("should set the end when the start is set if it is empty", function () {
         var editor = new EventEditor({});
@@ -66,14 +66,27 @@ define(
 
         it("should trigger a change on the model to say it needs updating", function () {
           sinon.stub(this.editor.model, "trigger");
+          sinon.stub(this.editor, "updateHighlight");
           try {
-
             this.editor.handleSaveComplete();
-            this.editor.model.trigger.calledWith("change").should.equal(true);
+            this.editor.model.trigger.calledWith("change:center").should.equal(true);
           } finally {
             this.editor.model.trigger.restore();
           }
         });
+
+        it("should update the highlight if the added attendee is already highlighted", function () {
+          this.editor.model.set("highlight", {id: 123});
+          this.editor.updateHighlight({attendees: [{id: 123}]});
+          this.editor.model.get("highlight").reset.should.equal(true);
+        });
+
+        it("should not update the highlight if the added attendee is not highlighted", function () {
+          this.editor.model.set("highlight", {id: 123});
+          this.editor.updateHighlight({attendees: [{id: 1234}]});
+          (this.editor.model.get("highlight").reset === undefined).should.equal(true);
+        });
+
 
         it("should show the error message if it fails", function () {
           this.editor.handleSaveFail({}, {responseText: "some error message"});
@@ -88,9 +101,6 @@ define(
         });
 
         it("should prepend // if the url doesn't start with http or https", function () {
-
-
-
           this.editor.handleSave();
           this.editor.eventsCollection.toJSON()[0].link
             .should.equal("//some link");

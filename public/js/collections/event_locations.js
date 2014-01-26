@@ -3,8 +3,9 @@ define([
   "underscore",
   "backbone",
   "utils/filter_url_serialiser",
+  "utils/date",
   "models/event_location"
-], function ($, _, Backbone, FilterUrlSerialiser, EventLocation) {
+], function ($, _, Backbone, FilterUrlSerialiser, date, EventLocation) {
 
   var Events = Backbone.Collection.extend({
 
@@ -19,7 +20,16 @@ define([
     },
 
     start: function () {
-      this.state.on("change", _.debounce(this.updateData, 500), this);
+      var changeEvents = ["center", "date", "bounds", "filterState"];
+      var bindString = _.map(changeEvents, function (event) {
+        return "change:" + event;
+      }).join(" ");
+      this.state.on(bindString, this.getDebouncedUpdateData(), this);
+    },
+
+    //Need to do this to facilitate testing.
+    getDebouncedUpdateData: function () {
+      return _.debounce(this.updateData, 500);
     },
 
     updateData: function () {
@@ -29,33 +39,18 @@ define([
         var timeRange = this.state.get("date");
         var bounds = this.state.get("bounds");
         var filterState = this.state.get("filterState");
-        var pad = function (n, width, z) {
-          z = z || "0";
-          n = n + "";
-          return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-        };
-        var formatYear = function (year) {
-          return pad(Math.abs(year), 4, 0);
-        };
-        var getStartOfYear = function (year) {
-          return formatYearAsTimestamp(year, "-01-01 00:00");
-        };
-        var getEndOfYear = function (year) {
-          return formatYearAsTimestamp(year, "-12-31 23:59");
-        };
-        var formatYearAsTimestamp = function (year, suffix) {
-          var isBc = year < 0;
-          year = formatYear(year) + suffix + (isBc ? " BC" : "");
-          return isBc ? year.substring(1) : year;
-        };
+
         $.get(
           "/location",
           {
             lat: position[0],
             lon: position[1],
-            bounds: bounds,
-            start: getStartOfYear(timeRange[0]),
-            end: getEndOfYear(timeRange[1]),
+            bounds: [
+              [bounds[0].lat, bounds[0].lon],
+              [bounds[1].lat, bounds[1].lon]
+            ],
+            start: this.getStartOfYear(timeRange[0]),
+            end: this.getEndOfYear(timeRange[1]),
             typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
             subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
             notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
@@ -65,16 +60,25 @@ define([
       }
     },
 
+    getStartOfYear: function (year) {
+      return date.formatYearAsTimestamp(year, "-01-01 00:00");
+    },
+
+    getEndOfYear: function (year) {
+      return date.formatYearAsTimestamp(year, "-12-31 23:59");
+    },
+
     handleResults: function (results) {
       this.queryPending = false;
       results = this.combineEventsAtTheSamePlace(_.cloneDeep(results));
-
       var oldResultsAsKeys = _.map(this.lastResults, this.makeKey, this);
       var newResultsAsKeys = _.map(results, this.makeKey, this);
 
       var toRemove = _.difference(oldResultsAsKeys, newResultsAsKeys);
       var toRender = _.difference(newResultsAsKeys, oldResultsAsKeys);
 
+      //todo: be better off storing last results as keys
+      //so don't need to make it twice?
       this.lastResults = results;
 
       this.trigger("reset", [toRemove, toRender]);
@@ -85,7 +89,7 @@ define([
       return JSON.stringify({
         location: result[0].location[0],
         events: _.map(result, function (r) {
-          return r;
+          return _.omit(r, "distance");
         })
       });
     },
@@ -103,7 +107,7 @@ define([
         location.sort(function (a, b) {
           a = new Date(a.start_date).getTime();
           b = new Date(b.start_date).getTime();
-          return (a - b) / Math.abs(a - b);
+          return a > b ? 1 : (a === b ? 0 : -1);
         });
       });
       return locations;

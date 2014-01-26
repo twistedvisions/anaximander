@@ -1,0 +1,26 @@
+<li role="presentation" class="search-result" data-id="<%= thing_id %>">
+    <span class="name" title="<%= thing_name %>">
+      <a href="<%= thing_link%>" target="blank" class="search-link btn btn-xs">
+        <span class="glyphicon glyphicon-link"></span>
+      </a>
+      <%= thing_name %>
+    </span>
+    <span class="type-name">
+      <%= thing_type_name %>
+    </span>
+    <br/>
+    <span class="date">
+      <% if (end_date - start_date < 24 * 60 * 60 * 1000) { %>
+
+      1 event on <%=  start_date.toLocaleDateString() %>
+
+      <% } else { %>
+
+      <%= event_count %> events
+      <%=  start_date.toLocaleDateString() %>
+      &ndash;
+      <%=  end_date.toLocaleDateString() %>
+
+      <% }%>
+    </span>
+</li>

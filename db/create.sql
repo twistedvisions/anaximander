@@ -18,7 +18,7 @@ CREATE TABLE thing
 CREATE TABLE place
 (
   id SERIAL,
-  location geography NOT NULL,
+  location geometry NOT NULL,
   thing_id bigint NOT NULL REFERENCES thing(id),
   CONSTRAINT place_pkey PRIMARY KEY (id)
 );
@@ -65,6 +65,10 @@ CREATE INDEX event_id_idx
 
 CREATE INDEX place_idx
    ON event USING hash (place_id);
+
+
+CREATE EXTENSION pg_trgm;
+CREATE INDEX thing_name_gin ON thing USING gin (name gin_trgm_ops);
 
 INSERT INTO thing_type (name) VALUES ('Person');
 INSERT INTO thing_type (name) VALUES ('Organisation');

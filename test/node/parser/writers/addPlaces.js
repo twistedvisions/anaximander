@@ -3,7 +3,7 @@ var sinon = require("sinon");
 var when = require("when");
 var should = require("should");
 var tryTest = require("../../tryTest");
-var db = require("../../../../lib/db");
+var db = require("../../../../lib/parser/raw_db");
 var addPlaces = require("../../../../lib/parser/writers/addPlaces");
 
 describe("addPlaces", function () {
