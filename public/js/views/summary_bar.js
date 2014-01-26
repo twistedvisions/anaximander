@@ -150,9 +150,7 @@ define([
     handleChange: function () {
       window.lastEvent = "period_selector";
       var id = this.placeSelector.select2("val");
-      setTimeout(_.bind(function () {
-        analytics.periodSelected(this.data[id]);
-      }, this), 1000);
+      analytics.periodSelected(this.data[id]);
       var place = this.data[id].place;
       this.model.set(this.data[id].place, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
