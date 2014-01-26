@@ -405,6 +405,7 @@ define(
         });
         it("should toggle the drop down", function () {
           sinon.stub(this.searchBox, "toggleDropdown");
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           this.searchBox.toggleDropdown.calledOnce.should.equal(true);
         });
@@ -415,17 +416,20 @@ define(
         });
         it("should remove the 'search-visible' class from the body", function () {
           $("body").addClass("search-visible");
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           $("body.search-visible").length.should.equal(0);
         });
         it("should unset the highlight", function () {
           this.searchBox.model.set("highlight", {id: 123});
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           (this.searchBox.model.get("highlight").id === undefined).should.equal(true);
         });
         it("should unset the query", function () {
           this.searchBox.model.set("query", "some search");
           this.searchBox.model.get("query").length.should.not.equal(0);
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           this.searchBox.model.get("query").length.should.equal(0);
         });
@@ -433,12 +437,14 @@ define(
           sinon.stub(this.searchBox, "doSearch");
           this.searchBox.render();
           this.searchBox.model.set("query", "some search");
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           this.searchBox.$("#search").val().should.equal("some search");
         });
         it("should not persist the query string in the text box if it is empty", function () {
           this.searchBox.render();
           this.searchBox.model.set("query", null);
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           this.searchBox.$("#search").val().should.equal("");
         });
@@ -447,6 +453,7 @@ define(
           this.searchBox.model.on("force-change", function () {
             called = true;
           });
+          this.searchBox.dropdownVisible = true;
           this.searchBox.hideSearchResults();
           called.should.equal(true);
         });
@@ -846,6 +853,7 @@ define(
           this.searchBox.$(".dropdown-menu").html("<li><span class='hide-button'>x</span></li>");
           this.searchBox.bindEventsToSearchEntries();
           Analytics.hideSearchResults.reset();
+          this.searchBox.dropdownVisible = true;
           this.searchBox.$(".dropdown-menu li .hide-button").click();
           Analytics.hideSearchResults.calledOnce.should.equal(true);
         });
