@@ -152,9 +152,13 @@ define([
       var id = this.placeSelector.select2("val");
       analytics.periodSelected(this.data[id]);
       var place = this.data[id].place;
-      this.model.set(this.data[id].place, {silent: true});
+      var data = _.extend({
+        query: "",
+        highlight: {}
+      }, this.data[id].place);
+      this.model.set(data, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
-      this.model.trigger("change change:filterState change:date");
+      this.model.trigger("change change:filterState change:date change:query  ");
     },
 
     showStats: function () {

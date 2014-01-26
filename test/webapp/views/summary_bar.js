@@ -26,7 +26,7 @@ define(
       $("#summary-bar").remove();
     });
 
-    describe("interaction", function () {
+    describe("period selector", function () {
       beforeEach(function () {
         this.clock = sinon.useFakeTimers();
         this.summaryBar = new SummaryBar({
@@ -48,10 +48,12 @@ define(
         analytics.periodSelectorOpened.restore();
         analytics.periodSelected.restore();
       });
+
       it("should track users clicking on the period selector", function () {
         this.summaryBar.placeSelectorOpened();
         analytics.periodSelectorOpened.calledOnce.should.equal(true);
       });
+
       it("should track users selecting a period", function () {
         this.summaryBar.handleChange();
         this.clock.tick(1200);
@@ -61,6 +63,14 @@ define(
       it("should set lastEvent to 'period_selector'", function () {
         this.summaryBar.handleChange();
         window.lastEvent.should.equal("period_selector");
+      });
+
+      it("should remove the query and highlight from the model", function () {
+        this.summaryBar.model.set("query", "some query");
+        this.summaryBar.model.set("highlight", {id: 123});
+        this.summaryBar.handleChange();
+        this.summaryBar.model.get("query").should.equal("");
+        this.summaryBar.model.get("highlight").should.eql({});
       });
     });
 
