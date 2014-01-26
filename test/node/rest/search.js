@@ -114,7 +114,7 @@ describe("search", function () {
         getResultRow(1, {area: [{lat: -20, lon: 10}, {lat: -20, lon: 10.1}]})
       ]);
     });
-    it("should return points if they exist", function () {
+    it("should return points and dates if they exist", function () {
       var dbPoints = {
         "type": "LineString",
         "coordinates": [
@@ -123,15 +123,17 @@ describe("search", function () {
         ]
       };
 
+      var dates = "{\"2000-01-01 00:00:00\",\"2000-01-02 00:00:00\"}";
+
       Search.prototype.handleSearchResults.call(this, this.res, [
-        {rows: [getRow(1, {points: JSON.stringify(dbPoints)})]},
+        {rows: [getRow(1, {points: JSON.stringify(dbPoints), dates: dates})]},
         {rows: []}
       ]);
       this.result.should.eql([
         getResultRow(1, {
           points: [
-            {lat: 10, lon: -20},
-            {lat: -30, lon: 40}
+            {lat: 10, lon: -20, date: "2000-01-01T00:00:00.000Z"  },
+            {lat: -30, lon: 40, date: "2000-01-02T00:00:00.000Z"}
           ]
         })
       ]);

@@ -23,7 +23,8 @@ define(function () {
               };
             },
             Point: {},
-            Polyline: function () {
+            Polyline: function (args) {
+              window.google.maps.Polyline.args = args;
               return {
                 setMap: function () {}
               };

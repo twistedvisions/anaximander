@@ -367,6 +367,26 @@ define(
           this.map.showHighlight();
           this.map.paths.length.should.equal(1);
         });
+        it("should only create a path for highlight in the date range", function () {
+          this.map.model.set("highlight", {
+            id: 1,
+            points: [
+              {lat: 10, lon: -20, date: "1900-01-01"},
+              {lat: 11, lon: -20, date: "1907-01-01"},
+              {lat: 11, lon: -20, date: "1911-01-01"},
+              {lat: 12, lon: -20, date: "1920-01-01"}
+            ]
+          });
+          this.map.paths = [];
+
+          this.map.model.set("date", [1900, 1920]);
+          this.map.showHighlight();
+          window.google.maps.Polyline.args.path.length.should.equal(4);
+
+          this.map.model.set("date", [1905, 1915]);
+          this.map.showHighlight();
+          window.google.maps.Polyline.args.path.length.should.equal(2);
+        });
       });
 
       describe("forceUpdate", function () {
@@ -567,6 +587,10 @@ define(
           this.map.getZoom = function () {
             return 8;
           };
+          this.map.lastModelPosition = {
+            date: [1900, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
           this.mockMap();
           sinon.spy(this.map, "mapNeedsRedrawing");
           this.map.render();
@@ -664,18 +688,39 @@ define(
       describe("mapNeedsRedrawing", function () {
         it("needs redrawing when highlight have been set", function () {
           this.map.model.set("highlight", {id: 1});
+          this.map.lastModelPosition = {
+            date: [1900, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
           this.map.lastHighlight = {};
           this.map.mapNeedsRedrawing().should.equal(true);
         });
         it("needs redrawing when highlight have been removed", function () {
           this.map.model.set("highlight", {});
+          this.map.lastModelPosition = {
+            date: [1900, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
           this.map.lastHighlight = {id: 1};
           this.map.mapNeedsRedrawing().should.equal(true);
         });
         it("does not need redrawing when highlight are the same", function () {
           this.map.model.set("highlight", {id: 1});
+          this.map.lastModelPosition = {
+            date: [1900, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
           this.map.lastHighlight = {id: 1};
           this.map.mapNeedsRedrawing().should.equal(false);
+        });
+        it("needs redrawing when the dates have changed", function () {
+          this.map.model.set("highlight", {id: 1});
+          this.map.lastModelPosition = {
+            date: [1901, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
+          this.map.lastHighlight = {id: 1};
+          this.map.mapNeedsRedrawing().should.equal(true);
         });
       });
 

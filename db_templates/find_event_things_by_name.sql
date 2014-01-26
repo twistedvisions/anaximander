@@ -7,7 +7,8 @@ select
   min(matching_thing.start_date) as start_date,
   max(matching_thing.end_date) as end_date,
   ST_Extent(matching_thing.location) as area,
-  ST_AsGeoJSON(ST_MakeLine(matching_thing.location)) as points
+  ST_AsGeoJSON(ST_MakeLine(matching_thing.location)) as points,
+  array_agg(matching_thing.start_date) as dates
 
 from (
   select

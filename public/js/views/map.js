@@ -25,6 +25,7 @@ define([
       this.mapObjects = {};
       this.user = opts.user;
       this.lastHighlight = {};
+      this.lastModelPosition = {};
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
     },
@@ -81,7 +82,12 @@ define([
         });
       }
       if (highlight.id) {
-        var points = _.map(highlight.points, function (point) {
+        var modelDate = this.model.get("date");
+        var pointsInRange = _.filter(highlight.points, function (point) {
+          var pointDate = new Date(point.date).getFullYear();
+          return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
+        });
+        var points = _.map(pointsInRange, function (point) {
           return new google.maps.LatLng(point.lat, point.lon);
         });
         var path = new google.maps.Polyline({
@@ -161,7 +167,8 @@ define([
     },
 
     mapNeedsRedrawing: function () {
-      return !_.isEqual(this.model.get("highlight"), this.lastHighlight);
+      return !_.isEqual(this.model.get("highlight"), this.lastHighlight) ||
+        !_.isEqual(this.getModelPosition().date, this.lastModelPosition.date);
     },
 
     drawMap: function () {
