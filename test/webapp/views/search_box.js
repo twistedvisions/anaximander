@@ -171,6 +171,12 @@ define(
           this.searchBox.updateHighlight();
           this.searchBox.search.calledOnce.should.equal(true);
         });
+        it("should not call search if there is no id parameter", function () {
+          sinon.stub(this.searchBox, "search");
+          this.searchBox.model.set("highlight", {});
+          this.searchBox.updateHighlight();
+          this.searchBox.search.calledOnce.should.equal(false);
+        });
         it("should reset the search highlight", function () {
           sinon.stub(this.searchBox, "search");
           sinon.stub(this.searchBox, "highlightSelectedResult");

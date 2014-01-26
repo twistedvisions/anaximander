@@ -98,7 +98,7 @@ define([
 
         var el = this.$(".search-result[data-id=" + highlight.id + "]");
         if (el) {
-          if (!highlight.points) {
+          if (highlight.id && !highlight.points) {
             this.search();
           }
         }
@@ -125,7 +125,7 @@ define([
 
     search: function () {
       var queryString = this.$("#search").val();
-      this.model.set("query", queryString);
+      this.model.set("query", queryString, {silent: true});
       this.showLoadingState();
       this.doSearch(queryString);
     },
