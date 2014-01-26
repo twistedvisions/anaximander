@@ -36,7 +36,12 @@ define([
       user: this.user
     });
     appView.render();
-    Analytics.loginSucceeded(user.toJSON());
+    if (user.get("id") !== -1) {
+      Analytics.loginSucceeded(user.toJSON());
+    }
+    this.startRouter();
+  };
+  App.prototype.startRouter = function () {
     this.router = new Router();
     this.router.init({
       model: this.model

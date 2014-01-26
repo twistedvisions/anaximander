@@ -1,7 +1,7 @@
-/*global sinon, describe, it */
+/*global sinon, describe, it, beforeEach, afterEach */
 define(
-  ["chai", "anax_startup"],
-  function (chai, App) {
+  ["underscore", "chai", "anax_startup", "analytics"],
+  function (_, chai, App, Analytics) {
     var should = chai.should();
     describe("anax", function () {
       it("should have a default view state", function () {
@@ -14,7 +14,35 @@ define(
         app.user.fetch.calledOnce.should.equal(true);
         app.user.fetch.restore();
       });
-      //it("should show a nice screen when it cannot fetch a user model");
+      describe("handleUserFetchSuccess", function () {
+        beforeEach(function () {
+          sinon.stub(Analytics, "loginSucceeded");
+          this.user = {
+            get: _.bind(function (key) {
+              if (key === "id") {
+                return this.userId;
+              }
+            }, this),
+            toJSON: sinon.stub()
+          };
+          this.app = new App();
+          sinon.stub(this.app, "startRouter");
+
+        });
+        afterEach(function () {
+          Analytics.loginSucceeded.restore();
+        });
+        it("should track if the user logged in on startup", function () {
+          this.userId = 1;
+          this.app.handleUserFetchSuccess(this.user);
+          Analytics.loginSucceeded.calledOnce.should.equal(true);
+        });
+        it("should not track if the user did not log in on startup", function () {
+          this.userId = -1;
+          this.app.handleUserFetchSuccess(this.user);
+          Analytics.loginSucceeded.calledOnce.should.equal(false);
+        });
+      });
     });
   }
 );
