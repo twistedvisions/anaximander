@@ -29,6 +29,7 @@ define([
         this.$("#search").focus();
       }, this));
       this.model.on("change:query", this.updateQuery, this);
+      this.model.on("change:highlights", this.updateHighlights, this);
       this.$("#search").focus();
       $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
       $("#search-box").on("show.bs.dropdown", _.bind(this.bsShowSearchResults, this));
@@ -83,6 +84,27 @@ define([
         this.search();
       } else {
         this.hideSearchResults();
+      }
+    },
+
+    updateHighlights: function () {
+      var highlights = this.model.get("highlights");
+
+      if (highlights.length > 0) {
+        var highlight = highlights[0];
+        if (highlight.reset) {
+          this.search();
+        } else {
+
+          this.highlightSelectedResult();
+
+          var el = this.$(".search-result[data-id=" + highlight.id + "]");
+          if (el) {
+            if (!highlight.points) {
+              this.search();
+            }
+          }
+        }
       }
     },
 
@@ -250,15 +272,17 @@ define([
         var highlight = highlights[0];
         var id = highlight.id;
         var el = this.$(".search-result[data-id=" + id + "]");
-        el.addClass("selected");
+        if (el.length > 0) {
+          el.addClass("selected");
 
-        var data = el.data("result");
-        this.model.set("highlights", this.getHighlightsFromJSON(data));
+          var data = el.data("result");
+          this.model.set("highlights", this.getHighlightsFromJSON(data));
 
-        Scroll.intoView(el, this.$(".search-results"), 100);
+          Scroll.intoView(el, this.$(".search-results"), 100);
 
-        if (highlight.reset) {
-          this.resetHighlight(data);
+          if (highlight.reset) {
+            this.resetHighlight(data);
+          }
         }
       }
     },

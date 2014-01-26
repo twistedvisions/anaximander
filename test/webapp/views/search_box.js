@@ -104,6 +104,15 @@ define(
           this.searchBox.updateQuery.calledOnce.should.equal(true);
         });
 
+        it("should listen to highlight change events on the model", function () {
+          sinon.stub(this.searchBox, "updateHighlights");
+          this.searchBox.render();
+          this.searchBox.updateHighlights.reset();
+          this.searchBox.updateHighlights.calledOnce.should.equal(false);
+          this.searchBox.model.set("highlights", [{id: 123}]);
+          this.searchBox.updateHighlights.calledOnce.should.equal(true);
+        });
+
         it("should update its visual state when it loads", function () {
           sinon.stub(this.searchBox, "updateQuery");
           this.searchBox.render();
@@ -112,6 +121,9 @@ define(
       });
 
       describe("updateQuery", function () {
+        beforeEach(function () {
+          sinon.stub(this.searchBox, "doSearch");
+        });
         it("should set the query string if it is set", function () {
           this.searchBox.model.set("query", "");
           this.searchBox.render();
@@ -141,6 +153,28 @@ define(
           sinon.stub(this.searchBox, "hideSearchResults");
           this.searchBox.updateQuery();
           this.searchBox.hideSearchResults.calledOnce.should.equal(true);
+        });
+      });
+
+      describe("updateHighlights", function () {
+        it("should call search if there is a reset parameter", function () {
+          sinon.stub(this.searchBox, "search");
+          this.searchBox.model.set("highlights", [{id: 123, reset: true}]);
+          this.searchBox.updateHighlights();
+          this.searchBox.search.calledOnce.should.equal(true);
+        });
+        it("should call search if there is no points parameter", function () {
+          sinon.stub(this.searchBox, "search");
+          this.searchBox.model.set("highlights", [{id: 123}]);
+          this.searchBox.updateHighlights();
+          this.searchBox.search.calledOnce.should.equal(true);
+        });
+        it("should reset the search highlights", function () {
+          sinon.stub(this.searchBox, "search");
+          sinon.stub(this.searchBox, "highlightSelectedResult");
+          this.searchBox.model.set("highlights", [{id: 123}]);
+          this.searchBox.updateHighlights();
+          this.searchBox.highlightSelectedResult.calledOnce.should.equal(true);
         });
       });
 
@@ -395,6 +429,7 @@ define(
           this.searchBox.model.get("query").length.should.equal(0);
         });
         it("should persist the query string in the text box", function () {
+          sinon.stub(this.searchBox, "doSearch");
           this.searchBox.render();
           this.searchBox.model.set("query", "some search");
           this.searchBox.hideSearchResults();
@@ -582,6 +617,7 @@ define(
         });
         it("should select the first highlight if it exists", function () {
           sinon.stub(this.searchBox, "getHighlightsFromJSON");
+          sinon.stub(this.searchBox, "updateHighlights");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='3'></li>");
           this.searchBox.renderSearchEntries([el]);
@@ -603,6 +639,7 @@ define(
           sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
             return [{id: 1, points: "a point"}];
           });
+          sinon.stub(this.searchBox, "doSearch");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='1'></li>");
           this.searchBox.renderSearchEntries([el]);
@@ -613,6 +650,7 @@ define(
         it("should scroll the element into view", function () {
           sinon.stub(Scroll, "intoView");
           sinon.stub(this.searchBox, "getHighlightsFromJSON");
+          sinon.stub(this.searchBox, "updateHighlights");
           try {
             this.searchBox.render();
             var el = $("<li class='search-result' data-id='1'></li>");
@@ -628,6 +666,7 @@ define(
           sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
             return [{id: 1, points: "a point"}];
           });
+          sinon.stub(this.searchBox, "doSearch");
           sinon.stub(this.searchBox, "resetHighlight");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='1'></li>");
@@ -763,11 +802,13 @@ define(
           }).should.equal(true);
         });
         it("should track when someone submits a search by hitting enter", function () {
+          sinon.stub(this.searchBox, "doSearch");
           this.searchBox.handleSearchSubmit({type: "submit", preventDefault: sinon.stub()});
           Analytics.searchSubmitted.calledOnce.should.equal(true);
           Analytics.searchSubmitted.args[0][0].type.should.equal("keyboard");
         });
         it("should track when someone submits a search by hitting the search button", function () {
+          sinon.stub(this.searchBox, "doSearch");
           this.searchBox.handleSearchSubmit({type: "click", preventDefault: sinon.stub()});
           Analytics.searchSubmitted.calledOnce.should.equal(true);
           Analytics.searchSubmitted.args[0][0].type.should.equal("mouse");
