@@ -5,7 +5,7 @@ define(
 
   function (Backbone, EventEditor, Analytics, Event) {
 
-    describe("interaction", function () {
+    describe("event editor", function () {
 
       it("should set the end when the start is set if it is empty", function () {
         var editor = new EventEditor({});
@@ -74,6 +74,19 @@ define(
             this.editor.model.trigger.restore();
           }
         });
+
+        it("should update the highlights if the added attendee is already highlighted", function () {
+          this.editor.model.set("highlights", [{id: 123}]);
+          this.editor.updateHighlights({attendees: [{id: 123}]});
+          this.editor.model.get("highlights")[0].reset.should.equal(true);
+        });
+
+        it("should not update the highlights if the added attendee is already highlighted", function () {
+          this.model.set("highlights", [{id: 123}]);
+          this.editor.updateHighlights({attendees: [{id: 1234}]});
+          (this.model.get("highlights")[0].reset === undefined).should.equal(true);
+        });
+
 
         it("should show the error message if it fails", function () {
           this.editor.handleSaveFail({}, {responseText: "some error message"});

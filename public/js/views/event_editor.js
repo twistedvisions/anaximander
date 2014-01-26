@@ -133,7 +133,7 @@ define([
         var model = new Event(values);
         this.eventsCollection.add(model);
         model.save(null, {
-          success: _.bind(this.handleSaveComplete, this),
+          success: _.bind(this.handleSaveComplete, this, values),
           error: _.bind(this.handleSaveFail, this)
         });
         analytics.eventAdded(values);
@@ -154,9 +154,30 @@ define([
       return place;
     },
 
-    handleSaveComplete: function () {
+    handleSaveComplete: function (values) {
       this.$el.find(".modal").modal("hide");
-      this.model.trigger("change");
+      var updatedModel = this.updateHighlights(values);
+      if (!updatedModel) {
+        //don't always do this because the above may have
+        //triggered it with an extra more specific event
+        this.model.trigger("change");
+      }
+    },
+
+    updateHighlights: function (values) {
+      var highlights = this.model.get("highlights");
+      if (highlights && (highlights.length > 0)) {
+        var highlightId = highlights[0].id;
+        var attendeeIds = _.object(
+          _.pluck(values.attendees, "id"),
+          _.times(values.attendees.length, function () { return true; })
+        );
+        if (attendeeIds[highlightId]) {
+          this.model.set("highlights", [{id: highlightId, reset: true}]);
+          return true;
+        }
+      }
+      return false;
     },
 
     handleSaveFail: function (model, res) {
