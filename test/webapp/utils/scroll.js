@@ -26,7 +26,7 @@ define(
           this.parentEl.scrollTop(500);
           this.parentEl.scrollTop().should.equal(500);
           Scroll.intoView($("li[data-id=" + 1 + "]"), this.parentEl);
-          this.parentEl.scrollTop().should.equal(0);
+          this.parentEl.scrollTop().should.be.lessThan(500);
         });
         it("should scroll the result into view if it is below the visible area", function () {
           this.parentEl.scrollTop().should.equal(0);
