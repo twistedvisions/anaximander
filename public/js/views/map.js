@@ -88,16 +88,21 @@ define([
           return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
         });
         var points = _.map(pointsInRange, function (point) {
-          return new google.maps.LatLng(point.lat, point.lon);
+          var latLng = new google.maps.LatLng(point.lat, point.lon);
+          latLng.date = point.date;
+          return latLng;
         });
-        var path = new google.maps.Polyline({
-          path: points,
-          strokeColor: "#FF0000",
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-        path.setMap(this.map);
-        this.paths = [path];
+        var pairs = _.zip(_.initial(points), _.rest(points));
+        this.paths = _.map(pairs, function (pair) {
+          var path = new google.maps.Polyline({
+            path: pair,
+            strokeColor: this.getColor(new Date(pair[0].date), false),
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          path.setMap(this.map);
+          return path;
+        }, this);
 
       } else {
         this.paths = [];
@@ -254,9 +259,10 @@ define([
 
     drawPoint: function (result) {
       var marker;
+      var eventTime = new Date(_.first(result.events).start_date);
       marker = new StyledMarker.StyledMarker({
         styleIcon: new StyledMarker.StyledIcon(StyledMarker.StyledIconTypes.MARKER, {
-          color: this.getColor(result, this.isDimmed(result.events)),
+          color: this.getColor(eventTime, this.isDimmed(result.events)),
           fore: "#eeeeee",
           text: this.getMarkerText(result.events)
         }),
@@ -330,8 +336,7 @@ define([
       return data;
     },
 
-    getColor: function (result, isDimmed) {
-      var eventTime = new Date(_.first(result.events).start_date);
+    getColor: function (eventTime, isDimmed) {
       var range = this.model.get("date");
       var start = new Date(range[0], 0, 1);
       var end = new Date(range[1], 12, 31);

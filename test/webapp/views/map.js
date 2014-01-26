@@ -151,7 +151,7 @@ define(
           it("should close open windows when a marker is hovered over", function () {
             this.map.render();
             this.map.drawPoint({
-              events: [],
+              events: [{}],
               location: []
             });
 
@@ -361,7 +361,10 @@ define(
         it("should create a path for each highlight", function () {
           this.map.model.set("highlight", {
             id: 1,
-            points: [{lat: 10, lon: -20}]
+            points: [
+              {lat: 10, lon: -20, date: "1900-01-01"},
+              {lat: 11, lon: -20, date: "1907-01-01"}
+            ]
           });
           this.map.paths = [];
           this.map.showHighlight();
@@ -381,11 +384,27 @@ define(
 
           this.map.model.set("date", [1900, 1920]);
           this.map.showHighlight();
-          window.google.maps.Polyline.args.path.length.should.equal(4);
+          this.map.paths.length.should.equal(3);
 
           this.map.model.set("date", [1905, 1915]);
           this.map.showHighlight();
-          window.google.maps.Polyline.args.path.length.should.equal(2);
+          this.map.paths.length.should.equal(1);
+        });
+        it("should set the color for each point", function () {
+          sinon.spy(this.map, "getColor");
+          this.map.model.set("highlight", {
+            id: 1,
+            points: [
+              {lat: 10, lon: -20, date: "1900-01-01"},
+              {lat: 12, lon: -20, date: "1910-01-01"},
+              {lat: 12, lon: -20, date: "1920-01-01"}
+            ]
+          });
+          this.map.paths = [];
+
+          this.map.model.set("date", [1900, 1920]);
+          this.map.showHighlight();
+          this.map.getColor.calledTwice.should.equal(true);
         });
       });
 
@@ -828,35 +847,19 @@ define(
       describe("getColor", function () {
         it("should be blue at the most recent end", function () {
           var map = new Map({model: this.model});
-          map.getColor({
-            events: [{
-              start_date: "2000-12-31"
-            }]
-          }).should.be.equal("#0000fe");
+          map.getColor(new Date("2000-12-31")).should.be.equal("#0000fe");
         });
         it("should be red at the most distant end", function () {
           var map = new Map({model: this.model});
-          map.getColor({
-            events: [{
-              start_date: "1900-01-01"
-            }]
-          }).should.be.equal("#ff0000");
+          map.getColor(new Date("1900-01-01")).should.be.equal("#ff0000");
         });
         it("should be a mixture in the middle", function () {
           var map = new Map({model: this.model});
-          map.getColor({
-            events: [{
-              start_date: "1950-05-06"
-            }]
-          }).should.be.equal("#80007e");
+          map.getColor(new Date("1950-05-06")).should.be.equal("#80007e");
         });
         it("should be washed out if it is dimmed", function () {
           var map = new Map({model: this.model});
-          map.getColor({
-            events: [{
-              start_date: "1900-01-01"
-            }]
-          }, true).should.be.equal("#ff9f79");
+          map.getColor(new Date("1900-01-01"), true).should.be.equal("#ff9f79");
         });
       });
 
