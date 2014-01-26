@@ -132,8 +132,8 @@ describe("search", function () {
       this.result.should.eql([
         getResultRow(1, {
           points: [
-            {lat: 10, lon: -20, date: "2000-01-01T00:00:00.000Z"  },
-            {lat: -30, lon: 40, date: "2000-01-02T00:00:00.000Z"}
+            {lat: 10, lon: -20, date: new Date("2000-01-01T00:00:00.000Z")},
+            {lat: -30, lon: 40, date: new Date("2000-01-02T00:00:00.000Z")}
           ]
         })
       ]);
