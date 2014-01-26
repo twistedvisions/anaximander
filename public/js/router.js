@@ -139,7 +139,7 @@ define([
         location.push("query");
         location.push(encodeURIComponent(query));
 
-        if (highlight) {
+        if (highlight.id) {
 
           location.push("highlight");
           location.push(highlight.id);

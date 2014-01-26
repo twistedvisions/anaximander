@@ -11,7 +11,8 @@ define(
           center: [1, 1],
           date: [1900, 2000],
           zoom: 3,
-          filterState: new Backbone.Collection()
+          filterState: new Backbone.Collection(),
+          highlight: {}
         });
         this.router = new Router();
       });
@@ -139,9 +140,10 @@ define(
           /highlight\/1/.test(this.location).should.equal(true);
         });
         it("should not navigate with highlight value if it is not set", function () {
+          this.model.set("query", "some search string");
           this.router.init({model: this.model});
           this.router.handleChange();
-          /highlight\//.test(this.location).should.equal(false);
+          /highlight/.test(this.location).should.equal(false);
         });
         it("should not navigate with highlight value if no query is set", function () {
           this.model.set("highlight", [{id: 1}]);
