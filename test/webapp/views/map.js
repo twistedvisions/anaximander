@@ -42,7 +42,8 @@ define(
         this.model = new Backbone.Model({
           center: [1, 1],
           date: [1900, 2000],
-          zoom: 3
+          zoom: 3,
+          highlight: {}
         });
         this.map = new Map({
           model: this.model,
@@ -231,7 +232,7 @@ define(
               el.appendTo(document.body);
               sinon.stub(Scroll, "intoView");
               this.map.render();
-              this.map.model.set("highlights", [{id: 123}]);
+              this.map.model.set("highlight", {id: 123});
               this.map.afterMouseOverMarker();
               Scroll.intoView.calledOnce.should.equal(true);
             } finally {
@@ -253,7 +254,7 @@ define(
 
           this.model.get("query").should.equal("thing name");
         });
-        it("should set the model's highlights to the event's thing's id", function () {
+        it("should set the model's highlight to the event's thing's id", function () {
           sinon.stub(this.map, "getMarkerData", function () {
             return {
               thingId: 1234
@@ -261,9 +262,9 @@ define(
           });
           this.map.onSearchClick();
 
-          this.model.get("highlights")[0].id.should.equal(1234);
+          this.model.get("highlight").id.should.equal(1234);
         });
-        it("should set the reset flag on the model's highlights", function () {
+        it("should set the reset flag on the model's highlight", function () {
           sinon.stub(this.map, "getMarkerData", function () {
             return {
               thingId: 1234
@@ -271,7 +272,7 @@ define(
           });
           this.map.onSearchClick();
 
-          this.model.get("highlights")[0].reset.should.equal(true);
+          this.model.get("highlight").reset.should.equal(true);
         });
       });
 
@@ -341,29 +342,29 @@ define(
             this.map.redrawMarkers();
             this.newMapObject.setMap.calledWith("someMap").should.equal(true);
           });
-          it("should show the highlights", function () {
-            sinon.stub(this.map, "showHighlights");
+          it("should show the highlight", function () {
+            sinon.stub(this.map, "showHighlight");
             this.map.redrawMarkers();
-            this.map.showHighlights.calledOnce.should.equal(true);
+            this.map.showHighlight.calledOnce.should.equal(true);
           });
         });
       });
 
-      describe("showHighlights", function () {
-        it("should clear any existing highlights", function () {
+      describe("showHighlight", function () {
+        it("should clear any existing highlight", function () {
           var setMap = sinon.stub();
           this.map.paths = [{setMap: setMap}];
-          this.map.showHighlights();
+          this.map.showHighlight();
           this.map.paths.should.eql([]);
           setMap.calledWith(null).should.equal(true);
         });
         it("should create a path for each highlight", function () {
-          this.map.model.set("highlights", [{
+          this.map.model.set("highlight", {
             id: 1,
             points: [{lat: 10, lon: -20}]
-          }]);
+          });
           this.map.paths = [];
-          this.map.showHighlights();
+          this.map.showHighlight();
           this.map.paths.length.should.equal(1);
         });
       });
@@ -513,7 +514,7 @@ define(
               return true;
             });
             sinon.stub(this.map, "redrawMarkers");
-            this.map.model.set("highlights", [1]);
+            this.map.model.set("highlight", {id: 1});
           });
           it("should redraw the markers", function () {
             this.map.updateLocation();
@@ -521,7 +522,7 @@ define(
           });
           it("should the last highlighted ids", function () {
             this.map.updateLocation();
-            this.map.lastHighlights.should.eql([1]);
+            this.map.lastHighlight.should.eql({id: 1});
           });
         });
       });
@@ -534,7 +535,7 @@ define(
               return false;
             });
             sinon.stub(this.map, "redrawMarkers");
-            this.map.model.set("highlights", [1]);
+            this.map.model.set("highlight", {id: 1});
           });
         it("should remember the last position to which it was navigated", function () {
           this.map.lastModelPosition = null;
@@ -661,25 +662,20 @@ define(
       });
 
       describe("mapNeedsRedrawing", function () {
-        it("needs redrawing when highlights have been set", function () {
-          this.map.model.set("highlights", [1]);
-          this.map.lastHighlights = null;
+        it("needs redrawing when highlight have been set", function () {
+          this.map.model.set("highlight", {id: 1});
+          this.map.lastHighlight = {};
           this.map.mapNeedsRedrawing().should.equal(true);
         });
-        it("needs redrawing when highlights have been added", function () {
-          this.map.model.set("highlights", [1, 2]);
-          this.map.lastHighlights = [1];
+        it("needs redrawing when highlight have been removed", function () {
+          this.map.model.set("highlight", {});
+          this.map.lastHighlight = {id: 1};
           this.map.mapNeedsRedrawing().should.equal(true);
         });
-        it("needs redrawing when highlights have been removed", function () {
-          this.map.model.set("highlights", []);
-          this.map.lastHighlights = [1];
-          this.map.mapNeedsRedrawing().should.equal(true);
-        });
-        it("does not need redrawing when highlights are the same", function () {
-          this.map.model.set("highlights", [1]);
-          this.map.lastHighlights = [1];
-          this.map.mapNeedsRedrawing().should.equal(true);
+        it("does not need redrawing when highlight are the same", function () {
+          this.map.model.set("highlight", {id: 1});
+          this.map.lastHighlight = {id: 1};
+          this.map.mapNeedsRedrawing().should.equal(false);
         });
       });
 
@@ -694,23 +690,23 @@ define(
 
       describe("isDimmed", function () {
         it("should be dimmed when there are things to highlight, but not in this marker", function () {
-          this.model.set("highlights", [{id: 1}]);
+          this.model.set("highlight", {id: 1});
           this.map.isDimmed([{thing_id: 2}]).should.equal(true);
         });
         it("should be dimmed when there are places to highlight, but not in this marker", function () {
-          this.model.set("highlights", [{id: 1}]);
+          this.model.set("highlight", {id: 1});
           this.map.isDimmed([{place_thing_id: 2}]).should.equal(true);
         });
         it("should not be dimmed when there are things to highlight that are in this marker", function () {
-          this.model.set("highlights", [{id: 1}]);
+          this.model.set("highlight", {id: 1});
           this.map.isDimmed([{thing_id: 1}]).should.equal(false);
         });
         it("should not be dimmed when there are places to highlight that are in this marker", function () {
-          this.model.set("highlights", [{id: 1}]);
+          this.model.set("highlight", {id: 1});
           this.map.isDimmed([{place_thing_id: 1}]).should.equal(false);
         });
         it("should not be dimmed when there are no things to highlight", function () {
-          this.model.set("highlights", []);
+          this.model.set("highlight", {});
           this.map.isDimmed([{place_thing_id: 1}]).should.equal(false);
         });
       });
@@ -772,13 +768,13 @@ define(
           dataset.startDate.should.equal(this.event.start_date);
           dataset.endDate.should.equal(this.event.end_date);
         });
-        it("should be highlighted when the thing id matches the model's highlights", function () {
-          this.map.model.set("highlights", [{id: 123}]);
+        it("should be highlighted when the thing id matches the model's highlight", function () {
+          this.map.model.set("highlight", {id: 123});
           var text = this.map.getInfoWindowEntry(this.event);
           $(text).find(".event-link").hasClass("highlight").should.equal(true);
         });
-        it("should not be highlighted when the thing id does not match the model's highlights", function () {
-          this.map.model.set("highlights", [{id: 124}]);
+        it("should not be highlighted when the thing id does not match the model's highlight", function () {
+          this.map.model.set("highlight", {id: 124});
           var text = this.map.getInfoWindowEntry(this.event);
           $(text).find(".event-link").hasClass("highlight").should.equal(false);
         });

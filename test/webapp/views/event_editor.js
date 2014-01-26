@@ -66,25 +66,25 @@ define(
 
         it("should trigger a change on the model to say it needs updating", function () {
           sinon.stub(this.editor.model, "trigger");
+          sinon.stub(this.editor, "updateHighlight");
           try {
-
             this.editor.handleSaveComplete();
-            this.editor.model.trigger.calledWith("change").should.equal(true);
+            this.editor.model.trigger.calledWith("change:center").should.equal(true);
           } finally {
             this.editor.model.trigger.restore();
           }
         });
 
-        it("should update the highlights if the added attendee is already highlighted", function () {
-          this.editor.model.set("highlights", [{id: 123}]);
-          this.editor.updateHighlights({attendees: [{id: 123}]});
-          this.editor.model.get("highlights")[0].reset.should.equal(true);
+        it("should update the highlight if the added attendee is already highlighted", function () {
+          this.editor.model.set("highlight", {id: 123});
+          this.editor.updateHighlight({attendees: [{id: 123}]});
+          this.editor.model.get("highlight").reset.should.equal(true);
         });
 
-        it("should not update the highlights if the added attendee is already highlighted", function () {
-          this.model.set("highlights", [{id: 123}]);
-          this.editor.updateHighlights({attendees: [{id: 1234}]});
-          (this.model.get("highlights")[0].reset === undefined).should.equal(true);
+        it("should not update the highlight if the added attendee is not highlighted", function () {
+          this.editor.model.set("highlight", {id: 123});
+          this.editor.updateHighlight({attendees: [{id: 1234}]});
+          (this.editor.model.get("highlight").reset === undefined).should.equal(true);
         });
 
 

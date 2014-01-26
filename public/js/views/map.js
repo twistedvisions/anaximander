@@ -24,6 +24,7 @@ define([
 
       this.mapObjects = {};
       this.user = opts.user;
+      this.lastHighlight = {};
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
     },
@@ -66,33 +67,32 @@ define([
         newMapObjects[result] = newMapObject;
       }, this);
 
-      this.showHighlights();
+      this.showHighlight();
 
       this.mapObjects = newMapObjects;
     },
 
-    showHighlights: function () {
-      var highlights = this.model.get("highlights");
+    showHighlight: function () {
+      var highlight = this.model.get("highlight");
 
       if (this.paths) {
         _.each(this.paths, function (path) {
           path.setMap(null);
         });
       }
-      if (highlights) {
-        this.paths = _.map(highlights, function (highlight) {
-          var points = _.map(highlight.points, function (point) {
-            return new google.maps.LatLng(point.lat, point.lon);
-          });
-          var path = new google.maps.Polyline({
-            path: points,
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 2
-          });
-          path.setMap(this.map);
-          return path;
-        }, this);
+      if (highlight.id) {
+        var points = _.map(highlight.points, function (point) {
+          return new google.maps.LatLng(point.lat, point.lon);
+        });
+        var path = new google.maps.Polyline({
+          path: points,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        path.setMap(this.map);
+        this.paths = [path];
+
       } else {
         this.paths = [];
       }
@@ -142,7 +142,7 @@ define([
       }
       if (this.mapNeedsRedrawing()) {
         this.redrawMarkers();
-        this.lastHighlights = this.model.get("highlights");
+        this.lastHighlight = this.model.get("highlight");
       }
       this.lastModelPosition = this.getModelPosition();
     },
@@ -161,7 +161,7 @@ define([
     },
 
     mapNeedsRedrawing: function () {
-      return this.model.get("highlights") !== this.lastHighlights;
+      return !_.isEqual(this.model.get("highlight"), this.lastHighlight);
     },
 
     drawMap: function () {
@@ -280,9 +280,9 @@ define([
       $(".event-link").on("click", _.bind(this.onLinkClick, this));
       $(".search").on("click", _.bind(this.onSearchClick, this));
 
-      var highlights = this.model.get("highlights");
-      if (highlights && highlights.length > 0) {
-        var el = $(".event-entry[data-thing-id=" + highlights[0].id + "]");
+      var highlight = this.model.get("highlight");
+      if (highlight.id) {
+        var el = $(".event-entry[data-thing-id=" + highlight.id + "]");
         if (el && el.length) {
           Scroll.intoView(el, el.parent().parent().parent(), 50);
         }
@@ -292,7 +292,7 @@ define([
     onSearchClick: function (e) {
       var data = this.getMarkerData(e);
       this.model.set("query", data.thingName);
-      this.model.set("highlights", [{id: data.thingId, reset: true}]);
+      this.model.set("highlight", {id: data.thingId, reset: true});
       analytics.mapEntrySearched(data);
     },
 
@@ -344,16 +344,15 @@ define([
     },
 
     isDimmed: function (events) {
-      var highlights = this.model.get("highlights") || false;
+      var highlight = this.model.get("highlight");
 
       var isHighlighted =
-        highlights &&
         _.intersection(
-          _.pluck(highlights, "id"),
+          [highlight.id],
           _.pluck(events, "thing_id").concat(_.pluck(events, "place_thing_id"))
         ).length > 0;
 
-      return highlights && (highlights.length > 0) && !isHighlighted;
+      return !!highlight.id && !isHighlighted;
     },
 
     onLinkClick: function (e) {
@@ -365,11 +364,9 @@ define([
     },
 
     getInfoWindowEntry: function (event) {
-      var highlights = this.model.get("highlights");
+      var highlight = this.model.get("highlight");
       var highlighted =
-        highlights &&
-        highlights.length > 0 &&
-        highlights[0].id === event.thing_id;
+        highlight.id === event.thing_id;
 
       return this.infoWindowEntryTemplate(_.extend({
         date: new Date(event.start_date),

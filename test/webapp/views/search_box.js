@@ -7,7 +7,9 @@ define(
       beforeEach(function () {
         this.searchBox = new SearchBox({
           el: null,
-          model: new Backbone.Model()
+          model: new Backbone.Model({
+            highlight: {}
+          })
         });
       });
       afterEach(function () {
@@ -105,12 +107,12 @@ define(
         });
 
         it("should listen to highlight change events on the model", function () {
-          sinon.stub(this.searchBox, "updateHighlights");
+          sinon.stub(this.searchBox, "updateHighlight");
           this.searchBox.render();
-          this.searchBox.updateHighlights.reset();
-          this.searchBox.updateHighlights.calledOnce.should.equal(false);
-          this.searchBox.model.set("highlights", [{id: 123}]);
-          this.searchBox.updateHighlights.calledOnce.should.equal(true);
+          this.searchBox.updateHighlight.reset();
+          this.searchBox.updateHighlight.calledOnce.should.equal(false);
+          this.searchBox.model.set("highlight", {id: 123});
+          this.searchBox.updateHighlight.calledOnce.should.equal(true);
         });
 
         it("should update its visual state when it loads", function () {
@@ -156,24 +158,24 @@ define(
         });
       });
 
-      describe("updateHighlights", function () {
+      describe("updateHighlight", function () {
         it("should call search if there is a reset parameter", function () {
           sinon.stub(this.searchBox, "search");
-          this.searchBox.model.set("highlights", [{id: 123, reset: true}]);
-          this.searchBox.updateHighlights();
+          this.searchBox.model.set("highlight", {id: 123, reset: true});
+          this.searchBox.updateHighlight();
           this.searchBox.search.calledOnce.should.equal(true);
         });
         it("should call search if there is no points parameter", function () {
           sinon.stub(this.searchBox, "search");
-          this.searchBox.model.set("highlights", [{id: 123}]);
-          this.searchBox.updateHighlights();
+          this.searchBox.model.set("highlight", {id: 123});
+          this.searchBox.updateHighlight();
           this.searchBox.search.calledOnce.should.equal(true);
         });
-        it("should reset the search highlights", function () {
+        it("should reset the search highlight", function () {
           sinon.stub(this.searchBox, "search");
           sinon.stub(this.searchBox, "highlightSelectedResult");
-          this.searchBox.model.set("highlights", [{id: 123}]);
-          this.searchBox.updateHighlights();
+          this.searchBox.model.set("highlight", {id: 123});
+          this.searchBox.updateHighlight();
           this.searchBox.highlightSelectedResult.calledOnce.should.equal(true);
         });
       });
@@ -416,11 +418,10 @@ define(
           this.searchBox.hideSearchResults();
           $("body.search-visible").length.should.equal(0);
         });
-        it("should unset the highlights", function () {
-          this.searchBox.model.set("highlights", [123]);
-          this.searchBox.model.get("highlights").length.should.equal(1);
+        it("should unset the highlight", function () {
+          this.searchBox.model.set("highlight", {id: 123});
           this.searchBox.hideSearchResults();
-          this.searchBox.model.get("highlights").length.should.equal(0);
+          (this.searchBox.model.get("highlight").id === undefined).should.equal(true);
         });
         it("should unset the query", function () {
           this.searchBox.model.set("query", "some search");
@@ -559,22 +560,22 @@ define(
           });
           it("should set the highlight's id to that of the clicked result", function () {
             this.searchBox.resultSelected();
-            this.searchBox.setModelData.args[0][0].highlights[0].id
+            this.searchBox.setModelData.args[0][0].highlight.id
               .should.equal(123);
           });
-          it("should set the highlights points from the points of the clicked result", function () {
+          it("should set the highlight points from the points of the clicked result", function () {
             this.data = {
               points: [{lat: 11, lon: -21}],
               area: [{lat: 10, lon: -20}],
               thing_id: 123
             };
             this.searchBox.resultSelected();
-            this.searchBox.setModelData.args[0][0].highlights[0].points
+            this.searchBox.setModelData.args[0][0].highlight.points
               .should.eql([{lat: 11, lon: -21}]);
           });
-          it("should set the highlights points from the area of the clicked result if there are no points", function () {
+          it("should set the highlight points from the area of the clicked result if there are no points", function () {
             this.searchBox.resultSelected();
-            this.searchBox.setModelData.args[0][0].highlights[0].points
+            this.searchBox.setModelData.args[0][0].highlight.points
               .should.eql([{lat: 10, lon: -20}]);
           });
           it("should highlight the selected event", function () {
@@ -616,46 +617,46 @@ define(
           this.searchBox.$(".search-result.selected").length.should.equal(0);
         });
         it("should select the first highlight if it exists", function () {
-          sinon.stub(this.searchBox, "getHighlightsFromJSON");
-          sinon.stub(this.searchBox, "updateHighlights");
+          sinon.stub(this.searchBox, "getHighlightFromJSON");
+          sinon.stub(this.searchBox, "updateHighlight");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='3'></li>");
           this.searchBox.renderSearchEntries([el]);
           this.searchBox.$(".search-result.selected").length.should.equal(0);
-          this.searchBox.model.set("highlights", [{id: 3}]);
+          this.searchBox.model.set("highlight", {id: 3});
           this.searchBox.highlightSelectedResult();
           this.searchBox.$(".search-result[data-id=3].selected").length.should.equal(1);
         });
-        it("should not select anything if there are no highlights", function () {
+        it("should not select anything if there are no highlight", function () {
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='3'></li>");
           this.searchBox.renderSearchEntries([el]);
           this.searchBox.$(".search-result.selected").length.should.equal(0);
-          this.searchBox.model.set("highlights", []);
+          this.searchBox.model.set("highlight", {});
           this.searchBox.highlightSelectedResult();
           this.searchBox.$(".search-result.selected").length.should.equal(0);
         });
-        it("should update the highlights from the selected element", function () {
-          sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
-            return [{id: 1, points: "a point"}];
+        it("should update the highlight from the selected element", function () {
+          sinon.stub(this.searchBox, "getHighlightFromJSON", function () {
+            return {id: 1, points: "a point"};
           });
           sinon.stub(this.searchBox, "doSearch");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='1'></li>");
           this.searchBox.renderSearchEntries([el]);
-          this.searchBox.model.set("highlights", [{id: 1}]);
+          this.searchBox.model.set("highlight", {id: 1});
           this.searchBox.highlightSelectedResult();
-          this.searchBox.model.get("highlights")[0].points.should.equal("a point");
+          this.searchBox.model.get("highlight").points.should.equal("a point");
         });
         it("should scroll the element into view", function () {
           sinon.stub(Scroll, "intoView");
-          sinon.stub(this.searchBox, "getHighlightsFromJSON");
-          sinon.stub(this.searchBox, "updateHighlights");
+          sinon.stub(this.searchBox, "getHighlightFromJSON");
+          sinon.stub(this.searchBox, "updateHighlight");
           try {
             this.searchBox.render();
             var el = $("<li class='search-result' data-id='1'></li>");
             this.searchBox.renderSearchEntries([el]);
-            this.searchBox.model.set("highlights", [{id: 1}]);
+            this.searchBox.model.set("highlight", {id: 1});
             this.searchBox.highlightSelectedResult();
             Scroll.intoView.calledOnce.should.equal(true);
           } finally {
@@ -663,15 +664,15 @@ define(
           }
         });
         it("should call resetHighlight if the highlight has a reset value", function () {
-          sinon.stub(this.searchBox, "getHighlightsFromJSON", function () {
-            return [{id: 1, points: "a point"}];
+          sinon.stub(this.searchBox, "getHighlightFromJSON", function () {
+            return {id: 1, points: "a point"};
           });
           sinon.stub(this.searchBox, "doSearch");
           sinon.stub(this.searchBox, "resetHighlight");
           this.searchBox.render();
           var el = $("<li class='search-result' data-id='1'></li>");
           this.searchBox.renderSearchEntries([el]);
-          this.searchBox.model.set("highlights", [{id: 1, reset: true}]);
+          this.searchBox.model.set("highlight", {id: 1, reset: true});
           this.searchBox.highlightSelectedResult();
           this.searchBox.resetHighlight.calledOnce.should.equal(true);
         });
@@ -832,7 +833,7 @@ define(
           sinon.stub(this.searchBox, "extractDate");
           sinon.stub(this.searchBox, "extractPointData");
           sinon.stub(this.searchBox, "setModelData");
-          sinon.stub(this.searchBox, "getHighlightsFromJSON");
+          sinon.stub(this.searchBox, "getHighlightFromJSON");
 
           this.searchBox.render();
           this.searchBox.$(".dropdown-menu").html("<li class='search-result'/>");

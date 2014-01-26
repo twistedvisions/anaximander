@@ -11,6 +11,9 @@ define([
           this.trigger("change");
         }, this);
         this.set("filterState", filterState);
+        if (!this.get("highlight")) {
+          this.set("highlight", {});
+        }
       }
     });
     return ViewState;

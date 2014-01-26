@@ -156,26 +156,22 @@ define([
 
     handleSaveComplete: function (values) {
       this.$el.find(".modal").modal("hide");
-      var updatedModel = this.updateHighlights(values);
+      var updatedModel = this.updateHighlight(values);
       if (!updatedModel) {
         //don't always do this because the above may have
         //triggered it with an extra more specific event
-        this.model.trigger("change");
+        this.model.trigger("change:center");
       }
     },
 
-    updateHighlights: function (values) {
-      var highlights = this.model.get("highlights");
-      if (highlights && (highlights.length > 0)) {
-        var highlightId = highlights[0].id;
-        var attendeeIds = _.object(
-          _.pluck(values.attendees, "id"),
-          _.times(values.attendees.length, function () { return true; })
-        );
-        if (attendeeIds[highlightId]) {
-          this.model.set("highlights", [{id: highlightId, reset: true}]);
-          return true;
-        }
+    updateHighlight: function (values) {
+      var highlightId = this.model.get("highlight").id;
+      var attendeeMatchesHighlight = function (attendee) {
+        return attendee.id === highlightId;
+      };
+      if (_.find(values.attendees, attendeeMatchesHighlight)) {
+        this.model.set("highlight", {id: highlightId, reset: true});
+        return true;
       }
       return false;
     },

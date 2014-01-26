@@ -29,7 +29,7 @@ define([
         this.$("#search").focus();
       }, this));
       this.model.on("change:query", this.updateQuery, this);
-      this.model.on("change:highlights", this.updateHighlights, this);
+      this.model.on("change:highlight", this.updateHighlight, this);
       this.$("#search").focus();
       $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
       $("#search-box").on("show.bs.dropdown", _.bind(this.bsShowSearchResults, this));
@@ -87,22 +87,19 @@ define([
       }
     },
 
-    updateHighlights: function () {
-      var highlights = this.model.get("highlights");
+    updateHighlight: function () {
+      var highlight = this.model.get("highlight");
 
-      if (highlights.length > 0) {
-        var highlight = highlights[0];
-        if (highlight.reset) {
-          this.search();
-        } else {
+      if (highlight.reset) {
+        this.search();
+      } else {
 
-          this.highlightSelectedResult();
+        this.highlightSelectedResult();
 
-          var el = this.$(".search-result[data-id=" + highlight.id + "]");
-          if (el) {
-            if (!highlight.points) {
-              this.search();
-            }
+        var el = this.$(".search-result[data-id=" + highlight.id + "]");
+        if (el) {
+          if (!highlight.points) {
+            this.search();
           }
         }
       }
@@ -208,7 +205,7 @@ define([
       this.toggleDropdown();
       var queryString = this.model.get("query");
       this.model.set("query", "");
-      this.model.set("highlights", []);
+      this.model.set("highlight", {});
       this.model.trigger("force-change");
       if (queryString) {
         this.$("#search").val(queryString);
@@ -250,7 +247,7 @@ define([
       var modelData = {};
 
       modelData.date = this.extractDate(data);
-      modelData.highlights = this.getHighlightsFromJSON(data);
+      modelData.highlight = this.getHighlightFromJSON(data);
 
       if (data.area.length === 1) {
         this.extractPointData(modelData, data);
@@ -267,22 +264,19 @@ define([
 
     highlightSelectedResult: function () {
       this.$(".search-result").removeClass("selected");
-      var highlights = this.model.get("highlights");
-      if (highlights && highlights.length > 0) {
-        var highlight = highlights[0];
-        var id = highlight.id;
-        var el = this.$(".search-result[data-id=" + id + "]");
-        if (el.length > 0) {
-          el.addClass("selected");
+      var highlight = this.model.get("highlight");
+      var id = highlight.id;
+      var el = this.$(".search-result[data-id=" + id + "]");
+      if (el.length > 0) {
+        el.addClass("selected");
 
-          var data = el.data("result");
-          this.model.set("highlights", this.getHighlightsFromJSON(data));
+        var data = el.data("result");
+        this.model.set("highlight", this.getHighlightFromJSON(data));
 
-          Scroll.intoView(el, this.$(".search-results"), 100);
+        Scroll.intoView(el, this.$(".search-results"), 100);
 
-          if (highlight.reset) {
-            this.resetHighlight(data);
-          }
+        if (highlight.reset) {
+          this.resetHighlight(data);
         }
       }
     },
@@ -299,11 +293,11 @@ define([
       }
     },
 
-    getHighlightsFromJSON: function (data) {
-      return [{
+    getHighlightFromJSON: function (data) {
+      return {
         id: data.thing_id,
         points: data.points || data.area
-      }];
+      };
     },
 
     extractData: function (e) {
