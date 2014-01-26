@@ -1,4 +1,4 @@
-/*global describe, it, beforeEach, afterEach */
+/*global describe, it */
 define(
 
   ["underscore", "jquery", "utils/date"],
