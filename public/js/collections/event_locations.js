@@ -2,10 +2,11 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "when",
   "utils/filter_url_serialiser",
   "utils/date",
   "models/event_location"
-], function ($, _, Backbone, FilterUrlSerialiser, date, EventLocation) {
+], function ($, _, Backbone, when, FilterUrlSerialiser, date, EventLocation) {
 
   var Events = Backbone.Collection.extend({
 
@@ -40,24 +41,75 @@ define([
         var bounds = this.state.get("bounds");
         var filterState = this.state.get("filterState");
 
+        var params = {
+          lat: position[0],
+          lon: position[1],
+          start: this.getStartOfYear(timeRange[0]),
+          end: this.getEndOfYear(timeRange[1]),
+          typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
+          subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
+          notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
+        };
+
+
+        var lon = position[1];
+
+        if (!this.crossesAntiMeridian(lon, bounds)) {
+          this.simpleQuery(bounds, params);
+        } else {
+          this.queryBothHemispheres(lon, bounds, params);
+        }
+      }
+    },
+
+    crossesAntiMeridian: function (lon, bounds) {
+      //bounds[0] is NE corner
+      //bounds[1] is the SW corner
+      return (bounds[0].lon < lon) || (bounds[1].lon > lon);
+    },
+
+    simpleQuery: function (bounds, params) {
+      params.bounds = [
+        [bounds[0].lat, bounds[0].lon],
+        [bounds[1].lat, bounds[1].lon]
+      ];
+
+      $.get(
+        "/location",
+        params,
+        _.bind(this.handleResults, this)
+      );
+    },
+
+    queryBothHemispheres: function (lon, bounds, params) {
+      var isLonPositive = lon > 0;
+
+      var p1 = _.extend({bounds: [
+        [bounds[0].lat, bounds[0].lon],
+        [bounds[1].lat, -180]
+      ]}, params);
+
+      var p2 = _.extend({bounds: [
+        [bounds[0].lat, 180],
+        [bounds[1].lat, bounds[1].lon]
+      ]}, params);
+
+      if (isLonPositive) {
+        p1.lon = -180;
+      } else {
+        p2.lon = 180;
+      }
+
+      when.all([
         $.get(
           "/location",
-          {
-            lat: position[0],
-            lon: position[1],
-            bounds: [
-              [bounds[0].lat, bounds[0].lon],
-              [bounds[1].lat, bounds[1].lon]
-            ],
-            start: this.getStartOfYear(timeRange[0]),
-            end: this.getEndOfYear(timeRange[1]),
-            typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
-            subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
-            notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
-          },
-          _.bind(this.handleResults, this)
-        );
-      }
+          p1
+        ),
+        $.get(
+          "/location",
+          p2
+        )
+      ]).then(_.bind(this.combineResults, this));
     },
 
     getStartOfYear: function (year) {
@@ -66,6 +118,10 @@ define([
 
     getEndOfYear: function (year) {
       return date.formatYearAsTimestamp(year, "-12-31 23:59");
+    },
+
+    combineResults: function (results) {
+      return this.handleResults(results[0].concat(results[1]));
     },
 
     handleResults: function (results) {

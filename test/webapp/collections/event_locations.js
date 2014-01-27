@@ -10,7 +10,7 @@ define(
         center: [-10, 12],
         date: [1900, 2000],
         zoom: 3,
-        bounds: [{lat: 10, lon: -20}, {lat: -20, lon: 34}],
+        bounds: [{lat: 10, lon: 20}, {lat: -20, lon: -34}],
         filterState: new Backbone.Collection()
       });
       FilterUrlSerialiser.deserialise("1:u;3:*;4:11", this.model);
@@ -39,6 +39,22 @@ define(
       afterEach(function () {
         $.get.restore();
       });
+
+      it("should run a simple query when it doesn't cross the antimeridian", function () {
+        sinon.stub(this.events, "simpleQuery");
+        this.events.updateData();
+        this.events.simpleQuery.calledOnce.should.equal(true);
+      });
+      it("should query both hemispheres when it crosses the antimeridian", function () {
+        sinon.stub(this.events, "queryBothHemispheres");
+        this.events.state.set({
+          "center": [0, 179],
+          bounds: [{lat: 10, lon: -169}, {lat: -10, lon: 169}]
+        });
+        this.events.updateData();
+        this.events.queryBothHemispheres.calledOnce.should.equal(true);
+      });
+
       it("should take the lat from the model's position", function () {
         this.events.updateData();
         $.get.args[0][1].lat.should.equal(-10);
@@ -49,7 +65,7 @@ define(
       });
       it("should pass the bounds as a nested array", function () {
         this.events.updateData();
-        $.get.args[0][1].bounds.should.eql([[10, -20], [-20, 34]]);
+        $.get.args[0][1].bounds.should.eql([[10, 20], [-20, -34]]);
       });
       it("should get the start of the year of the start", function () {
         this.events.updateData();
@@ -75,6 +91,70 @@ define(
         $.get.args[0][1].notSpecifiedTypeFilters.should.equal(JSON.stringify([{
           id: 1
         }]));
+      });
+    });
+    describe("crosses antimeridian", function () {
+      it("should cross when the lon is just to the left of the antimeridian", function () {
+        this.events.state.set({
+          "center": [0, 179],
+          bounds: [{lat: 10, lon: -169}, {lat: -10, lon: 169}]
+        });
+        this.events.crossesAntiMeridian(
+          this.events.state.get("center")[1],
+          this.events.state.get("bounds")
+        ).should.equal(true);
+      });
+      it("should cross when the lon is just to the right of the antimeridian", function () {
+        this.events.state.set({
+          "center": [0, -179],
+          bounds: [{lat: 10, lon: -169}, {lat: -10, lon: 169}]
+        });
+        this.events.crossesAntiMeridian(
+          this.events.state.get("center")[1],
+          this.events.state.get("bounds")
+        ).should.equal(true);
+      });
+      it("should not cross when the bounding box does not cross the antimeridian", function () {
+        this.events.state.set({
+          "center": [0, 0],
+          bounds: [{lat: 10, lon: -169}, {lat: -10, lon: 169}]
+        });
+        this.events.crossesAntiMeridian(
+          this.events.state.get("center")[1],
+          this.events.state.get("bounds")
+        ).should.equal(true);
+      });
+    });
+    describe("queryBothHemispheres", function () {
+      beforeEach(function () {
+        sinon.stub($, "get");
+        this.events.state.set({
+          "center": [0, -179],
+          bounds: [{lat: 10, lon: -169}, {lat: -10, lon: 169}]
+        });
+      });
+      afterEach(function () {
+        $.get.restore();
+      });
+      it("should run two queries from right to left", function () {
+
+        this.events.updateData();
+        //the lon of the right side of first should be less than
+        //the lon of the left  side of second
+        $.get.args[0][1].bounds[0][1].should.be.lessThan($.get.args[1][1].bounds[1][1]);
+      });
+      it("should ceil the lon of the first query if the center is on the left", function () {
+        this.events.state.set({
+          "center": [0, 179]
+        });
+        this.events.updateData();
+        $.get.args[0][1].bounds[1][1].should.equal(-180);
+        $.get.args[0][1].lon.should.equal(-180);
+      });
+      it("should ceil the lon of the second query if the center is on the right", function () {
+        this.events.updateData();
+        $.get.args[1][1].bounds[0][1].should.equal(180);
+        $.get.args[1][1].lon.should.equal(180);
       });
     });
     describe("combineEventsAtTheSamePlace", function () {
