@@ -6,12 +6,13 @@ define([
   "utils/position",
   "utils/scroll",
   "utils/filter_url_serialiser",
+  "collections/search_results",
   "text!templates/search_box.htm",
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "css!/css/search_box"
 ], function ($, _, Backbone, Analytics, Position, Scroll, FilterUrlSerialiser,
-    template, searchSummary, searchResult) {
+    SearchResults, template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
     el: "#search-box",
@@ -19,6 +20,8 @@ define([
     initialize: function () {
       this.searchSummaryTemplate = _.template(searchSummary);
       this.searchResultTemplate = _.template(searchResult);
+      this.searchResults = new SearchResults();
+      this.searchResults.on("reset", this.handleSearchResults, this);
     },
 
     render: function () {
@@ -131,15 +134,11 @@ define([
     },
 
     doSearch: function (searchString) {
-      //TODO: refactor this out into a collection
-      $.get("/search", {
-        string: searchString
-      }, _.bind(this.handleSearchResults, this));
+      this.searchResults.fetch({reset: true, data: $.param({string: searchString})});
     },
 
     handleSearchResults: function (results) {
-      var formattedResults = _.map(results, this.formatResults, this);
-      var searchEntries = _.map(formattedResults, this.generateSearchEntry, this);
+      var searchEntries = results.map(this.generateSearchEntry, this);
       this.renderSearchEntries(searchEntries);
       this.bindEventsToSearchEntries();
       this.hideLoadingState();
@@ -155,15 +154,9 @@ define([
       this.$el.removeClass("loading");
     },
 
-    formatResults: function (x) {
-      x.start_date = new Date(x.start_date);
-      x.end_date = new Date(x.end_date);
-      return x;
-    },
-
     generateSearchEntry: function (x) {
-      var el = $(this.searchResultTemplate(x));
-      el.data("result", x);
+      var el = $(this.searchResultTemplate(x.toJSON()));
+      el.data("result", x.toJSON());
       return el;
     },
 

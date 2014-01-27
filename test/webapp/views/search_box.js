@@ -254,21 +254,13 @@ define(
             event_count: 2
           };
         });
-        describe("formatResults", function () {
-          it("should convert the start date to a JS date", function () {
-            this.searchBox.formatResults({
-              start_date: "1900-01-01"
-            }).start_date.should.eql(new Date(1900, 0, 1));
-          });
-          it("should convert the end date to a JS date", function () {
-            this.searchBox.formatResults({
-              end_date: "1900-01-01"
-            }).end_date.should.eql(new Date(1900, 0, 1));
-          });
-        });
         describe("generateSearchEntry", function () {
           it("should store the result in the drop down's data", function () {
-            var el = this.searchBox.generateSearchEntry(this.searchEntry);
+            var el = this.searchBox.generateSearchEntry({
+              toJSON: _.bind(function () {
+                return this.searchEntry;
+              }, this)
+            });
             el.data("result").should.equal(this.searchEntry);
           });
         });
@@ -368,38 +360,32 @@ define(
           });
         });
 
-        it("should format each result", function () {
-          sinon.spy(this.searchBox, "formatResults");
-          this.searchBox.handleSearchResults([this.searchEntry]);
-          this.searchBox.formatResults.calledWith(this.searchEntry)
-            .should.equal(true);
-        });
         it("should hide the loading icon", function () {
           this.searchBox.$el.addClass("loading");
-          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
           this.searchBox.$el.hasClass("loading").should.equal(false);
         });
         it("should create drop down entries for each result", function () {
           sinon.spy(this.searchBox, "generateSearchEntry");
-          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
           this.searchBox.generateSearchEntry.calledOnce
             .should.equal(true);
         });
         it("should bind events", function () {
           sinon.spy(this.searchBox, "bindEventsToSearchEntries");
-          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
           this.searchBox.bindEventsToSearchEntries.calledOnce
             .should.equal(true);
         });
         it("should show the drop down", function () {
           sinon.spy(this.searchBox, "showSearchResults");
-          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
           this.searchBox.showSearchResults.calledOnce
             .should.equal(true);
         });
         it("should highlight the selected search result", function () {
           sinon.spy(this.searchBox, "highlightSelectedResult");
-          this.searchBox.handleSearchResults([this.searchEntry]);
+          this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
           this.searchBox.highlightSelectedResult.calledOnce
             .should.equal(true);
         });
