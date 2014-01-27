@@ -4,8 +4,3 @@ define([
   var Type = Backbone.Model.extend({});
   return Type;
 });
-
-
-
-
-

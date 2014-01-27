@@ -4,8 +4,3 @@ define([
   var Event = Backbone.Model.extend({});
   return Event;
 });
-
-
-
-
-
