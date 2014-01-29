@@ -1,6 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 var when = require("when");
 var sinon = require("sinon");
+var stubDb = require("../stubDb");
 var tryTest = require("../tryTest");
 var getCurrentUser = require("../../../lib/rest/getCurrentUser");
 var userPermissions = require("../../../lib/rest/util/userPermissions");
@@ -16,43 +17,56 @@ describe("getCurrentUser", function () {
       ]);
       return d.promise;
     });
+    stubDb.setup(this);
   });
 
   afterEach(function () {
+    stubDb.restore(this);
     userPermissions.get.restore();
   });
 
   describe("logged in state", function () {
-    var test = function (isAuthenticated, done) {
-      var app = {
-        get: function (path, handler) {
-          var req = {
-            isAuthenticated: function () {
-              return isAuthenticated;
-            },
-            user: {id: 1, name: "john"}
-          };
-          var res = {
-            send: function (value) {
-              (value["logged-in"] === isAuthenticated).should.equal(true);
-              if (isAuthenticated) {
-                value.name.should.equal("john");
-              }
-              done();
-            }
-          };
-          handler(req, res);
+    var test = function (self, isAuthenticated) {
+
+      var req = {
+        isAuthenticated: function () {
+          return isAuthenticated;
+        },
+        user: {id: 1, name: "john"}
+      };
+
+      var res = {
+        send: function (value) {
+          (value["logged-in"] === isAuthenticated).should.equal(true);
+          if (isAuthenticated) {
+            value.name.should.equal("john");
+          }
+          if (self.d.length === 1) {
+            self.d[0].resolve({rows: []});
+          }
         }
       };
-      getCurrentUser.init(app);
+      return getCurrentUser.handler(req, res);
     };
 
     it("should return with the user's logged in state when logged in", function (done) {
-      test(true, done);
+      test(this, true).then(function () { done(); });
+
+      stubDb.setQueryValues(this, [[]]);
+    });
+
+    it("should store the user's ip when logged in", function (done) {
+      var self = this;
+      test(this, true).then(function () {
+        tryTest(function () {
+          self.args[0][0].should.equal("update_user_last_ip");
+        }, done)();
+      });
+      stubDb.setQueryValues(this, [[]]);
     });
 
     it("should return with the user's logged in state when logged out", function (done) {
-      test(false, done);
+      test(this, false).then(done);
     });
   });
 

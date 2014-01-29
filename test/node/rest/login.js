@@ -4,6 +4,7 @@ var _ = require("underscore");
 var when = require("when");
 var sinon = require("sinon");
 var should = require("should");
+var stubDb = require("../stubDb");
 
 var login = require("../../../lib/rest/login");
 var userPermissions = require("../../../lib/rest/util/userPermissions");
@@ -49,10 +50,15 @@ describe("login", function () {
   describe("successful requests", function () {
     beforeEach(function () {
       this.loggedIn = false;
+      stubDb.setup(this);
+      stubDb.setQueryValues(this, [[], []]);
       var req = {
         logIn: _.bind(function (user, next) {
-          this.d = next();
-        }, this)
+          this.promise = next();
+        }, this),
+        user: {
+          id: 3
+        }
       };
       this.res = {
         statusCode: 200,
@@ -62,9 +68,12 @@ describe("login", function () {
       };
       login.authenticate(req, this.res, function () {}, null, {id: 3});
     });
+    afterEach(function () {
+      stubDb.restore(this);
+    });
 
     it("should have a status code of 200", function (done) {
-      this.d.then(_.bind(function () {
+      this.promise.then(_.bind(function () {
         should.exist(this.message);
         this.res.statusCode.should.equal(200);
         done();
@@ -72,7 +81,7 @@ describe("login", function () {
     });
 
     it("should send an id if the user can login", function (done) {
-      this.d.then(_.bind(function () {
+      this.promise.then(_.bind(function () {
         should.exist(this.message);
         this.message.id.should.equal(3);
         done();
@@ -80,7 +89,7 @@ describe("login", function () {
     });
 
     it("should send the users permissions", function (done) {
-      this.d.then(_.bind(function () {
+      this.promise.then(_.bind(function () {
         this.message.permissions.should.eql([
           {id: 1, name: "some user permission"},
           {id: 2, name: "some global permission"}
