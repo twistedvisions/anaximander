@@ -44,5 +44,9 @@ group by
   event.start_date,
   event.end_date,
   place.location
-order by distance asc, event.start_date asc
+order by
+  distance asc,
+  event.start_date asc,
+  event.id asc,
+  thing.id asc
 limit 200
