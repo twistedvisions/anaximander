@@ -33,7 +33,7 @@ define([
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.infoWindowSummaryTemplate = _.template(infoWindowSummaryTemplate);
       this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
-      this.infoWindowEntryParticipantTemplate = _.template(infoWindowEntryParticipantTemplate)
+      this.infoWindowEntryParticipantTemplate = _.template(infoWindowEntryParticipantTemplate);
     },
 
     render: function () {
