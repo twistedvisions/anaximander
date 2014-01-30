@@ -36,7 +36,9 @@ define(
           thing_name: "some thing",
           start_date: "2014-01-01T01:00:00.000Z",
           end_date: "2014-01-01T23:00:00.000Z",
-          thing_id: 123,
+          attendees: [{
+            thing_id: 123
+          }],
           location: [1, 2]
         };
         this.model = new Backbone.Model({
@@ -151,7 +153,7 @@ define(
           it("should close open windows when a marker is hovered over", function () {
             this.map.render();
             this.map.drawPoint({
-              events: [{}],
+              events: [this.sampleEvent],
               location: []
             });
 
@@ -770,23 +772,27 @@ define(
       describe("isDimmed", function () {
         it("should be dimmed when there are things to highlight, but not in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{thing_id: 2}]).should.equal(true);
+          this.map.isDimmed([{attendees: [{thing_id: 2}]}]).should.equal(true);
         });
         it("should be dimmed when there are places to highlight, but not in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{place_thing_id: 2}]).should.equal(true);
+          this.map.isDimmed([{attendees: [], place_thing_id: 2}]).should.equal(true);
         });
         it("should not be dimmed when there are things to highlight that are in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{thing_id: 1}]).should.equal(false);
+          this.map.isDimmed([{attendees: [{thing_id: 1}]}]).should.equal(false);
+        });
+        it("should not be dimmed when there are multiple attendees, one to highlight that are in this marker", function () {
+          this.model.set("highlight", {id: 1});
+          this.map.isDimmed([{attendees: [{thing_id: 2}, {thing_id: 1}]}]).should.equal(false);
         });
         it("should not be dimmed when there are places to highlight that are in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{place_thing_id: 1}]).should.equal(false);
+          this.map.isDimmed([{attendees: [], place_thing_id: 1}]).should.equal(false);
         });
         it("should not be dimmed when there are no things to highlight", function () {
           this.model.set("highlight", {});
-          this.map.isDimmed([{place_thing_id: 1}]).should.equal(false);
+          this.map.isDimmed([{attendees: [], place_thing_id: 1}]).should.equal(false);
         });
       });
 
@@ -825,7 +831,10 @@ define(
       describe("marker links", function () {
         beforeEach(function () {
           this.event = {
-            thing_id: 123,
+            attendees: [{
+              thing_id: 123,
+              thing_name: "some thing"
+            }],
             event_name: "some name",
             thing_name: "some thing",
             event_link: "http://something.com/blah",
@@ -834,28 +843,65 @@ define(
             location: [[20, -53]]
           };
         });
-        it("should contain the event data in the dataset", function () {
-          var text = this.map.getInfoWindowEntry(this.event);
-          var el = $(text);
-          var dataset = el.data();
+        describe("single attendees", function () {
+          it("should contain the event data in the dataset", function () {
+            var text = this.map.getInfoWindowEntry(this.event);
+            var el = $(text);
+            var dataset = el.data();
 
-          dataset.thingId.should.equal(this.event.thing_id);
-          dataset.name.should.equal(this.event.event_name);
-          dataset.link.should.equal(this.event.event_link);
-          dataset.lat.should.equal(this.event.location[0][0]);
-          dataset.lon.should.equal(this.event.location[0][1]);
-          dataset.startDate.should.equal(this.event.start_date);
-          dataset.endDate.should.equal(this.event.end_date);
+            dataset.thingId.should.equal(this.event.attendees[0].thing_id);
+            dataset.name.should.equal(this.event.event_name);
+            dataset.link.should.equal(this.event.event_link);
+            dataset.lat.should.equal(this.event.location[0][0]);
+            dataset.lon.should.equal(this.event.location[0][1]);
+            dataset.startDate.should.equal(this.event.start_date);
+            dataset.endDate.should.equal(this.event.end_date);
+          });
+          it("should be highlighted when the thing id matches the model's highlight", function () {
+            this.map.model.set("highlight", {id: 123});
+            var text = this.map.getInfoWindowEntry(this.event);
+            $(text).find(".event-link").hasClass("highlight").should.equal(true);
+          });
+          it("should not be highlighted when the thing id does not match the model's highlight", function () {
+            this.map.model.set("highlight", {id: 124});
+            var text = this.map.getInfoWindowEntry(this.event);
+            $(text).find(".event-link").hasClass("highlight").should.equal(false);
+          });
         });
-        it("should be highlighted when the thing id matches the model's highlight", function () {
-          this.map.model.set("highlight", {id: 123});
-          var text = this.map.getInfoWindowEntry(this.event);
-          $(text).find(".event-link").hasClass("highlight").should.equal(true);
-        });
-        it("should not be highlighted when the thing id does not match the model's highlight", function () {
-          this.map.model.set("highlight", {id: 124});
-          var text = this.map.getInfoWindowEntry(this.event);
-          $(text).find(".event-link").hasClass("highlight").should.equal(false);
+
+        describe("multiple attendees", function () {
+          beforeEach(function () {
+            this.event.attendees.push({
+              thing_id: 1234,
+              thing_name: "some thing"
+            });
+          });
+          it("should contain the event data in the dataset", function () {
+            var text = this.map.getInfoWindowEntry(this.event);
+            var parent = $(text);
+
+            parent.find(".attendee").each(_.bind(function (i, el) {
+              var dataset = $(el).data();
+              dataset.thingId.should.equal(this.event.attendees[i].thing_id);
+              dataset.thingName.should.equal(this.event.attendees[i].thing_name);
+            }, this));
+
+          });
+          it("should be highlighted when the first thing id matches the model's highlight", function () {
+            this.map.model.set("highlight", {id: 123});
+            var text = this.map.getInfoWindowEntry(this.event);
+            $(text).find(".event-link").hasClass("highlight").should.equal(true);
+          });
+          it("should be highlighted when the another thing id matches the model's highlight", function () {
+            this.map.model.set("highlight", {id: 1234});
+            var text = this.map.getInfoWindowEntry(this.event);
+            $(text).find(".event-link").hasClass("highlight").should.equal(true);
+          });
+          it("should not be highlighted when the thing id does not match the model's highlight", function () {
+            this.map.model.set("highlight", {id: 124});
+            var text = this.map.getInfoWindowEntry(this.event);
+            $(text).find(".event-link").hasClass("highlight").should.equal(false);
+          });
         });
       });
 
