@@ -1,13 +1,15 @@
-<span
+<div
   class="event-entry"
   data-name="<%= event_name %>"
-  data-thing-id="<%= thing_id %>"
-  data-thing-name="<%= thing_name %>"
   data-link="<%= event_link %>"
   data-lat="<%= location[0][0] %>"
   data-lon="<%= location[0][1] %>"
   data-start-date="<%= start_date %>"
   data-end-date="<%= end_date %>"
+<% if (participants.length === 1) { %>
+  data-thing-id="<%= participants[0].thing_id %>"
+  data-thing-name="<%= participants[0].thing_name %>"
+<% } %>
 >
   <a class="event-link <%= (highlighted ? " highlight" : "") %> "
       href="<%= encodeURI(event_link) %>"
@@ -15,8 +17,18 @@
   >
     <%= event_name %>
   </a>
+
+
+<% if (participants.length === 1) { %>
   <span class="search glyphicon glyphicon-search"></span>
+<% } else { %>
+
+  <% for (var i = 0, ii = participants.length; i < ii; i += 1) { %>
+  <%= participantTemplate(participants[i])  %>
+  <% } %>
+<% } %>
+
   <span class="date">
     <%= date.getDate() %>/<%= (date.getMonth() + 1)%>/<%= Math.abs(date.getFullYear()) %> <%= (date.getFullYear() < 0 ? " BC" : "") %>
   </span>
-</span>
+</div>

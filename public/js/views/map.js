@@ -13,10 +13,12 @@ define([
   "chroma",
   "text!templates/info_window_summary.htm",
   "text!templates/info_window_entry.htm",
+  "text!templates/info_window_entry_participant.htm",
   "css!/css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
     Position, Scroll, StyledMarker, chroma,
-    infoWindowSummaryTemplate, infoWindowEntryTemplate) {
+    infoWindowSummaryTemplate, infoWindowEntryTemplate,
+    infoWindowEntryParticipantTemplate) {
 
   var MapView = Backbone.View.extend({
 
@@ -31,6 +33,7 @@ define([
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.infoWindowSummaryTemplate = _.template(infoWindowSummaryTemplate);
       this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
+      this.infoWindowEntryParticipantTemplate = _.template(infoWindowEntryParticipantTemplate);
     },
 
     render: function () {
@@ -293,6 +296,8 @@ define([
     },
 
     afterMouseOverMarker: function () {
+
+
       $(".event-link").on("click", _.bind(this.onLinkClick, this));
       $(".search").on("click", _.bind(this.onSearchClick, this));
 
@@ -304,16 +309,25 @@ define([
         $(".gm-style-iw").addClass("fix-height");
         //This is an ugly hack to make the InfoWindow allow
         //us to chose the width of the box without it taking it into account
-        setTimeout(function () {
+        setTimeout(_.bind(function () {
           $(".gm-style-iw").addClass("fix-height2");
-        }, 10);
+          this.highlightEntry();
+        }, this), 10);
       }
 
+      this.highlightEntry();
+
+    },
+
+    highlightEntry: function () {
+
       var highlight = this.model.get("highlight");
+      var el;
+
       if (highlight.id) {
         var el = $(".event-entry[data-thing-id=" + highlight.id + "]");
         if (el && el.length) {
-          Scroll.intoView(el, el.parent().parent(), 50);
+          Scroll.intoView(el, el.parent(), 50);
         }
       }
     },
@@ -374,10 +388,14 @@ define([
     isDimmed: function (events) {
       var highlight = this.model.get("highlight");
 
+      var thingEvents = _.pluck(_.flatten(_.pluck(events, "participants")), "thing_id");
+      var placeEvents = _.pluck(events, "place_thing_id");
+      var allEvents = thingEvents.concat(placeEvents);
+
       var isHighlighted =
         _.intersection(
           [highlight.id],
-          _.pluck(events, "thing_id").concat(_.pluck(events, "place_thing_id"))
+          allEvents
         ).length > 0;
 
       return !!highlight.id && !isHighlighted;
@@ -392,7 +410,7 @@ define([
         "<div>",
         this.getInfoWindowSummary(result),
         "<div class='content-holder'><div class='content'>",
-        "<p>" + _.map(result.events, this.getInfoWindowEntry, this).join("<p>"),
+        _.map(result.events, this.getInfoWindowEntry, this).join(""),
         "</div></div></div>"
       ].join("");
       return content;
@@ -406,9 +424,13 @@ define([
     getInfoWindowEntry: function (event) {
       var highlight = this.model.get("highlight");
       var highlighted =
-        highlight.id === event.thing_id;
+        _.intersection(
+          [highlight.id],
+          _.pluck(event.participants, "thing_id")
+        ).length > 0;
 
       return this.infoWindowEntryTemplate(_.extend({
+        participantTemplate: this.infoWindowEntryParticipantTemplate,
         date: new Date(event.start_date),
         highlighted: highlighted
       }, event));
