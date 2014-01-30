@@ -13,12 +13,12 @@ define([
   "chroma",
   "text!templates/info_window_summary.htm",
   "text!templates/info_window_entry.htm",
-  "text!templates/info_window_entry_attendee.htm",
+  "text!templates/info_window_entry_participant.htm",
   "css!/css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
     Position, Scroll, StyledMarker, chroma,
     infoWindowSummaryTemplate, infoWindowEntryTemplate,
-    infoWindowEntryAttendeeTemplate) {
+    infoWindowEntryParticipantTemplate) {
 
   var MapView = Backbone.View.extend({
 
@@ -33,7 +33,7 @@ define([
       this.eventLocationsCollection = opts.eventLocationsCollection;
       this.infoWindowSummaryTemplate = _.template(infoWindowSummaryTemplate);
       this.infoWindowEntryTemplate = _.template(infoWindowEntryTemplate);
-      this.infoWindowEntryAttendeeTemplate = _.template(infoWindowEntryAttendeeTemplate)
+      this.infoWindowEntryParticipantTemplate = _.template(infoWindowEntryParticipantTemplate)
     },
 
     render: function () {
@@ -388,7 +388,7 @@ define([
     isDimmed: function (events) {
       var highlight = this.model.get("highlight");
 
-      var thingEvents = _.pluck(_.flatten(_.pluck(events, "attendees")), "thing_id");
+      var thingEvents = _.pluck(_.flatten(_.pluck(events, "participants")), "thing_id");
       var placeEvents = _.pluck(events, "place_thing_id");
       var allEvents = thingEvents.concat(placeEvents);
 
@@ -426,11 +426,11 @@ define([
       var highlighted =
         _.intersection(
           [highlight.id],
-          _.pluck(event.attendees, "thing_id")
+          _.pluck(event.participants, "thing_id")
         ).length > 0;
 
       return this.infoWindowEntryTemplate(_.extend({
-        attendeeTemplate: this.infoWindowEntryAttendeeTemplate,
+        participantTemplate: this.infoWindowEntryParticipantTemplate,
         date: new Date(event.start_date),
         highlighted: highlighted
       }, event));

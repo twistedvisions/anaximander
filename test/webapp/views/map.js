@@ -36,7 +36,7 @@ define(
           thing_name: "some thing",
           start_date: "2014-01-01T01:00:00.000Z",
           end_date: "2014-01-01T23:00:00.000Z",
-          attendees: [{
+          participants: [{
             thing_id: 123
           }],
           location: [1, 2]
@@ -772,27 +772,27 @@ define(
       describe("isDimmed", function () {
         it("should be dimmed when there are things to highlight, but not in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{attendees: [{thing_id: 2}]}]).should.equal(true);
+          this.map.isDimmed([{participants: [{thing_id: 2}]}]).should.equal(true);
         });
         it("should be dimmed when there are places to highlight, but not in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{attendees: [], place_thing_id: 2}]).should.equal(true);
+          this.map.isDimmed([{participants: [], place_thing_id: 2}]).should.equal(true);
         });
         it("should not be dimmed when there are things to highlight that are in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{attendees: [{thing_id: 1}]}]).should.equal(false);
+          this.map.isDimmed([{participants: [{thing_id: 1}]}]).should.equal(false);
         });
-        it("should not be dimmed when there are multiple attendees, one to highlight that are in this marker", function () {
+        it("should not be dimmed when there are multiple participants, one to highlight that are in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{attendees: [{thing_id: 2}, {thing_id: 1}]}]).should.equal(false);
+          this.map.isDimmed([{participants: [{thing_id: 2}, {thing_id: 1}]}]).should.equal(false);
         });
         it("should not be dimmed when there are places to highlight that are in this marker", function () {
           this.model.set("highlight", {id: 1});
-          this.map.isDimmed([{attendees: [], place_thing_id: 1}]).should.equal(false);
+          this.map.isDimmed([{participants: [], place_thing_id: 1}]).should.equal(false);
         });
         it("should not be dimmed when there are no things to highlight", function () {
           this.model.set("highlight", {});
-          this.map.isDimmed([{attendees: [], place_thing_id: 1}]).should.equal(false);
+          this.map.isDimmed([{participants: [], place_thing_id: 1}]).should.equal(false);
         });
       });
 
@@ -831,7 +831,7 @@ define(
       describe("marker links", function () {
         beforeEach(function () {
           this.event = {
-            attendees: [{
+            participants: [{
               thing_id: 123,
               thing_name: "some thing"
             }],
@@ -843,13 +843,13 @@ define(
             location: [[20, -53]]
           };
         });
-        describe("single attendees", function () {
+        describe("single participants", function () {
           it("should contain the event data in the dataset", function () {
             var text = this.map.getInfoWindowEntry(this.event);
             var el = $(text);
             var dataset = el.data();
 
-            dataset.thingId.should.equal(this.event.attendees[0].thing_id);
+            dataset.thingId.should.equal(this.event.participants[0].thing_id);
             dataset.name.should.equal(this.event.event_name);
             dataset.link.should.equal(this.event.event_link);
             dataset.lat.should.equal(this.event.location[0][0]);
@@ -869,9 +869,9 @@ define(
           });
         });
 
-        describe("multiple attendees", function () {
+        describe("multiple participants", function () {
           beforeEach(function () {
-            this.event.attendees.push({
+            this.event.participants.push({
               thing_id: 1234,
               thing_name: "some thing"
             });
@@ -880,10 +880,10 @@ define(
             var text = this.map.getInfoWindowEntry(this.event);
             var parent = $(text);
 
-            parent.find(".attendee").each(_.bind(function (i, el) {
+            parent.find(".participant").each(_.bind(function (i, el) {
               var dataset = $(el).data();
-              dataset.thingId.should.equal(this.event.attendees[i].thing_id);
-              dataset.thingName.should.equal(this.event.attendees[i].thing_name);
+              dataset.thingId.should.equal(this.event.participants[i].thing_id);
+              dataset.thingName.should.equal(this.event.participants[i].thing_name);
             }, this));
 
           });

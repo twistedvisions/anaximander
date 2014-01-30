@@ -6,9 +6,9 @@
   data-lon="<%= location[0][1] %>"
   data-start-date="<%= start_date %>"
   data-end-date="<%= end_date %>"
-<% if (attendees.length === 1) { %>
-  data-thing-id="<%= attendees[0].thing_id %>"
-  data-thing-name="<%= attendees[0].thing_name %>"
+<% if (participants.length === 1) { %>
+  data-thing-id="<%= participants[0].thing_id %>"
+  data-thing-name="<%= participants[0].thing_name %>"
 <% } %>
 >
   <a class="event-link <%= (highlighted ? " highlight" : "") %> "
@@ -19,12 +19,12 @@
   </a>
 
 
-<% if (attendees.length === 1) { %>
+<% if (participants.length === 1) { %>
   <span class="search glyphicon glyphicon-search"></span>
 <% } else { %>
 
-  <% for (var i = 0, ii = attendees.length; i < ii; i += 1) { %>
-  <%= attendeeTemplate(attendees[i])  %>
+  <% for (var i = 0, ii = participants.length; i < ii; i += 1) { %>
+  <%= participantTemplate(participants[i])  %>
   <% } %>
 <% } %>
 
