@@ -30,12 +30,26 @@ define([
       this.$el.find(".modal").modal();
       this.$el.find(".modal").modal("show");
 
-      this.$el.find("input.date").datepicker({ dateFormat: "yy-mm-dd" });
+      this.$el.find("input[data-key=end]").datepicker(this.getDatePickerOpts());
+      this.$el.find("input[data-key=start]").datepicker(this.getDatePickerOpts(true));
       this.$el.find("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$el.find(".save").on("click", _.bind(this.handleSave, this));
       this.renderAttendees();
 
       return this.$el;
+    },
+
+    getDatePickerOpts: function (isStart) {
+      var date = this.model.get("date");
+      var opts = {
+        dateFormat: "yy-mm-dd",
+        changeYear: true,
+        yearRange: (date[0] - 20) + ":" + (date[1] + 20)
+      };
+      if (isStart) {
+        opts.defaultDate = new Date(date[0], 0, 1);
+      }
+      return opts;
     },
 
     updateEnd: function () {

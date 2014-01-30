@@ -60,10 +60,15 @@ define(
       });
 
       it("should track when the add event option is selected", function () {
-        var optionsMenu = new OptionsMenu({event: {latLng: {
-          lat: function () {},
-          lng: function () {}
-        }}});
+        var optionsMenu = new OptionsMenu({
+          event: {
+            latLng: {
+              lat: function () {},
+              lng: function () {}
+            }
+          }
+        });
+        sinon.stub(optionsMenu, "showEventEditor");
         optionsMenu.handleAddEvent();
         Analytics.optionSelected.calledWith({option: "addEvent"}).should.equal(true);
       });

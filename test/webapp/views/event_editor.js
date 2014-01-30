@@ -6,9 +6,24 @@ define(
   function (Backbone, EventEditor, Analytics, Event) {
 
     describe("event editor", function () {
-
+      describe("getDatePickerOpts", function () {
+        it("should set the year range", function () {
+          var editor = new EventEditor({
+            model: new Backbone.Model({date: [1900, 2000]})
+          });
+          editor.getDatePickerOpts().yearRange.should.equal("1880:2020");
+        });
+        it("should set the default date for the start", function () {
+          var editor = new EventEditor({
+            model: new Backbone.Model({date: [1900, 2000]})
+          });
+          editor.getDatePickerOpts(true).defaultDate.should.eql(new Date(1900, 0, 1));
+        });
+      });
       it("should set the end when the start is set if it is empty", function () {
-        var editor = new EventEditor({});
+        var editor = new EventEditor({
+          model: new Backbone.Model({date: [1900, 2000]})
+        });
         editor.render();
         editor.$("input[data-key=end]").val().should.equal("");
         editor.$("input[data-key=start]").val("2012-12-04");
@@ -19,7 +34,9 @@ define(
       });
 
       it("should not set the end when the start is set if it is already set", function () {
-        var editor = new EventEditor({});
+        var editor = new EventEditor({
+          model: new Backbone.Model({date: [1900, 2000]})
+        });
         editor.render();
         editor.$("input[data-key=end]").val("2012-12-05");
         editor.$("input[data-key=start]").val("2012-12-04");
@@ -36,7 +53,7 @@ define(
           sinon.stub(Event.prototype, "save");
 
           this.editor = new EventEditor({
-            model: new Backbone.Model()
+            model: new Backbone.Model({date: [1900, 2000]})
           });
           this.editor.getPlaceValue = function () {
             return {

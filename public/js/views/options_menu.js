@@ -30,6 +30,12 @@ define([
     },
 
     handleAddEvent: function () {
+      this.showEventEditor();
+      analytics.optionSelected({option: "addEvent"});
+      this.close();
+    },
+
+    showEventEditor: function () {
       new EventEditor({
         model: this.model,
         newEvent: {
@@ -39,8 +45,6 @@ define([
           }
         }
       }).render();
-      analytics.optionSelected({option: "addEvent"});
-      this.close();
     },
 
     close: function () {
