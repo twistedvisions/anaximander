@@ -22,10 +22,10 @@ describe("deserializeUser", function () {
     }, done));
     this.d[0].resolve({rows: [user]});
   });
-  it("should callback with an error if a user is not found", function (done) {
+  it("should delete session if a user is not found", function (done) {
     deserializeUser.deserializer(1, tryTest(function (err, result) {
-      should.exist(err.message);
-      should.not.exist(result);
+      should.not.exist(err);
+      result.should.equal(false);
     }, done));
     this.d[0].resolve({rows: []});
   });
