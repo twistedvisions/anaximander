@@ -292,6 +292,34 @@ define(
         });
 
       });
+
+      describe("events", function () {
+        it("triggers an event when you click a primary", function () {
+          this.filters.model.get("filterState").set([]);
+          this.filters.render();
+          var called = false;
+          this.filters.model.on("change:filterState", function () {
+            called = true;
+          });
+          this.filters.checkPrimary(new Backbone.Model({id: 1}), false);
+          called.should.equal(true);
+        });
+        it("triggers an event when you click a secondary", function () {
+          this.filters.model.get("filterState").set([]);
+          this.filters.render();
+          var called = false;
+          this.filters.model.on("change:filterState", function () {
+            called = true;
+          });
+          this.filters.checkSecondary(
+            new Backbone.Model({id: 3, parent_type: 1}),
+            {
+              currentTarget: $(this.filters.$el.find(".secondary label").first().children()[0])
+            }
+          );
+          called.should.equal(true);
+        });
+      });
     });
   }
 );

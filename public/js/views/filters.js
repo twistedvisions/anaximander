@@ -142,6 +142,7 @@ define([
         reset: true,
         success: _.bind(this._setSecondaries, this, id)
       });
+      this.model.trigger("change:filterState");
     },
 
     _setSecondaries: function (id) {
@@ -207,6 +208,7 @@ define([
 
       //todo: only update the one primary not all of them
       this.updatePrimaryFilters();
+      this.model.trigger("change:filterState");
     },
 
     updateFilterState: function (filter, checked) {
