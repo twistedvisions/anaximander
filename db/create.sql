@@ -57,15 +57,21 @@ CREATE INDEX start_date_idx
 CREATE INDEX end_date_idx
    ON event USING btree (end_date ASC NULLS LAST);
 
+CREATE INDEX event_name_idx
+   ON event (name ASC NULLS LAST);
+
+
 CREATE INDEX thing_type_idx
    ON thing USING hash (type_id);
+
+CREATE INDEX thing_name_idx
+   ON thing (name ASC NULLS LAST);
 
 CREATE INDEX event_id_idx
    ON event_participant USING hash (event_id);
 
 CREATE INDEX place_idx
    ON event USING hash (place_id);
-
 
 CREATE EXTENSION pg_trgm;
 CREATE INDEX thing_name_gin ON thing USING gin (name gin_trgm_ops);
