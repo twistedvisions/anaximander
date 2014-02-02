@@ -12,6 +12,16 @@ define([
 
     initialize: function () {
 
+    },
+
+    setHighlighted: function (type) {
+      this.highlighted = type;
+      this.trigger("highlightChanged", type);
+    },
+
+    setSelected: function (type, isSelected) {
+      this.selected = type;
+      this.trigger("selectionChanged", type, isSelected);
     }
 
   });

@@ -1,8 +1,9 @@
 define([
   "underscore",
   "backbone",
+  "when",
   "models/type"
-], function (_, Backbone, Type) {
+], function (_, Backbone, when, Type) {
 
   var types = Backbone.Collection.extend({
 
@@ -25,18 +26,19 @@ define([
     },
 
     updateData: function (opts) {
-      var success = opts.success;
+      var d = when.defer();
       var parentType = this.parentType.get("id");
       if (this.byParentType[parentType]) {
         this.reset(this.byParentType[parentType]);
-        success();
+        d.resolve();
       } else {
         opts.success = _.bind(function () {
           this.byParentType[parentType] = this.toJSON();
-          success();
+          d.resolve();
         }, this);
-        return this.fetch(opts);
+        this.fetch(opts);
       }
+      return d.promise;
     }
 
   });
