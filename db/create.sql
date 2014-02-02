@@ -41,10 +41,18 @@ CREATE TABLE event
   CONSTRAINT event_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE role
+(
+  id SERIAL,
+  name character varying(300) NOT NULL,
+  CONSTRAINT role_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE event_participant
 (
   thing_id bigint NOT NULL REFERENCES thing(id),
   event_id bigint NOT NULL REFERENCES event(id),
+  role_id bigint NOT NULL REFERENCES role(id),
   CONSTRAINT event_attendee_pkey PRIMARY KEY (thing_id, event_id)
 );
 
@@ -80,3 +88,6 @@ INSERT INTO thing_type (name) VALUES ('Person');
 INSERT INTO thing_type (name) VALUES ('Organisation');
 INSERT INTO thing_type (name) VALUES ('Place');
 INSERT INTO thing_type (name) VALUES ('Construction');
+
+INSERT INTO role (name) VALUES ('subject');
+INSERT INTO role (name) VALUES ('attendee');

@@ -85,10 +85,10 @@ describe("saveEvent", function () {
       });
     });
 
-    describe("ensureAttendees", function () {
-      it("should ensure that each attendee exists", function (done) {
+    describe("ensureParticipants", function () {
+      it("should ensure that each participant exists", function (done) {
         var self = this;
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(
+        new saveEvent.EventSaver().ensureParticipants([{id: 3, roleId: 1}, {id: 4, roleId: 1}]).then(
           tryTest(function () {
             self.args[0][1].should.equal("find_thing_by_id");
             self.args[1][1].should.equal("find_thing_by_id");
@@ -99,8 +99,8 @@ describe("saveEvent", function () {
         this.d[1].resolve({rows: [{id: 4}]});
       });
 
-      it("should throw an exception if an attendee cannot be found", function (done) {
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: 4}]).then(
+      it("should throw an exception if an participant cannot be found", function (done) {
+        new saveEvent.EventSaver().ensureParticipants([{id: 3, roleId: 1}, {id: 4, roleId: 1}]).then(
           function () {
             done({message: "should not succeed"});
           },
@@ -112,9 +112,18 @@ describe("saveEvent", function () {
         this.d[1].resolve({rows: []});
       });
 
-      it("should create attendees if they do not exist", function (done) {
+      it("should throw an exception if an participant does not have a role", function (done) {
+        tryTest(function () {
+          new saveEvent.EventSaver().ensureParticipants([{id: 3, roleId: 1}, {id: 4}]);
+        }, function (e) {
+          should.exist(e);
+          done();
+        })();
+      });
+
+      it("should create participants if they do not exist", function (done) {
         var self = this;
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
+        new saveEvent.EventSaver().ensureParticipants([{id: 3, roleId: 1}, {id: -1, name: "someone", roleId: 1}]).then(
           tryTest(function () {
             self.args[0][1].should.equal("find_thing_by_id");
             self.args[1][1].should.equal("save_thing");
@@ -126,7 +135,7 @@ describe("saveEvent", function () {
       });
 
       it("should callback with the new ids if they can be found", function (done) {
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
+        new saveEvent.EventSaver().ensureParticipants([{id: 3, roleId: 1}, {id: -1, name: "someone", roleId: 1}]).then(
           tryTest(function (ids) {
             JSON.stringify(ids).should.equal(JSON.stringify([5, 6]));
           }, done),
@@ -137,7 +146,7 @@ describe("saveEvent", function () {
       });
 
       it("should throw an exception if an attendee cannot be created", function (done) {
-        new saveEvent.EventSaver().ensureAttendees([{id: 3}, {id: -1, name: "someone"}]).then(
+        new saveEvent.EventSaver().ensureParticipants([{id: 3, roleId: 1}, {id: -1, name: "someone", roleId: 1}]).then(
           function () {
             done({message: "should not succeed"});
           },
@@ -229,7 +238,7 @@ describe("saveEvent", function () {
     describe("addAttendees", function () {
       it("should add each attendee to the event", function (done) {
         var self = this;
-        new saveEvent.EventSaver().addAttendees([{id: 3}, {id: 4}], 5).then(
+        new saveEvent.EventSaver().addParticipants([{id: 3}, {id: 4}], 5).then(
           tryTest(function () {
             self.args[0][1].should.equal("save_event_participant");
             self.args[1][1].should.equal("save_event_participant");
@@ -265,9 +274,10 @@ describe("saveEvent", function () {
             id: 58365,
             name: "Sneem"
           },
-          attendees: [{
+          participants: [{
             id: 611528,
-            name: "Kareem Ajani (Person)"
+            name: "Kareem Ajani (Person)",
+            roleId: 1
           }]
         },
         isAuthenticated: function () {
