@@ -2,7 +2,7 @@ define([
   "underscore",
   "backbone",
   "models/role",
-  "utils/underscore_string"
+  "underscore_string"
 ], function (_, Backbone, Role) {
 
   var Roles = Backbone.Collection.extend({

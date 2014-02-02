@@ -38,7 +38,7 @@ require.config({
       "css": "libs/require-css/css"
     }
   },
-  
+
   cssDir:  "/base/public",
 
   paths: {
@@ -54,14 +54,15 @@ require.config({
     templates: "../templates",
     async: "../../test/webapp/mocks/async",
     styled_marker: "./libs/styled_marker",
+    underscore_string: "./libs/underscore_string",
     fuse: "./libs/fuse",
     when: "./libs/when",
     sha256: "./libs/sha256",
     cookies: "./libs/cookies",
     socketio: "../../node_modules/socket.io-client/dist/socket.io.min"
   },
-  
+
   deps: tests,
-  
+
   callback: window.__karma__.start
 });

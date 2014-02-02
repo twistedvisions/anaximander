@@ -46,6 +46,7 @@ require.config({
     async: "./libs/async",
     when: "./libs/when",
     styled_marker: "./libs/styled_marker",
+    underscore_string: "./libs/underscore_string",
     fuse: "./libs/fuse",
     sha256: "./libs/sha256",
     "socketio": "../socket.io/socket.io",
