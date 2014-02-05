@@ -13,7 +13,7 @@ define(
         bounds: [{lat: 10, lon: 20}, {lat: -20, lon: -34}],
         filterState: new Backbone.Collection()
       });
-      FilterUrlSerialiser.deserialise("1:u;3:*;4:11", this.model);
+      FilterUrlSerialiser.deserialise("1:u;3:*;4:11;r:5,6;et:7,8", this.model);
       this.events = new EventLocations({
         state: this.model
       });
@@ -91,6 +91,14 @@ define(
         $.get.args[0][1].notSpecifiedTypeFilters.should.equal(JSON.stringify([{
           id: 1
         }]));
+      });
+      it("should pass the role filters", function () {
+        this.events.updateData();
+        $.get.args[0][1].roleFilters.should.eql([5, 6]);
+      });
+      it("should pass the event types filters", function () {
+        this.events.updateData();
+        $.get.args[0][1].eventTypeFilters.should.eql([7, 8]);
       });
     });
     describe("crosses antimeridian", function () {

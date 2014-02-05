@@ -181,6 +181,66 @@ define(
         });
       });
 
+      describe("getters", function () {
+        describe("getTypeFilterKeys", function () {
+          it("can ignore string types", function () {
+            var filters = [
+              new Backbone.Model({id: 1}),
+              new Backbone.Model({id: "r"})
+            ];
+            FilterUrlSerialiser.getTypeFilterKeys(filters)
+              .should.eql([{id: 1}, {id: "r"}]);
+            FilterUrlSerialiser.getTypeFilterKeys(filters, true)
+              .should.eql([{id: 1}]);
+          });
+        });
+        describe("getSubtypeFilterKeys", function () {
+          it("can ignore string types", function () {
+            var filters = [
+              new Backbone.Model({id: 1, parent_type: 1}),
+              new Backbone.Model({id: "r1", parent_type: "r"})
+            ];
+            FilterUrlSerialiser.getSubtypeFilterKeys(filters)
+              .should.eql([{id: 1, parent_type: 1}, {id: 1, parent_type: "r"}]);
+            FilterUrlSerialiser.getSubtypeFilterKeys(filters, true)
+              .should.eql([{id: 1, parent_type: 1}]);
+          });
+        });
+        describe("getNotSpecifiedTypeFilterKeys", function () {
+          it("can ignore string types", function () {
+            var filters = [
+              new Backbone.Model({id: -1, parent_type: 1}),
+              new Backbone.Model({id: "r.ns", parent_type: "r"})
+            ];
+            FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filters)
+              .should.eql([{id: 1}, {id: "r.ns"}]);
+            FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filters, true)
+              .should.eql([{id: 1}]);
+          });
+        });
+        describe("getRoleFilterKeys", function () {
+          it("gets only roles", function () {
+            var filters = [
+              new Backbone.Model({id: 1, parent_type: 1}),
+              new Backbone.Model({id: "r1", parent_type: "r"})
+            ];
+            FilterUrlSerialiser.getRoleFilterKeys(filters, true)
+              .should.eql([{id: 1, parent_type: "r"}]);
+          });
+        });
+        describe("getEventTypeFilterKeys", function () {
+          it("gets only event types", function () {
+            var filters = [
+              new Backbone.Model({id: 1, parent_type: 1}),
+              new Backbone.Model({id: "et1", parent_type: "et"})
+            ];
+            FilterUrlSerialiser.getEventTypeFilterKeys(filters, true)
+              .should.eql([{id: 1, parent_type: "et"}]);
+          });
+        });
+
+      });
+
       it("should produce appropriate results when string contains a combination of everything", function () {
         FilterUrlSerialiser.deserialise("1:*;2:u;3:u,4;5:6,7;r:4;et:u,6", this.model);
         var json = JSON.stringify(this.model.get("filterState").toJSON());

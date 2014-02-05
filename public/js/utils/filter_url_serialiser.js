@@ -93,19 +93,20 @@ define(["underscore", "underscore_string"], function (_) {
       });
       return filterMap;
     },
-    getTypeFilterKeys: function (filterState) {
+    getTypeFilterKeys: function (filterState, ignoreStringTypes) {
       var typeFilters = filterState.filter(function (filter) {
-        return !filter.get("parent_type");
+        return !filter.get("parent_type") && (!ignoreStringTypes || !_.isString(filter.id));
       });
       return _.map(typeFilters, function (filter) {
         return filter.toJSON();
       });
     },
-    getSubtypeFilterKeys: function (filterState) {
+    getSubtypeFilterKeys: function (filterState, ignoreStringTypes) {
       var typeFilters = filterState.filter(function (filter) {
         return !!filter.get("parent_type") &&
           ((filter.id > 0) ||
-           (_.isString(filter.get("parent_type")) &&
+           (!ignoreStringTypes &&
+            _.isString(filter.get("parent_type")) &&
             !_.string.endsWith(filter.id, ".ns")
            )
           );
@@ -118,17 +119,34 @@ define(["underscore", "underscore_string"], function (_) {
         return json;
       });
     },
-    getNotSpecifiedTypeFilterKeys: function (filterState) {
+    getNotSpecifiedTypeFilterKeys: function (filterState, ignoreStringTypes) {
       var typeFilters = filterState.filter(function (filter) {
         return !!filter.get("parent_type") &&
           ((filter.id < 0) ||
-           (_.isString(filter.get("parent_type")) &&
+           (!ignoreStringTypes &&
+            _.isString(filter.get("parent_type")) &&
             _.string.endsWith(filter.id, ".ns")
            )
           );
       });
       return _.map(typeFilters, function (filter) {
         return {"id": (_.isString(filter.id) ? filter.id : -filter.id)};
+      });
+    },
+    getRoleFilterKeys: function (filterState) {
+      return this._getStringEventTypeFilterKeys(filterState, "r");
+    },
+    getEventTypeFilterKeys: function (filterState) {
+      return this._getStringEventTypeFilterKeys(filterState, "et");
+    },
+    _getStringEventTypeFilterKeys: function (filterState, key) {
+      var typeFilters = filterState.filter(function (filter) {
+        return filter.get("parent_type") === key;
+      });
+      return _.map(typeFilters, function (filter) {
+        var json = filter.toJSON();
+        json.id = parseInt(json.id.substring(filter.get("parent_type").length), 10);
+        return json;
       });
     }
   };

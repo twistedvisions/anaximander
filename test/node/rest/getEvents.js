@@ -354,5 +354,25 @@ describe("getEvents", function () {
       );
     });
 
+    it("should allow you to filter out roles", function () {
+      var query = getEvents.generateEventFilters({
+        roleFilters: [1, 2],
+        typeFilters: [],
+        subtypeFilters: [],
+        notSpecifiedTypeFilters: []
+      });
+      query.should.equal("and ((event_participant.role_id not in (1, 2)))");
+    });
+
+    it("should allow you to filter out event types", function () {
+      var query = getEvents.generateEventFilters({
+        eventTypeFilters: [1, 2],
+        typeFilters: [],
+        subtypeFilters: [],
+        notSpecifiedTypeFilters: []
+      });
+      query.should.equal("and ((event.type_id not in (1, 2)))");
+    });
+
   });
 });
