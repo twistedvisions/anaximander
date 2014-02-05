@@ -11,6 +11,8 @@ define([
   var SecondaryFilters = Backbone.View.extend({
     initialize: function (opts) {
       this.subtypesCollection = opts.subtypesCollection;
+      this.rolesCollection = opts.rolesCollection;
+      this.eventTypesCollection = opts.eventTypesCollection;
       this.filterTemplate =  _.template(filterTemplate);
     },
 
@@ -99,11 +101,11 @@ define([
       }
     },
 
-    setSecondaries: function (id) {
-      this.model.removeFilterStateKey(-id);
+    setSecondaries: function (parentTypeId) {
+      this.model.removeFilterStateKey(this.getId(this.getNotSelectedId(parentTypeId)));
       var removed = false;
-      this.subtypesCollection.forEach(function (filter) {
-        this.model.removeFilterStateKey(filter.get("id"), true);
+      this.currentCollection.forEach(function (filter) {
+        this.model.removeFilterStateKey(this.getId(filter.get("id")), true);
         removed = true;
       }, this);
       if (removed) {
@@ -117,11 +119,30 @@ define([
       this.$("#secondary-filter").select();
       var secondary = this.$(".options");
       secondary.html("");
-      this.subtypesCollection.setParentType(filter);
 
-      this.subtypesCollection.updateData({
-        reset: true
-      }).then(_.bind(this._showSecondaryFilters, this));
+      if (_.isString(filter.id)) {
+        this.idPrefix = filter.id;
+        if (filter.id === "et") {
+          this.currentCollection = this.eventTypesCollection;
+        } else if (filter.id === "r") {
+          this.currentCollection = this.rolesCollection;
+        }
+        this.setParentTypeId(filter.id);
+        this._showSecondaryFilters();
+      } else {
+        this.idPrefix = null;
+        this.setParentTypeId(filter.id);
+        this.setDefaultCollection();
+
+        this.currentCollection.updateData({
+          reset: true,
+          id: filter.id
+        }).then(_.bind(this._showSecondaryFilters, this));
+      }
+    },
+
+    setDefaultCollection: function () {
+      this.currentCollection = this.subtypesCollection;
     },
 
     _showSecondaryFilters: function () {
@@ -130,23 +151,36 @@ define([
       var parentTypeId = this.getParentTypeId();
       var isParentUnselected = this.model.filterStateExists(parentTypeId);
       this._showSecondaryFilter(isParentUnselected, secondary, new Backbone.Model({
-        id: -parentTypeId,
+        id: this.getNotSelectedId(parentTypeId),
         parent_type: parentTypeId,
         name: "Not Specified",
         not_specified: true
       }));
-      this.subtypesCollection.forEach(
+      this.currentCollection.forEach(
         _.bind(this._showSecondaryFilter,
           this, isParentUnselected, secondary)
       );
       this.updateVisibleSecondaryFilters();
     },
 
+    getNotSelectedId: function (parentTypeId) {
+      return _.isString(parentTypeId) ? ".ns" : -parentTypeId;
+    },
+
+    getId: function (id) {
+      return this.idPrefix + id;
+    },
+
     _showSecondaryFilter: function (isParentUnselected, secondary, filter) {
       var json = filter.toJSON();
-      json.isUnset = isParentUnselected || this.model.filterStateExists(json.id);
+
+      json.isUnset = isParentUnselected || this.model.filterStateExists(this.getId(json.id));
       json.isHalfSet = false;
       json.not_specified = json.not_specified === true || json.not_specified === false;
+      json.special = false;
+      if (this.idPrefix) {
+        json.id = this.getId(json.id);
+      }
       var el = $(this.filterTemplate(json));
       secondary.append(el);
       el.find("input[type=checkbox]").on("change", _.bind(this._checkSecondary, this, filter));
@@ -159,11 +193,11 @@ define([
     },
 
     _updateFilterState: function (filter, checked) {
-      var id = filter.get("id");
+      var id = this.getId(filter.id);
       if (checked) {
         this.model.removeFilterStateKey(id);
       } else {
-        this.model.addFilterStateKey(id, filter.get("parent_type"));
+        this.model.addFilterStateKey(id, filter.get("parent_type") || this.getParentTypeId());
       }
       this.normaliseFilters();
     },
@@ -179,18 +213,18 @@ define([
     },
 
     allSecondariesUnchecked: function () {
-      return this.subtypesCollection.all(function (subtype) {
-        return this.model.filterStateExists(subtype.get("id"));
+      return this.currentCollection.all(function (subtype) {
+        return this.model.filterStateExists(this.getId(subtype.get("id")));
       }, this);
     },
 
     switchAllSecondarysForPrimary: function () {
       var removed = false;
-      this.subtypesCollection.forEach(function (subtype) {
+      this.currentCollection.forEach(function (subtype) {
         removed = true;
-        this.model.removeFilterStateKey(subtype.get("id"), true);
+        this.model.removeFilterStateKey(this.getId(subtype.get("id")), true);
       }, this);
-      this.model.removeFilterStateKey(-this.getParentTypeId(), true);
+      this.model.removeFilterStateKey(this.getId(this.getNotSelectedId(this.getParentTypeId())), true);
       if (removed) {
         this.model.get("filterState").trigger("remove");
       }
@@ -204,10 +238,11 @@ define([
       var parentTypeId = this.getParentTypeId();
       this.model.removeFilterStateKey(parentTypeId);
       var added = false;
-      this.$el.find(".secondary input[type=checkbox]").each(_.bind(function (i, el) {
+      this.$el.find("input[type=checkbox]").each(_.bind(function (i, el) {
         added = true;
         var $el = $(el);
-        var id = parseInt($el.attr("data-id"), 10);
+        var id = $el.attr("data-id");
+        id = _.isString(parentTypeId) ? id : parseInt($el.attr("data-id"), 10);
         if (!$el.prop("checked")) {
           this.model.addFilterStateKey(id, parentTypeId, true);
         }
@@ -219,7 +254,10 @@ define([
     },
 
     getParentTypeId: function () {
-      return this.subtypesCollection.getParentType().get("id");
+      return this.parentTypeId;
+    },
+    setParentTypeId: function (id) {
+      this.parentTypeId = id;
     }
   });
 

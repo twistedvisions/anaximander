@@ -25,6 +25,10 @@ require.config({
     },
     "parsley": {
       deps: ["jquery"]
+    },
+    "underscore_string": {
+      deps: ["underscore"],
+      exports: "underscore_string"
     }
   },
   map: {

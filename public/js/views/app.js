@@ -8,10 +8,13 @@ define([
   "collections/event_locations",
   "collections/types",
   "collections/subtypes",
+  "collections/roles",
+  "collections/event_types",
   "text!templates/layout.htm"
 ], function ($, jqueryui, _, Backbone, Bootstrap, when,
-    EventLocationsCollection, TypeCollection,
-    SubtypeCollection, layoutTemplate) {
+    EventLocationsCollection,
+    TypeCollection, SubtypeCollection,
+    RolesCollection, EventTypesCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
 
@@ -19,6 +22,12 @@ define([
       this.eventLocationsCollection = new EventLocationsCollection({state: this.model});
       this.typesCollection = new TypeCollection();
       this.subtypesCollection = new SubtypeCollection();
+      this.rolesCollection = new RolesCollection();
+      this.eventTypesCollection = new EventTypesCollection();
+
+      this.rolesCollection.fetch();
+      this.eventTypesCollection.fetch();
+
       this.user = options.user;
     },
 
@@ -73,7 +82,9 @@ define([
         this.filters = new Filters({
           model: this.model,
           typesCollection: this.typesCollection,
-          subtypesCollection: this.subtypesCollection
+          subtypesCollection: this.subtypesCollection,
+          rolesCollection: this.rolesCollection,
+          eventTypesCollection: this.eventTypesCollection
         });
         filtersLoaded.resolve(true);
       }, this));

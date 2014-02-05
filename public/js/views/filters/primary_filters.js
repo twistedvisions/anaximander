@@ -9,6 +9,20 @@ define([
 ], function ($, _, Backbone, Fuse, analytics, template, filterTemplate) {
 
   var PrimaryFilters = Backbone.View.extend({
+
+    specialFilters: new Backbone.Collection([
+      {
+        id: "et",
+        name: "event type",
+        special: true
+      },
+      {
+        id: "r",
+        name: "participant role",
+        special: true
+      }
+    ]),
+
     initialize: function (opts) {
       this.typesCollection = opts.typesCollection;
       this.filterTemplate =  _.template(filterTemplate);
@@ -28,6 +42,7 @@ define([
 
     updatePrimaryFilters: function () {
       this.primaryOptions.html("");
+      this.specialFilters.forEach(this.renderPrimaryFilter, this);
       this.typesCollection.forEach(this.renderPrimaryFilter, this);
     },
 
@@ -37,23 +52,27 @@ define([
       var id = thingType.get("id");
       json.isHalfSet = this.model.isPrimaryFilterStateUsed(id);
       json.not_specified = false;
+      json.special = thingType.get("special") || false;
 
       var el = $(this.filterTemplate(json));
       this.primaryOptions.append(el);
 
       el.hover(_.bind(this.updateHighlightedPrimary, this, thingType));
-      el.find("input[type=checkbox]").on("change", _.bind(function (event) {
-        analytics.filterEventsByPrimary(json);
-        var input = $(event.currentTarget);
-        input.removeClass("half");
-        this.updateSelectedPrimary(thingType, input.prop("checked"));
-      }, this));
+      el.find("input[type=checkbox]").on("change",
+        _.bind(this.filterClicked, this, json, thingType));
     },
 
     updateHighlightedPrimary: function (thingType) {
       this.$(".primary .filter").removeClass("selected");
       this.$(".primary .filter[data-id=" + thingType.get("id") + "]").addClass("selected");
       this.typesCollection.setHighlighted(thingType);
+    },
+
+    filterClicked: function (json, thingType, event) {
+      analytics.filterEventsByPrimary(json);
+      var input = $(event.currentTarget);
+      input.removeClass("half");
+      this.updateSelectedPrimary(thingType, input.prop("checked"));
     },
 
     updateSelectedPrimary: function (thingType, isSelected) {

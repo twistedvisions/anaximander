@@ -10,30 +10,23 @@ define([
     model: Type,
 
     url: function () {
-      return "type/" + this.parentType.get("id") + "/type";
+      return "type/" + this.parentTypeId + "/type";
     },
 
     initialize: function () {
       this.byParentType = {};
     },
 
-    setParentType: function (parentType) {
-      this.parentType = parentType;
-    },
-
-    getParentType: function () {
-      return this.parentType;
-    },
-
     updateData: function (opts) {
       var d = when.defer();
-      var parentType = this.parentType.get("id");
-      if (this.byParentType[parentType]) {
-        this.reset(this.byParentType[parentType]);
+
+      this.parentTypeId = opts.id;
+      if (this.byParentType[this.parentTypeId]) {
+        this.reset(this.byParentType[this.parentTypeId]);
         d.resolve();
       } else {
         opts.success = _.bind(function () {
-          this.byParentType[parentType] = this.toJSON();
+          this.byParentType[this.parentTypeId] = this.toJSON();
           d.resolve();
         }, this);
         this.fetch(opts);

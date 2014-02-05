@@ -26,6 +26,8 @@ define([
       });
       this.secondaryFilters = new SecondaryFilters({
         subtypesCollection: this.subtypesCollection,
+        rolesCollection: opts.rolesCollection,
+        eventTypesCollection: opts.eventTypesCollection,
         model: this.model
       });
       this.typesCollection.on("highlightChanged", function (thingType) {
@@ -49,10 +51,13 @@ define([
       } else {
         this.model.addFilterStateKey(id, null, true);
       }
-      this.subtypesCollection.setParentType(filter);
-      this.subtypesCollection.updateData({reset: true}).then(_.bind(function () {
+      if (_.isString(filter.id)) {
         this.secondaryFilters.setSecondaries(id);
-      }, this));
+      } else {
+        this.subtypesCollection.updateData({reset: true, id: filter.id}).then(_.bind(function () {
+          this.secondaryFilters.setSecondaries(id);
+        }, this));
+      }
       this.model.trigger("change:filterState");
     },
 
