@@ -213,9 +213,12 @@ define([
     },
 
     allSecondariesUnchecked: function () {
+
       return this.currentCollection.all(function (subtype) {
-        return this.model.filterStateExists(this.getId(subtype.get("id")));
-      }, this);
+          return this.model.filterStateExists(this.getId(subtype.get("id")));
+        }, this) &&
+
+        this.model.filterStateExists(this.getId(this.getNotSelectedId(this.getParentTypeId())));
     },
 
     switchAllSecondarysForPrimary: function () {
