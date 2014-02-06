@@ -22,9 +22,6 @@ define([
       filterChanged: function (filter, checked) {
         this.trigger("filterChanged", filter, checked);
       },
-      filterStateExists: function (id) {
-        return !!this.get("filterState").get(id);
-      },
       getFilterState: function (id) {
         return this.get("filterState").get(id);
       },
