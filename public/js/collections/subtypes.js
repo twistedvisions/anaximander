@@ -32,6 +32,14 @@ define([
         this.fetch(opts);
       }
       return d.promise;
+    },
+
+    parse: function (results) {
+      results = _.map(results, function (x) {
+        x.name = _.string.capitalize(x.name);
+        return x;
+      });
+      return results;
     }
 
   });

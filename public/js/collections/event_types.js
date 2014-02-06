@@ -7,15 +7,15 @@ define([
 
   var EventTypes = Backbone.Collection.extend({
     model: EventType,
-    url: "event_type"
-    // ,
-    // parse: function (results) {
-    //   results = _.map(results, function (x) {
-    //     x.name = _.string.capitalize(x.name);
-    //     return x;
-    //   });
-    //   return results;
-    // }
+    url: "event_type",
+
+    parse: function (results) {
+      results = _.map(results, function (x) {
+        x.name = _.string.capitalize(x.name);
+        return x;
+      });
+      return results;
+    }
   });
 
   return EventTypes;
