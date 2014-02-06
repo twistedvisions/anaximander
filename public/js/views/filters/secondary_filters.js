@@ -150,12 +150,18 @@ define([
       secondary.html("");
       var parentTypeId = this.getParentTypeId();
       var isParentUnselected = this.model.filterStateExists(parentTypeId);
-      this._showSecondaryFilter(isParentUnselected, secondary, new Backbone.Model({
-        id: this.getNotSelectedId(parentTypeId),
-        parent_type: parentTypeId,
-        name: "Not Specified",
-        not_specified: true
-      }));
+      if (!this.idPrefix) {
+        this._showSecondaryFilter(
+          isParentUnselected,
+          secondary,
+          new Backbone.Model({
+            id: this.getNotSelectedId(parentTypeId),
+            parent_type: parentTypeId,
+            name: "Not Specified",
+            not_specified: true
+          }
+        ));
+      }
       this.currentCollection.forEach(
         _.bind(this._showSecondaryFilter,
           this, isParentUnselected, secondary)
@@ -218,7 +224,10 @@ define([
           return this.model.filterStateExists(this.getId(subtype.get("id")));
         }, this) &&
 
-        this.model.filterStateExists(this.getId(this.getNotSelectedId(this.getParentTypeId())));
+        (
+          !!this.idPrefix ||
+          this.model.filterStateExists(this.getId(this.getNotSelectedId(this.getParentTypeId())))
+        );
     },
 
     switchAllSecondarysForPrimary: function () {

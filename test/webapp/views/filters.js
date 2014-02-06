@@ -231,39 +231,13 @@ define(
             it("shows check boxes for secondary filters", function () {
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-              this.filters.$(".secondary input[type=checkbox]").length.should.equal(4);
+              this.filters.$(".secondary input[type=checkbox]").length.should.equal(3);
             });
 
-            it("shows check boxes for not-specified secondary filters", function () {
+            it("does not show check boxes for not-specified secondary filters", function () {
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-              this.filters.$(".secondary input[type=checkbox].not-specified").length.should.equal(1);
-            });
-
-            it("unsets not-specified filter when appropriate", function () {
-              this.filters.model.get("filterState").set([{id: "r.ns"}]);
-              this.filters.render();
-              this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-              this.filters.$(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
-            });
-
-            it("sets not-specified filter when it was off, but the primary is toggled", function () {
-              this.filters.model.get("filterState").set([{id: "r.ns"}]);
-              this.filters.render();
-              this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-
-              this.filters.$(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
-              this.filters.primaryFilterSelectionChanged(new Backbone.Model({id: "r"}), false);
-              this.filters.$(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(false);
-              this.filters.primaryFilterSelectionChanged(new Backbone.Model({id: "r"}), true);
-              this.filters.$(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(true);
-            });
-
-            it("doesn't unset not-specified filter when not in options", function () {
-              this.filters.model.get("filterState").set([]);
-              this.filters.render();
-              this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-              this.filters.$(".secondary input[type=checkbox].not-specified").prop("checked").should.equal(true);
+              this.filters.$(".secondary input[type=checkbox].not-specified").length.should.equal(0);
             });
 
             it("doesn't select primary filters when state has them unselected", function () {
@@ -283,16 +257,16 @@ define(
               this.filters.model.get("filterState").set([{id: "r3", parent_type: "r"}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-              this.filters.$(".secondary input:checked").length.should.equal(3);
+              this.filters.$(".secondary input:checked").length.should.equal(2);
               this.filters.primaryFilterSelectionChanged(new Backbone.Model({id: "r"}), true);
-              this.filters.$(".secondary input:checked").length.should.equal(4);
+              this.filters.$(".secondary input:checked").length.should.equal(3);
             });
 
             it("deselects all secondary filters when a primary filter is deselected", function () {
               this.filters.model.get("filterState").set([{id: "r3", parent_type: "r"}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-              this.filters.$(".secondary input:checked").length.should.equal(3);
+              this.filters.$(".secondary input:checked").length.should.equal(2);
               this.filters.primaryFilterSelectionChanged(new Backbone.Model({id: "r"}), false);
               this.filters.$(".secondary input:checked").length.should.equal(0);
             });
@@ -312,7 +286,6 @@ define(
 
             it("puts the primary checkbox in a unselected state when all secondary filters are unselected", function () {
               this.filters.model.get("filterState").set([
-                {id: "r.ns"},
                 {id: "r1", parent_type: "r"},
                 {id: "r2", parent_type: "r"}
               ]);
@@ -326,28 +299,6 @@ define(
                 new Backbone.Model({id: 3}),
                 {
                   currentTarget: $(this.filters.$(".secondary label").children()[0])
-                }
-              );
-              this.filters.$(".primary input.half:checked").length.should.equal(0);
-              this.filters.$(".primary .filter.special input:checked").length.should.equal(1);
-            });
-
-            it("puts the primary checkbox in a unselected state when all secondary filters are unselected when last selection is the notSelected", function () {
-              this.filters.model.get("filterState").set([
-                {id: "r1", parent_type: "r"},
-                {id: "r2", parent_type: "r"},
-                {id: "r3", parent_type: "r"}
-              ]);
-              this.filters.render();
-              this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
-
-              this.filters.$(".primary input.half:checked").length.should.equal(1);
-              this.filters.$(".primary .filter.special input:checked").length.should.equal(2);
-
-              this.filters.secondaryFilters._checkSecondary(
-                new Backbone.Model({id: ".ns"}),
-                {
-                  currentTarget: $($(this.filters.$(".secondary label")[1]).children()[0])
                 }
               );
               this.filters.$(".primary input.half:checked").length.should.equal(0);
