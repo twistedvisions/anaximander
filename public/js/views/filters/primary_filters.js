@@ -13,12 +13,12 @@ define([
     specialFilters: new Backbone.Collection([
       {
         id: "et",
-        name: "event type",
+        name: "are of type&hellip;",
         special: true
       },
       {
         id: "r",
-        name: "participant role",
+        name: "have participants as&hellip;",
         special: true
       }
     ]),
@@ -52,10 +52,10 @@ define([
       var id = thingType.get("id");
       json.isHalfSet = this.model.isPrimaryFilterStateUsed(id);
       json.not_specified = false;
-      json.special = thingType.get("special") || false;
+      json.special = !!thingType.get("special") || false;
 
       var el = $(this.filterTemplate(json));
-      this.primaryOptions.append(el);
+      this.$(".options." + (json.special ? "special" : "type")).append(el);
 
       el.hover(_.bind(this.updateHighlightedPrimary, this, thingType));
       el.find("input[type=checkbox]").on("change",

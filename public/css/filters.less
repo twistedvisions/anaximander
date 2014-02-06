@@ -18,22 +18,27 @@
     padding-left: 10px;
   }
 
+  .options .checkbox {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
   .primary {
-    width: 180px;
+    width: 215px;
     border-right: 1px solid #aaa;
     height: 100%;
     padding-top: 10px;
     box-sizing: border-box;
     float: left;
+    overflow: auto;
 
     .options {
       margin-top: 5px;
-      height: 167px;
-      overflow: auto;
     }
 
     .options .checkbox {
       display: inline-block;
+      max-width: 160px;
     }
 
     .filter:hover .see-more,
@@ -45,6 +50,14 @@
       margin-top: 0;
       bottom: -2px;
       position: relative;
+    }
+
+    .heading {
+      font-style: italic;
+    }
+
+    .type-heading {
+      margin-top: 5px;
     }
   }
 
@@ -59,7 +72,7 @@
 
   .secondary {
 
-    margin-left: 180px;
+    margin-left: 215px;
 
     #secondary-filter-holder {
       z-index: 1;
@@ -85,7 +98,7 @@
       height: 100%;
       overflow-y: scroll;
       padding-top: 30px;
-      top: 0;
+      top: 5px;
       position: absolute;
     }
 
