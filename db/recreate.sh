@@ -11,4 +11,5 @@ time redis-cli FLUSHALL && time ./db/create.sh &&
   time node lib/parser/parser.js --start 20 --finish 40 -e -f /home/pretzel/Downloads/dbpedia_data/3.9/persondata_en.nq &&
   time node lib/parser/parser.js --start 40 --finish 60 -e -f /home/pretzel/Downloads/dbpedia_data/3.9/persondata_en.nq &&
   time node lib/parser/parser.js --start 60 --finish 80 -e -f /home/pretzel/Downloads/dbpedia_data/3.9/persondata_en.nq &&
-  time node lib/parser/parser.js --start 80 --finish 100 -e -f /home/pretzel/Downloads/dbpedia_data/3.9/persondata_en.nq
+  time node lib/parser/parser.js --start 80 --finish 100 -e -f /home/pretzel/Downloads/dbpedia_data/3.9/persondata_en.nq &&
+  date
