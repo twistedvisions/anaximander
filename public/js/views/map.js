@@ -306,10 +306,14 @@ define([
         //Without it some weird thing happens where the scroll
         //height takes into account the width with the scrollbars
         //so it shows them unnecessarily
+
         $(".gm-style-iw").addClass("fix-height");
         //This is an ugly hack to make the InfoWindow allow
         //us to chose the width of the box without it taking it into account
         setTimeout(_.bind(function () {
+          var width = $(".gm-style-iw").parent().width() - 23;
+          this.$(".event-entry").css("width", (width - 11) + "px !important");
+          $(".gm-style-iw").width(width);
           $(".gm-style-iw").addClass("fix-height2");
           this.highlightEntry();
         }, this), 10);
