@@ -21,14 +21,15 @@
     "passport-facebook": "1.x",
     "passport-google": "0.3.x",
     "passport-twitter": "1.*",
-    "passport-local": "0.1.x",  
+    "passport-local": "0.1.x",
     "passport-github": "0.1.x",
     "db-migrate": "0.6.x",
     "bcrypt": "0.7.x",
     "connect-flash": "0.1.x",
     "node-uuid": "1.x",
     "socket.io": "0.9.x",
-    "async": "0.2.x"
+    "async": "0.2.x",
+    "execSync": "1.0.1-pre"
   },
   "devDependencies": {
     "mocha": "1.x",
