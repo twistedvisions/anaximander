@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "mocha": "1.x",
-    "sinon": "1.x",
+    "sinon": "1.7.x",
     "should": "1.x",
     "karma": "0.10.x",
     "karma-mocha": "0.1.x",
