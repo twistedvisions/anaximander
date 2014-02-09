@@ -803,15 +803,21 @@ define(
         });
         it("should track when someone submits a search by hitting enter", function () {
           sinon.stub(this.searchBox, "doSearch");
+          this.searchBox.render();
+          this.searchBox.$("#search").val("some search");
           this.searchBox.handleSearchSubmit({type: "submit", preventDefault: sinon.stub()});
           Analytics.searchSubmitted.calledOnce.should.equal(true);
           Analytics.searchSubmitted.args[0][0].submission_type.should.equal("keyboard");
+          Analytics.searchSubmitted.args[0][0].text.should.equal("some search");
         });
         it("should track when someone submits a search by hitting the search button", function () {
           sinon.stub(this.searchBox, "doSearch");
+          this.searchBox.render();
+          this.searchBox.$("#search").val("some search");
           this.searchBox.handleSearchSubmit({type: "click", preventDefault: sinon.stub()});
           Analytics.searchSubmitted.calledOnce.should.equal(true);
           Analytics.searchSubmitted.args[0][0].submission_type.should.equal("mouse");
+          Analytics.searchSubmitted.args[0][0].text.should.equal("some search");
         });
         it("should track when a user clicks on a search link", function () {
           sinon.spy(this.searchBox, "preventEventPropagation");

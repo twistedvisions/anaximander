@@ -122,7 +122,8 @@ define([
       e.preventDefault();
       this.search();
       Analytics.searchSubmitted({
-        submission_type: e.type === "submit" ? "keyboard" : "mouse"
+        submission_type: e.type === "submit" ? "keyboard" : "mouse",
+        text: this.$("#search").val()
       });
     },
 
