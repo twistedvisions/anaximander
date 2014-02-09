@@ -1,1 +1,2 @@
-select id, name from role;
+select id, name
+from role;

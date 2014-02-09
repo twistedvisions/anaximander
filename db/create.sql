@@ -6,6 +6,13 @@ CREATE TABLE thing_type
   CONSTRAINT thing_type_pkey PRIMARY KEY (id)
 );
 
+CREATE TABLE event_type
+(
+  id SERIAL,
+  name character varying(200) NOT NULL,
+  CONSTRAINT event_type_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE thing
 (
   id SERIAL,
@@ -38,6 +45,7 @@ CREATE TABLE event
   start_date timestamp,
   end_date timestamp,
   link character varying(200),
+  type_id bigint REFERENCES event_type(id),
   CONSTRAINT event_pkey PRIMARY KEY (id)
 );
 
@@ -84,10 +92,21 @@ CREATE INDEX place_idx
 CREATE EXTENSION pg_trgm;
 CREATE INDEX thing_name_gin ON thing USING gin (name gin_trgm_ops);
 
-INSERT INTO thing_type (name) VALUES ('Person');
-INSERT INTO thing_type (name) VALUES ('Organisation');
-INSERT INTO thing_type (name) VALUES ('Place');
-INSERT INTO thing_type (name) VALUES ('Construction');
+INSERT INTO thing_type (name) VALUES ('person');
+INSERT INTO thing_type (name) VALUES ('organisation');
+INSERT INTO thing_type (name) VALUES ('place');
+INSERT INTO thing_type (name) VALUES ('construction');
 
 INSERT INTO role (name) VALUES ('subject');
 INSERT INTO role (name) VALUES ('attendee');
+
+INSERT INTO event_type (name) VALUES ('battle');
+INSERT INTO event_type (name) VALUES ('birth');
+INSERT INTO event_type (name) VALUES ('construction closing');
+INSERT INTO event_type (name) VALUES ('construction commencement');
+INSERT INTO event_type (name) VALUES ('construction opening');
+INSERT INTO event_type (name) VALUES ('death');
+INSERT INTO event_type (name) VALUES ('organisation extinction');
+INSERT INTO event_type (name) VALUES ('organisation foundation');
+INSERT INTO event_type (name) VALUES ('place dissolution');
+INSERT INTO event_type (name) VALUES ('place foundation');

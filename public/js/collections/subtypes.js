@@ -1,42 +1,45 @@
 define([
   "underscore",
   "backbone",
+  "when",
   "models/type"
-], function (_, Backbone, Type) {
+], function (_, Backbone, when, Type) {
 
   var types = Backbone.Collection.extend({
 
     model: Type,
 
     url: function () {
-      return "type/" + this.parentType.get("id") + "/type";
+      return "type/" + this.parentTypeId + "/type";
     },
 
     initialize: function () {
       this.byParentType = {};
     },
 
-    setParentType: function (parentType) {
-      this.parentType = parentType;
-    },
-
-    getParentType: function () {
-      return this.parentType;
-    },
-
     updateData: function (opts) {
-      var success = opts.success;
-      var parentType = this.parentType.get("id");
-      if (this.byParentType[parentType]) {
-        this.reset(this.byParentType[parentType]);
-        success();
+      var d = when.defer();
+
+      this.parentTypeId = opts.id;
+      if (this.byParentType[this.parentTypeId]) {
+        this.reset(this.byParentType[this.parentTypeId]);
+        d.resolve();
       } else {
         opts.success = _.bind(function () {
-          this.byParentType[parentType] = this.toJSON();
-          success();
+          this.byParentType[this.parentTypeId] = this.toJSON();
+          d.resolve();
         }, this);
-        return this.fetch(opts);
+        this.fetch(opts);
       }
+      return d.promise;
+    },
+
+    parse: function (results) {
+      results = _.map(results, function (x) {
+        x.name = _.string.capitalize(x.name);
+        return x;
+      });
+      return results;
     }
 
   });

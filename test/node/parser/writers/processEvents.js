@@ -118,7 +118,7 @@ describe("processing events", function () {
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
           "Person1", personJob,
-          "born", ["<http://dbpedia.org/ontology/birthPlace>"],
+          "born", "birth", ["<http://dbpedia.org/ontology/birthPlace>"],
           ["<http://dbpedia.org/ontology/birthDate>",
            "<http://dbpedia.org/ontology/birthYear>"]).should.equal(true);
       },
@@ -132,7 +132,7 @@ describe("processing events", function () {
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
           "Person1", personJob,
-          "died", ["<http://dbpedia.org/ontology/deathPlace>"],
+          "died", "death", ["<http://dbpedia.org/ontology/deathPlace>"],
           ["<http://dbpedia.org/ontology/deathDate>",
            "<http://dbpedia.org/ontology/deathYear>"]).should.equal(true);
       },
@@ -145,7 +145,7 @@ describe("processing events", function () {
       tryTest(function () {
         addEvent.addEventWithPlace.calledWith(
           "Place1", placeJob,
-          "founded as a place", null,
+          "founded as a place", "place foundation", null,
           ["<http://dbpedia.org/ontology/foundingDate>",
            "<http://dbpedia.org/ontology/foundingYear>"]).should.equal(true);
       },
@@ -159,6 +159,7 @@ describe("processing events", function () {
         addEvent.addEventWithPlace.calledWith(
           "Organisation1", organisationJob,
           "founded as an organisation",
+          "organisation foundation",
           [
             "<http://dbpedia.org/ontology/locationCity>",
             "<http://dbpedia.org/ontology/locationCountry>",
@@ -180,6 +181,7 @@ describe("processing events", function () {
         addEvent.addEventWithPlace.calledWith(
           "Organisation1", organisationJob,
           "went extinct as an organisation",
+          "organisation extinction",
           [
             "<http://dbpedia.org/ontology/locationCity>",
             "<http://dbpedia.org/ontology/locationCountry>",

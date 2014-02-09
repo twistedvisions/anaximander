@@ -3,13 +3,12 @@ define([
   "underscore",
   "backbone",
   "select2",
-  "views/filters",
   "views/login",
   "utils/filter_url_serialiser",
   "analytics",
   "text!templates/summary_bar.htm",
   "css!/css/summary_bar"
-], function ($, _, Backbone, Select2, Filters, Login, FilterUrlSerialiser,
+], function ($, _, Backbone, Select2, Login, FilterUrlSerialiser,
     analytics, template) {
 
   var SummaryBar = Backbone.View.extend({
@@ -98,10 +97,6 @@ define([
     render: function () {
       this.$el.html(template);
       setTimeout(_.bind(this.showSelector, this), 100);
-      this.filters = new Filters({
-        model: this.model,
-        eventLocationsCollection: this.eventLocationsCollection
-      });
 
       if (this.user.hasPermission("login")) {
         this.login = new Login({
@@ -128,7 +123,7 @@ define([
       analytics.showFilters();
       $("body").toggleClass("filters-visible");
       $(window).trigger("resize");
-      this.model.trigger("force-change");
+      this.model.trigger("force-change filter-view-change");
     },
 
     showSelector: function () {

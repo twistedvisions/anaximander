@@ -1,5 +1,6 @@
 drop table event cascade;
 drop table event_participant cascade;
+drop table event_type cascade;
 drop table migrations cascade;
 drop table permission cascade;
 drop table place cascade;

@@ -46,9 +46,11 @@ define([
           lon: position[1],
           start: this.getStartOfYear(timeRange[0]),
           end: this.getEndOfYear(timeRange[1]),
-          typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState)),
-          subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState)),
-          notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState))
+          roleFilters: _.pluck(FilterUrlSerialiser.getRoleFilterKeys(filterState), "id"),
+          eventTypeFilters: _.pluck(FilterUrlSerialiser.getEventTypeFilterKeys(filterState), "id"),
+          typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState, true)),
+          subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState, true)),
+          notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState, true))
         };
 
 
