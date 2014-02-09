@@ -37,6 +37,13 @@ define([
         this.updatePrimaryFilters();
       }, this);
 
+      this.model.on("filter-view-change", function () {
+        this.selectedId = null;
+        if (this.$(":visible").length) {
+          this.updatePrimaryFilters();
+        }
+      }, this);
+
       return this.$el;
     },
 
@@ -53,13 +60,14 @@ define([
       json.isHalfSet = this.model.isPrimaryFilterStateUsed(id);
       json.not_specified = false;
       json.special = !!thingType.get("special") || false;
-
+      json.isSelected = thingType.id === this.selectedId;
       var el = $(this.filterTemplate(json));
       this.$(".options." + (json.special ? "special" : "type")).append(el);
-
       el.hover(_.bind(this.updateHighlightedPrimary, this, thingType));
       el.find("input[type=checkbox]").on("change",
-        _.bind(this.filterClicked, this, json, thingType));
+        _.bind(this.checkboxClicked, this, json, thingType));
+      el.find(".name").on("click", _.bind(this.nameClicked, this, json, thingType));
+      el.on("click", _.bind(this.filterClicked, this, json, thingType));
     },
 
     updateHighlightedPrimary: function (thingType) {
@@ -68,14 +76,37 @@ define([
       this.typesCollection.setHighlighted(thingType);
     },
 
-    filterClicked: function (json, thingType, event) {
+    filterClicked: function (json, thingType/*, event*/) {
+      // analytics.filterPrimaryClicked(json);
+      if (this.selectedId === thingType.id) {
+        this.selectedId = null;
+        this.updatePrimaryFilters();
+        this.typesCollection.setSelected(null, null);
+      } else {
+        this.updateSelectedPrimary(thingType, null);
+      }
+    },
+
+    checkboxClicked: function (json, thingType, event) {
+      this.filterCheckboxClicked(json, thingType, event,
+        $(event.currentTarget));
+    },
+
+    nameClicked: function (json, thingType, event) {
+      var input = $(event.currentTarget).parent().find("input");
+      input.prop("checked", !input.prop("checked"));
+      this.filterCheckboxClicked(json, thingType, event,
+        input);
+    },
+
+    filterCheckboxClicked: function (json, thingType, event, input) {
       analytics.filterEventsByPrimary(json);
-      var input = $(event.currentTarget);
       input.removeClass("half");
       this.updateSelectedPrimary(thingType, input.prop("checked"));
     },
 
     updateSelectedPrimary: function (thingType, isSelected) {
+      this.selectedId = thingType.id;
       this.typesCollection.setSelected(thingType, isSelected);
     }
 

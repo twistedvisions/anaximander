@@ -123,7 +123,7 @@ define([
       analytics.showFilters();
       $("body").toggleClass("filters-visible");
       $(window).trigger("resize");
-      this.model.trigger("force-change");
+      this.model.trigger("force-change filter-view-change");
     },
 
     showSelector: function () {

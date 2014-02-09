@@ -184,6 +184,7 @@ define([
       json.isHalfSet = false;
       json.not_specified = json.not_specified === true || json.not_specified === false;
       json.special = false;
+      json.isSelected = false;
       if (this.idPrefix) {
         json.id = this.getId(json.id);
       }

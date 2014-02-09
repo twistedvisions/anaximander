@@ -1,8 +1,10 @@
 /*global sinon, describe, beforeEach, afterEach, it */
 define(
-  ["jquery", "underscore", "backbone", "when",
-    "collections/subtypes", "models/view_state", "views/filters"],
-  function ($, _, Backbone, when, SubTypes, ViewState, Filters) {
+  ["chai", "jquery", "underscore", "backbone", "when",
+    "collections/types", "collections/subtypes",
+    "models/view_state", "views/filters"],
+  function (chai, $, _, Backbone, when, Types, SubTypes, ViewState, Filters) {
+    var should = chai.should();
     describe("filters", function () {
       beforeEach(function () {
 
@@ -13,7 +15,7 @@ define(
           filterState: new Backbone.Collection()
         });
 
-        this.typesCollection = new Backbone.Collection();
+        this.typesCollection = new Types();
         this.subtypesCollection = new SubTypes();
         this.subtypesCollection.updateData = function (opts) {
           var d = when.defer();
@@ -70,6 +72,56 @@ define(
         afterEach(function () {
           $("#filters-container").remove();
           this.subtypesCollection.fetch.restore();
+        });
+
+        describe("primary selection", function () {
+          it("should show secondary filters when a primary is hovered over", function () {
+            this.filters.render();
+            this.filters.$(".secondary .filter").length.should.equal(0);
+            this.filters.primaryFilters.updateHighlightedPrimary(this.typesCollection.at(0));
+            this.filters.$(".secondary .filter").length.should.be.greaterThan(0);
+          });
+          it("should select a primary when the background is clicked on", function () {
+            this.filters.render();
+            this.filters.$(".primary .filter.selected").length.should.equal(0);
+            this.filters.$(".primary .filter:nth(1)").click();
+            this.filters.$(".primary .filter.selected").length.should.equal(1);
+          });
+          it("should not show secondary filters when a primary is hovered over after a primary is selected", function () {
+            this.filters.render();
+            this.filters.$(".primary .filter:nth(1)").click();
+            this.filters.$(".secondary .filter .name").first().text().trim().should.equal("role 1");
+            this.filters.primaryFilters.updateHighlightedPrimary(this.typesCollection.at(0));
+            this.filters.$(".secondary .filter .name").first().text().trim().should.equal("role 1");
+          });
+          it("should select a primary when the check box is selected", function () {
+            this.filters.render();
+            this.filters.$(".primary .filter.selected").length.should.equal(0);
+            this.filters.$(".primary .filter:nth(1) input").click();
+            this.filters.$(".primary .filter.selected").length.should.equal(1);
+          });
+          it("should select a primary and check the box when the label is selected", function () {
+            this.filters.render();
+            this.filters.$(".primary .filter.selected").length.should.equal(0);
+            this.filters.$(".primary .filter:nth(1) input").prop("checked").should.equal(true);
+            this.filters.$(".primary .filter:nth(1) .name").click();
+            this.filters.$(".primary .filter.selected").length.should.equal(1);
+            this.filters.$(".primary .filter:nth(1) input").prop("checked").should.equal(false);
+          });
+          it("should unselect a primary when it is clicked on", function () {
+            this.filters.render();
+            this.filters.$(".primary .filter:nth(1) input").click();
+            this.filters.$(".primary .filter.selected").length.should.equal(1);
+            this.filters.$(".primary .filter:nth(1)").click();
+            this.filters.$(".primary .filter.selected").length.should.equal(0);
+          });
+          it("should reset the filter when it is hidden", function () {
+            this.filters.render();
+            this.filters.$(".primary .filter:nth(1) input").click();
+            should.exist(this.filters.selectedId);
+            this.filters.model.trigger("filter-view-change");
+            should.not.exist(this.filters.selectedId);
+          });
         });
 
         describe("checkbox states", function () {

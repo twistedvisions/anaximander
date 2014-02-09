@@ -34,11 +34,21 @@
 
     .options {
       margin-top: 5px;
-    }
-
-    .options .checkbox {
-      display: inline-block;
-      max-width: 160px;
+      .filter {
+        &:hover {
+          background-color: #efefff;
+        }
+        &.selected {
+          background-color: #e0e0ff;
+        }
+        .checkbox {
+          display: inline-block;
+          max-width: 160px;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
     }
 
     .filter:hover .see-more,
@@ -63,7 +73,7 @@
 
   .options .see-more {
     float: right;
-    margin-top: 10px;
+    margin-top: 6px;
     margin-right: 10px;
     display: none;
   }

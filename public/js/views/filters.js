@@ -31,24 +31,33 @@ define([
         model: this.model
       });
       this.typesCollection.on("highlightChanged", function (thingType) {
-        this.secondaryFilters.showSecondaryFilters(thingType);
+        if (!this.selectedId) {
+          this.secondaryFilters.showSecondaryFilters(thingType);
+        }
       }, this);
       this.typesCollection.on("selectionChanged", function (thingType, isSelected) {
-        this.primaryFilterSelectionChanged(thingType, isSelected);
+        this.selectedId = thingType ? thingType.id : null;
+        if (thingType) {
+          this.secondaryFilters.showSecondaryFilters(thingType);
+          this.primaryFilterSelectionChanged(thingType, isSelected);
+        }
       }, this);
       this.model.on("change:filterState", function () {
         if (this.lastPrimarySelected) {
           this.showSecondaryFilters(this.lastPrimarySelected);
         }
       }, this);
+      this.model.on("filter-view-change", function () {
+        this.selectedId = null;
+      }, this);
     },
 
     primaryFilterSelectionChanged: function (filter, isChecked) {
       var id = filter.get("id");
       //can do this silently because secondary will trigger
-      if (isChecked) {
+      if (isChecked === true) {
         this.model.removeFilterStateKey(id, null, true);
-      } else {
+      } else if (isChecked === false) {
         this.model.addFilterStateKey(id, null, true);
       }
       if (_.isString(filter.id)) {
@@ -67,6 +76,10 @@ define([
       this.secondaryFilters.render().appendTo(this.$(".secondary"));
 
       return this.$el;
+    },
+
+    hide: function () {
+      this.selectedId = null;
     }
   });
 

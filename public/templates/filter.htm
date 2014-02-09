@@ -1,4 +1,6 @@
-<div class="filter <%= special ? "special" : "type" %> data-id="<%= id %>">
+<div
+    class="filter <%= special ? "special" : "type" %> <%= (isSelected ? "selected" : "") %>"
+    data-id="<%= id %>">
   <div class="checkbox">
     <label>
       <input
