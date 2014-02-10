@@ -1,5 +1,6 @@
 /*global describe, it */
 var getEvents = require("../../../lib/rest/getEvents");
+var should = require("should");
 
 describe("getEvents", function () {
   describe("filters", function () {
@@ -372,6 +373,76 @@ describe("getEvents", function () {
         notSpecifiedTypeFilters: []
       });
       query.should.equal("and ((event.type_id not in (1, 2)))");
+    });
+
+    describe("invalid data", function () {
+      it("should fail with bad eventTypes", function () {
+        var e;
+        try {
+          getEvents.generateEventFilters({
+            eventTypeFilters: [1, 2, "3 -- bobby tables"],
+            typeFilters: [],
+            subtypeFilters: [],
+            notSpecifiedTypeFilters: []
+          });
+        } catch (_e) {
+          e = _e;
+        }
+        should.exist(e);
+      });
+      it("should fail with bad roles", function () {
+        var e;
+        try {
+          getEvents.generateEventFilters({
+            roleFilters: [1, 2, "3 -- bobby tables"],
+            typeFilters: [],
+            subtypeFilters: [],
+            notSpecifiedTypeFilters: []
+          });
+        } catch (_e) {
+          e = _e;
+        }
+        should.exist(e);
+      });
+      it("should fail with bad types", function () {
+        var e;
+        try {
+          getEvents.generateEventFilters({
+            typeFilters: [{id: 2}, {id: "3 -- bobby tables"}],
+            subtypeFilters: [],
+            notSpecifiedTypeFilters: []
+          });
+        } catch (_e) {
+          e = _e;
+        }
+        should.exist(e);
+      });
+      it("should fail with bad subtypes", function () {
+        var e;
+        try {
+          getEvents.generateEventFilters({
+            typeFilters: [{id: 2}],
+            subtypeFilters: [{id: 4, parent_type: 2}, {id: "4 -- bobby tables", parent_type: 2}],
+            notSpecifiedTypeFilters: []
+          });
+        } catch (_e) {
+          e = _e;
+        }
+        should.exist(e);
+      });
+      it("should fail with bad not-specified types", function () {
+        var e;
+        try {
+          getEvents.generateEventFilters({
+            typeFilters: [{id: 2}],
+            subtypeFilters: [{id: 4, parent_type: 2}],
+            notSpecifiedTypeFilters: [{id: 1}, {id: "2 -- bobby tables"}]
+          });
+        } catch (_e) {
+          e = _e;
+        }
+        should.exist(e);
+      });
     });
 
   });
