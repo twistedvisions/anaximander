@@ -359,8 +359,7 @@ define([
       var data = {};
       data.lat = results.location[0];
       data.lon = results.location[1];
-      data.distance = results.events[0].distance;
-      data.thingTypes = _.unique(_.pluck(results.events, "thing_type"));
+      data.placeName = results.events[0].place_thing_name;
       data.eventNames = _.unique(_.pluck(results.events, "event_name"));
       var getDate = function (x) {
         return new Date(x).getTime();

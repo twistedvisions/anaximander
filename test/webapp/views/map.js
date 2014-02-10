@@ -34,6 +34,7 @@ define(
           event_link: "somelink",
           event_name: "some event",
           thing_name: "some thing",
+          place_thing_name: "some place",
           start_date: "2014-01-01T01:00:00.000Z",
           end_date: "2014-01-01T23:00:00.000Z",
           participants: [{
@@ -801,27 +802,22 @@ define(
           var data = this.map.getInfoBoxData({
             location: [1, 2],
             events: [{
-              distance: 3,
               start_date: "1900-01-01T00:00:00.000Z",
               end_date: "1900-01-01T23:59:00.000Z",
-              thing_type: "a",
-              event_name: "x"
+              event_name: "x",
+              place_thing_name: "some place"
             }, {
-              distance: 3,
               start_date: "1950-01-01T00:00:00.000Z",
               end_date: "1950-01-01T23:59:00.000Z",
-              thing_type: "a",
-              event_name: "y"
+              event_name: "y",
+              place_thing_name: "some place"
             }, {
-              distance: 3,
               start_date: "1990-01-01T00:00:00.000Z",
               end_date: "1990-01-01T23:59:00.000Z",
-              thing_type: "b",
-              event_name: "z"
+              event_name: "z",
+              place_thing_name: "some place"
             }]
           });
-          data.distance.should.equal(3);
-          data.thingTypes.should.eql(["a", "b"]);
           data.eventNames.should.eql(["x", "y", "z"]);
           data.startDate.should.equal("1900-01-01T00:00:00.000Z");
           data.endDate.should.equal("1990-01-01T23:59:00.000Z");
@@ -840,7 +836,8 @@ define(
             event_link: "http://something.com/blah",
             start_date: "2013-03-02",
             end_date: "2013-04-03",
-            location: [[20, -53]]
+            location: [[20, -53]],
+            place_thing_name: "some place"
           };
         });
         describe("single participants", function () {
