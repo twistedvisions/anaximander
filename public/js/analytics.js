@@ -54,6 +54,8 @@ define(["underscore"], function (_) {
 
     //filters
     "showFilters",
+    "selectPrimary",
+    "unselectPrimary",
     "filterEventsByPrimary",
     "filterEventsBySecondary",
     "filterSecondaryFilters",

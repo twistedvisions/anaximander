@@ -36,10 +36,17 @@ define([
         }
       }, this);
       this.typesCollection.on("selectionChanged", function (thingType, isSelected) {
+        var oldSelection = this.selectedId;
         this.selectedId = thingType ? thingType.id : null;
         if (thingType) {
           this.secondaryFilters.showSecondaryFilters(thingType);
           this.primaryFilterSelectionChanged(thingType, isSelected);
+
+          if (oldSelection !== this.selectedId) {
+            analytics.selectPrimary(thingType.toJSON());
+          }
+        } else {
+          analytics.unselectPrimary({id: oldSelection});
         }
       }, this);
       this.model.on("change:filterState", function () {

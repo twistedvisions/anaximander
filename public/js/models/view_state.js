@@ -26,7 +26,10 @@ define([
         return this.get("filterState").get(id);
       },
       removeFilterStateKey: function (id, silent) {
-        this.get("filterState").remove(id, {silent: !!silent});
+        var filterStates = this.get("filterState");
+        var originalLength = filterStates.length;
+        filterStates.remove(id, {silent: !!silent});
+        return originalLength !== filterStates.length;
       },
       addFilterStateKey: function (id, parentType, silent) {
         var model = {
