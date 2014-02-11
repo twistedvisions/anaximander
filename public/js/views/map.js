@@ -284,7 +284,6 @@ define([
     },
 
     mouseOverMarker: function (marker, infoBoxData) {
-      analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
       this.closeOpenWindows();
       var info = new google.maps.InfoWindow({
         content: this.getContent(infoBoxData)
@@ -293,6 +292,21 @@ define([
       info.result = infoBoxData;
       this.lastInfoWindow = info;
       setTimeout(_.bind(this.afterMouseOverMarker, this), 10);
+      this.infoBoxAnalyticsTimeout = setTimeout(_.bind(function () {
+        analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
+      }, this), 1000);
+    },
+
+    closeOpenWindows: function () {
+      if (this.infoBoxAnalyticsTimeout) {
+        clearTimeout(this.infoBoxAnalyticsTimeout);
+      }
+      if (this.lastInfoWindow) {
+        this.lastInfoWindow.close();
+      }
+      if (this.lastOptionsMenu) {
+        this.lastOptionsMenu.close();
+      }
     },
 
     afterMouseOverMarker: function () {
@@ -451,15 +465,6 @@ define([
         fillOpacity: 0.5,
         map: this.map
       });
-    },
-
-    closeOpenWindows: function () {
-      if (this.lastInfoWindow) {
-        this.lastInfoWindow.close();
-      }
-      if (this.lastOptionsMenu) {
-        this.lastOptionsMenu.close();
-      }
     }
   });
   return MapView;

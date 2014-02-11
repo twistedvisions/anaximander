@@ -204,6 +204,8 @@ define(
           });
 
           it("should track when a marker is hovered over", function () {
+            this.clock = sinon.useFakeTimers();
+
             this.map.render();
             this.map.drawPoint({
               events: [this.sampleEvent],
@@ -211,6 +213,7 @@ define(
             });
 
             google.maps.event.triggers[3]();
+            this.clock.tick(1000);
 
             Analytics.infoBoxShown.calledOnce.should.equal(true);
           });
