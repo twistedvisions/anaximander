@@ -2,6 +2,8 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "range-slider",
+  "css!/css/rangeslider",
   "css!/css/date_slider"
 ], function ($, _, Backbone) {
 
@@ -9,35 +11,64 @@ define([
     el: "#slider-range",
 
     initialize: function () {
-
     },
 
     render: function () {
-      this.slider = this.$el.slider({
-        range: true,
-        min: -2000,
-        max: 2013,
-        values: this.model.get("date"),
-        slide: _.bind(this.sliderChanged, this)
+      this.$el.html("<div class='slider'></div>");
+      var date = this.model.get("date");
+      this.$(".slider").rangeSlider({ //dateRangeSlider({
+        bounds: {
+          min: -2000, //new Date(-2000, 0, 1),
+          max: new Date().getFullYear() //new Date(),
+        },
+        defaultValues: {
+          min: date[0],
+          max: date[1]
+        },
+        type: "double",
+        valueLabels: "hide",
+        arrows: false
       });
+      this.$(".slider").on("valuesChanging", _.bind(this.sliderChanged, this));
 
       this.model.on("change:date", this.update, this);
+      // this.showDate();
     },
 
-    sliderChanged: function (/*event, ui*/) {
+    sliderChanged: function (event, data) {
       window.lastEvent = "slider";
-      this.model.set("date", this.getTimeRange());
+      var timeRange = this.getTimeRange(data);
+      this.model.set("date", timeRange);
+      // this.showDate();
     },
 
-    getTimeRange: function () {
-      return [$("#slider-range").slider("values", 0),
-              $("#slider-range").slider("values", 1)];
+    showDate: function () {
+      var timeRange = this.model.get("date");
+      this.$(".ui-rangeSlider-leftHandle").text(this.toText(timeRange[0], timeRange[1]));
+      this.$(".ui-rangeSlider-rightHandle").text(this.toText(timeRange[1], timeRange[0]));
+    },
+
+    getTimeRange: function (data) {
+      return [Math.round(data.values.min), Math.round(data.values.max)];
     },
 
     update: function () {
-      this.slider.slider({
-        values: this.model.get("date")
-      });
+      var date = this.model.get("date");
+      var currentPos = this.$(".slider").rangeSlider("values");
+
+      if (Math.round(currentPos.min) !== date[0] ||
+          Math.round(currentPos.max, 10) !== date[1]) {
+        this.$(".slider").rangeSlider("values", date[0], date[1]);
+      }
+    },
+
+    toText: function (year, otherYear) {
+      if (year < 0) {
+        return (-year) + "BCE";
+      } else if (otherYear && otherYear < 0) {
+        return year + "CE";
+      }
+      return year;
     }
   });
 

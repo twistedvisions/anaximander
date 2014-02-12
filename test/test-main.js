@@ -35,6 +35,9 @@ require.config({
     "underscore_string": {
       deps: ["underscore"],
       exports: "underscore_string"
+    },
+    "range-slider": {
+      deps: ["jquery", "jqueryui"]
     }
   },
   map: {
@@ -63,6 +66,7 @@ require.config({
     when: "./libs/when",
     sha256: "./libs/sha256",
     cookies: "./libs/cookies",
+    "range-slider": "libs/jQAllRangeSliders-min",
     socketio: "../../node_modules/socket.io-client/dist/socket.io.min"
   },
 

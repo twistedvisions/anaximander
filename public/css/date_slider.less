@@ -1,19 +1,30 @@
 #slider-range {
   top: 0;
   margin-left: 250px;
-  margin-right: 2px;
-  height: 16px;
+  height: 32px;
 
-  .ui-slider-handle {
-    margin-top: 3px;
-    width: 5px;
-    margin-left: -2px;
-    background: none;
-    background-color: #ff0000;
-  }
+  .slider {
 
-  .ui-slider-handle:last-of-type {
-    background: none;
-    background-color: #0000ff;
+    &.ui-rangeSlider {
+      .ui-rangeSlider-bar {
+        height: 32px;
+      }
+      .ui-rangeSlider-innerBar {
+        height: 32px;
+        margin: 0;
+      }
+      .ui-rangeSlider-handle {
+        height: 32px;
+        width: 6px;
+        padding-top: 6px;
+        text-align: center;
+        &.ui-rangeSlider-leftHandle {
+          background-color: #ff0000;
+        }
+        &.ui-rangeSlider-rightHandle {
+          background-color: #0000ff;
+        }
+      }
+    }
   }
 }
