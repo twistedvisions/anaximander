@@ -1,7 +1,9 @@
 /*global exports*/
-// var dbm = require("db-migrate");
+/*jslint multistr: true */
+
 require("db-migrate");
 var async = require("async");
+// var dbm = require("db-migrate");
 // var type = dbm.dataType;
 
 exports.up = function (db, callback) {
@@ -32,7 +34,13 @@ exports.up = function (db, callback) {
     }),
 
     db.insert.bind(db, "permission", ["name"], ["login"]),
-    db.insert.bind(db, "permission", ["name"], ["add-event"])
+    db.insert.bind(db, "permission", ["name"], ["add-event"]),
+    db.all.bind(db, "ALTER TABLE user_permission \
+      ADD CONSTRAINT user_fkey FOREIGN KEY (user_id) \
+      REFERENCES registered_user (id) MATCH FULL;"),
+    db.all.bind(db, "ALTER TABLE user_permission \
+      ADD CONSTRAINT permission_fkey FOREIGN KEY (permission_id) \
+      REFERENCES permission (id) MATCH FULL;")
 
   ], callback);
 };
@@ -41,6 +49,8 @@ exports.down = function (db, callback) {
   async.series([
     db.dropTable.bind(db, "user_permission", callback),
     db.dropTable.bind(db, "permission", callback),
-    db.dropTable.bind(db, "registered_user", callback)
+    db.dropTable.bind(db, "registered_user", callback),
+    db.all.bind(db, "ALTER TABLE user_permission DROP CONSTRAINT user_fkey;"),
+    db.all.bind(db, "ALTER TABLE user_permission DROP CONSTRAINT permission_fkey;")
   ], callback);
 };
