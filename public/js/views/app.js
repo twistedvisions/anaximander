@@ -25,25 +25,33 @@ define([
       this.rolesCollection = new RolesCollection();
       this.eventTypesCollection = new EventTypesCollection();
 
-      this.rolesCollection.fetch();
-      this.eventTypesCollection.fetch();
-
       this.user = options.user;
+    },
+
+    fetchData: function (dataLoaded) {
+      var count = 0;
+      var collectionRetrieved = {
+        success: function () {
+          count += 1;
+          if (count === 3) {
+            dataLoaded.resolve(true);
+          }
+        },
+        error: function () {
+          dataLoaded.reject();
+        }
+      };
+      this.rolesCollection.fetch(collectionRetrieved);
+      this.eventTypesCollection.fetch(collectionRetrieved);
+      this.typesCollection.fetch(collectionRetrieved);
     },
 
     render: function () {
       $(this.el).html(layoutTemplate);
 
-      var typesLoaded = when.defer();
+      var dataLoaded = when.defer();
       var filtersLoaded = when.defer();
-      this.typesCollection.fetch({
-        success: function () {
-          typesLoaded.resolve(true);
-        },
-        error: function () {
-          typesLoaded.reject();
-        }
-      });
+      this.fetchData(dataLoaded);
 
       require(["views/map"], _.bind(function (MapView) {
         this.mapView = new MapView({
@@ -88,7 +96,7 @@ define([
         });
         filtersLoaded.resolve(true);
       }, this));
-      when.all([typesLoaded.promise, filtersLoaded.promise])
+      when.all([dataLoaded.promise, filtersLoaded.promise])
           .then(_.bind(this.renderFilters, this));
     },
     renderFilters: function () {
