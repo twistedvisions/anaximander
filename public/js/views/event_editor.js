@@ -5,6 +5,7 @@ define([
   "models/event",
   "collections/events",
   "collections/roles",
+  "collections/event_types",
   "analytics",
   "text!templates/event_editor.htm",
   "text!templates/participant_editor.htm",
@@ -13,7 +14,8 @@ define([
   "parsley",
   "css!/css/event_editor",
   "css!/css/select2-bootstrap"
-], function ($, _, Backbone, Event, EventsCollection, RolesCollection,
+], function ($, _, Backbone, Event, EventsCollection,
+    roles, eventTypes,
     analytics, template, participantEditorTemplate) {
 
   var EventEditor = Backbone.View.extend({
@@ -24,12 +26,8 @@ define([
       this.participants = new Backbone.Collection();
       this.eventsCollection = new EventsCollection();
       this.participantEditorTemplate = _.template(participantEditorTemplate);
-      this.initializeRoles();
-    },
-
-    initializeRoles: function () {
-      this.roles = new RolesCollection();
-      this.roles.fetch();
+      this.roles = roles.instance;
+      this.eventTypes = eventTypes.instance;
     },
 
     render: function () {
@@ -38,17 +36,36 @@ define([
 
       this.setValues();
 
-      this.$el.find(".modal").modal();
-      this.$el.find(".modal").modal("show");
+      this.$(".modal").modal();
+      this.$(".modal").modal("show");
 
-      this.$el.find("input[data-key=end]").datepicker(this.getDatePickerOpts());
-      this.$el.find("input[data-key=start]").datepicker(this.getDatePickerOpts(true));
-      this.$el.find("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
-      this.$el.find(".save").on("click", _.bind(this.handleSave, this));
+      this.$("input[data-key=end]").datepicker(this.getDatePickerOpts());
+      this.$("input[data-key=start]").datepicker(this.getDatePickerOpts(true));
+      this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
+      this.$(".save").on("click", _.bind(this.handleSave, this));
 
+      this.renderEventTypes();
       this.renderParticipants();
 
       return this.$el;
+    },
+
+    renderEventTypes: function () {
+      this.$("input[data-key=type]").select2({
+        placeholder: "Select or add a event_types",
+        data: this.eventTypes.map(function (eventType) {
+          return {
+            id: eventType.id,
+            text: eventType.get("name")
+          };
+        }),
+        createSearchChoice: function (text) {
+          return {
+            id: -1,
+            text: text
+          };
+        }
+      });
     },
 
     getDatePickerOpts: function (isStart) {
@@ -206,10 +223,11 @@ define([
       if (this.$("form").parsley("validate")) {
         var values = {};
         values.name = this.$el.find("input[data-key=name]").val();
+        values.type = this.getSelectValue("type");
         values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
+        values.place = this.getSelectValue("place");
         values.start = new Date(this.$el.find("input[data-key=start]").val());
         values.end = new Date(this.$el.find("input[data-key=end]").val());
-        values.place = this.getPlaceValue();
         values.participants = this.participants.toJSON();
 
         var model = new Event(values);
@@ -229,11 +247,11 @@ define([
       return link;
     },
 
-    getPlaceValue: function () {
-      var place = this.$el.find("input[data-key=place]").select2("data");
-      place.name = place.text;
-      delete place.text;
-      return place;
+    getSelectValue: function (key) {
+      var value = this.$el.find("input[data-key=" + key + "]").select2("data");
+      value.name = value.text;
+      delete value.text;
+      return value;
     },
 
     handleSaveComplete: function (values) {

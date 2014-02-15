@@ -1,19 +1,20 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["backbone", "views/event_editor", "analytics", "models/event"],
+  ["backbone", "views/event_editor", "collections/roles", "collections/event_types", "analytics", "models/event"],
 
-  function (Backbone, EventEditor, Analytics, Event) {
+  function (Backbone, EventEditor, Roles, EventTypes, Analytics, Event) {
 
     describe("event editor", function () {
       beforeEach(function () {
-        sinon.stub(EventEditor.prototype, "initializeRoles", function () {
-          this.roles = new Backbone.Collection();
-          this.roles.add({id: 1, name: "some role"});
-        });
+        Roles.instance = new Roles();
+        Roles.instance.reset([{id: 1, "name": "role 1"}]);
+        EventTypes.instance = new EventTypes();
+        EventTypes.instance.reset([{id: 1, "name": "event type 1"}]);
       });
       afterEach(function () {
-        EventEditor.prototype.initializeRoles.restore();
+        delete Roles.instance;
+        delete EventTypes.instance;
       });
       describe("getDatePickerOpts", function () {
         it("should set the year range", function () {
@@ -145,9 +146,9 @@ define(
           this.editor = new EventEditor({
             model: new Backbone.Model({date: [1900, 2000]})
           });
-          this.editor.getPlaceValue = function () {
+          this.editor.getSelectValue = function (type) {
             return {
-              name: "some place"
+              name: "some " + type
             };
           };
           this.editor.render();
@@ -157,6 +158,8 @@ define(
           this.editor.$("input[data-key=end]").val("2012-12-05");
           this.editor.$("input[data-key=place]").val("some place name");
           this.editor.$("input[data-key=place]").select2("data", {id: 1, text: "some place"});
+          this.editor.$("input[data-key=type]").val("some type name");
+          this.editor.$("input[data-key=type]").select2("data", {id: 1, text: "some type"});
         });
 
         afterEach(function () {
@@ -178,6 +181,17 @@ define(
           } finally {
             this.editor.model.trigger.restore();
           }
+        });
+
+        it("should not save if no type is added", function () {
+          this.editor.$("input[data-key=type]").val("");
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON().length.should.equal(0);
+        });
+        it("should not save if no place is added", function () {
+          this.editor.$("input[data-key=place]").val("");
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON().length.should.equal(0);
         });
 
         it("should update the highlight if the added participant is already highlighted", function () {

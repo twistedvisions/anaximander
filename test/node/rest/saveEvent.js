@@ -29,59 +29,64 @@ describe("saveEvent", function () {
       it("cannot be called if the user is not logged in");
     });
 
-    describe("ensurePlace", function () {
-      it("should try to find a place if it has an id", function (done) {
-        var self = this;
-        new saveEvent.EventSaver().ensurePlace({id: 3}).then(
-          tryTest(function () {
-            self.args[0][1].should.equal("find_place_by_id");
-          }, done),
-          done
-        );
-        this.d[0].resolve({rows: [{id: 1}]});
-      });
+    [
+      {name: "ensurePlace", type: "place", findQuery: "find_place_by_id", saveQuery: "save_thing"},
+      {name: "ensureEventType", type: "event type", findQuery: "find_event_type_by_id", saveQuery: "save_event_type"}
+    ].forEach(function (test) {
+      describe(test.name, function () {
+        it("should try to find a " + test.type + " if it has an id", function (done) {
+          var self = this;
+          new saveEvent.EventSaver()[test.name]({id: 3}).then(
+            tryTest(function () {
+              self.args[0][1].should.equal(test.findQuery);
+            }, done),
+            done
+          );
+          this.d[0].resolve({rows: [{id: 1}]});
+        });
 
-      it("throw an exception if it can't find a place", function (done) {
-        new saveEvent.EventSaver().ensurePlace({id: 4}).then(
-          function () {
-            done({message: "should not succeed"});
-          },
-          tryTest(function (e) {
-            should.exist(e);
-          }, done)
-        );
-        this.d[0].resolve({rows: []});
-      });
+        it("throw an exception if it can't find a " + test.type + "", function (done) {
+          new saveEvent.EventSaver()[test.name]({id: 4}).then(
+            function () {
+              done({message: "should not succeed"});
+            },
+            tryTest(function (e) {
+              should.exist(e);
+            }, done)
+          );
+          this.d[0].resolve({rows: []});
+        });
 
-      it("should try to create a place if it doesn't exist", function (done) {
-        var self = this;
-        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
-          tryTest(function () {
-            self.args[0][1].should.equal("save_thing");
-          }, done
-        ), done);
-        this.d[0].resolve({rows: [{id: 1}]});
-      });
+        it("should try to create a " + test.type + " if it doesn't exist", function (done) {
+          var self = this;
+          new saveEvent.EventSaver()[test.name]({name: "somewhere"}).then(
+            tryTest(function () {
+              self.args[0][1].should.equal(test.saveQuery);
+            }, done
+          ), done);
+          this.d[0].resolve({rows: [{id: 1}]});
+        });
 
-      it("should return the place id if it was created", function (done) {
-        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
-          tryTest(function (id) {
-            id.should.be.above(0);
-          }, done),
-          done
-        );
-        this.d[0].resolve({rows: [{id: 1}]});
-      });
-      it("should throw an exception if the place cannot be created", function (done) {
-        new saveEvent.EventSaver().ensurePlace({name: "somewhere"}).then(
-          function () {
-            done({message: "should not succeed"});
-          },
-          tryTest(function (e) {
-            should.exist(e);
-          }, done)
-        );
-        this.d[0].resolve({rows: []});
+        it("should return the " + test.type + " id if it was created", function (done) {
+          new saveEvent.EventSaver()[test.name]({name: "somewhere"}).then(
+            tryTest(function (id) {
+              id.should.be.above(0);
+            }, done),
+            done
+          );
+          this.d[0].resolve({rows: [{id: 1}]});
+        });
+        it("should throw an exception if the " + test.type + " cannot be created", function (done) {
+          new saveEvent.EventSaver()[test.name]({name: "somewhere"}).then(
+            function () {
+              done({message: "should not succeed"});
+            },
+            tryTest(function (e) {
+              should.exist(e);
+            }, done)
+          );
+          this.d[0].resolve({rows: []});
+        });
       });
     });
 
@@ -163,6 +168,7 @@ describe("saveEvent", function () {
       it("should create event if all the necessary values exist", function (done) {
         new saveEvent.EventSaver().createEvent({
             name: "something happened",
+            type_id: 2,
             place_id: 1,
             start_date: "2013-06-02",
             end_date: "2013-06-02",
@@ -179,10 +185,11 @@ describe("saveEvent", function () {
         this.d[0].resolve({rows: [{id: 5}]});
       });
 
-      ["name", "place_id", "start_date", "end_date", "link"].forEach(function (key) {
+      ["name", "place_id", "type_id", "start_date", "end_date", "link"].forEach(function (key) {
         it("should throw an exception if " + key + " cannot be found", function (done) {
           var obj = {
             name: "something happened",
+            type_id: 1,
             place_id: 1,
             start_date: "2013-06-02",
             end_date: "2013-06-02",
@@ -202,6 +209,7 @@ describe("saveEvent", function () {
       it("should throw an exception if the end date is before the start date", function (done) {
           new saveEvent.EventSaver().createEvent({
             name: "something happened",
+            type_id: 1,
             place_id: 1,
             start_date: "2013-06-02",
             end_date: "2013-06-01",
@@ -218,7 +226,8 @@ describe("saveEvent", function () {
       it("should throw an exception if it cannot create the event", function (done) {
         new saveEvent.EventSaver().createEvent({
             name: "something happened",
-            place_id: 1,
+            type_id: 1,
+            place_id: 2,
             start_date: "2013-06-02",
             end_date: "2013-06-02",
             link: "http://some.wiki.page/ihope.html"
@@ -270,6 +279,10 @@ describe("saveEvent", function () {
           link: "http://testlink.com",
           start: "2013-03-12T00:00:00.000Z",
           end: "2013-03-12T00:00:00.000Z",
+          type: {
+            id: 1,
+            name: "test type"
+          },
           place: {
             id: 58365,
             name: "Sneem"
@@ -298,7 +311,8 @@ describe("saveEvent", function () {
         [{id: 1}],
         [{id: 2}],
         [{id: 3}],
-        [{id: 4}]
+        [{id: 4}],
+        [{id: 5}]
       ]);
     });
     it("should roll back the transaction if a component section fails", function (done) {
@@ -310,6 +324,10 @@ describe("saveEvent", function () {
           place: {
             id: 58365,
             name: "Sneem"
+          },
+          type: {
+            id: 2,
+            name: "some type"
           },
           attendees: [{
             id: -1
