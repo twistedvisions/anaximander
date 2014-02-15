@@ -24,7 +24,7 @@ describe("ensure", function () {
     it("should throw an exception if a value is not an int", function () {
       var e;
       try {
-        ensure.intArray(1, 2, "3 --little bobby tables", true);
+        ensure.intArray([1, 2, "3 --little bobby tables"]);
       } catch (_e) {
         e = _e;
       }
