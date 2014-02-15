@@ -33,7 +33,7 @@ define([
 
     filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, filters, query, highlight) {
 
-      this.setFromUrl = true;
+      this._setFromUrl = true;
 
       var data = {
         date: [parseInt(start, 10), parseInt(end, 10)],
@@ -99,17 +99,7 @@ define([
       this.model = options.model;
       this.model.on("change", _.bind(this.handleChange, this));
       Backbone.history.start();
-      if (!this.setFromUrl) {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(_.bind(function (position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            this.model.set({
-              "center": [latitude, longitude]
-            });
-          }, this));
-        }
-      }
+      this.initialisedByUrl = !!this._setFromUrl;
     },
 
     handleChange: function () {

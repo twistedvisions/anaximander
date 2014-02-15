@@ -48,7 +48,6 @@ define(
               name: "name 2"
             }
           ]);
-
           sinon.stub(this.subtypesCollection, "fetch", _.bind(function () {
             this.subtypesCollection.reset([
               {

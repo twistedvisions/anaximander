@@ -9,12 +9,17 @@ define([
   "css!/css/anax"
 ], function (_, AppView, Router, ViewState, User, Analytics) {
   var App = function () {
-    this.model = new ViewState({
+    var defaultState = {
       date: [1963, 2014],
       center: [53.24112905344493, 6.191539001464932],
       zoom: 9,
       radius: 10
-    });
+    };
+    this.setGeoLocation(defaultState);
+    var storedData = this.getStoredData();
+    var data = _.extend(defaultState, storedData);
+    this.model = new ViewState(data);
+    defaultState.set = true;
     var permissions = [];
     if (window.location.href.indexOf("login") > -1) {
       permissions = [{id: 1, name: "login"}];
@@ -23,6 +28,40 @@ define([
       id: -1,
       permissions: permissions
     });
+  };
+  App.prototype.setGeoLocation = function (defaultState) {
+    var geolocation = this.getGeolocationObject();
+    if (geolocation) {
+      geolocation.getCurrentPosition(_.bind(function (position) {
+        if (position && position.coords) {
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+          var value = [latitude, longitude];
+          if (!defaultState.set) {
+            defaultState.center = value;
+          } else if (!this.readLocalData && (!this.router || !this.router.initialisedByUrl)) {
+            this.model.set("center", value);
+          }
+        }
+      }, this));
+    }
+  };
+  App.prototype.getGeolocationObject = function () {
+    return navigator.geolocation;
+  };
+  App.prototype.getStoredData = function () {
+    try {
+      var geoData = JSON.parse(this.getLocalStorageState());
+      if (geoData) {
+        this.readLocalData = true;
+      }
+      return geoData;
+    } catch (e) {
+      return {};
+    }
+  };
+  App.prototype.getLocalStorageState = function () {
+    return localStorage.getItem("retred_viewstate");
   };
   App.prototype.start = function () {
     this.user.fetch({

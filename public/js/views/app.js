@@ -23,20 +23,21 @@ define([
       this.typesCollection = new TypeCollection();
       this.subtypesCollection = new SubtypeCollection();
       this.rolesCollection = new RolesCollection();
+      RolesCollection.instance = this.rolesCollection;
       this.eventTypesCollection = new EventTypesCollection();
-
+      EventTypesCollection.instance = this.eventTypesCollection;
       this.user = options.user;
     },
 
     fetchData: function (dataLoaded) {
       var count = 0;
       var collectionRetrieved = {
-        success: function () {
+        success: _.bind(function () {
           count += 1;
           if (count === 3) {
             dataLoaded.resolve(true);
           }
-        },
+        }, this),
         error: function () {
           dataLoaded.reject();
         }

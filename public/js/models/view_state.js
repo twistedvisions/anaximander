@@ -14,6 +14,10 @@ define([
         if (!this.get("highlight")) {
           this.set("highlight", {});
         }
+        this.on("change", this.saveState, this);
+      },
+      saveState: function () {
+        localStorage.setItem("retred_viewstate", JSON.stringify(this.toJSON()));
       },
 
       filterStateExists: function (id) {

@@ -19,7 +19,6 @@ define(
             "logged-in": false
           })
         });
-
         sinon.stub(Analytics, "loginAttempted");
         sinon.stub(Analytics, "loginSucceeded");
         sinon.stub(Analytics, "loginFailed");

@@ -16,6 +16,7 @@ define([
     render: function () {
       this.$el.html("<div class='slider'></div>");
       var date = this.model.get("date");
+
       this.$(".slider").rangeSlider({ //dateRangeSlider({
         bounds: {
           min: -2000, //new Date(-2000, 0, 1),

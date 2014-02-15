@@ -20,7 +20,7 @@ define(
         dateSlider.getTimeRange = sinon.stub();
         dateSlider.update = sinon.stub();
 
-        dateSlider.render();
+        // dateSlider.render();
         dateSlider.sliderChanged();
         window.lastEvent.should.equal("slider");
       });
