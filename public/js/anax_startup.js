@@ -52,7 +52,7 @@ define([
   App.prototype.getStoredData = function () {
     try {
       var geoData = JSON.parse(this.getLocalStorageState());
-      if (geoData) {
+      if (geoData && (_.keys(geoData).length > 0)) {
         this.readLocalData = true;
       }
       return geoData;
