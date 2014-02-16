@@ -85,6 +85,7 @@ define([
     this.router.init({
       model: this.model
     });
+    this.model.trigger("change");
   };
   App.prototype.handleUserFetchFailure = function () {
     console.log("failed to log in");
