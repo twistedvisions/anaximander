@@ -4,6 +4,7 @@ drop table event_type cascade;
 drop table migrations cascade;
 drop table permission cascade;
 drop table place cascade;
+drop table role cascade;
 drop table registered_user cascade;
 drop table spatial_ref_sys cascade;
 drop table thing cascade;
