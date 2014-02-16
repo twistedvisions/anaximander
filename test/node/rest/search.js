@@ -66,7 +66,7 @@ describe("search", function () {
         getResultRow(1)
       ]);
     });
-    //nb - seems to be doing string sort, not numerical sort atm
+
     it("should sort the results by event_count and then name", function () {
       Search.prototype.handleSearchResults.call(this, this.res, [
         {rows: [getRow(1, {event_count: 20})]},
@@ -94,6 +94,16 @@ describe("search", function () {
       ]);
       this.result.should.eql([
         getResultRow(1)
+      ]);
+    });
+    it("should remove duplicates within results of different queries that are out of order", function () {
+      Search.prototype.handleSearchResults.call(this, this.res, [
+        {rows: [getRow(3), getRow(2, {event_count: 5})]},
+        {rows: [getRow(2, {event_count: 100})]}
+      ]);
+      this.result.should.eql([
+        getResultRow(2, {event_count: 100}),
+        getResultRow(3)
       ]);
     });
     it("should return one element in the area if both edges are the same", function () {
