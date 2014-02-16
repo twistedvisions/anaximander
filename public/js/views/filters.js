@@ -74,6 +74,8 @@ define([
           this.secondaryFilters.setSecondaries(id);
         }, this));
       }
+
+      window.lastEvent = "filterChange";
       this.model.trigger("change:filterState");
     },
 

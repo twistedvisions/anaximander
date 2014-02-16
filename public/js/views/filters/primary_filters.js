@@ -33,6 +33,7 @@ define([
       this.primaryOptions = this.$(".options");
       this.updatePrimaryFilters();
 
+      window.lastEvent = "filterChange";
       this.model.on("change:filterState", function () {
         this.updatePrimaryFilters();
       }, this);

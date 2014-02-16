@@ -97,6 +97,7 @@ define([
             this.model.get("filterState").trigger("remove");
           }
         }
+        window.lastEvent = "filterChange";
         this.model.trigger("change:filterState");
       }
     },
@@ -198,6 +199,7 @@ define([
         filter.toJSON()
       ));
       this._updateFilterState(filter, $(event.currentTarget).prop("checked"));
+      window.lastEvent = "filterChange";
       this.model.trigger("change:filterState");
     },
 

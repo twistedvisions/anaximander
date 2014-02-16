@@ -349,6 +349,7 @@ define([
     setModelData: function (modelData) {
       this.model.set(modelData, {silent: true});
       FilterUrlSerialiser.deserialise("", this.model);
+      window.lastEvent = "search";
       this.model.trigger("change change:filterState change:date");
     }
 

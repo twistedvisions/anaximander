@@ -153,6 +153,7 @@ define([
       }, this.data[id].place);
       this.model.set(data, {silent: true});
       FilterUrlSerialiser.deserialise(place.filters || "", this.model);
+      window.lastEvent = "periodSelector";
       this.model.trigger("change change:filterState change:date change:query  ");
     },
 
