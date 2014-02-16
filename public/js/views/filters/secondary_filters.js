@@ -193,7 +193,10 @@ define([
     },
 
     _checkSecondary: function (filter, event) {
-      analytics.filterEventsBySecondary(filter.toJSON());
+      analytics.filterEventsBySecondary(_.extend(
+        {parentTypeId: this.getParentTypeId()},
+        filter.toJSON()
+      ));
       this._updateFilterState(filter, $(event.currentTarget).prop("checked"));
       this.model.trigger("change:filterState");
     },
