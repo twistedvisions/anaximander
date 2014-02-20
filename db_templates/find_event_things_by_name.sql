@@ -16,13 +16,13 @@ from (
     e.id as event_id,
     t.name as thing_name,
     t.link as thing_link,
-    thing_type.name as thing_type_name,
+    type.name as type_name,
     e.start_date as start_date,
     e.end_date as end_date,
     p.location as location
 
   from thing t
-  inner join thing_type on thing_type.id = t.type_id
+  inner join type on type.id = t.type_id
   inner join event_participant ep on ep.thing_id = t.id
   inner join event e on e.id = ep.event_id
   inner join thing pt on pt.id = e.place_id

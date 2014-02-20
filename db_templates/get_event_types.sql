@@ -1,2 +1,3 @@
 select id, name
-from event_type;
+from type
+where type_id = 2;

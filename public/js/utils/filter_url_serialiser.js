@@ -29,9 +29,9 @@ define(["underscore", "underscore_string"], function (_) {
           var filterSubTypes = values[1].split(",");
           _.forEach(filterSubTypes, function (filterSubType) {
             if (filterSubType === "u") {
-              filters.push({id: this.getNonSpecifiedId(prefix, id), parent_type: id});
+              filters.push({id: this.getNonSpecifiedId(prefix, id), parent_type_id: id});
             } else {
-              filters.push({id: this.getSubTypeId(prefix, filterSubType), parent_type: id});
+              filters.push({id: this.getSubTypeId(prefix, filterSubType), parent_type_id: id});
             }
           }, this);
         }
@@ -88,14 +88,14 @@ define(["underscore", "underscore_string"], function (_) {
         filterMap[id].push("u");
       });
       _.forEach(subTypes, function (filter) {
-        filterMap[filter.parent_type] = filterMap[filter.parent_type] || [];
-        filterMap[filter.parent_type].push(filter.id);
+        filterMap[filter.parent_type_id] = filterMap[filter.parent_type_id] || [];
+        filterMap[filter.parent_type_id].push(filter.id);
       });
       return filterMap;
     },
     getTypeFilterKeys: function (filterState, ignoreStringTypes) {
       var typeFilters = filterState.filter(function (filter) {
-        return !filter.get("parent_type") && (!ignoreStringTypes || !_.isString(filter.id));
+        return !filter.get("parent_type_id") && (!ignoreStringTypes || !_.isString(filter.id));
       });
       return _.map(typeFilters, function (filter) {
         return filter.toJSON();
@@ -103,28 +103,28 @@ define(["underscore", "underscore_string"], function (_) {
     },
     getSubtypeFilterKeys: function (filterState, ignoreStringTypes) {
       var typeFilters = filterState.filter(function (filter) {
-        return !!filter.get("parent_type") &&
+        return !!filter.get("parent_type_id") &&
           ((filter.id > 0) ||
            (!ignoreStringTypes &&
-            _.isString(filter.get("parent_type")) &&
+            _.isString(filter.get("parent_type_id")) &&
             !_.string.endsWith(filter.id, ".ns")
            )
           );
       });
       return _.map(typeFilters, function (filter) {
         var json = filter.toJSON();
-        if (_.isString(filter.get("parent_type"))) {
-          json.id = parseInt(json.id.substring(filter.get("parent_type").length), 10);
+        if (_.isString(filter.get("parent_type_id"))) {
+          json.id = parseInt(json.id.substring(filter.get("parent_type_id").length), 10);
         }
         return json;
       });
     },
     getNotSpecifiedTypeFilterKeys: function (filterState, ignoreStringTypes) {
       var typeFilters = filterState.filter(function (filter) {
-        return !!filter.get("parent_type") &&
+        return !!filter.get("parent_type_id") &&
           ((filter.id < 0) ||
            (!ignoreStringTypes &&
-            _.isString(filter.get("parent_type")) &&
+            _.isString(filter.get("parent_type_id")) &&
             _.string.endsWith(filter.id, ".ns")
            )
           );
@@ -141,11 +141,11 @@ define(["underscore", "underscore_string"], function (_) {
     },
     _getStringEventTypeFilterKeys: function (filterState, key) {
       var typeFilters = filterState.filter(function (filter) {
-        return filter.get("parent_type") === key;
+        return filter.get("parent_type_id") === key;
       });
       return _.map(typeFilters, function (filter) {
         var json = filter.toJSON();
-        json.id = parseInt(json.id.substring(filter.get("parent_type").length), 10);
+        json.id = parseInt(json.id.substring(filter.get("parent_type_id").length), 10);
         return json;
       });
     }

@@ -1,75 +1,75 @@
 {
-  "1": {
+  "17": {
     "Academia": "Academic",
     "Academic administration": "Academic",
     "Academician": "Academic",
     "Agricultural economics": "Academic",
     "Anatomy": "Academic",
     "Antiquarian": "Academic",
-    "Archaeology": "Academic", 
+    "Archaeology": "Academic",
     "Aristotle University of Thessaloniki": "Academic",
     "Arizona State University": "Academic",
-    "Art history": "Academic", 
+    "Art history": "Academic",
     "Business economics": "Academic",
     "Campbellsville University": "Academic",
     "Chancellor (education)": "Academic",
-    "College": "Academic", 
-    "Communication": "Academic", 
+    "College": "Academic",
+    "Communication": "Academic",
     "Criminology": "Academic",
-    "Cultural history": "Academic", 
-    "Dean (education)": "Academic", 
-    "Doctor of Philosophy": "Academic", 
-    "Doctor of Sciences": "Academic", 
-    "Dravidian Linguistics": "Academic", 
+    "Cultural history": "Academic",
+    "Dean (education)": "Academic",
+    "Doctor of Philosophy": "Academic",
+    "Doctor of Sciences": "Academic",
+    "Dravidian Linguistics": "Academic",
     "Econmist": "Academic",
     "Economics": "Academic",
     "Economist": "Academic",
     "Egyptology": "Academic",
-    "Emeritus": "Academic", 
+    "Emeritus": "Academic",
     "English studies": "Academic",
-    "Epidemiology": "Academic", 
-    "Ethnography": "Academic", 
-    "Ethnology": "Academic", 
-    "Florida International University": "Academic", 
-    "Goldsmiths, University of London": "Academic", 
+    "Epidemiology": "Academic",
+    "Ethnography": "Academic",
+    "Ethnology": "Academic",
+    "Florida International University": "Academic",
+    "Goldsmiths, University of London": "Academic",
     "Historian": "Academic",
-    "Historic preservation": "Academic", 
-    "Historical linguistics": "Academic", 
-    "History of literature": "Academic", 
-    "History": "Academic", 
-    "Intellectual": "Academic", 
-    "Jean Monnet": "Academic", 
+    "Historic preservation": "Academic",
+    "Historical linguistics": "Academic",
+    "History of literature": "Academic",
+    "History": "Academic",
+    "Intellectual": "Academic",
+    "Jean Monnet": "Academic",
     "Lecturer": "Academic",
-    "Linguistics": "Academic", 
+    "Linguistics": "Academic",
     "Literary criticism": "Academic",
-    "Lord Byron": "Academic", 
-    "Mount Mercy University": "Academic", 
+    "Lord Byron": "Academic",
+    "Mount Mercy University": "Academic",
     "Natural history": "Academic",
-    "Philology": "Academic", 
+    "Philology": "Academic",
     "Philosopher": "Academic",
     "Philosophy": "Academic",
-    "Philosophy, Politics and Economics": "Academic", 
+    "Philosophy, Politics and Economics": "Academic",
     "Political science": "Academic",
     "Professors in the United States": "Academic",
     "Scholarly method": "Academic",
     "Sinology": "Academic",
-    "Siviløkonom": "Academic", 
-    "Social anthropology": "Academic", 
-    "Socioeconomics": "Academic", 
+    "Siviløkonom": "Academic",
+    "Social anthropology": "Academic",
+    "Socioeconomics": "Academic",
     "Sociology": "Academic",
-    "Syndicalism": "Academic", 
-    "Temasek Polytechnic": "Academic", 
-    "Troy University": "Academic", 
+    "Syndicalism": "Academic",
+    "Temasek Polytechnic": "Academic",
+    "Troy University": "Academic",
     "University College Dublin": "Academic",
     "University of Denver": "Academic",
-    "University of Iowa": "Academic", 
-    "University of Maine": "Academic", 
-    "University of Minnesota": "Academic", 
-    "University of Nottingham": "Academic", 
-    "University of Rhode Island": "Academic", 
-    "University": "Academic", 
+    "University of Iowa": "Academic",
+    "University of Maine": "Academic",
+    "University of Minnesota": "Academic",
+    "University of Nottingham": "Academic",
+    "University of Rhode Island": "Academic",
+    "University": "Academic",
     "Western philosophy": "Academic",
-    "Zoology": "Academic", 
+    "Zoology": "Academic",
 
     "Advertising": "Advertising",
     "Marketing management": "Advertising",
@@ -250,7 +250,7 @@
     "International relations": "Diplomat",
     "Plenipotentiary": "Diplomat",
     "United States Foreign Service": "Diplomat",
-    
+
     "CEGEP": "Educator",
     "Counselor education": "Educator",
     "Davis School District": "Educator",
@@ -458,7 +458,7 @@
     "Victoria Police": "Law Enforcement",
     "Racine, Wisconsin": "Law Enforcement",
 
-    
+
     "Advocate General": "Legal Profession",
     "Advocate": "Legal Profession",
     "Alcalde": "Legal Profession",
@@ -515,7 +515,7 @@
     "Librarian": "Librarian",
 
     "Publishing": "Media",
-    
+
     "Acupuncture": "Medicine",
     "American Public Health Association": "Medicine",
     "Anesthesiologist": "Medicine",
@@ -598,7 +598,7 @@
     "Veterinary physician": "Medicine",
     "Veterinary surgery": "Medicine",
 
-    
+
     "Admiral of the Fleet (Royal Navy)": "Military",
     "Admiral": "Military",
     "Air National Guard": "Military",
@@ -670,7 +670,7 @@
     "Composer": "Music",
     "Music": "Music",
     "Musician": "Music",
-    
+
     "Nobility": "Nobility",
 
     "Baptists": "Organised Religion",
@@ -806,7 +806,7 @@
 
     "Post office": "Post officer",
     "Postmaster": "Post officer",
-    
+
     "Agronomy": "Scientist",
     "Astronomer": "Scientist",
     "Atomic physics": "Scientist",
@@ -952,7 +952,7 @@
     "Tampa Bay": null,
     "Sanford, Florida": null
   },
-  "2": {
+  "18": {
     "Business - Alcoholic beverage": "Business - Alcoholic beverage",
     "Business - Beer": "Business - Alcoholic beverage",
     "Business - Beverage industry": "Business - Alcoholic beverage",
@@ -966,7 +966,7 @@
     "Business - Microdistillery": "Business - Alcoholic beverage",
     "Business - Sake": "Business - Alcoholic beverage",
     "Business - Scotch whisky": "Business - Alcoholic beverage",
-    "Business - Trappist beer": "Business - Alcoholic beverage", 
+    "Business - Trappist beer": "Business - Alcoholic beverage",
     "Business - Wine": "Business - Alcoholic beverage",
     "Business - Winery": "Business - Alcoholic beverage",
 
@@ -1217,7 +1217,7 @@
     "Business - Waste-to-energy": "Business - Energy",
     "Business - Wind power industry": "Business - Energy",
     "Business - Wind power": "Business - Energy",
-    
+
     "Business - Action figure": "Business - Entertainment",
     "Business - Album": "Business - Entertainment",
     "Business - Almanac": "Business - Entertainment",
@@ -2184,7 +2184,7 @@
     "Business - Visual communication": "Business - Media",
     "Business - Visual effects": "Business - Media",
     "Business - Visual Production": "Business - Media",
-    
+
     "Business - Alternative newspaper": "Business - Newspaper",
     "Business - Journalism": "Business - Newspaper",
     "Business - News agency": "Business - Newspaper",
@@ -2197,7 +2197,7 @@
     "Business - Opinion poll": "Business - Newspaper",
     "Business - Public opinion": "Business - Newspaper",
     "Business - Student newspaper": "Business - Newspaper",
-    
+
     "Business - Cosmetics": "Business - Pharmaceuticals",
     "Business - Drug development": "Business - Pharmaceuticals",
     "Business - Drug": "Business - Pharmaceuticals",
@@ -2794,7 +2794,7 @@
     "Business - Professional": null,
     "Private Holding": null
   },
-  "3": {
+  "19": {
     "Country": "Country",
 
     "Barangay": "Settlement",
@@ -2863,14 +2863,14 @@
     "Ecuador": null,
     "Gatineau": null,
     "Legion of Christ": null,
-    "Longueuil": null,    
+    "Longueuil": null,
     "Nonprofit organization": null,
     "San Jose, California": null,
     "Shawinigan": null,
     "Trois-Rivières": null,
     "Yucatán": null
   },
-  "4": {
+  "20": {
     "Alfa 04, a. s.": "Bridge",
     "Arch": "Bridge",
     "Box truss": "Bridge",
@@ -2896,7 +2896,7 @@
     "Truss": "Bridge",
 
     "Tunnel": "Tunnel",
-    
+
     "Causeway": "Causeway",
 
     "Military airbase": "Airport",

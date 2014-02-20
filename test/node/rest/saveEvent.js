@@ -31,7 +31,7 @@ describe("saveEvent", function () {
 
     [
       {name: "ensurePlace", type: "place", findQuery: "find_place_by_id", saveQuery: "save_thing"},
-      {name: "ensureEventType", type: "event type", findQuery: "find_event_type_by_id", saveQuery: "save_event_type"}
+      {name: "ensureEventType", type: "event type", findQuery: "find_type_by_id", saveQuery: "save_event_type"}
     ].forEach(function (test) {
       describe(test.name, function () {
         it("should try to find a " + test.type + " if it has an id", function (done) {

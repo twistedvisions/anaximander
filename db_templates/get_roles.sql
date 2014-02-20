@@ -1,2 +1,3 @@
 select id, name
-from role;
+from type
+where type_id = 3;

@@ -1,4 +1,5 @@
 SELECT id, name
-FROM thing_type
-WHERE parent_type IS NULL
+FROM type
+WHERE parent_type_id IS NULL
+AND type_id = 4
 ORDER BY name ASC;

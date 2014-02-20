@@ -3,7 +3,7 @@ select
   place_thing.id as place_thing_id,
   thing.name as thing_name,
   place_thing.name as place_thing_name,
-  thing_type.name as thing_type,
+  type.name as thing_type,
   event.id as event_id,
   event.name as event_name,
   event.link as event_link,
@@ -19,7 +19,7 @@ inner join place on place.thing_id = place_thing.id
 inner join event on event.place_id = place_thing.id
 inner join event_participant on event_participant.event_id = event.id
 inner join thing on event_participant.thing_id = thing.id
-inner join thing_type on thing.type_id = thing_type.id
+inner join type on thing.type_id = type.id
 <%= (
   eventFilters.length > 0 ?
   "left join thing_subtype on thing.id = thing_subtype.thing_id" :
@@ -36,7 +36,7 @@ group by
   thing.id,
   place_thing.id,
   thing.name,
-  thing_type.name,
+  type.name,
   place_thing.name,
   event.id,
   event.name,

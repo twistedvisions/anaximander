@@ -83,7 +83,7 @@ define(
         this.events.updateData();
         $.get.args[0][1].subtypeFilters.should.equal(JSON.stringify([{
           id: 11,
-          parent_type: 4
+          parent_type_id: 4
         }]));
       });
       it("should pass the notSpecifedType filters", function () {

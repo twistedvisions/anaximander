@@ -40,13 +40,13 @@ define([
           id: id
         };
         if (parentType) {
-          model.parent_type = parentType;
+          model.parent_type_id = parentType;
         }
         this.get("filterState").set([model], {remove: false, silent: !!silent});
       },
       isPrimaryFilterStateUsed: function (id) {
         return this.get("filterState").any(function (thingType) {
-          return thingType.get("parent_type") === id;
+          return thingType.get("parent_type_id") === id;
         });
       }
 

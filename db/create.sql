@@ -1,23 +1,17 @@
-CREATE TABLE thing_type
+CREATE TABLE type
 (
   id SERIAL,
   name character varying(200) NOT NULL,
-  parent_type bigint,
-  CONSTRAINT thing_type_pkey PRIMARY KEY (id)
-);
-
-CREATE TABLE event_type
-(
-  id SERIAL,
-  name character varying(200) NOT NULL,
-  CONSTRAINT event_type_pkey PRIMARY KEY (id)
+  type_id bigint REFERENCES type(id),
+  parent_type_id bigint REFERENCES type(id),
+  CONSTRAINT type_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE thing
 (
   id SERIAL,
   name character varying(200) NOT NULL,
-  type_id bigint NOT NULL REFERENCES thing_type(id),
+  type_id bigint NOT NULL REFERENCES type(id),
   link character varying(200),
   CONSTRAINT person_pkey PRIMARY KEY (id)
 );
@@ -45,22 +39,15 @@ CREATE TABLE event
   start_date timestamp,
   end_date timestamp,
   link character varying(200),
-  type_id bigint REFERENCES event_type(id),
+  type_id bigint REFERENCES type(id),
   CONSTRAINT event_pkey PRIMARY KEY (id)
-);
-
-CREATE TABLE role
-(
-  id SERIAL,
-  name character varying(300) NOT NULL,
-  CONSTRAINT role_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE event_participant
 (
   thing_id bigint NOT NULL REFERENCES thing(id),
   event_id bigint NOT NULL REFERENCES event(id),
-  role_id bigint NOT NULL REFERENCES role(id),
+  role_id bigint NOT NULL REFERENCES type(id),
   CONSTRAINT event_attendee_pkey PRIMARY KEY (thing_id, event_id)
 );
 
@@ -92,21 +79,34 @@ CREATE INDEX place_idx
 CREATE EXTENSION pg_trgm;
 CREATE INDEX thing_name_gin ON thing USING gin (name gin_trgm_ops);
 
-INSERT INTO thing_type (name) VALUES ('person');
-INSERT INTO thing_type (name) VALUES ('organisation');
-INSERT INTO thing_type (name) VALUES ('place');
-INSERT INTO thing_type (name) VALUES ('construction');
+INSERT INTO type (name, type_id, parent_type_id) VALUES ('type', NULL, NULL);
+UPDATE type SET type_id = 1 WHERE id = 1;
 
-INSERT INTO role (name) VALUES ('subject');
-INSERT INTO role (name) VALUES ('attendee');
+ALTER TABLE type
+ALTER COLUMN type_id
+SET NOT NULL;
 
-INSERT INTO event_type (name) VALUES ('battle');
-INSERT INTO event_type (name) VALUES ('birth');
-INSERT INTO event_type (name) VALUES ('construction closing');
-INSERT INTO event_type (name) VALUES ('construction commencement');
-INSERT INTO event_type (name) VALUES ('construction opening');
-INSERT INTO event_type (name) VALUES ('death');
-INSERT INTO event_type (name) VALUES ('organisation extinction');
-INSERT INTO event_type (name) VALUES ('organisation foundation');
-INSERT INTO event_type (name) VALUES ('place dissolution');
-INSERT INTO event_type (name) VALUES ('place foundation');
+INSERT INTO type (name, type_id, parent_type_id) VALUES
+
+  ('event type', 1, NULL),                 --2
+  ('role', 1, NULL),                       --3
+  ('thing type', 1, NULL),                 --4
+
+  ('battle', 2, NULL),                     --5
+  ('birth', 2, NULL),                      --6
+  ('construction closing', 2, NULL),       --7
+  ('construction commencement', 2, NULL),  --8
+  ('construction opening', 2, NULL),       --9
+  ('death', 2, NULL),                      --10
+  ('organisation extinction', 2, NULL),    --11
+  ('organisation foundation', 2, NULL),    --12
+  ('place dissolution', 2, NULL),          --13
+  ('place foundation', 2, NULL),           --14
+
+  ('subject', 3, NULL),                    --15
+  ('attendee', 3, NULL),                   --16
+
+  ('person', 4, NULL),                     --17
+  ('organisation', 4, NULL),               --18
+  ('place', 4, NULL),                      --19
+  ('construction', 4, NULL);               --20

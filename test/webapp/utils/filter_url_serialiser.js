@@ -25,18 +25,18 @@ define(
         });
 
         it("should return <id>:u when only an unspecified", function () {
-          this.model.get("filterState").set([{id: -1, parent_type: 1}], {remove: false});
+          this.model.get("filterState").set([{id: -1, parent_type_id: 1}], {remove: false});
           FilterUrlSerialiser.serialise(this.model).should.equal("1:u");
         });
 
         it("should return <id>:<id> when only a secondary", function () {
-          this.model.get("filterState").set([{id: 2, parent_type: 1}], {remove: false});
+          this.model.get("filterState").set([{id: 2, parent_type_id: 1}], {remove: false});
           FilterUrlSerialiser.serialise(this.model).should.equal("1:2");
         });
 
         it("should return <id>:u,<id> when an unspecified and a secondary", function () {
           this.model.get("filterState").set(
-            [{id: -1, parent_type: 1}, {id: 2, parent_type: 1}],
+            [{id: -1, parent_type_id: 1}, {id: 2, parent_type_id: 1}],
             {remove: false}
           );
           FilterUrlSerialiser.serialise(this.model).should.equal("1:u,2");
@@ -57,18 +57,18 @@ define(
         });
 
         it("should return <id>:u when only an unspecified", function () {
-          this.model.get("filterState").set([{id: "r.ns", parent_type: "r"}], {remove: false});
+          this.model.get("filterState").set([{id: "r.ns", parent_type_id: "r"}], {remove: false});
           FilterUrlSerialiser.serialise(this.model).should.equal("r:u");
         });
 
         it("should return <id>:<id> when only a secondary", function () {
-          this.model.get("filterState").set([{id: "r2", parent_type: "r"}], {remove: false});
+          this.model.get("filterState").set([{id: "r2", parent_type_id: "r"}], {remove: false});
           FilterUrlSerialiser.serialise(this.model).should.equal("r:2");
         });
 
         it("should return <id>:u,<id> when an unspecified and a secondary", function () {
           this.model.get("filterState").set(
-            [{id: "r.ns", parent_type: "r"}, {id: "r2", parent_type: "r"}],
+            [{id: "r.ns", parent_type_id: "r"}, {id: "r2", parent_type_id: "r"}],
             {remove: false}
           );
           FilterUrlSerialiser.serialise(this.model).should.equal("r:u,2");
@@ -83,8 +83,8 @@ define(
 
       it("should not confused the same ids with different parents", function () {
         this.model.get("filterState").set([
-          {id: 7, parent_type: 5},
-          {id: "r7", parent_type: "r"}
+          {id: 7, parent_type_id: 5},
+          {id: "r7", parent_type_id: "r"}
         ], {remove: false});
         FilterUrlSerialiser.serialise(this.model).should.equal("5:7;r:7");
       });
@@ -92,13 +92,13 @@ define(
       it("should return handle a combination of everything", function () {
         this.model.get("filterState").set([
           {id: 1},
-          {id: -2, parent_type: 2},
-          {id: -3, parent_type: 3},
-          {id: 4, parent_type: 3},
-          {id: 6, parent_type: 5},
-          {id: 7, parent_type: 5},
-          {id: "r.ns", parent_type: "r"},
-          {id: "r7", parent_type: "r"},
+          {id: -2, parent_type_id: 2},
+          {id: -3, parent_type_id: 3},
+          {id: 4, parent_type_id: 3},
+          {id: 6, parent_type_id: 5},
+          {id: 7, parent_type_id: 5},
+          {id: "r.ns", parent_type_id: "r"},
+          {id: "r7", parent_type_id: "r"},
           {id: "et"}
 
         ], {remove: false});
@@ -125,19 +125,19 @@ define(
         it("should produce a not specified filter when string is <id>:u", function () {
           FilterUrlSerialiser.deserialise("1:u", this.model);
           var json = JSON.stringify(this.model.get("filterState").toJSON());
-          json.should.equal("[{\"id\":-1,\"parent_type\":1}]");
+          json.should.equal("[{\"id\":-1,\"parent_type_id\":1}]");
         });
 
         it("should produce a secondary when string is <id>:<id>", function () {
           FilterUrlSerialiser.deserialise("1:2", this.model);
           var json = JSON.stringify(this.model.get("filterState").toJSON());
-          json.should.equal("[{\"id\":2,\"parent_type\":1}]");
+          json.should.equal("[{\"id\":2,\"parent_type_id\":1}]");
         });
 
         it("should produce an unspecified and a secondary when string is <id>:u,<id>", function () {
           FilterUrlSerialiser.deserialise("1:u,2", this.model);
           var json = JSON.stringify(this.model.get("filterState").toJSON());
-          json.should.equal("[{\"id\":-1,\"parent_type\":1},{\"id\":2,\"parent_type\":1}]");
+          json.should.equal("[{\"id\":-1,\"parent_type_id\":1},{\"id\":2,\"parent_type_id\":1}]");
         });
 
         it("should produce multiple primary filter keys", function () {
@@ -159,19 +159,19 @@ define(
         it("should produce a not specified filter when string is <id>:u", function () {
           FilterUrlSerialiser.deserialise("r:u", this.model);
           var json = JSON.stringify(this.model.get("filterState").toJSON());
-          json.should.equal("[{\"id\":\"r.ns\",\"parent_type\":\"r\"}]");
+          json.should.equal("[{\"id\":\"r.ns\",\"parent_type_id\":\"r\"}]");
         });
 
         it("should produce a secondary when string is <id>:<id>", function () {
           FilterUrlSerialiser.deserialise("r:2", this.model);
           var json = JSON.stringify(this.model.get("filterState").toJSON());
-          json.should.equal("[{\"id\":\"r2\",\"parent_type\":\"r\"}]");
+          json.should.equal("[{\"id\":\"r2\",\"parent_type_id\":\"r\"}]");
         });
 
         it("should produce an unspecified and a secondary when string is <id>:u,<id>", function () {
           FilterUrlSerialiser.deserialise("r:u,2", this.model);
           var json = JSON.stringify(this.model.get("filterState").toJSON());
-          json.should.equal("[{\"id\":\"r.ns\",\"parent_type\":\"r\"},{\"id\":\"r2\",\"parent_type\":\"r\"}]");
+          json.should.equal("[{\"id\":\"r.ns\",\"parent_type_id\":\"r\"},{\"id\":\"r2\",\"parent_type_id\":\"r\"}]");
         });
 
         it("should produce multiple primary filter keys", function () {
@@ -197,20 +197,20 @@ define(
         describe("getSubtypeFilterKeys", function () {
           it("can ignore string types", function () {
             var filters = [
-              new Backbone.Model({id: 1, parent_type: 1}),
-              new Backbone.Model({id: "r1", parent_type: "r"})
+              new Backbone.Model({id: 1, parent_type_id: 1}),
+              new Backbone.Model({id: "r1", parent_type_id: "r"})
             ];
             FilterUrlSerialiser.getSubtypeFilterKeys(filters)
-              .should.eql([{id: 1, parent_type: 1}, {id: 1, parent_type: "r"}]);
+              .should.eql([{id: 1, parent_type_id: 1}, {id: 1, parent_type_id: "r"}]);
             FilterUrlSerialiser.getSubtypeFilterKeys(filters, true)
-              .should.eql([{id: 1, parent_type: 1}]);
+              .should.eql([{id: 1, parent_type_id: 1}]);
           });
         });
         describe("getNotSpecifiedTypeFilterKeys", function () {
           it("can ignore string types", function () {
             var filters = [
-              new Backbone.Model({id: -1, parent_type: 1}),
-              new Backbone.Model({id: "r.ns", parent_type: "r"})
+              new Backbone.Model({id: -1, parent_type_id: 1}),
+              new Backbone.Model({id: "r.ns", parent_type_id: "r"})
             ];
             FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filters)
               .should.eql([{id: 1}, {id: "r.ns"}]);
@@ -221,21 +221,21 @@ define(
         describe("getRoleFilterKeys", function () {
           it("gets only roles", function () {
             var filters = [
-              new Backbone.Model({id: 1, parent_type: 1}),
-              new Backbone.Model({id: "r1", parent_type: "r"})
+              new Backbone.Model({id: 1, parent_type_id: 1}),
+              new Backbone.Model({id: "r1", parent_type_id: "r"})
             ];
             FilterUrlSerialiser.getRoleFilterKeys(filters, true)
-              .should.eql([{id: 1, parent_type: "r"}]);
+              .should.eql([{id: 1, parent_type_id: "r"}]);
           });
         });
         describe("getEventTypeFilterKeys", function () {
           it("gets only event types", function () {
             var filters = [
-              new Backbone.Model({id: 1, parent_type: 1}),
-              new Backbone.Model({id: "et1", parent_type: "et"})
+              new Backbone.Model({id: 1, parent_type_id: 1}),
+              new Backbone.Model({id: "et1", parent_type_id: "et"})
             ];
             FilterUrlSerialiser.getEventTypeFilterKeys(filters, true)
-              .should.eql([{id: 1, parent_type: "et"}]);
+              .should.eql([{id: 1, parent_type_id: "et"}]);
           });
         });
 
@@ -246,14 +246,14 @@ define(
         var json = JSON.stringify(this.model.get("filterState").toJSON());
         json.should.equal("[" + [
           "{\"id\":1}",
-          "{\"id\":-2,\"parent_type\":2}",
-          "{\"id\":-3,\"parent_type\":3}",
-          "{\"id\":4,\"parent_type\":3}",
-          "{\"id\":6,\"parent_type\":5}",
-          "{\"id\":7,\"parent_type\":5}",
-          "{\"id\":\"r4\",\"parent_type\":\"r\"}",
-          "{\"id\":\"et.ns\",\"parent_type\":\"et\"}",
-          "{\"id\":\"et6\",\"parent_type\":\"et\"}"
+          "{\"id\":-2,\"parent_type_id\":2}",
+          "{\"id\":-3,\"parent_type_id\":3}",
+          "{\"id\":4,\"parent_type_id\":3}",
+          "{\"id\":6,\"parent_type_id\":5}",
+          "{\"id\":7,\"parent_type_id\":5}",
+          "{\"id\":\"r4\",\"parent_type_id\":\"r\"}",
+          "{\"id\":\"et.ns\",\"parent_type_id\":\"et\"}",
+          "{\"id\":\"et6\",\"parent_type_id\":\"et\"}"
         ].join(",") + "]");
 
       });

@@ -1,1 +1,0 @@
-select id, name from event_type where id = $1;

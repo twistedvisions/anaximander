@@ -177,14 +177,14 @@ define(
             });
 
             it("doesn't select secondary filters when state has them unselected", function () {
-              this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
+              this.filters.model.get("filterState").set([{id: 3, parent_type_id: 1}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters(this.typesCollection.get(1));
               this.filters.$(".secondary input:checked.specified").length.should.equal(1);
             });
 
             it("selects all secondary filters when a primary filter is selected", function () {
-              this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
+              this.filters.model.get("filterState").set([{id: 3, parent_type_id: 1}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters(this.typesCollection.get(1));
               this.filters.$(".secondary input:checked").length.should.equal(2);
@@ -193,7 +193,7 @@ define(
             });
 
             it("deselects all secondary filters when a primary filter is deselected", function () {
-              this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
+              this.filters.model.get("filterState").set([{id: 3, parent_type_id: 1}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters(this.typesCollection.get(1));
               this.filters.$(".secondary input:checked").length.should.equal(2);
@@ -202,7 +202,7 @@ define(
             });
 
             it("puts the primary checkbox in a half-state when not all secondary filters are selected", function () {
-              this.filters.model.get("filterState").set([{id: 3, parent_type: 1}]);
+              this.filters.model.get("filterState").set([{id: 3, parent_type_id: 1}]);
               this.filters.render();
               this.filters.$(".primary input.half:checked").length.should.equal(1);
             });
@@ -217,7 +217,7 @@ define(
             it("puts the primary checkbox in a unselected state when all secondary filters are unselected", function () {
               this.filters.model.get("filterState").set([
                 {id: -1},
-                {id: 4, parent_type: 1}
+                {id: 4, parent_type_id: 1}
               ]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters(this.typesCollection.get(1));
@@ -226,7 +226,7 @@ define(
               this.filters.$(".primary .filter.type input:checked").length.should.equal(2);
 
               this.filters.secondaryFilters._checkSecondary(
-                new Backbone.Model({id: 3, parent_type: 1}),
+                new Backbone.Model({id: 3, parent_type_id: 1}),
                 {
                   currentTarget: $(this.filters.$(".secondary label").first().children()[0])
                 }
@@ -238,8 +238,8 @@ define(
 
             it("puts the primary checkbox in a unselected state when all secondary filters are unselected when last selection is the notSelected", function () {
               this.filters.model.get("filterState").set([
-                {id: 3, parent_type: 1},
-                {id: 4, parent_type: 1}
+                {id: 3, parent_type_id: 1},
+                {id: 4, parent_type_id: 1}
               ]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters(this.typesCollection.get(1));
@@ -267,7 +267,7 @@ define(
               this.filters.$(".secondary input:checked").length.should.equal(0);
               this.filters.$(".secondary input").first().prop("checked", true);
               this.filters.secondaryFilters._checkSecondary(
-                new Backbone.Model({id: 3, parent_type: 1}),
+                new Backbone.Model({id: 3, parent_type_id: 1}),
                 {
                   currentTarget: $(this.filters.$(".secondary label").first().children()[0])
                 }
@@ -298,14 +298,14 @@ define(
             });
 
             it("doesn't select secondary filters when state has them unselected", function () {
-              this.filters.model.get("filterState").set([{id: "r3", parent_type: "r"}]);
+              this.filters.model.get("filterState").set([{id: "r3", parent_type_id: "r"}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
               this.filters.$(".secondary input:checked.specified").length.should.equal(2);
             });
 
             it("selects all secondary filters when a primary filter is selected", function () {
-              this.filters.model.get("filterState").set([{id: "r3", parent_type: "r"}]);
+              this.filters.model.get("filterState").set([{id: "r3", parent_type_id: "r"}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
               this.filters.$(".secondary input:checked").length.should.equal(2);
@@ -314,7 +314,7 @@ define(
             });
 
             it("deselects all secondary filters when a primary filter is deselected", function () {
-              this.filters.model.get("filterState").set([{id: "r3", parent_type: "r"}]);
+              this.filters.model.get("filterState").set([{id: "r3", parent_type_id: "r"}]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
               this.filters.$(".secondary input:checked").length.should.equal(2);
@@ -323,7 +323,7 @@ define(
             });
 
             it("puts the primary checkbox in a half-state when not all secondary filters are selected", function () {
-              this.filters.model.get("filterState").set([{id: "r3", parent_type: "r"}]);
+              this.filters.model.get("filterState").set([{id: "r3", parent_type_id: "r"}]);
               this.filters.render();
               this.filters.$(".primary input.half:checked").length.should.equal(1);
             });
@@ -337,8 +337,8 @@ define(
 
             it("puts the primary checkbox in a unselected state when all secondary filters are unselected", function () {
               this.filters.model.get("filterState").set([
-                {id: "r1", parent_type: "r"},
-                {id: "r2", parent_type: "r"}
+                {id: "r1", parent_type_id: "r"},
+                {id: "r2", parent_type_id: "r"}
               ]);
               this.filters.render();
               this.filters.secondaryFilters.showSecondaryFilters({id: "r"});
@@ -476,7 +476,7 @@ define(
 
           it("returns a single filter if one secondary is unselected", function () {
             this.filters.model.get("filterState").set([
-              {id: 3, parent_type: 1}
+              {id: 3, parent_type_id: 1}
             ]);
             this.filters.render();
             this.filters.model.get("filterState").length.should.equal(1);
@@ -505,7 +505,7 @@ define(
             });
             this.filters.secondaryFilters.setDefaultCollection();
             this.filters.secondaryFilters._checkSecondary(
-              new Backbone.Model({id: 3, parent_type: 1}),
+              new Backbone.Model({id: 3, parent_type_id: 1}),
               {
                 currentTarget: $(this.filters.$(".secondary label").first().children()[0])
               }
