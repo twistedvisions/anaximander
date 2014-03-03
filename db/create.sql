@@ -76,6 +76,9 @@ CREATE INDEX event_id_idx
 CREATE INDEX place_idx
    ON event USING hash (place_id);
 
+CREATE UNIQUE INDEX type_name
+   ON type (name, parent_type_id);
+
 CREATE EXTENSION pg_trgm;
 CREATE INDEX thing_name_gin ON thing USING gin (name gin_trgm_ops);
 

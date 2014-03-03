@@ -1,4 +1,4 @@
-/*global describe, it, beforeEach, afterEach */
+/*global global, describe, it, beforeEach, afterEach */
 var should = require("should");
 var sinon = require("sinon");
 var supertest = require("supertest");
@@ -15,7 +15,10 @@ var userPermissions = require("../../../lib/rest/util/userPermissions");
 
 var setupApp = function (provider, useClock) {
   if (useClock) {
-    this.clock = sinon.useFakeTimers();
+    this.sandbox = sinon.sandbox.create();
+    this.sandbox.useFakeTimers();
+    //see https://github.com/cjohansen/Sinon.JS/issues/419
+    global.Date = sinon.timers.Date;
   }
   this.app = express();
   this.app.use(express.cookieParser());
@@ -29,8 +32,10 @@ var setupApp = function (provider, useClock) {
 
 var teardownApp = function () {
   this.Provider.shutdown();
-  if (this.clock) {
-    this.clock.restore();
+  if (this.sandbox) {
+    this.sandbox.restore();
+    this.sandbox = null;
+    global.Date = sinon.timers.Date;
   }
 };
 
@@ -181,7 +186,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
             },
             time: new Date().getTime() - 11 * oneMinute
           };
-          this.clock.tick(1.5 * oneMinute);
+          this.sandbox.clock.tick(1.5 * oneMinute);
           _.keys(this.Provider.logins).length.should.equal(0);
           disconnected.should.equal(true);
         });
@@ -194,7 +199,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
             },
             time: new Date().getTime() - 9 * oneMinute
           };
-          this.clock.tick(1.5 * oneMinute);
+          this.sandbox.clock.tick(1.5 * oneMinute);
           _.keys(this.Provider.logins).length.should.equal(1);
         });
       });

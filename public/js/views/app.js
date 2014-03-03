@@ -21,6 +21,7 @@ define([
     initialize: function (options) {
       this.eventLocationsCollection = new EventLocationsCollection({state: this.model});
       this.typesCollection = new TypeCollection();
+      TypeCollection.instance = this.typesCollection;
       this.subtypesCollection = new SubtypeCollection();
       this.rolesCollection = new RolesCollection();
       RolesCollection.instance = this.rolesCollection;

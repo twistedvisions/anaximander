@@ -16,7 +16,7 @@ from (
     e.id as event_id,
     t.name as thing_name,
     t.link as thing_link,
-    type.name as type_name,
+    type.name as thing_type_name,
     e.start_date as start_date,
     e.end_date as end_date,
     p.location as location

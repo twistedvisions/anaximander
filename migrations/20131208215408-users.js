@@ -3,7 +3,6 @@
 
 require("db-migrate");
 var async = require("async");
-// var dbm = require("db-migrate");
 // var type = dbm.dataType;
 
 exports.up = function (db, callback) {
