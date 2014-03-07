@@ -27,6 +27,7 @@ define(
             return this.updateData;
           }, this.events);
           this.events.start();
+          this.events.updateData.reset();
           this.events.state.set(key, "some value");
           this.events.updateData.calledOnce.should.equal(true);
         });
