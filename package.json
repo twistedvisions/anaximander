@@ -11,6 +11,8 @@
     "humanize": "0.0.8",
     "lodash": "1.x",
     "kue": "0.6.x",
+    "redis": "0.10.x",
+    "redis-lock": "0.0.8",
     "nconf": "0.6.x",
     "optimist": "0.6.x",
     "newrelic": "1.x",
