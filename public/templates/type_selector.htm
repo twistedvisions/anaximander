@@ -1,0 +1,31 @@
+<div class="form-group type-holder">
+  <label>Type</label>
+  <input type="text" class="form-control" data-key="type" required/>
+</div
+><div class="form-group">
+  <label>Importance</label>
+  <input type="text" class="form-control" data-key="importance" required/>
+</div>
+
+<fieldset class="importance-group">
+  <legend>
+    Importance
+    <a class="glyphicon glyphicon-remove remove"></a>
+  </legend>
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" class="form-control" data-key="importance-name" required />
+  </div>
+  <div class="form-group">
+    <label>Description</label>
+    <textarea class="form-control"
+      data-key="importance-description"
+      placeholder="describe when to use this level of importance"
+      required />
+  </div>
+  <div class="form-group">
+    <label>Value</label>
+    <input type="number" class="form-control" value="5"
+      data-key="importance-value" min="1" max="10" required />
+  </div>
+</fieldset>

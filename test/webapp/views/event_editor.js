@@ -1,9 +1,9 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["backbone", "views/event_editor", "collections/roles", "collections/event_types", "analytics", "models/event"],
+  ["underscore", "backbone", "views/event_editor", "collections/roles", "collections/event_types", "analytics", "models/event"],
 
-  function (Backbone, EventEditor, Roles, EventTypes, Analytics, Event) {
+  function (_, Backbone, EventEditor, Roles, EventTypes, Analytics, Event) {
 
     describe("event editor", function () {
       beforeEach(function () {
@@ -76,9 +76,9 @@ define(
           sinon.stub(editor, "getSelectedParticipant", function () {
             return {};
           });
-          editor.participants.length.should.equal(0);
+          _.keys(editor.participants).length.should.equal(0);
           editor.addParticipant();
-          editor.participants.length.should.equal(1);
+          _.keys(editor.participants).length.should.equal(1);
         });
         it("should a view to the participants list", function () {
           var editor = new EventEditor({
@@ -88,9 +88,9 @@ define(
           sinon.stub(editor, "getSelectedParticipant", function () {
             return {};
           });
-          editor.$(".participant-list .participant").length.should.equal(0);
+          editor.$(".participant-list .participant-editor").length.should.equal(0);
           editor.addParticipant();
-          editor.$(".participant-list .participant").length.should.equal(1);
+          editor.$(".participant-list .participant-editor").length.should.equal(1);
         });
         it("should empty the select box", function () {
           var editor = new EventEditor({
@@ -115,24 +115,10 @@ define(
             });
             this.editor.addParticipant();
           });
-          it("should allow participants to be removable", function () {
-
-            this.editor.participants.length.should.equal(1);
-            this.editor.removeParticipant(
-              this.editor.participants.at(0),
-              {target: this.editor.$(".participant-list .participant")[0]}
-            );
-            this.editor.participants.length.should.equal(0);
-          });
-          it("should allow roles to be set", function () {
-            sinon.stub(this.editor, "getSelectedRoleId", function () {
-              return 2;
-            });
-            this.editor.changeParticipantRoleSelection(
-              this.editor.participants.at(0),
-              {}
-            );
-            this.editor.participants.at(0).get("roleId").should.equal(2);
+          it("should remove participants on the participant editor's remove event", function () {
+            _.keys(this.editor.participants).length.should.equal(1);
+            this.editor.participants[_.keys(this.editor.participants)[0]].trigger("remove");
+            _.keys(this.editor.participants).length.should.equal(0);
           });
         });
       });
@@ -160,6 +146,8 @@ define(
           this.editor.$("input[data-key=place]").select2("data", {id: 1, text: "some place"});
           this.editor.$("input[data-key=type]").val("some type name");
           this.editor.$("input[data-key=type]").select2("data", {id: 1, text: "some type"});
+          this.editor.$("input[data-key=importance]").val("some importance name");
+          this.editor.$("input[data-key=importance]").select2("data", {id: 1, text: "some importance"});
         });
 
         afterEach(function () {

@@ -6,26 +6,25 @@ define([
   "collections/events",
   "collections/roles",
   "collections/event_types",
+  "views/type_selector",
+  "views/participant_editor",
   "analytics",
   "text!templates/event_editor.htm",
-  "text!templates/participant_editor.htm",
   "bootstrap",
   "jqueryui",
   "parsley",
   "css!/css/event_editor",
   "css!/css/select2-bootstrap"
 ], function ($, _, Backbone, Event, EventsCollection,
-    roles, eventTypes,
-    analytics, template, participantEditorTemplate) {
+    roles, eventTypes, TypeSelector, ParticipantEditor,
+    analytics, template) {
 
   var EventEditor = Backbone.View.extend({
     className: "",
 
     initialize: function (options) {
       this.newEvent = options.newEvent;
-      this.participants = new Backbone.Collection();
       this.eventsCollection = new EventsCollection();
-      this.participantEditorTemplate = _.template(participantEditorTemplate);
       this.roles = roles.instance;
       this.eventTypes = eventTypes.instance;
     },
@@ -45,27 +44,21 @@ define([
       this.$(".save").on("click", _.bind(this.handleSave, this));
 
       this.renderEventTypes();
+
       this.renderParticipants();
 
       return this.$el;
     },
 
     renderEventTypes: function () {
-      this.$("input[data-key=type]").select2({
-        placeholder: "Select or add a event_types",
-        data: this.eventTypes.map(function (eventType) {
-          return {
-            id: eventType.id,
-            text: eventType.get("name")
-          };
-        }),
-        createSearchChoice: function (text) {
-          return {
-            id: -1,
-            text: text
-          };
-        }
+      this.eventTypeSelector = new TypeSelector({
+        typePlaceholder: "Select or add an event type",
+        importancePlaceholder: "Select or add an event importance",
+        types: this.eventTypes
       });
+      this.$(".event-type-selector-holder").append(
+        this.eventTypeSelector.render()
+      );
     },
 
     getDatePickerOpts: function (isStart) {
@@ -175,21 +168,26 @@ define([
       });
     },
 
+    nextParticipantId: 1,
+    participants: {},
+
     addParticipant: function () {
       var participant = this.getSelectedParticipant();
-      participant.name = participant.text;
-      participant.roleId = this.roles.at(0).id;
-      delete participant.text;
-      var participantModel = new this.participants.model(participant);
-      this.participants.add(participant);
-      var el = $(this.participantEditorTemplate(
-        _.extend({roles: this.roles}, participant)
-      ));
-      el.find(".remove").on("click",
-        _.bind(this.removeParticipant, this, participantModel));
-      el.find(".role").on("change",
-        _.bind(this.changeParticipantRoleSelection, this, participantModel));
-      this.$(".participant-list").append(el);
+
+      var participantEditor = new ParticipantEditor({
+        model: new Backbone.Model(participant),
+        roles: this.roles,
+        id: this.nextParticipantId
+      });
+
+      this.participants[this.nextParticipantId] = participantEditor;
+      participantEditor.on("remove", _.bind(function (id) {
+        delete this.participants[id];
+      }, this, this.nextParticipantId));
+
+      this.nextParticipantId += 1;
+
+      this.$(".participant-list").append(participantEditor.render());
 
       this.clearParticipantSelector();
     },
@@ -197,21 +195,16 @@ define([
     getSelectedParticipant: function () {
       var select = this.$("input[data-key=participants]");
       var participants = select.select2("data");
-      return participants[0];
+      var data = participants[0];
+
+      data.name = data.text;
+      delete data.text;
+
+      return data;
     },
 
     clearParticipantSelector: function () {
       this.$("input[data-key=participants]").select2("data", []);
-    },
-
-    removeParticipant: function (participant, e) {
-      this.participants.remove(participant);
-      $(e.target).parent().remove();
-    },
-
-    changeParticipantRoleSelection: function (participant, e) {
-      this.participants.get(participant).set("roleId",
-        this.getSelectedRoleId(e));
     },
 
     getSelectedRoleId: function (e) {
@@ -219,16 +212,18 @@ define([
     },
 
     handleSave: function () {
-      this.$(".error-message").hide();
-      if (this.$("form").parsley("validate")) {
+
+      if (this.validate()) {
         var values = {};
+
         values.name = this.$el.find("input[data-key=name]").val();
         values.type = this.getSelectValue("type");
+        values.importance = this.getImportanceValue();
         values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
         values.place = this.getSelectValue("place");
         values.start = new Date(this.$el.find("input[data-key=start]").val());
         values.end = new Date(this.$el.find("input[data-key=end]").val());
-        values.participants = this.participants.toJSON();
+        values.participants = this.getParticipantValues();
 
         var model = new Event(values);
         this.eventsCollection.add(model);
@@ -238,6 +233,32 @@ define([
         });
         analytics.eventAdded(values);
       }
+    },
+
+    validate: function () {
+      var ok = true;
+      this.$(".error-message").hide();
+      ok = ok && this.$("form").parsley("validate");
+      _.each(_.values(this.participants), function (participant) {
+        ok = ok && participant.validate();
+      });
+      return ok;
+    },
+
+    getParticipantValues: function () {
+      var values = _.map(_.values(this.participants), function (participant) {
+        return participant.getValue();
+      });
+      return values;
+    },
+
+    getImportanceValue: function () {
+      var importance = this.getSelectValue("importance");
+      if (importance.id === -1) {
+        importance.description = this.$el.find("input[data-key=importance-description]").val();
+        importance.value = this.$el.find("input[data-key=importance-value]").val();
+      }
+      return importance;
     },
 
     wrapLink: function (link) {
