@@ -27,7 +27,7 @@ define(
           var editor = new EventEditor({
             model: new Backbone.Model({date: [1900, 2000]})
           });
-          editor.getDatePickerOpts(true).defaultDate.should.eql(new Date(1900, 0, 1));
+          editor.getDatePickerOpts(true).defaultDate.should.eql(new Date(1950, 0, 1));
         });
       });
       describe("interactions", function () {

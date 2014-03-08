@@ -69,7 +69,7 @@ define([
         yearRange: (date[0] - 20) + ":" + (date[1] + 20)
       };
       if (isStart) {
-        opts.defaultDate = new Date(date[0], 0, 1);
+        opts.defaultDate = new Date((date[0] + date[1]) / 2, 0, 1);
       }
       return opts;
     },
