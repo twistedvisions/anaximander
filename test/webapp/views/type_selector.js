@@ -1,4 +1,4 @@
-/*global sinon, describe, it, beforeEach */
+/*global describe, it, beforeEach */
 define(
 
   ["backbone", "views/type_selector"],
