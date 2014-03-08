@@ -217,12 +217,11 @@ define([
         var values = {};
 
         values.name = this.$el.find("input[data-key=name]").val();
-        values.type = this.getSelectValue("type");
-        values.importance = this.getImportanceValue();
         values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
         values.place = this.getPlace();
         values.start = new Date(this.$el.find("input[data-key=start]").val());
         values.end = new Date(this.$el.find("input[data-key=end]").val());
+        _.extend(values, this.eventTypeSelector.getValue());
         values.participants = this.getParticipantValues();
 
         var model = new Event(values);
@@ -259,15 +258,6 @@ define([
         return participant.getValue();
       });
       return values;
-    },
-
-    getImportanceValue: function () {
-      var importance = this.getSelectValue("importance");
-      if (importance.id === -1) {
-        importance.description = this.$el.find("input[data-key=importance-description]").val();
-        importance.value = this.$el.find("input[data-key=importance-value]").val();
-      }
-      return importance;
     },
 
     wrapLink: function (link) {
