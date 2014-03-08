@@ -160,6 +160,27 @@ define(
           Analytics.eventAdded.calledOnce.should.equal(true);
         });
 
+        it("should save the place with a lat and lon if it is a new place", function () {
+          this.editor.newEvent = {
+            location: {
+              lat: 3,
+              lon: 4
+            }
+          };
+          sinon.stub(this.editor, "getSelectValue", function () {
+            return {
+              id: -1,
+              name: "new place"
+            };
+          });
+          this.editor.getPlace().should.eql({
+            id: -1,
+            name: "new place",
+            lat: 3,
+            lon: 4
+          });
+        });
+
         it("should trigger a change on the model to say it needs updating", function () {
           sinon.stub(this.editor.model, "trigger");
           sinon.stub(this.editor, "updateHighlight");

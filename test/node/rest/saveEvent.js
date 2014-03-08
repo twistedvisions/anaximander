@@ -180,6 +180,15 @@ describe("saveEvent", function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "place").should.equal(true);
           }, done);
         });
+        it("should create a place if the thing doesn't exist", function (done) {
+          this.eventSaver.ensurePlace({
+            id: -1
+          }).then(_.bind(function () {
+            this.args[1][1].should.equal("save_place");
+            done();
+          }, this));
+          stubDb.setQueryValues(this, this.stubValues);
+        });
       });
       describe("participants", function () {
         it("should ensure that each participant's type exists", function (done) {

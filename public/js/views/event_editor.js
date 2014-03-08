@@ -220,7 +220,7 @@ define([
         values.type = this.getSelectValue("type");
         values.importance = this.getImportanceValue();
         values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
-        values.place = this.getSelectValue("place");
+        values.place = this.getPlace();
         values.start = new Date(this.$el.find("input[data-key=start]").val());
         values.end = new Date(this.$el.find("input[data-key=end]").val());
         values.participants = this.getParticipantValues();
@@ -243,6 +243,15 @@ define([
         ok = ok && participant.validate();
       });
       return ok;
+    },
+
+    getPlace: function () {
+      var value = this.getSelectValue("place");
+      if (value.id === -1) {
+        value.lat = this.newEvent.location.lat;
+        value.lon = this.newEvent.location.lon;
+      }
+      return value;
     },
 
     getParticipantValues: function () {
