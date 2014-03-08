@@ -46,7 +46,7 @@ define([
 
     removeParticipant: function () {
       this.$el.remove();
-      this.trigger("removed", this.id);
+      this.trigger("remove", this.id);
     },
 
     getValue: function () {
