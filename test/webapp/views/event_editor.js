@@ -184,16 +184,15 @@ define(
 
         it("should update the highlight if the added participant is already highlighted", function () {
           this.editor.model.set("highlight", {id: 123});
-          this.editor.updateHighlight({participants: [{id: 123}]});
+          this.editor.updateHighlight({participants: [{thing: {id: 123}}]});
           this.editor.model.get("highlight").reset.should.equal(true);
         });
 
         it("should not update the highlight if the added participant is not highlighted", function () {
           this.editor.model.set("highlight", {id: 123});
-          this.editor.updateHighlight({participants: [{id: 1234}]});
+          this.editor.updateHighlight({participants: [{thing: {id: 1234}}]});
           (this.editor.model.get("highlight").reset === undefined).should.equal(true);
         });
-
 
         it("should show the error message if it fails", function () {
           this.editor.handleSaveFail({}, {responseText: "some error message"});
