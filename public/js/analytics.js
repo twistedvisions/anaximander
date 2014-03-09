@@ -51,6 +51,10 @@ define(["underscore"], function (_) {
     "optionsMenuShown",
     "optionSelected",
     "eventAdded",
+    "participantAdded",
+    "participantRemoved",
+    "newTypeAdded",
+    "newImportanceAdded",
 
     //filters
     "showFilters",

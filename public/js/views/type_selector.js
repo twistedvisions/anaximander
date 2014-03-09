@@ -2,8 +2,9 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "analytics",
   "text!templates/type_selector.htm"
-], function ($, _, Backbone, template) {
+], function ($, _, Backbone, Analytics, template) {
 
   var TypeSelector = Backbone.View.extend({
 
@@ -14,7 +15,7 @@ define([
       this.typePlaceholder = options.typePlaceholder;
       this.importancePlaceholder = options.importancePlaceholder;
       this.importanceDisplay = options.importanceDisplay;
-
+      this.defaultNewImportanceName = "Nominal";
       this.importanceSelectData = {
         placeholder: this.importancePlaceholder,
         data: [],
@@ -74,6 +75,12 @@ define([
         var name = this.$("input[data-key=importance]").select2("data").text;
         this.$("input[data-key=importance-name]").val(name);
         this.setImportanceSelectMode(false);
+        if (name !== this.defaultNewImportanceName) {
+          Analytics.newImportanceAdded({
+            type: this.typeName,
+            name: name
+          });
+        }
       } else {
         this.setImportanceSelectMode(true, true);
       }
@@ -135,10 +142,14 @@ define([
           _.extend(this.importanceSelectData, {
           data: [{
             id: -1,
-            text: "Nominal"
+            text: this.defaultNewImportanceName
           }]
         }));
         this.$("input[data-key=importance]").val(-1).trigger("change");
+        Analytics.newTypeAdded({
+          type: this.typeName,
+          name: name
+        });
       }
       this.setImportanceSelectMode(true, true);
     },

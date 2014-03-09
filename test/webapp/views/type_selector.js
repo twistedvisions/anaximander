@@ -1,9 +1,9 @@
-/*global describe, it, beforeEach */
+/*global sinon, describe, it, beforeEach, afterEach */
 define(
 
-  ["backbone", "views/type_selector"],
+  ["backbone", "views/type_selector", "analytics"],
 
-  function (Backbone, TypeSelector) {
+  function (Backbone, TypeSelector, Analytics) {
 
     var isSelect2ized = function (el) {
       return el[0].className.indexOf("select2") > -1;
@@ -179,6 +179,28 @@ define(
           this.typeSelector.validate().should.equal(true);
           this.typeSelector.$("input[data-key=importance-value]").val("");
           this.typeSelector.validate().should.equal(false);
+        });
+      });
+      describe("analytics", function () {
+        beforeEach(function () {
+          sinon.stub(Analytics, "newTypeAdded");
+          sinon.stub(Analytics, "newImportanceAdded");
+        });
+        afterEach(function () {
+          Analytics.newTypeAdded.restore();
+          Analytics.newImportanceAdded.restore();
+        });
+        it("should log when someone attempts to create a new role", function () {
+          this.typeSelector.$("input[data-key=type]").select2("data",
+            {id: -1, text: "new type"});
+          this.typeSelector.$("input[data-key=type]").trigger("change");
+          Analytics.newTypeAdded.calledOnce.should.equal(true);
+        });
+        it("should log when someone attempts to create a new importance", function () {
+          this.typeSelector.$("input[data-key=importance]").select2("data",
+            {id: -1, text: "new importance"});
+          this.typeSelector.$("input[data-key=importance]").trigger("change");
+          Analytics.newImportanceAdded.calledOnce.should.equal(true);
         });
       });
 

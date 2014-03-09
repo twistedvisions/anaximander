@@ -30,6 +30,7 @@ define([
       }
 
       this.typeSelector = new TypeSelector({
+        type: "role",
         typePlaceholder: "Role",
         importancePlaceholder: "Importance",
         types: this.roles,

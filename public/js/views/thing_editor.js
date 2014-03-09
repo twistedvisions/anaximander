@@ -57,6 +57,7 @@ define([
       this.subtypeId += 1;
       var subtypeId = this.subtypeId;
       this.subtypeSelector = new TypeSelector({
+        type: "thing subtype",
         typePlaceholder: "Select or add a subtype",
         importancePlaceholder: "Select or add an importance",
         types: this.subtypes,

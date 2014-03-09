@@ -55,6 +55,7 @@ define([
 
     renderEventTypes: function () {
       this.eventTypeSelector = new TypeSelector({
+        type: "event type",
         typePlaceholder: "Select or add an event type",
         importancePlaceholder: "Select or add an event importance",
         types: this.eventTypes
@@ -181,15 +182,21 @@ define([
       });
 
       this.participants[this.nextParticipantId] = participantEditor;
-      participantEditor.on("remove", _.bind(function (id) {
-        delete this.participants[id];
-      }, this, this.nextParticipantId));
+
+      var analyticsData = {
+        isNew: participant.id === -1,
+        name: participant.name
+      };
+
+      participantEditor.on("remove", _.bind(this.removeParticipant, this, this.nextParticipantId, analyticsData));
 
       this.nextParticipantId += 1;
 
       this.$(".participant-list").append(participantEditor.render());
 
       this.clearParticipantSelector();
+
+      analytics.participantAdded(analyticsData);
     },
 
     getSelectedParticipant: function () {
@@ -201,6 +208,11 @@ define([
       delete data.text;
 
       return data;
+    },
+
+    removeParticipant: function (id, analyticsData) {
+      delete this.participants[id];
+      analytics.participantRemoved(analyticsData);
     },
 
     clearParticipantSelector: function () {

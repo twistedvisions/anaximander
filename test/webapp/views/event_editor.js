@@ -123,6 +123,44 @@ define(
         });
       });
 
+      describe("analytics", function () {
+        it("should log when someone adds a participant", function () {
+          sinon.stub(Analytics, "participantAdded");
+          var editor = new EventEditor({
+            model: new Backbone.Model({date: [1900, 2000]})
+          });
+          editor.render();
+          sinon.stub(editor, "getSelectedParticipant", function () {
+            return {id: 1, name: "some name"};
+          });
+          try {
+            editor.addParticipant();
+            Analytics.participantAdded.calledOnce.should.equal(true);
+          } finally {
+            editor.getSelectedParticipant.restore();
+            Analytics.participantAdded.restore();
+          }
+        });
+        it("should log when someone removes a participant", function () {
+          sinon.stub(Analytics, "participantRemoved");
+          var editor = new EventEditor({
+            model: new Backbone.Model({date: [1900, 2000]})
+          });
+          editor.render();
+          sinon.stub(editor, "getSelectedParticipant", function () {
+            return {id: 1, name: "some name"};
+          });
+          try {
+            editor.addParticipant();
+            _.values(editor.participants)[0].trigger("remove");
+            Analytics.participantRemoved.calledOnce.should.equal(true);
+          } finally {
+            editor.getSelectedParticipant.restore();
+            Analytics.participantRemoved.restore();
+          }
+        });
+      });
+
       describe("saving", function () {
 
         beforeEach(function () {
@@ -144,9 +182,7 @@ define(
           this.editor.$("input[data-key=end]").val("2012-12-05");
           this.editor.$("input[data-key=place]").val("some place name");
           this.editor.$("input[data-key=place]").select2("data", {id: 1, text: "some place"});
-          this.editor.$("input[data-key=type]").val("some type name");
           this.editor.$("input[data-key=type]").select2("data", {id: 1, text: "some type"});
-          this.editor.$("input[data-key=importance]").val("some importance name");
           this.editor.$("input[data-key=importance]").select2("data", {id: 1, text: "some importance"});
         });
 
