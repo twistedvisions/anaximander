@@ -27,6 +27,9 @@ define([
       this.eventsCollection = new EventsCollection();
       this.roles = roles.instance;
       this.eventTypes = eventTypes.instance;
+
+      this.nextParticipantId = 1;
+      this.participants = {};
     },
 
     render: function () {
@@ -167,9 +170,6 @@ define([
         }
       });
     },
-
-    nextParticipantId: 1,
-    participants: {},
 
     addParticipant: function () {
       var participant = this.getSelectedParticipant();
