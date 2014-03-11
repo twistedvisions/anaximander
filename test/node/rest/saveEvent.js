@@ -17,71 +17,73 @@ try {
 }
 
 describe("saveEvent", function () {
-  describe("component functions", function () {
-    before(function () {
-      this.testSave = function (fn, done) {
-        var req = {
-          body: this.fullBody,
-          isAuthenticated: function () {
-            return true;
-          }
-        };
-        var res = {
-          send: function () {}
-        };
-        var next = function () {};
-        this.eventSaver.saveEvent(req, res, next).then(tryTest(_.bind(fn, this), done));
-        stubDb.setQueryValues(this, this.stubValues);
+  before(function () {
+    this.testSave = function (fn, done) {
+      var req = {
+        user: {id: 1},
+        body: this.fullBody,
+        isAuthenticated: function () {
+          return true;
+        }
       };
-    });
-    beforeEach(function () {
-      this.eventSaver = new saveEvent.EventSaver();
-      this.fullBody = {
-        name: "a test",
-        link: "http://testlink.com",
-        start: "2013-03-12T00:00:00.000Z",
-        end: "2013-03-12T00:00:00.000Z",
+      var res = {
+        send: function () {}
+      };
+      var next = function () {};
+      this.eventSaver.saveEvent(req, res, next).then(tryTest(_.bind(fn, this), done));
+      stubDb.setQueryValues(this, this.stubValues);
+    };
+  });
+  beforeEach(function () {
+    this.eventSaver = new saveEvent.EventSaver();
+    this.fullBody = {
+      name: "a test",
+      link: "http://testlink.com",
+      start: "2013-03-12T00:00:00.000Z",
+      end: "2013-03-12T00:00:00.000Z",
+      type: {
+        id: 1,
+        name: "test type"
+      },
+      importance: {
+        id: 1,
+        name: "test importance"
+      },
+      place: {
+        id: 123,
+        name: "Sneem"
+      },
+      participants: [{
+        thing: {
+          id: 456,
+          name: "Kareem Ajani (Person)",
+          typeId: 4
+        },
         type: {
-          id: 1,
-          name: "test type"
+          id: 1
         },
         importance: {
-          id: 1,
-          name: "test importance"
-        },
-        place: {
-          id: 123,
-          name: "Sneem"
-        },
-        participants: [{
-          thing: {
-            id: 456,
-            name: "Kareem Ajani (Person)",
-            typeId: 4
-          },
-          type: {
-            id: 1
-          },
-          importance: {
-            id: 1
-          }
-        }]
-      };
-      this.stubValues = [
-        [{id: 1}],
-        [{id: 2}],
-        [{id: 3}],
-        [{id: 4}],
-        [{id: 5}],
-        [{id: 6}],
-        [{id: 7}],
-        [{id: 8}]
-      ];
-      stubDb.setup(this);
-    });
-    afterEach(function () {
-      stubDb.restore();
-    });
+          id: 1
+        }
+      }]
+    };
+    this.stubValues = [
+      [{id: 1}],
+      [{id: 2}],
+      [{id: 3}],
+      [{id: 4}],
+      [{id: 5}],
+      [{id: 6}],
+      [{id: 7}],
+      [{id: 8}],
+      [{id: 9}]
+    ];
+    stubDb.setup(this);
+  });
+  afterEach(function () {
+    stubDb.restore(this);
+  });
+  describe("component functions", function () {
 
     describe("ensure", function () {
       beforeEach(function () {
@@ -120,15 +122,19 @@ describe("saveEvent", function () {
         this.d[0].resolve({rows: []});
       });
 
-      it("should try to create an ensured-thing if it doesn't exist", function (done) {
+      it("should try to create an ensured-thing if it doesn't exist with a creator", function (done) {
         var self = this;
         this.fnArgs[0].name = "somewhere";
         this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
           tryTest(function () {
-            self.args[0][1].should.equal("save_some_thing_by_id");
+            self.args[0][1].should.equal("save_creator");
+            self.args[1][1].should.equal("save_some_thing_by_id");
           }, done
         ), done);
-        this.d[0].resolve({rows: [{id: 1}]});
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
       });
 
       it("should return the ensured-thing's id if it was created", function (done) {
@@ -139,9 +145,27 @@ describe("saveEvent", function () {
           }, done),
           done
         );
-        this.d[0].resolve({rows: [{id: 1}]});
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
       });
       it("should throw an exception if an ensured-thing cannot be created", function (done) {
+        this.fnArgs[0].name = "somewhere";
+        this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+          function () {
+            done({message: "should not succeed"});
+          },
+          tryTest(function (e) {
+            should.exist(e);
+          }, done)
+        );
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          []
+        ]);
+      });
+      it("should throw an exception if an creator cannot be created", function (done) {
         this.fnArgs[0].name = "somewhere";
         this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
           function () {
@@ -184,7 +208,7 @@ describe("saveEvent", function () {
           this.eventSaver.ensurePlace({
             id: -1
           }).then(_.bind(function () {
-            this.args[1][1].should.equal("save_place");
+            this.args[2][1].should.equal("save_place");
             done();
           }, this));
           stubDb.setQueryValues(this, this.stubValues);
@@ -242,7 +266,7 @@ describe("saveEvent", function () {
           });
           it("should add subtypes to the new thing", function (done) {
             this.testSave(function () {
-              this.args[8][1].should.equal("save_thing_subtype");
+              this.args[9][1].should.equal("save_thing_subtype");
             }, done);
           });
         });
@@ -267,7 +291,32 @@ describe("saveEvent", function () {
             done(e);
           }
         );
-        this.d[0].resolve({rows: [{id: 5}]});
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
+      });
+      it("should ensure a creator", function (done) {
+        new saveEvent.EventSaver().createEvent({
+            name: "something happened",
+            type_id: 2,
+            place_id: 1,
+            start_date: "2013-06-02",
+            end_date: "2013-06-02",
+            link: "http://some.wiki.page/ihope.html"
+          }
+        ).then(
+          tryTest(_.bind(function () {
+            this.args[0][1].should.equal("save_creator");
+          }, this), done),
+          function (e) {
+            done(e);
+          }
+        );
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
       });
 
       ["name", "place_id", "type_id", "start_date", "end_date", "link"].forEach(function (key) {
@@ -292,22 +341,22 @@ describe("saveEvent", function () {
         });
       });
       it("should throw an exception if the end date is before the start date", function (done) {
-          new saveEvent.EventSaver().createEvent({
-            name: "something happened",
-            type_id: 1,
-            place_id: 1,
-            start_date: "2013-06-02",
-            end_date: "2013-06-01",
-            link: "http://some.wiki.page/ihope.html"
-          }).then(
-            function () {
-              done({message: "should not succeed"});
-            },
-            tryTest(function (e) {
-              should.exist(e);
-            }, done)
-          );
-        });
+        new saveEvent.EventSaver().createEvent({
+          name: "something happened",
+          type_id: 1,
+          place_id: 1,
+          start_date: "2013-06-02",
+          end_date: "2013-06-01",
+          link: "http://some.wiki.page/ihope.html"
+        }).then(
+          function () {
+            done({message: "should not succeed"});
+          },
+          tryTest(function (e) {
+            should.exist(e);
+          }, done)
+        );
+      });
       it("should throw an exception if it cannot create the event", function (done) {
         new saveEvent.EventSaver().createEvent({
             name: "something happened",
@@ -345,7 +394,7 @@ describe("saveEvent", function () {
           }
         );
         _.defer(function () {
-          self.d[0].resolve({rows: [{}]});
+          self.d[0].resolve({rows: [{id: 1}]});
           self.d[1].resolve({rows: [{}]});
         });
       });
@@ -353,12 +402,6 @@ describe("saveEvent", function () {
   });
 
   describe("transaction", function () {
-    beforeEach(function () {
-      stubDb.setup(this);
-    });
-    afterEach(function () {
-      stubDb.restore(this);
-    });
     it("should do the entire save in a transaction", function (done) {
       this.testSave(function () {
         this.db.startTransaction.callCount.should.equal(1);
@@ -367,6 +410,7 @@ describe("saveEvent", function () {
     });
     it("should roll back the transaction if a component section fails", function (done) {
       var req = {
+        user: {id: 1},
         body: {
           name: "a test",
           start: "2013-03-12T00:00:00.000Z",

@@ -1,4 +1,5 @@
 insert into event (
+  creator_id,
   name,
   type_id,
   importance_id,
@@ -7,5 +8,5 @@ insert into event (
   end_date,
   link
 )
-values ($1, $2, $3, $4, $5, $6, $7)
+values ($1, $2, $3, $4, $5, $6, $7, $8)
 returning id;
