@@ -1,6 +1,6 @@
 CREATE TABLE type
 (
-  id SERIAL,
+  id BIGSERIAL,
   name character varying(200) NOT NULL,
   type_id bigint REFERENCES type(id),
   parent_type_id bigint REFERENCES type(id),
@@ -9,7 +9,7 @@ CREATE TABLE type
 
 CREATE TABLE thing
 (
-  id SERIAL,
+  id BIGSERIAL,
   name character varying(200) NOT NULL,
   type_id bigint NOT NULL REFERENCES type(id),
   link character varying(200),
@@ -18,7 +18,7 @@ CREATE TABLE thing
 
 CREATE TABLE place
 (
-  id SERIAL,
+  id BIGSERIAL,
   location geometry NOT NULL,
   thing_id bigint NOT NULL REFERENCES thing(id),
   CONSTRAINT place_pkey PRIMARY KEY (id)
@@ -33,7 +33,7 @@ CREATE TABLE thing_subtype
 
 CREATE TABLE event
 (
-  id SERIAL,
+  id BIGSERIAL,
   name character varying(300) NOT NULL,
   place_id bigint NOT NULL REFERENCES thing(id),
   start_date timestamp,

@@ -8,26 +8,26 @@ var async = require("async");
 exports.up = function (db, callback) {
   var actions = [
     db.createTable.bind(db, "importance", {
-      id:            {type: "int",     primaryKey: true, autoIncrement: true},
+      id:            {type: "bigint",  primaryKey: true, autoIncrement: true},
       name:          {type: "string",  notNull: false },
       description:   {type: "string",  notNull: false, unique: true },
-      value:         {type: "int",  notNull: false },
-      type_id:       {type: "int",  notNull: false }
+      value:         {type: "int",     notNull: false },
+      type_id:       {type: "bigint",  notNull: false }
     }),
     db.addColumn.bind(db, "thing_subtype", "importance_id", {
       type: "int",
       notNull: true
     }),
     db.addColumn.bind(db, "event", "importance_id", {
-      type: "int",
+      type: "bigint",
       notNull: true
     }),
     db.addColumn.bind(db, "event_participant", "importance_id", {
-      type: "int",
+      type: "bigint",
       notNull: true
     }),
     db.addColumn.bind(db, "type", "default_importance_id", {
-      type: "int",
+      type: "bigint",
       notNull: false
     }),
 

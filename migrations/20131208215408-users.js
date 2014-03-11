@@ -8,7 +8,7 @@ var async = require("async");
 exports.up = function (db, callback) {
   async.series([
     db.createTable.bind(db, "registered_user", {
-      id:            {type: "int",     primaryKey: true, autoIncrement: true},
+      id:            {type: "bigint",     primaryKey: true, autoIncrement: true},
       username:      {type: "string",  notNull: false, unique: true },
       password:      {type: "string",  notNull: false },
       facebook_id:   {type: "string",  notNull: false },
@@ -17,19 +17,19 @@ exports.up = function (db, callback) {
       github_id:     {type: "string",  notNull: false },
       email:         {type: "string",  notNull: false },
       name:          {type: "string",  notNull: false },
-      registration_date: {type: "timestamp",  notNull: true }
+      registration_date: {type: "timestamp",  notNull: true, defaultValue: "now()" }
     }),
 
     db.createTable.bind(db, "permission", {
-      id:            {type: "int",     primaryKey: true, autoIncrement: true},
+      id:            {type: "bigint",     primaryKey: true, autoIncrement: true},
       name:          {type: "string",  unique: true},
       is_global:     {type: "boolean", defaultValue: false}
 
     }),
 
     db.createTable.bind(db, "user_permission", {
-      user_id:       {type: "int",     primaryKey: true},
-      permission_id: {type: "int",     primaryKey: true}
+      user_id:       {type: "bigint",     primaryKey: true},
+      permission_id: {type: "bigint",     primaryKey: true}
     }),
 
     db.insert.bind(db, "permission", ["name"], ["login"]),
