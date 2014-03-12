@@ -7,6 +7,7 @@ define([
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
         "&sensor=false!callback",
   "views/options_menu",
+  "views/event_editor",
   "utils/position",
   "utils/scroll",
   "styled_marker",
@@ -15,7 +16,7 @@ define([
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
   "css!/css/map"
-], function ($, _, Backbone, analytics, maps, OptionsMenu,
+], function ($, _, Backbone, analytics, maps, OptionsMenu, EventEditor,
     Position, Scroll, StyledMarker, chroma,
     infoWindowSummaryTemplate, infoWindowEntryTemplate,
     infoWindowEntryParticipantTemplate) {
@@ -314,6 +315,7 @@ define([
 
       $(".event-link").on("click", _.bind(this.onLinkClick, this));
       $(".search").on("click", _.bind(this.onSearchClick, this));
+      $(".edit").on("click", _.bind(this.onEditClick, this));
 
       if ($(".content-holder").height() === 200) {
         //This is an ugly hack to allow us to put scroll bars on.
@@ -355,6 +357,19 @@ define([
       this.model.set("query", data.thingName);
       this.model.set("highlight", {id: data.thingId, reset: true});
       analytics.mapEntrySearched(data);
+    },
+
+    onEditClick: function (e) {
+      var data = this.getMarkerData(e);
+      this.createEventEditor(data);
+      analytics.mapEntryEdited(data);
+    },
+
+    createEventEditor: function (data) {
+      return new EventEditor({
+        state: this.model,
+        model: new Backbone.Model(data)
+      }).render();
     },
 
     getMarkerData: function (e) {

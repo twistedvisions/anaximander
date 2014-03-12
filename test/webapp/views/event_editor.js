@@ -19,103 +19,79 @@ define(
       describe("getDatePickerOpts", function () {
         it("should set the year range", function () {
           var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+            state: new Backbone.Model({date: [1900, 2000]})
           });
           editor.getDatePickerOpts().yearRange.should.equal("1880:2020");
         });
         it("should set the default date for the start", function () {
           var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+            state: new Backbone.Model({date: [1900, 2000]})
           });
           editor.getDatePickerOpts(true).defaultDate.should.eql(new Date(1950, 0, 1));
         });
       });
       describe("interactions", function () {
-        it("should set the end when the start is set if it is empty", function () {
-          var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+        beforeEach(function () {
+          this.editor = new EventEditor({
+            state: new Backbone.Model({date: [1900, 2000]})
           });
-          editor.render();
-          editor.$("input[data-key=end]").val().should.equal("");
-          editor.$("input[data-key=start]").val("2012-12-04");
-          editor.$("input[data-key=start]").trigger("change");
-          editor.$("input[data-key=end]").val().should.equal("2012-12-04");
-          editor.$("input.date").datepicker("hide");
-          editor.$el.remove();
+        });
+        it("should set the end when the start is set if it is empty", function () {
+
+          this.editor.render();
+          this.editor.$("input[data-key=end]").val().should.equal("");
+          this.editor.$("input[data-key=start]").val("2012-12-04");
+          this.editor.$("input[data-key=start]").trigger("change");
+          this.editor.$("input[data-key=end]").val().should.equal("2012-12-04");
+          this.editor.$("input.date").datepicker("hide");
+          this.editor.$el.remove();
         });
 
         it("should not set the end when the start is set if it is already set", function () {
-          var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
-          });
-          editor.render();
-          editor.$("input[data-key=end]").val("2012-12-05");
-          editor.$("input[data-key=start]").val("2012-12-04");
-          editor.$("input[data-key=start]").trigger("change");
-          editor.$("input[data-key=end]").val().should.equal("2012-12-05");
-          editor.$("input.date").datepicker("hide");
-          editor.$el.remove();
+          this.editor.render();
+          this.editor.$("input[data-key=end]").val("2012-12-05");
+          this.editor.$("input[data-key=start]").val("2012-12-04");
+          this.editor.$("input[data-key=start]").trigger("change");
+          this.editor.$("input[data-key=end]").val().should.equal("2012-12-05");
+          this.editor.$("input.date").datepicker("hide");
+          this.editor.$el.remove();
         });
         it("should add a participant when the participant select box changes", function () {
-          var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
-          });
-          sinon.stub(editor, "addParticipant");
-          editor.render();
-          editor.$("input[data-key=participants]").trigger("change");
-          editor.addParticipant.calledOnce.should.equal(true);
+          sinon.stub(this.editor, "addParticipant");
+          this.editor.render();
+          this.editor.$("input[data-key=participants]").trigger("change");
+          this.editor.addParticipant.calledOnce.should.equal(true);
         });
       });
 
       describe("addParticipant", function () {
-        it("should add a model to the participants collection", function () {
-          var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+        beforeEach(function () {
+          this.editor = new EventEditor({
+            state: new Backbone.Model({date: [1900, 2000]})
           });
-          editor.render();
-          sinon.stub(editor, "getSelectedParticipant", function () {
+          this.editor.render();
+          sinon.stub(this.editor, "getSelectedParticipant", function () {
             return {};
           });
-          _.keys(editor.participants).length.should.equal(0);
-          editor.addParticipant();
-          _.keys(editor.participants).length.should.equal(1);
+        });
+        it("should add a model to the participants collection", function () {
+          _.keys(this.editor.participants).length.should.equal(0);
+          this.editor.addParticipant();
+          _.keys(this.editor.participants).length.should.equal(1);
         });
         it("should a view to the participants list", function () {
-          var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
-          });
-          editor.render();
-          sinon.stub(editor, "getSelectedParticipant", function () {
-            return {};
-          });
-          editor.$(".participant-list .participant-editor").length.should.equal(0);
-          editor.addParticipant();
-          editor.$(".participant-list .participant-editor").length.should.equal(1);
+          this.editor.$(".participant-list .participant-editor").length.should.equal(0);
+          this.editor.addParticipant();
+          this.editor.$(".participant-list .participant-editor").length.should.equal(1);
         });
         it("should empty the select box", function () {
-          var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
-          });
-          editor.render();
-          sinon.stub(editor, "getSelectedParticipant", function () {
-            return {};
-          });
-          sinon.stub(editor, "clearParticipantSelector");
-          editor.addParticipant();
-          editor.clearParticipantSelector.calledOnce.should.equal(true);
+          sinon.stub(this.editor, "clearParticipantSelector");
+          this.editor.addParticipant();
+          this.editor.clearParticipantSelector.calledOnce.should.equal(true);
         });
         describe("participantEditor", function () {
-          beforeEach(function () {
-            this.editor = new EventEditor({
-              model: new Backbone.Model({date: [1900, 2000]})
-            });
-            this.editor.render();
-            sinon.stub(this.editor, "getSelectedParticipant", function () {
-              return {};
-            });
-            this.editor.addParticipant();
-          });
           it("should remove participants on the participant editor's remove event", function () {
+            this.editor.addParticipant();
             _.keys(this.editor.participants).length.should.equal(1);
             this.editor.participants[_.keys(this.editor.participants)[0]].trigger("remove");
             _.keys(this.editor.participants).length.should.equal(0);
@@ -127,7 +103,7 @@ define(
         it("should log when someone adds a participant", function () {
           sinon.stub(Analytics, "participantAdded");
           var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+            state: new Backbone.Model({date: [1900, 2000]})
           });
           editor.render();
           sinon.stub(editor, "getSelectedParticipant", function () {
@@ -144,7 +120,7 @@ define(
         it("should log when someone removes a participant", function () {
           sinon.stub(Analytics, "participantRemoved");
           var editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+            state: new Backbone.Model({date: [1900, 2000]})
           });
           editor.render();
           sinon.stub(editor, "getSelectedParticipant", function () {
@@ -168,7 +144,7 @@ define(
           sinon.stub(Event.prototype, "save");
 
           this.editor = new EventEditor({
-            model: new Backbone.Model({date: [1900, 2000]})
+            state: new Backbone.Model({date: [1900, 2000]})
           });
           this.editor.getSelectValue = function (type) {
             return {
@@ -218,13 +194,13 @@ define(
         });
 
         it("should trigger a change on the model to say it needs updating", function () {
-          sinon.stub(this.editor.model, "trigger");
+          sinon.stub(this.editor.state, "trigger");
           sinon.stub(this.editor, "updateHighlight");
           try {
             this.editor.handleSaveComplete();
-            this.editor.model.trigger.calledWith("change:center").should.equal(true);
+            this.editor.state.trigger.calledWith("change:center").should.equal(true);
           } finally {
-            this.editor.model.trigger.restore();
+            this.editor.state.trigger.restore();
           }
         });
 
@@ -240,15 +216,15 @@ define(
         });
 
         it("should update the highlight if the added participant is already highlighted", function () {
-          this.editor.model.set("highlight", {id: 123});
+          this.editor.state.set("highlight", {id: 123});
           this.editor.updateHighlight({participants: [{thing: {id: 123}}]});
-          this.editor.model.get("highlight").reset.should.equal(true);
+          this.editor.state.get("highlight").reset.should.equal(true);
         });
 
         it("should not update the highlight if the added participant is not highlighted", function () {
-          this.editor.model.set("highlight", {id: 123});
+          this.editor.state.set("highlight", {id: 123});
           this.editor.updateHighlight({participants: [{thing: {id: 1234}}]});
-          (this.editor.model.get("highlight").reset === undefined).should.equal(true);
+          (this.editor.state.get("highlight").reset === undefined).should.equal(true);
         });
 
         it("should show the error message if it fails", function () {

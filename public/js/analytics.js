@@ -31,6 +31,7 @@ define(["underscore"], function (_) {
     "infoBoxShown",
     "linkClicked",
     "mapEntrySearched",
+    "mapEntryEdited",
 
     //search
     "searchBoxCharacterTyped",

@@ -23,6 +23,7 @@ define([
     className: "",
 
     initialize: function (options) {
+      this.state = options.state;
       this.newEvent = options.newEvent;
       this.eventsCollection = new EventsCollection();
       this.roles = roles.instance;
@@ -66,7 +67,7 @@ define([
     },
 
     getDatePickerOpts: function (isStart) {
-      var date = this.model.get("date");
+      var date = this.state.get("date");
       var opts = {
         dateFormat: "yy-mm-dd",
         changeYear: true,
@@ -292,17 +293,17 @@ define([
       if (!updatedModel) {
         //don't always do this because the above may have
         //triggered it with an extra more specific event
-        this.model.trigger("change:center");
+        this.state.trigger("change:center");
       }
     },
 
     updateHighlight: function (values) {
-      var highlightId = this.model.get("highlight").id;
+      var highlightId = this.state.get("highlight").id;
       var participantMatchesHighlight = function (participant) {
         return participant.thing.id === highlightId;
       };
       if (_.find(values.participants, participantMatchesHighlight)) {
-        this.model.set("highlight", {id: highlightId, reset: true});
+        this.state.set("highlight", {id: highlightId, reset: true});
         return true;
       }
       return false;

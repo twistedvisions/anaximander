@@ -38,7 +38,7 @@ define([
 
     showEventEditor: function () {
       new EventEditor({
-        model: this.model,
+        state: this.model,
         newEvent: {
           location: {
             lat: this.event.latLng.lat(),
