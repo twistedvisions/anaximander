@@ -1,9 +1,11 @@
 /*global sinon, describe, it, beforeEach */
 define(
 
-  ["backbone", "views/participant_editor", "collections/roles"],
+  ["chai", "backbone", "views/participant_editor", "collections/roles"],
 
-  function (Backbone, ParticipantEditor, RolesCollection) {
+  function (chai, Backbone, ParticipantEditor, RolesCollection) {
+
+    var should = chai.should();
 
     describe("rendering", function () {
       beforeEach(function () {
@@ -27,29 +29,28 @@ define(
             name: "importance 3"
           }]
         }]);
+        this.existingModel = new Backbone.Model({thing: {id: 10, name: "existing thing name"}});
+        this.newModel = new Backbone.Model({thing: {id: -1, name: "new thing name"}});
       });
       it("should show the thing's name if it exists", function () {
-        this.model = new Backbone.Model({id: 10, name: "existing thing name"});
         this.participantEditor = new ParticipantEditor({
-          model: this.model,
+          model: this.existingModel,
           roles: this.typesCollection
         });
         this.participantEditor.render();
         this.participantEditor.$(".name").text().should.equal("existing thing name");
       });
       it("should make the thing name's editable if it is a new thing", function () {
-        this.model = new Backbone.Model({id: -1, name: "new thing name"});
         this.participantEditor = new ParticipantEditor({
-          model: this.model,
+          model: this.newModel,
           roles: this.typesCollection
         });
         this.participantEditor.render();
         this.participantEditor.$(".new-thing input[data-key=thing-name]").val().should.equal("new thing name");
       });
       it("should remove participants when the remove button is clicked", function () {
-        this.model = new Backbone.Model({id: -1, name: "new thing name"});
         this.participantEditor = new ParticipantEditor({
-          model: this.model,
+          model: this.newModel,
           roles: this.typesCollection
         });
         this.participantEditor.render();
@@ -61,9 +62,8 @@ define(
 
     describe("getValue", function () {
       it("should get the value of the thing editor if it is a new thing", function () {
-        this.model = new Backbone.Model({id: -1, name: "new thing name"});
         this.participantEditor = new ParticipantEditor({
-          model: this.model,
+          model: this.newModel,
           roles: this.typesCollection
         });
         this.participantEditor.render();
@@ -72,18 +72,16 @@ define(
         value.thing.name.should.equal("new thing name");
       });
       it("should get the id of the thing if it already exists", function () {
-        this.model = new Backbone.Model({id: 10, name: "existing thing name"});
         this.participantEditor = new ParticipantEditor({
-          model: this.model,
+          model: this.existingModel,
           roles: this.typesCollection
         });
         this.participantEditor.render();
         this.participantEditor.getValue().thing.id.should.equal(10);
       });
       it("should get the value of the type selector", function () {
-        this.model = new Backbone.Model({id: 10, name: "existing thing name"});
         this.participantEditor = new ParticipantEditor({
-          model: this.model,
+          model: this.existingModel,
           roles: this.typesCollection
         });
         this.participantEditor.render();

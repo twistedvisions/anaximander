@@ -71,7 +71,11 @@ define(
           });
           this.editor.render();
           sinon.stub(this.editor, "getSelectedParticipant", function () {
-            return {};
+            return {
+              thing: {
+                id: -1
+              }
+            };
           });
         });
         it("should add a model to the participants collection", function () {
@@ -100,40 +104,30 @@ define(
       });
 
       describe("analytics", function () {
-        it("should log when someone adds a participant", function () {
+        beforeEach(function () {
           sinon.stub(Analytics, "participantAdded");
-          var editor = new EventEditor({
+          sinon.stub(Analytics, "participantRemoved");
+          this.editor = new EventEditor({
             state: new Backbone.Model({date: [1900, 2000]})
           });
-          editor.render();
-          sinon.stub(editor, "getSelectedParticipant", function () {
-            return {id: 1, name: "some name"};
+          this.editor.render();
+          sinon.stub(this.editor, "getSelectedParticipant", function () {
+            return {thing: {id: 1, name: "some name"}};
           });
-          try {
-            editor.addParticipant();
-            Analytics.participantAdded.calledOnce.should.equal(true);
-          } finally {
-            editor.getSelectedParticipant.restore();
-            Analytics.participantAdded.restore();
-          }
+        });
+        afterEach(function () {
+          this.editor.getSelectedParticipant.restore();
+          Analytics.participantAdded.restore();
+          Analytics.participantRemoved.restore();
+        });
+        it("should log when someone adds a participant", function () {
+          this.editor.addParticipant();
+          Analytics.participantAdded.calledOnce.should.equal(true);
         });
         it("should log when someone removes a participant", function () {
-          sinon.stub(Analytics, "participantRemoved");
-          var editor = new EventEditor({
-            state: new Backbone.Model({date: [1900, 2000]})
-          });
-          editor.render();
-          sinon.stub(editor, "getSelectedParticipant", function () {
-            return {id: 1, name: "some name"};
-          });
-          try {
-            editor.addParticipant();
-            _.values(editor.participants)[0].trigger("remove");
-            Analytics.participantRemoved.calledOnce.should.equal(true);
-          } finally {
-            editor.getSelectedParticipant.restore();
-            Analytics.participantRemoved.restore();
-          }
+          this.editor.addParticipant();
+          _.values(this.editor.participants)[0].trigger("remove");
+          Analytics.participantRemoved.calledOnce.should.equal(true);
         });
       });
 
@@ -148,17 +142,17 @@ define(
           sinon.stub(this.editor.eventTypeSelector, "setValue");
           this.editor._populateView({
             name: "existing event name",
-            place_name: "existing place name",
+            place: {name: "existing place name"},
             link: "www.link.com",
-            type_id: 1,
-            importance_id: 1,
+            type: {id: 1},
+            importance: {id: 1},
             start_date: new Date(1900, 11, 13).getTime(),
             end_date: new Date(2000, 0, 1).getTime(),
             participants: [
               {
-                name: "John Smith",
-                type: {id: 2},
-                importance: {id: 2}
+                thing: {id: 3, name: "John Smith"},
+                type: {id: 1},
+                importance: {id: 1}
               }
             ]
           });

@@ -39,8 +39,8 @@ describe("saveEvent", function () {
     this.fullBody = {
       name: "a test",
       link: "http://testlink.com",
-      start: "2013-03-12T00:00:00.000Z",
-      end: "2013-03-12T00:00:00.000Z",
+      start_date: "2013-03-12T00:00:00.000Z",
+      end_date: "2013-03-12T00:00:00.000Z",
       type: {
         id: 1,
         name: "test type"
@@ -413,8 +413,8 @@ describe("saveEvent", function () {
         user: {id: 1},
         body: {
           name: "a test",
-          start: "2013-03-12T00:00:00.000Z",
-          end: "2013-03-12T00:00:00.000Z",
+          start_date: "2013-03-12T00:00:00.000Z",
+          end_date: "2013-03-12T00:00:00.000Z",
           place: {
             id: 58365,
             name: "Sneem"

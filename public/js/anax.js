@@ -19,6 +19,9 @@ require.config({
     "chroma": {
       exports: "chroma"
     },
+    "deep-diff": {
+      exports: "DeepDiff"
+    },
     "select2": {
       deps: ["jquery"],
       exports: "Select2"
@@ -52,6 +55,7 @@ require.config({
     templates: "../templates",
     async: "./libs/async",
     when: "./libs/when",
+    "deep-diff": "./libs/deep-diff",
     styled_marker: "./libs/styled_marker",
     underscore_string: "./libs/underscore_string",
     fuse: "./libs/fuse",

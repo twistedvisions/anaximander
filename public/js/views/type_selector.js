@@ -181,7 +181,9 @@ define([
 
     getTypeValue: function () {
       var data = _.clone(this.$("input[data-key=type]").select2("data"));
-      data.name = data.text;
+      if (data.id === -1) {
+        data.name = data.text;
+      }
       delete data.text;
       return data;
     },
@@ -190,6 +192,7 @@ define([
       var value;
       if (this.selectMode) {
         value = this.$("input[data-key=importance]").select2("data");
+        delete value.text;
       } else {
         value = {
           id: -1,

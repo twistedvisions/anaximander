@@ -36,21 +36,19 @@ define([
     },
 
     populateValues: function () {
-      if (this.model.id === -1) {
+      if (this.model.get("thing").id === -1) {
         this.$(".known-thing").remove();
-        this.thingEditor = new ThingEditor({
-          name: this.model.get("name")
-        });
+        this.thingEditor = new ThingEditor(this.model.get("thing"));
         this.$(".new-thing").append(this.thingEditor.render());
         this.$el.addClass("creating-thing");
       } else {
         this.$(".new-thing").remove();
       }
 
-      if (this.model.has("type_id")) {
+      if (this.model.has("type")) {
         this.typeSelector.setValue(
-          this.model.get("type_id"),
-          this.model.get("importance_id")
+          this.model.get("type").id,
+          this.model.get("importance").id
         );
       }
     },
@@ -63,14 +61,14 @@ define([
     getValue: function () {
       var value;
 
-      if (this.model.id === -1)  {
+      if (!this.model.has("thing") || this.model.get("thing").id === -1)  {
         value = {
           thing: this.thingEditor.getValue()
         };
         value.thing.id = -1;
       } else {
         value = {
-          thing: this.model.toJSON()
+          thing: this.model.get("thing")
         };
       }
       return _.extend(value, this.typeSelector.getValue());

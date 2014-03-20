@@ -2,6 +2,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "deep-diff",
   "models/event",
   "collections/events",
   "collections/roles",
@@ -15,7 +16,7 @@ define([
   "parsley",
   "css!/css/event_editor",
   "css!/css/select2-bootstrap"
-], function ($, _, Backbone, Event, EventsCollection,
+], function ($, _, Backbone, DeepDiff, Event, EventsCollection,
     roles, eventTypes, TypeSelector, ParticipantEditor,
     analytics, template) {
 
@@ -158,7 +159,7 @@ define([
         }
       });
 
-      el.on("change", _.bind(this.addParticipant, this));
+      el.on("change", _.bind(this.addParticipant, this, null));
 
       this.$("form").parsley({
         validators: {
@@ -211,7 +212,7 @@ define([
       var participants = select.select2("data");
       var data = participants[0];
 
-      data.name = data.text;
+      data.thing = {name: data.text};
       delete data.text;
 
       return data;
@@ -236,40 +237,70 @@ define([
     },
 
     _populateView: function (data) {
+      data.start_date = new Date(data.start_date);
+      data.end_date = new Date(data.end_date);
       this.model = new Backbone.Model(data);
       this.$el.find("input[data-key=name]").val(this.model.get("name"));
-      this.$el.find("input[data-key=place]").val(this.model.get("place_name"));
+      this.$el.find("input[data-key=place]").val(this.model.get("place").name);
       this.eventTypeSelector.setValue(
-        this.model.get("type_id"),
-        this.model.get("importance_id")
+        this.model.get("type").id,
+        this.model.get("importance").id
       );
       this.$el.find("input[data-key=link]").val(this.model.get("link"));
-      this.$el.find("input[data-key=start]").datepicker("setDate", new Date(this.model.get("start_date")));
-      this.$el.find("input[data-key=end]").datepicker("setDate", new Date(this.model.get("end_date")));
+      this.$el.find("input[data-key=start]").datepicker("setDate", this.model.get("start_date"));
+      this.$el.find("input[data-key=end]").datepicker("setDate", this.model.get("end_date"));
       _.each(this.model.get("participants"), _.bind(this.addParticipant, this));
     },
 
     handleSave: function () {
 
       if (this.validate()) {
-        var values = {};
-
-        values.name = this.$el.find("input[data-key=name]").val();
-        values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
-        values.place = this.getPlace();
-        values.start = new Date(this.$el.find("input[data-key=start]").val());
-        values.end = new Date(this.$el.find("input[data-key=end]").val());
-        _.extend(values, this.eventTypeSelector.getValue());
-        values.participants = this.getParticipantValues();
-
-        var model = new Event(values);
-        this.eventsCollection.add(model);
-        model.save(null, {
-          success: _.bind(this.handleSaveComplete, this, values),
-          error: _.bind(this.handleSaveFail, this)
-        });
-        analytics.eventAdded(values);
+        var values = this.collectValues();
+        if (this.model) {
+          this.updateExistingEvent(values);
+        } else {
+          this.saveNewEvent(values);
+        }
       }
+    },
+
+    collectValues: function () {
+      var values = {};
+
+      if (this.model) {
+        values.id = this.model.id;
+      }
+
+      values.name = this.$el.find("input[data-key=name]").val();
+      values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
+      values.place = this.getPlace();
+      values.start_date = new Date(this.$el.find("input[data-key=start]").val());
+      values.end_date = new Date(this.$el.find("input[data-key=end]").val());
+      _.extend(values, this.eventTypeSelector.getValue());
+      values.participants = this.getParticipantValues();
+
+      return values;
+    },
+
+    updateExistingEvent: function (values) {
+      this.getDifferences(values);
+    },
+
+    getDifferences: function (values) {
+      var previous = _.omit(this.model.toJSON(), ["location", "place"]);
+      values = _.omit(values, ["place"]);
+      var diff = DeepDiff.diff(previous, values);
+      return diff;
+    },
+
+    saveNewEvent: function (values) {
+      var model = new Event(values);
+      this.eventsCollection.add(model);
+      model.save(null, {
+        success: _.bind(this.handleSaveComplete, this, values),
+        error: _.bind(this.handleSaveFail, this)
+      });
+      analytics.eventAdded(values);
     },
 
     validate: function () {
