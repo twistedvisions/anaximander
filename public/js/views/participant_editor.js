@@ -18,17 +18,6 @@ define([
     render: function () {
       this.$el.html(_.template(template, this.model.toJSON()));
 
-      if (this.model.id === -1) {
-        this.$(".known-thing").remove();
-        this.thingEditor = new ThingEditor({
-          name: this.model.get("name")
-        });
-        this.$(".new-thing").append(this.thingEditor.render());
-        this.$el.addClass("creating-thing");
-      } else {
-        this.$(".new-thing").remove();
-      }
-
       this.typeSelector = new TypeSelector({
         type: "role",
         typePlaceholder: "Role",
@@ -42,7 +31,28 @@ define([
       this.$(".remove-participant").on("click",
         _.bind(this.removeParticipant, this));
 
+      this.populateValues();
       return this.$el;
+    },
+
+    populateValues: function () {
+      if (this.model.id === -1) {
+        this.$(".known-thing").remove();
+        this.thingEditor = new ThingEditor({
+          name: this.model.get("name")
+        });
+        this.$(".new-thing").append(this.thingEditor.render());
+        this.$el.addClass("creating-thing");
+      } else {
+        this.$(".new-thing").remove();
+      }
+
+      if (this.model.has("type_id")) {
+        this.typeSelector.setValue(
+          this.model.get("type_id"),
+          this.model.get("importance_id")
+        );
+      }
     },
 
     removeParticipant: function () {

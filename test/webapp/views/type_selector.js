@@ -136,6 +136,28 @@ define(
         });
       });
 
+      describe("setValue", function () {
+        it("should select the type", function () {
+          this.typeSelector.$("input[data-key=type]").select2("val").should.not.equal("1");
+          this.typeSelector.setValue(2, 3);
+          this.typeSelector.$("input[data-key=type]").select2("val").should.equal("2");
+        });
+        it("should populate the importance dropdown", function () {
+          try {
+            sinon.stub(this.typeSelector, "setImportanceDropdownValues");
+            this.typeSelector.setValue(2, 3);
+            this.typeSelector.setImportanceDropdownValues.args[0][0].length.should.equal(2);
+          } finally {
+            this.typeSelector.setImportanceDropdownValues.restore();
+          }
+        });
+        it("should select the importance", function () {
+          this.typeSelector.$("input[data-key=importance]").select2("val").should.not.equal("3");
+          this.typeSelector.setValue(2, 3);
+          this.typeSelector.$("input[data-key=importance]").select2("val").should.equal("3");
+        });
+      });
+
       describe("validate", function () {
         beforeEach(function () {
           this.typeSelector.$("input[data-key=type]").val(2);

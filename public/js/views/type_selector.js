@@ -124,34 +124,51 @@ define([
     updateTypeImportance: function () {
       var typeId = parseInt(this.$("input[data-key=type]").val(), 10);
       if (typeId !== -1) {
-        var type = this.types.get(typeId);
-        var importances = type.get("importances");
-        this.$("input[data-key=importance]").select2(
-          _.extend(this.importanceSelectData, {
-          data: _.map(importances, function (type) {
-            return {
-              id: type.id,
-              text: type.name
-            };
-          })
-        }));
-        var defaultImportanceId = type.get("default_importance_id");
-        this.$("input[data-key=importance]").val(defaultImportanceId).trigger("change");
+        this.setImportancesForExistingType(typeId);
       } else {
-        this.$("input[data-key=importance]").select2(
-          _.extend(this.importanceSelectData, {
-          data: [{
-            id: -1,
-            text: this.defaultNewImportanceName
-          }]
-        }));
-        this.$("input[data-key=importance]").val(-1).trigger("change");
-        Analytics.newTypeAdded({
-          type: this.typeName,
-          name: name
-        });
+        this.setImportancesForNewType();
       }
       this.setImportanceSelectMode(true, true);
+    },
+
+    setImportancesForExistingType: function (typeId) {
+      var type = this.types.get(typeId);
+      this.setImportanceDropdownValues(type.get("importances"));
+      var defaultImportanceId = type.get("default_importance_id");
+      this.$("input[data-key=importance]").val(defaultImportanceId).trigger("change");
+    },
+
+    setImportanceDropdownValues: function (importances) {
+      this.$("input[data-key=importance]").select2(
+        _.extend(this.importanceSelectData, {
+        data: _.map(importances, function (type) {
+          return {
+            id: type.id,
+            text: type.name
+          };
+        })
+      }));
+    },
+
+    setImportancesForNewType: function () {
+      this.$("input[data-key=importance]").select2(
+        _.extend(this.importanceSelectData, {
+        data: [{
+          id: -1,
+          text: this.defaultNewImportanceName
+        }]
+      }));
+      this.$("input[data-key=importance]").val(-1).trigger("change");
+      Analytics.newTypeAdded({
+        type: this.typeName,
+        name: name
+      });
+    },
+
+    setValue: function (typeId, importanceId) {
+      this.$("input[data-key=type]").select2("val", typeId);
+      this.updateTypeImportance();
+      this.$("input[data-key=importance]").select2("val", importanceId);
     },
 
     getValue: function () {

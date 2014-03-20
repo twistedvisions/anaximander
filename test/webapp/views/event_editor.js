@@ -137,6 +137,58 @@ define(
         });
       });
 
+      describe("editing", function () {
+        beforeEach(function () {
+          this.editor = new EventEditor({
+            state: new Backbone.Model({date: [1900, 2000]}),
+            model: new Backbone.Model()
+          });
+          sinon.stub(this.editor, "populateView");
+          this.editor.render();
+          sinon.stub(this.editor.eventTypeSelector, "setValue");
+          this.editor._populateView({
+            name: "existing event name",
+            place_name: "existing place name",
+            link: "www.link.com",
+            type_id: 1,
+            importance_id: 1,
+            start_date: new Date(1900, 11, 13).getTime(),
+            end_date: new Date(2000, 0, 1).getTime(),
+            participants: [
+              {
+                name: "John Smith",
+                type: {id: 2},
+                importance: {id: 2}
+              }
+            ]
+          });
+        });
+        afterEach(function () {
+          this.editor.populateView.restore();
+        });
+        it("should display the event name", function () {
+          this.editor.$("input[data-key=name]").val().should.equal("existing event name");
+        });
+        it("should display the event place", function () {
+          this.editor.$("input[data-key=place]").val().should.equal("existing place name");
+        });
+        it("should set the event type editor", function () {
+          this.editor.eventTypeSelector.setValue.calledOnce.should.equal(true);
+        });
+        it("should set the event link", function () {
+          this.editor.$("input[data-key=link]").val().should.equal("www.link.com");
+        });
+        it("should set the event start date", function () {
+          this.editor.$("input[data-key=start]").val().should.equal("1900-12-13");
+        });
+        it("should set the event end date", function () {
+          this.editor.$("input[data-key=end]").val().should.equal("2000-01-01");
+        });
+        it("should show each event participant", function () {
+          this.editor.$(".participant-editor").length.should.equal(1);
+        });
+      });
+
       describe("saving", function () {
 
         beforeEach(function () {

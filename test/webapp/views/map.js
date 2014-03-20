@@ -31,6 +31,7 @@ define(
       beforeEach(function () {
         this.sampleEvent = {
           distance: 1,
+          event_id: 1,
           event_link: "somelink",
           event_name: "some event",
           thing_name: "some thing",
@@ -861,6 +862,7 @@ define(
               thing_id: 123,
               thing_name: "some thing"
             }],
+            event_id: 1,
             event_name: "some name",
             thing_name: "some thing",
             event_link: "http://something.com/blah",

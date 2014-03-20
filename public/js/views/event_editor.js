@@ -51,6 +51,10 @@ define([
 
       this.renderParticipants();
 
+      if (this.model) {
+        this.populateView();
+      }
+
       return this.$el;
     },
 
@@ -173,8 +177,10 @@ define([
       });
     },
 
-    addParticipant: function () {
-      var participant = this.getSelectedParticipant();
+    addParticipant: function (participant) {
+      if (!participant) {
+        participant = this.getSelectedParticipant();
+      }
 
       var participantEditor = new ParticipantEditor({
         model: new Backbone.Model(participant),
@@ -222,6 +228,25 @@ define([
 
     getSelectedRoleId: function (e) {
       $(e.target).find(":selected").val();
+    },
+
+    populateView: function () {
+      //todo: get this data from a model
+      $.get("/event/" + this.model.id).then(_.bind(this._populateView, this));
+    },
+
+    _populateView: function (data) {
+      this.model = new Backbone.Model(data);
+      this.$el.find("input[data-key=name]").val(this.model.get("name"));
+      this.$el.find("input[data-key=place]").val(this.model.get("place_name"));
+      this.eventTypeSelector.setValue(
+        this.model.get("type_id"),
+        this.model.get("importance_id")
+      );
+      this.$el.find("input[data-key=link]").val(this.model.get("link"));
+      this.$el.find("input[data-key=start]").datepicker("setDate", new Date(this.model.get("start_date")));
+      this.$el.find("input[data-key=end]").datepicker("setDate", new Date(this.model.get("end_date")));
+      _.each(this.model.get("participants"), _.bind(this.addParticipant, this));
     },
 
     handleSave: function () {
