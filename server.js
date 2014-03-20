@@ -85,6 +85,7 @@ new Provider.provider("twitter");
 new Provider.provider("github");
 
 require("./lib/rest/getParticipant").init(secureApp);
+require("./lib/rest/getEvent").init(secureApp);
 require("./lib/rest/getEvents").init(secureApp);
 require("./lib/rest/getEventTypes").init(secureApp);
 require("./lib/rest/getPlaces").init(secureApp);
