@@ -212,10 +212,10 @@ define([
       var participants = select.select2("data");
       var data = participants[0];
 
-      data.thing = {name: data.text};
+      data.name = data.text;
       delete data.text;
 
-      return data;
+      return {thing: data};
     },
 
     removeParticipant: function (id, analyticsData) {
@@ -282,11 +282,78 @@ define([
       return values;
     },
 
-    updateExistingEvent: function (values) {
-      this.getDifferences(values);
+    getParticipantValues: function () {
+      var values = _.map(_.values(this.participants), function (participant) {
+        return participant.getValue();
+      });
+      return values;
     },
 
     getDifferences: function (values) {
+      var differences = this.getRawDifferences(values);
+      var toSend = {id: this.model.id};
+      var editedParticipants = {};
+      _.forEach(differences, function (difference) {
+        if (difference.path[0] === "name") {
+          toSend.name = difference.rhs;
+        }
+        else if (difference.path[0] === "link") {
+          toSend.link = difference.rhs;
+        }
+        else if (difference.path[0] === "start_date") {
+          toSend.start_date = difference.rhs;
+        }
+        else if (difference.path[0] === "end_date") {
+          toSend.end_date = difference.rhs;
+        }
+        else if (difference.path[0] === "type") {
+          if (!toSend.type) {
+            toSend.type = {};
+          }
+          if (difference.path[1] === "id") {
+            toSend.type.id = difference.rhs;
+          } else if (difference.path[1] === "name") {
+            toSend.type.name = difference.rhs;
+          }
+        }
+        else if ((difference.path[0] === "importance") && (difference.path[1] === "id")) {
+          toSend.importance = {
+            id: difference.rhs,
+            name: values.importance.name
+          };
+        } else if (difference.path[0] === "participants") {
+          if (difference.item.kind === "N" && !difference.item.path) {
+            toSend.newParticipants = toSend.newParticipants || [];
+            toSend.newParticipants.push(difference.item.rhs);
+          } else if (difference.item.kind === "D") {
+            toSend.removedParticipants = toSend.removedParticipants || [];
+            toSend.removedParticipants.push(difference.item.lhs.thing.id);
+          } else {
+            editedParticipants[difference.index] = editedParticipants[difference.index] || {};
+            var editedParticipant = editedParticipants[difference.index];
+            var path = difference.item.path;
+            editedParticipant[path[0]] = editedParticipant[path[0]] || {};
+            editedParticipant[path[0]][path[1]] = difference.item.rhs;
+          }
+        }
+      });
+      if (_.keys(editedParticipants).length > 0) {
+        toSend.editedParticipants = _.map(editedParticipants, function (value, key) {
+          var obj = {
+            thing: {
+              id: values.participants[key].thing.id
+            }
+          };
+          _.forEach(value, function (value, key) {
+            obj[key] = value;
+          });
+          return obj;
+        });
+      }
+      return toSend;
+    },
+
+    getRawDifferences: function (values) {
       var previous = _.omit(this.model.toJSON(), ["location", "place"]);
       values = _.omit(values, ["place"]);
       var diff = DeepDiff.diff(previous, values);
@@ -320,13 +387,6 @@ define([
         value.lon = this.newEvent.location.lon;
       }
       return value;
-    },
-
-    getParticipantValues: function () {
-      var values = _.map(_.values(this.participants), function (participant) {
-        return participant.getValue();
-      });
-      return values;
     },
 
     wrapLink: function (link) {

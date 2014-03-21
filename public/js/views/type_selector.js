@@ -158,7 +158,7 @@ define([
           text: this.defaultNewImportanceName
         }]
       }));
-      this.$("input[data-key=importance]").val(-1).trigger("change");
+      this.$("input[data-key=importance]").select2("val", -1).trigger("change");
       Analytics.newTypeAdded({
         type: this.typeName,
         name: name
@@ -192,6 +192,9 @@ define([
       var value;
       if (this.selectMode) {
         value = this.$("input[data-key=importance]").select2("data");
+        if (value.id === -1) {
+          value.name = value.text;
+        }
         delete value.text;
       } else {
         value = {

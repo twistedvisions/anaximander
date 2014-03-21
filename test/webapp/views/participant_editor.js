@@ -5,8 +5,6 @@ define(
 
   function (chai, Backbone, ParticipantEditor, RolesCollection) {
 
-    var should = chai.should();
-
     describe("rendering", function () {
       beforeEach(function () {
         this.typesCollection = new RolesCollection([{
