@@ -84,6 +84,7 @@ new Provider.provider("google");
 new Provider.provider("twitter");
 new Provider.provider("github");
 
+require("./lib/rest/editEvent").init(secureApp);
 require("./lib/rest/getParticipant").init(secureApp);
 require("./lib/rest/getEvent").init(secureApp);
 require("./lib/rest/getEvents").init(secureApp);
