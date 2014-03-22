@@ -48,6 +48,8 @@ describe("editEvent", function () {
     beforeEach(function () {
       this.stubValues = [];
       sinon.spy(this.eventEditor, "ensure");
+      sinon.stub(this.eventEditor, "ensureParticipant");
+      sinon.stub(this.eventEditor, "addParticipant");
       sinon.stub(this.eventEditor, "getEvent", _.bind(function () {
         this.eventEditor.originalEvent = this.originalEvent;
       }, this));
@@ -60,6 +62,8 @@ describe("editEvent", function () {
     });
     afterEach(function () {
       this.eventEditor.ensure.restore();
+      this.eventEditor.ensureParticipant.restore();
+      this.eventEditor.addParticipant.restore();
       this.eventEditor.getEvent.restore();
       this.originalEvent = null;
     });
@@ -207,6 +211,70 @@ describe("editEvent", function () {
         this.args[1][2][1].should.eql(2);
       }, done);
     });
+
+    it("should ensure that new participants exist", function (done) {
+      this.fullBody = {
+        id: 1,
+        newParticipants: [{}]
+      };
+
+      this.stubValues = [[{id: 2}], []];
+
+      this.testEdit(function () {
+        this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
+      }, done);
+    });
+    it("should add new participants", function (done) {
+      this.fullBody = {
+        id: 1,
+        newParticipants: [{}]
+      };
+
+      this.stubValues = [[{id: 2}], []];
+
+      this.testEdit(function () {
+        this.eventEditor.addParticipant.calledOnce.should.equal(true);
+      }, done);
+    });
+
+    it("should ensure that changed participants exist", function (done) {
+      this.fullBody = {
+        id: 1,
+        editedParticipants: [{}]
+      };
+
+      this.stubValues = [[{id: 2}], []];
+
+      this.testEdit(function () {
+        this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
+      }, done);
+    });
+    it("should change the role of existing participants", function (done) {
+      this.fullBody = {
+        id: 1,
+        editedParticipants: [{thing: {id: 2}, type: {id: 3}}]
+      };
+
+      this.stubValues = [[{id: 2}], []];
+
+      this.testEdit(function () {
+        this.args[0][1].should.equal("update_participant_role");
+      }, done);
+    });
+    it("should change the importance of existing participants", function (done) {
+      this.fullBody = {
+        id: 1,
+        editedParticipants: [{thing: {id: 2}, importance: {id: 3}}]
+      };
+
+      this.stubValues = [[{id: 2}], []];
+
+      this.testEdit(function () {
+        this.args[0][1].should.equal("update_participant_importance");
+      }, done);
+    });
+
+    it("should remove exisitng participants");
   });
 
   describe("transaction", function () {
