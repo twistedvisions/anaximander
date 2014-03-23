@@ -218,7 +218,7 @@ describe("editEvent", function () {
         newParticipants: [{}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [[{id: 2}]];
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
@@ -230,20 +230,49 @@ describe("editEvent", function () {
         newParticipants: [{}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [[{id: 2}]];
 
       this.testEdit(function () {
         this.eventEditor.addParticipant.calledOnce.should.equal(true);
       }, done);
     });
 
-    it("should ensure that changed participants exist", function (done) {
+    it("should not change participants that are not part of the event", function (done) {
       this.fullBody = {
         id: 1,
-        editedParticipants: [{}]
+        editedParticipants: [{thing: {id: 1}}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: []
+      };
+
+      this.stubValues = [[{id: 2}]];
+
+      this.testEdit(function () {
+        throw new Error("should not get here");
+      }, done, function () {
+        done();
+      });
+    });
+
+    it("should ensure that changed participants' values exist", function (done) {
+      this.fullBody = {
+        id: 1,
+        editedParticipants: [{thing: {id: 2}}]
+      };
+
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: [{thing: {id: 2}}]
+      };
+
+      this.stubValues = [[{id: 2}]];
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
@@ -255,7 +284,14 @@ describe("editEvent", function () {
         editedParticipants: [{thing: {id: 2}, type: {id: 3}}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: [{thing: {id: 2}}]
+      };
+
+      this.stubValues = [[{id: 2}]];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_participant_role");
@@ -267,14 +303,63 @@ describe("editEvent", function () {
         editedParticipants: [{thing: {id: 2}, importance: {id: 3}}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: [{thing: {id: 2}}]
+      };
+
+      this.stubValues = [[{id: 2}]];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_participant_importance");
       }, done);
     });
 
-    it("should remove exisitng participants");
+    it("should remove exisitng participants", function (done) {
+      this.fullBody = {
+        id: 1,
+        removedParticipants: [1]
+      };
+
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: [
+          {thing: {id: 1}}
+        ]
+      };
+
+      this.stubValues = [[{id: 2}]];
+
+      this.testEdit(function () {
+        this.args[0][1].should.equal("remove_participant");
+      }, done);
+    });
+
+    it("should not remove participants that do not exist", function (done) {
+      this.fullBody = {
+        id: 1,
+        removedParticipants: [1]
+      };
+
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: []
+      };
+
+      this.stubValues = [[{id: 2}]];
+
+      this.testEdit(function () {
+        throw new Error("should not get here");
+      }, done, function () {
+        done();
+      });
+    });
   });
 
   describe("transaction", function () {

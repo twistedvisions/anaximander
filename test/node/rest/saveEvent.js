@@ -18,7 +18,7 @@ try {
 
 describe("saveEvent", function () {
   before(function () {
-    this.testSave = function (fn, done) {
+    this.testSave = function (fn, done, failureFn) {
       var req = {
         user: {id: 1},
         body: this.fullBody,
@@ -29,7 +29,9 @@ describe("saveEvent", function () {
       var res = {
         send: function () {}
       };
-      var next = function () {};
+      var next = function (e) {
+        return failureFn ? failureFn(e) : null;
+      };
       this.eventSaver.call(req, res, next).then(tryTest(_.bind(fn, this), done));
       stubDb.setQueryValues(this, this.stubValues);
     };
@@ -147,14 +149,21 @@ describe("saveEvent", function () {
               type: {id: 1},
               importance: {id: 1}
             }];
-            this.stubValues.push({id: 9});
-            this.stubValues.push({id: 10});
+            this.stubValues.push([{id: 9}]);
+            this.stubValues.push([{id: 10}]);
+            this.stubValues.push([{id: 11}]);
           });
           it("should throw an exception if the participant's thing's type does not exist", function (done) {
             delete this.fullBody.participants[0].thing.typeId;
-            this.testSave(function () {
-              this.eventSaver.ensure.calledWith(sinon.match.any, "participant thing").should.equal(false);
-            }, done);
+            this.testSave(
+              function () {
+                throw new Error("should not get here");
+              },
+              done,
+              tryTest(_.bind(function () {
+                this.eventSaver.ensure.calledWith(sinon.match.any, "participant thing").should.equal(false);
+              }, this), done)
+            );
           });
           it("should ensure that each participant's thing's subtype exists", function (done) {
             this.testSave(function () {

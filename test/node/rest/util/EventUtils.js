@@ -122,7 +122,7 @@ describe("EventUtils", function () {
   describe("addAttendees", function () {
     it("should add each attendee to the event", function (done) {
       var self = this;
-      new EventUtils().addParticipants([
+      new EventUtils().addParticipants(1, [
           {thing: {id: 3}, type: {id: 4}, importance: {id: 5}},
           {thing: {id: 6}, type: {id: 7}, importance: {id: 8}}
         ], 9).then(
