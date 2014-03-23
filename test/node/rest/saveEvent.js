@@ -349,9 +349,4 @@ describe("saveEvent", function () {
 
     });
   });
-
-  //todo: implement this:
-  // describe("user state", function () {
-  //   it("shouldn't save an event if the user is not logged in");
-  // });
 });
