@@ -2,6 +2,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "when",
   "deep-diff",
   "models/event",
   "collections/events",
@@ -16,7 +17,7 @@ define([
   "parsley",
   "css!/css/event_editor",
   "css!/css/select2-bootstrap"
-], function ($, _, Backbone, DeepDiff, Event, EventsCollection,
+], function ($, _, Backbone, when, DeepDiff, Event, EventsCollection,
     roles, eventTypes, TypeSelector, ParticipantEditor,
     analytics, template) {
 
@@ -287,6 +288,29 @@ define([
         return participant.getValue();
       });
       return values;
+    },
+
+    updateExistingEvent: function (values) {
+      var differences = this.getDifferences(values);
+      if (_.keys(_.omit(differences, "id")).length > 0) {
+        this.sendChangeRequest(differences).then(
+          _.bind(this.handleUpdateSuccess, this),
+          _.bind(this.handleSaveFail, this, null)
+        );
+      }
+    },
+
+    sendChangeRequest: function (differences) {
+      var d = when.defer($.ajax({
+        url: "/event",
+        type: "PUT",
+        data: differences
+      }));
+      return d.promise;
+    },
+
+    handleUpdateSuccess: function () {
+      this.$el.find(".modal").modal("hide");
     },
 
     getDifferences: function (values) {

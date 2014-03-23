@@ -1,11 +1,11 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["chai", "underscore", "backbone", "views/event_editor",
+  ["chai", "underscore", "backbone", "when", "views/event_editor",
     "collections/roles", "collections/event_types", "collections/types",
     "analytics", "models/event"],
 
-  function (chai, _, Backbone, EventEditor,
+  function (chai, _, Backbone, when, EventEditor,
       Roles, EventTypes, Types,
       Analytics, Event) {
 
@@ -254,6 +254,79 @@ define(
           });
           it("should show each event participant", function () {
             this.editor.$(".participant-editor").length.should.equal(1);
+          });
+        });
+        describe("updateExistingEvent", function () {
+          describe("differences", function () {
+            beforeEach(function () {
+              this.shouldSucceed = true;
+              sinon.stub(this.editor, "getDifferences", _.bind(function () {
+                return this.differences;
+              }, this));
+              sinon.stub(this.editor, "sendChangeRequest", _.bind(function () {
+                if (this.shouldSucceed) {
+                  return when.resolve();
+                } else {
+                  return when.reject();
+                }
+              }, this));
+            });
+            it("should make a server call when there are differences", function (done) {
+              this.differences = {
+                name: "new name"
+              };
+              sinon.stub(this.editor, "handleUpdateSuccess");
+              this.editor.updateExistingEvent();
+              setTimeout(
+                _.bind(function () {
+                  var ex;
+                  try {
+                    this.editor.handleUpdateSuccess.calledOnce.should.equal(true);
+                  } catch (e) {
+                    ex = e;
+                  }
+                  done(ex);
+                }, this),
+                1
+              );
+            });
+            it("should not make a server call when there are no differences", function (done) {
+              this.differences = {};
+              sinon.stub(this.editor, "handleUpdateSuccess");
+              this.editor.updateExistingEvent();
+              setTimeout(
+                _.bind(function () {
+                  var ex;
+                  try {
+                    this.editor.handleUpdateSuccess.calledOnce.should.equal(false);
+                  } catch (e) {
+                    ex = e;
+                  }
+                  done(ex);
+                }, this),
+                1
+              );
+            });
+            it("should call handleSaveFail when the request failed", function (done) {
+              this.differences = {
+                name: "new name"
+              };
+              this.shouldSucceed = false;
+              sinon.stub(this.editor, "handleSaveFail");
+              this.editor.updateExistingEvent();
+              setTimeout(
+                _.bind(function () {
+                  var ex;
+                  try {
+                    this.editor.handleSaveFail.calledOnce.should.equal(true);
+                  } catch (e) {
+                    ex = e;
+                  }
+                  done(ex);
+                }, this),
+                1
+              );
+            });
           });
         });
         describe("saving", function () {
