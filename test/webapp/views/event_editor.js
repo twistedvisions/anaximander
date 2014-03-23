@@ -219,7 +219,7 @@ define(
             type: {id: 1},
             importance: {id: 10},
             start_date: new Date(1900, 11, 13).getTime(),
-            end_date: new Date(2000, 0, 1).getTime(),
+            end_date: new Date(2000, 0, 1, 23, 59).getTime(),
             participants: [
               {
                 thing: {id: 3, name: "John Smith"},
@@ -279,11 +279,11 @@ define(
             });
             it("should send the start if it has changed", function () {
               this.editor.$("input[data-key=start]").val("1500-12-24");
-              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 24));
+              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 24).toISOString());
             });
             it("should send the end if it has changed", function () {
               this.editor.$("input[data-key=end]").val("2010-10-20");
-              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date("2010-10-20"));
+              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 9, 20, 23, 59).toISOString());
             });
             it("should send the event type if it has changed to a different existing one", function () {
               this.editor.eventTypeSelector.setValue(2, 20);

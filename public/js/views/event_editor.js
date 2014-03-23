@@ -301,10 +301,10 @@ define([
           toSend.link = difference.rhs;
         }
         else if (difference.path[0] === "start_date") {
-          toSend.start_date = difference.rhs;
+          toSend.start_date = new Date(difference.rhs).toISOString();
         }
         else if (difference.path[0] === "end_date") {
-          toSend.end_date = difference.rhs;
+          toSend.end_date = new Date(difference.rhs).toISOString();
         }
         else if (difference.path[0] === "type") {
           if (!toSend.type) {
@@ -356,6 +356,8 @@ define([
     getRawDifferences: function (values) {
       var previous = _.omit(this.model.toJSON(), ["location", "place"]);
       values = _.omit(values, ["place"]);
+      values.end_date.setHours(23);
+      values.end_date.setMinutes(59);
       var diff = DeepDiff.diff(previous, values);
       return diff;
     },
