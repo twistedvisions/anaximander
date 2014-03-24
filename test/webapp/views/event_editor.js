@@ -617,8 +617,20 @@ define(
 
         it("should not update the highlight if the added participant is not highlighted", function () {
           this.editor.state.set("highlight", {id: 123});
+          this.editor.model = new Backbone.Model({
+            participants: []
+          });
           this.editor.updateHighlight({participants: [{thing: {id: 1234}}]});
           (this.editor.state.get("highlight").reset === undefined).should.equal(true);
+        });
+
+        it("should update the highlight if a removed participant is not highlighted", function () {
+          this.editor.state.set("highlight", {id: 123});
+          this.editor.model = new Backbone.Model({
+            participants: [{thing: {id: 123}}]
+          });
+          this.editor.updateHighlight({participants: []});
+          this.editor.state.get("highlight").reset.should.equal(true);
         });
 
         it("should show the error message if it fails", function () {

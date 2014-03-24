@@ -483,7 +483,11 @@ define([
       var participantMatchesHighlight = function (participant) {
         return participant.thing.id === highlightId;
       };
-      if (_.find(values.participants, participantMatchesHighlight)) {
+
+      if (
+            _.find(values.participants, participantMatchesHighlight) ||
+            _.find(this.model.get("participants"), participantMatchesHighlight)
+          ) {
         this.state.set("highlight", {id: highlightId, reset: true});
         return true;
       }
