@@ -275,13 +275,13 @@ define(
               this.differences = {
                 name: "new name"
               };
-              sinon.stub(this.editor, "handleUpdateSuccess");
+              sinon.stub(this.editor, "handleSaveComplete");
               this.editor.updateExistingEvent();
               setTimeout(
                 _.bind(function () {
                   var ex;
                   try {
-                    this.editor.handleUpdateSuccess.calledOnce.should.equal(true);
+                    this.editor.handleSaveComplete.calledOnce.should.equal(true);
                   } catch (e) {
                     ex = e;
                   }
@@ -292,13 +292,13 @@ define(
             });
             it("should not make a server call when there are no differences", function (done) {
               this.differences = {};
-              sinon.stub(this.editor, "handleUpdateSuccess");
+              sinon.stub(this.editor, "handleSaveComplete");
               this.editor.updateExistingEvent();
               setTimeout(
                 _.bind(function () {
                   var ex;
                   try {
-                    this.editor.handleUpdateSuccess.calledOnce.should.equal(false);
+                    this.editor.handleSaveComplete.calledOnce.should.equal(false);
                   } catch (e) {
                     ex = e;
                   }

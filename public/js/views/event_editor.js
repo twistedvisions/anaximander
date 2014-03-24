@@ -294,7 +294,7 @@ define([
       var differences = this.getDifferences(values);
       if (_.keys(_.omit(differences, "id")).length > 0) {
         this.sendChangeRequest(differences).then(
-          _.bind(this.handleUpdateSuccess, this),
+          _.bind(this.handleSaveComplete, this, values),
           _.bind(this.handleSaveFail, this, null)
         );
       }
@@ -307,10 +307,6 @@ define([
         data: differences
       }));
       return d.promise;
-    },
-
-    handleUpdateSuccess: function () {
-      this.$el.find(".modal").modal("hide");
     },
 
     getDifferences: function (values) {
