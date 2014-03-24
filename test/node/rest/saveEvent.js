@@ -290,7 +290,8 @@ describe("saveEvent", function () {
             should.exist(e);
           }, done)
         );
-        this.d[0].resolve({rows: []});
+
+        stubDb.setQueryValues(this, [[]]);
       });
     });
   });

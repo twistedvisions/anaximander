@@ -115,7 +115,7 @@ describe("EventUtils", function () {
           should.exist(e);
         }, done)
       );
-      this.d[0].resolve({rows: []});
+      stubDb.setQueryValues(this, [[]]);
     });
   });
 
@@ -127,17 +127,37 @@ describe("EventUtils", function () {
           {thing: {id: 6}, type: {id: 7}, importance: {id: 8}}
         ], 9).then(
         tryTest(function () {
-          self.args[0][1].should.equal("save_event_participant");
           self.args[1][1].should.equal("save_event_participant");
+          self.args[2][1].should.equal("save_event_participant");
         }, done),
         function (e) {
           done(e);
         }
       );
-      _.defer(function () {
-        self.d[0].resolve({rows: [{id: 1}]});
-        self.d[1].resolve({rows: [{}]});
-      });
+      stubDb.setQueryValues(this, [
+        [{id: 1}],
+        [{id: 2}],
+        [{id: 3}]
+      ]);
+    });
+    it("should add a creator if necessary", function (done) {
+      var self = this;
+      new EventUtils().addParticipants(1, [
+          {thing: {id: 3}, type: {id: 4}, importance: {id: 5}},
+          {thing: {id: 6}, type: {id: 7}, importance: {id: 8}}
+        ], 9).then(
+        tryTest(function () {
+          self.args[0][1].should.equal("save_creator");
+        }, done),
+        function (e) {
+          done(e);
+        }
+      );
+      stubDb.setQueryValues(this, [
+        [{id: 1}],
+        [{id: 2}],
+        [{id: 3}]
+      ]);
     });
   });
 
