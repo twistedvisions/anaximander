@@ -1,10 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 
-var sinon = require("sinon");
 var should = require("should");
-var _ = require("underscore");
 
-var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
 
 var TransactionalRequest = require("../../../../lib/rest/util/TransactionalRequest");
