@@ -520,6 +520,13 @@ define(
               differences.editedParticipants[0].importance.id.should.equal(-1);
               differences.editedParticipants[0].importance.name.should.equal("new importance name");
             });
+            it("should not remove elements from participants", function () {
+              var values = {
+                participants: [{thing: {id: 1234}}]
+              };
+              this.editor.getDifferences(values);
+              values.participants.length.should.equal(1);
+            });
           });
         });
       });

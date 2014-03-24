@@ -318,10 +318,15 @@ define([
       var newParticipants = this.getParticipantDifference(oldValues.participants, values.participants);
       var oldParticipants = this.getParticipantDifference(values.participants, oldValues.participants);
 
+      var originalParticipants = values.participants;
+
       oldValues.participants = this.removeParticipantsFromArray(oldValues.participants, oldParticipants);
       values.participants = this.removeParticipantsFromArray(values.participants, newParticipants);
 
       var differences = this.getRawDifferences(oldValues, values);
+
+      values.participants = originalParticipants;
+
       var toSend = {id: this.model.id};
       if (newParticipants) {
         toSend.newParticipants = newParticipants;
