@@ -312,8 +312,24 @@ define([
     },
 
     getDifferences: function (values) {
-      var differences = this.getRawDifferences(values);
+
+      var oldValues = this.model.toJSON();
+
+      var newParticipants = this.getParticipantDifference(oldValues.participants, values.participants);
+      var oldParticipants = this.getParticipantDifference(values.participants, oldValues.participants);
+
+      oldValues.participants = this.removeParticipantsFromArray(oldValues.participants, oldParticipants);
+      values.participants = this.removeParticipantsFromArray(values.participants, newParticipants);
+
+      var differences = this.getRawDifferences(oldValues, values);
       var toSend = {id: this.model.id};
+      if (newParticipants) {
+        toSend.newParticipants = newParticipants;
+      }
+      if (oldParticipants) {
+        toSend.removedParticipants = _.map(_.keys(this.getParticipantArrayKeys(oldParticipants)), parseInt);
+      }
+
       var editedParticipants = {};
       _.forEach(differences, function (difference) {
         if (difference.path[0] === "name") {
@@ -344,19 +360,11 @@ define([
             name: values.importance.name
           };
         } else if (difference.path[0] === "participants") {
-          if (difference.item.kind === "N" && !difference.item.path) {
-            toSend.newParticipants = toSend.newParticipants || [];
-            toSend.newParticipants.push(difference.item.rhs);
-          } else if (difference.item.kind === "D") {
-            toSend.removedParticipants = toSend.removedParticipants || [];
-            toSend.removedParticipants.push(difference.item.lhs.thing.id);
-          } else {
-            editedParticipants[difference.index] = editedParticipants[difference.index] || {};
-            var editedParticipant = editedParticipants[difference.index];
-            var path = difference.item.path;
-            editedParticipant[path[0]] = editedParticipant[path[0]] || {};
-            editedParticipant[path[0]][path[1]] = difference.item.rhs;
-          }
+          editedParticipants[difference.index] = editedParticipants[difference.index] || {};
+          var editedParticipant = editedParticipants[difference.index];
+          var path = difference.item.path;
+          editedParticipant[path[0]] = editedParticipant[path[0]] || {};
+          editedParticipant[path[0]][path[1]] = difference.item.rhs;
         }
       });
       if (_.keys(editedParticipants).length > 0) {
@@ -375,11 +383,39 @@ define([
       return toSend;
     },
 
-    getRawDifferences: function (values) {
-      var previous = _.omit(this.model.toJSON(), ["location", "place"]);
+    getParticipantDifference: function (base, comparator) {
+      var keys = this.getParticipantArrayKeys(base);
+      var onlyInComparator = _.filter(comparator, function (participant) {
+        var id = participant.thing.id;
+        if (id === -1) {
+          return true;
+        }
+        return !keys[id];
+      });
+      return onlyInComparator;
+    },
+
+    removeParticipantsFromArray: function (base, toRemove) {
+      var keys = this.getParticipantArrayKeys(toRemove);
+      var filteredParticipants = _.filter(base, function (participant) {
+        return !keys[participant.thing.id];
+      });
+      return filteredParticipants;
+    },
+
+    getParticipantArrayKeys: function (participants) {
+      return _.groupBy(participants, function (participant) {
+        return participant.thing.id;
+      });
+    },
+
+    getRawDifferences: function (oldValues, values) {
+      var previous = _.omit(oldValues, ["location", "place"]);
       values = _.omit(values, ["place"]);
-      values.end_date.setHours(23);
-      values.end_date.setMinutes(59);
+      if (values.end_date) {
+        values.end_date.setHours(23);
+        values.end_date.setMinutes(59);
+      }
       var diff = DeepDiff.diff(previous, values);
       return diff;
     },

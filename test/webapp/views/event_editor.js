@@ -333,7 +333,7 @@ define(
           describe("raw differences", function () {
             it("should return one difference if the name has changed", function () {
               this.editor.$("input[data-key=name]").val("something different");
-              var differences = this.editor.getRawDifferences(this.editor.collectValues());
+              var differences = this.editor.getRawDifferences(this.editor.model.toJSON(), this.editor.collectValues());
               differences.length.should.equal(1);
             });
           });
@@ -415,7 +415,7 @@ define(
               differences.importance.id.should.equal(-1);
               differences.importance.name.should.equal("new importance name");
             });
-            it("it send new participants", function () {
+            it("should send new participants", function () {
               sinon.stub(this.editor, "getSelectedParticipant", function () {
                 return {
                   thing: {
@@ -436,6 +436,28 @@ define(
               differences.newParticipants[0].thing.id.should.equal(-1);
               differences.newParticipants[0].type.id.should.equal(2);
               differences.newParticipants[0].importance.id.should.equal(20);
+            });
+            it("should send new and changed participants together", function () {
+              this.editor.$(".participant-editor input[data-key=type]").select2("val", 1).trigger("change");
+              sinon.stub(this.editor, "getSelectedParticipant", function () {
+                return {
+                  thing: {
+                    id: -1,
+                    name: "new thing name"
+                  }
+                };
+              });
+              this.editor.addParticipant();
+
+              this.editor
+                .$(".participant-editor input[data-key=type]")
+                .last()
+                .select2("val", 2)
+                .trigger("change");
+
+              var differences = this.editor.getDifferences(this.editor.collectValues());
+              differences.newParticipants.length.should.equal(1);
+              differences.editedParticipants.length.should.equal(1);
             });
             it("should send removed participants", function () {
               this.editor.$(".remove-participant").trigger("click");
