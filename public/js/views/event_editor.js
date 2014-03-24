@@ -301,14 +301,14 @@ define([
     },
 
     sendChangeRequest: function (differences) {
-      var d = when.defer($.ajax({
+      var d = when($.ajax({
         url: "/event",
         type: "PUT",
         processData: false,
         contentType: "application/json",
         data: JSON.stringify(differences)
       }));
-      return d.promise;
+      return d;
     },
 
     getDifferences: function (values) {
