@@ -304,7 +304,9 @@ define([
       var d = when.defer($.ajax({
         url: "/event",
         type: "PUT",
-        data: differences
+        processData: false,
+        contentType: "application/json",
+        data: JSON.stringify(differences)
       }));
       return d.promise;
     },
