@@ -135,6 +135,32 @@ define(
         });
       });
 
+      describe("participant selector", function () {
+        it("shouldn't allow you to select an existing thing", function () {
+          this.editor = new EventEditor({
+            state: new Backbone.Model({date: [1900, 2000]})
+          });
+          this.editor.participants = {
+            1: {
+              model: new Backbone.Model({
+                thing: {
+                  id: 10
+                }
+              })
+            }
+          };
+          var participants = this.editor.getSelectableParticipants([
+            {
+              id: 10
+            },
+            {
+              id: 20
+            }
+          ]);
+          participants.results.length.should.equal(1);
+          participants.results[0].id.should.equal(20);
+        });
+      });
       describe("addParticipant", function () {
         beforeEach(function () {
           this.editor = new EventEditor({

@@ -141,16 +141,7 @@ define([
               page: page
             };
           },
-          results: function (data/*, page*/) {
-            return {
-              results: _.map(data, function (r) {
-                return {
-                  id: r.id,
-                  text: r.name + " (" + r.type + ")"
-                };
-              })
-            };
-          }
+          results: _.bind(this.getSelectableParticipants, this)
         },
         createSearchChoice: function (text) {
           return {
@@ -177,6 +168,23 @@ define([
           participantexists: "Please add a participant"
         }
       });
+    },
+
+    getSelectableParticipants: function (data/*, page*/) {
+      var keys = _.map(_.values(this.participants), function (x) {
+        return x.model.get("thing").id;
+      });
+      data = _.filter(data, function (el) {
+        return !_.contains(keys, el.id);
+      });
+      return {
+        results: _.map(data, function (r) {
+          return {
+            id: r.id,
+            text: r.name + " (" + r.type + ")"
+          };
+        })
+      };
     },
 
     addParticipant: function (participant) {
