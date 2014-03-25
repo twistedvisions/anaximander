@@ -21,7 +21,9 @@
     <%= event_name %>
   </a>
 
-<span class="toolbutton edit glyphicon glyphicon-pencil"></span>
+<% if (canEdit) { %>
+  <span class="toolbutton edit glyphicon glyphicon-pencil"></span>
+<% } %>
 <% if (participants.length === 1) { %>
   <span class="toolbutton search glyphicon glyphicon-search"></span>
   <span class="date">

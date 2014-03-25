@@ -462,6 +462,7 @@ define([
         ).length > 0;
 
       return this.infoWindowEntryTemplate(_.extend({
+        canEdit: this.user.get("logged-in") && this.user.hasPermission("edit-event"),
         participantTemplate: this.infoWindowEntryParticipantTemplate,
         date: new Date(event.start_date),
         highlighted: highlighted
