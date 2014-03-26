@@ -8,7 +8,7 @@ exports.up = function (db, callback) {
     db.createTable.bind(db, "creator", {
       id:      {type: "bigint",       primaryKey: true, autoIncrement: true},
       date:    {type: "timestamp", notNull: true, defaultValue: "now()" },
-      user_id: {type: "string",    notNull: true }
+      user_id: {type: "bigint",    notNull: true }
     })
   ];
 
