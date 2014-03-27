@@ -91,7 +91,7 @@ describe("editEvent", function () {
         type: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [[{id: 2}], [], []];
 
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type").should.equal(true);
@@ -103,7 +103,7 @@ describe("editEvent", function () {
         name: "new name"
       };
 
-      this.stubValues = [[]];
+      this.stubValues = [[], []];
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type").should.equal(false);
         this.eventEditor.params.typeId.should.equal(3);
@@ -115,7 +115,7 @@ describe("editEvent", function () {
         importance: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [[{id: 2}], [], []];
 
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type importance").should.equal(true);
@@ -127,7 +127,7 @@ describe("editEvent", function () {
         name: "new name"
       };
 
-      this.stubValues = [[]];
+      this.stubValues = [[], []];
 
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type importance").should.equal(false);
@@ -139,7 +139,7 @@ describe("editEvent", function () {
         name: "new name"
       };
 
-      this.stubValues = [[]];
+      this.stubValues = [[], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_event_name");
@@ -152,7 +152,7 @@ describe("editEvent", function () {
         link: "new link"
       };
 
-      this.stubValues = [[]];
+      this.stubValues = [[], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_event_link");
@@ -165,7 +165,7 @@ describe("editEvent", function () {
         start_date: new Date(1900, 0, 1)
       };
 
-      this.stubValues = [[]];
+      this.stubValues = [[], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_event_start_date");
@@ -178,7 +178,7 @@ describe("editEvent", function () {
         end_date: new Date(2000, 0, 1)
       };
 
-      this.stubValues = [[]];
+      this.stubValues = [[], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_event_end_date");
@@ -191,7 +191,7 @@ describe("editEvent", function () {
         type: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [[{id: 2}], [], []];
 
       this.testEdit(function () {
         this.args[1][1].should.equal("update_event_type");
@@ -204,7 +204,7 @@ describe("editEvent", function () {
         importance: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [[{id: 2}], [], []];
 
       this.testEdit(function () {
         this.args[1][1].should.equal("update_event_importance");
@@ -218,7 +218,7 @@ describe("editEvent", function () {
         newParticipants: [{}]
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
@@ -230,7 +230,7 @@ describe("editEvent", function () {
         newParticipants: [{}]
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         this.eventEditor.addParticipant.calledOnce.should.equal(true);
@@ -250,7 +250,7 @@ describe("editEvent", function () {
         participants: []
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         throw new Error("should not get here");
@@ -272,7 +272,7 @@ describe("editEvent", function () {
         participants: [{thing: {id: 2}}]
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
@@ -291,7 +291,7 @@ describe("editEvent", function () {
         participants: [{thing: {id: 2}}]
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_participant_role");
@@ -310,14 +310,14 @@ describe("editEvent", function () {
         participants: [{thing: {id: 2}}]
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("update_participant_importance");
       }, done);
     });
 
-    it("should remove exisitng participants", function (done) {
+    it("should remove exisiting participants", function (done) {
       this.fullBody = {
         id: 1,
         removedParticipants: [1]
@@ -332,7 +332,7 @@ describe("editEvent", function () {
         ]
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [[{id: 2}], []];
 
       this.testEdit(function () {
         this.args[0][1].should.equal("remove_participant");
@@ -360,6 +360,20 @@ describe("editEvent", function () {
         done();
       });
     });
+
+    it("should call save_change after a change has happened", function (done) {
+      this.fullBody = {
+        id: 1,
+        name: "new name"
+      };
+
+      this.stubValues = [[], []];
+
+      this.testEdit(function () {
+        this.args[1][1].should.equal("save_event_change");
+      }, done);
+    });
+
   });
 
   describe("transaction", function () {
