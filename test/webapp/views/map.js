@@ -55,6 +55,14 @@ define(
             start: function () {}
           }))()
         });
+        this.map.user = {
+          get: function () {
+            return true;
+          },
+          hasPermission: function () {
+            return true;
+          }
+        };
         this.mockMap = function (opts) {
           this.map.map = _.extend({
             panTo: sinon.stub(),

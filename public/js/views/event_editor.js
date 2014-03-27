@@ -6,6 +6,7 @@ define([
   "deep-diff",
   "models/event",
   "collections/events",
+  "collections/types",
   "collections/roles",
   "collections/event_types",
   "views/type_selector",
@@ -18,7 +19,8 @@ define([
   "css!/css/event_editor",
   "css!/css/select2-bootstrap"
 ], function ($, _, Backbone, when, DeepDiff, Event, EventsCollection,
-    roles, eventTypes, TypeSelector, ParticipantEditor,
+    Types, Roles, EventTypes,
+    TypeSelector, ParticipantEditor,
     analytics, template) {
 
   var EventEditor = Backbone.View.extend({
@@ -28,8 +30,10 @@ define([
       this.state = options.state;
       this.newEvent = options.newEvent;
       this.eventsCollection = new EventsCollection();
-      this.roles = roles.instance;
-      this.eventTypes = eventTypes.instance;
+
+      this.types = Types.instance;
+      this.roles = Roles.instance;
+      this.eventTypes = EventTypes.instance;
 
       this.nextParticipantId = 1;
       this.participants = {};
@@ -49,27 +53,9 @@ define([
       this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$(".save").on("click", _.bind(this.handleSave, this));
 
-      this.renderEventTypes();
-
-      this.renderParticipants();
-
-      if (this.model) {
-        this.populateView();
-      }
+      this.fetchData().then(_.bind(this.populateView, this));
 
       return this.$el;
-    },
-
-    renderEventTypes: function () {
-      this.eventTypeSelector = new TypeSelector({
-        type: "event type",
-        typePlaceholder: "Select or add an event type",
-        importancePlaceholder: "Select or add an event importance",
-        types: this.eventTypes
-      });
-      this.$(".event-type-selector-holder").append(
-        this.eventTypeSelector.render()
-      );
     },
 
     getDatePickerOpts: function (isStart) {
@@ -125,6 +111,45 @@ define([
         }
       });
 
+    },
+
+    fetchData: function () {
+      var thingsToFetch = [];
+
+      thingsToFetch.push(when(this.types.fetch()));
+      thingsToFetch.push(when(this.roles.fetch()));
+      thingsToFetch.push(when(this.eventTypes.fetch()));
+
+      if (this.model) {
+        thingsToFetch.push(
+          //todo: get this data from a model
+          when($.get("/event/" + this.model.id)).then(_.bind(function (data) {
+            this.currentViewData = data;
+          }, this))
+        );
+      }
+
+      return when.all(thingsToFetch);
+    },
+
+    populateView: function () {
+      this.renderEventTypes();
+      this.renderParticipants();
+      if (this.model) {
+        this.renderExistingEvent();
+      }
+    },
+
+    renderEventTypes: function () {
+      this.eventTypeSelector = new TypeSelector({
+        type: "event type",
+        typePlaceholder: "Select or add an event type",
+        importancePlaceholder: "Select or add an event importance",
+        types: this.eventTypes
+      });
+      this.$(".event-type-selector-holder").append(
+        this.eventTypeSelector.render()
+      );
     },
 
     renderParticipants: function () {
@@ -240,12 +265,8 @@ define([
       $(e.target).find(":selected").val();
     },
 
-    populateView: function () {
-      //todo: get this data from a model
-      $.get("/event/" + this.model.id).then(_.bind(this._populateView, this));
-    },
-
-    _populateView: function (data) {
+    renderExistingEvent: function () {
+      var data = this.currentViewData;
       data.start_date = new Date(data.start_date);
       data.end_date = new Date(data.end_date);
       this.model = new Backbone.Model(data);

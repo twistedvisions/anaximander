@@ -12,6 +12,17 @@ define(
     var should = chai.should();
 
     describe("event editor", function () {
+
+      var stubFetchData = function (editor) {
+        sinon.stub(editor, "fetchData", function () {
+          return {
+            then: function (f) {
+              f();
+            }
+          };
+        });
+      };
+
       beforeEach(function () {
         Roles.instance = new Roles();
         Roles.instance.reset([
@@ -106,6 +117,7 @@ define(
           this.editor = new EventEditor({
             state: new Backbone.Model({date: [1900, 2000]})
           });
+          stubFetchData(this.editor);
         });
         it("should set the end when the start is set if it is empty", function () {
 
@@ -234,10 +246,8 @@ define(
             state: new Backbone.Model({date: [1900, 2000]}),
             model: new Backbone.Model()
           });
-          sinon.stub(this.editor, "populateView");
-          this.editor.render();
-          sinon.spy(this.editor.eventTypeSelector, "setValue");
-          this.editor._populateView({
+          stubFetchData(this.editor);
+          this.editor.currentViewData = {
             id: 123,
             name: "existing event name",
             place: {name: "existing place name"},
@@ -253,11 +263,8 @@ define(
                 importance: {id: 20}
               }
             ]
-          });
-        });
-        afterEach(function () {
-          this.editor.populateView.restore();
-          this.editor.eventTypeSelector.setValue.restore();
+          };
+          this.editor.render();
         });
         describe("rendering", function () {
           it("should display the event name", function () {
@@ -267,7 +274,8 @@ define(
             this.editor.$("input[data-key=place]").val().should.equal("existing place name");
           });
           it("should set the event type editor", function () {
-            this.editor.eventTypeSelector.setValue.calledOnce.should.equal(true);
+            this.editor.eventTypeSelector.getValue().type.id.should.equal(1);
+            this.editor.eventTypeSelector.getValue().importance.id.should.equal(10);
           });
           it("should set the event link", function () {
             this.editor.$("input[data-key=link]").val().should.equal("//www.link.com");
@@ -303,7 +311,7 @@ define(
               };
               sinon.stub(this.editor, "handleSaveComplete");
               this.editor.updateExistingEvent();
-              setTimeout(
+              _.defer(
                 _.bind(function () {
                   var ex;
                   try {
@@ -312,15 +320,14 @@ define(
                     ex = e;
                   }
                   done(ex);
-                }, this),
-                1
+                }, this)
               );
             });
             it("should not make a server call when there are no differences", function (done) {
               this.differences = {};
               sinon.stub(this.editor, "handleSaveComplete");
               this.editor.updateExistingEvent();
-              setTimeout(
+              _.defer(
                 _.bind(function () {
                   var ex;
                   try {
@@ -329,8 +336,7 @@ define(
                     ex = e;
                   }
                   done(ex);
-                }, this),
-                1
+                }, this)
               );
             });
             it("should call handleSaveFail when the request failed", function (done) {
@@ -340,7 +346,7 @@ define(
               this.shouldSucceed = false;
               sinon.stub(this.editor, "handleSaveFail");
               this.editor.updateExistingEvent();
-              setTimeout(
+              _.defer(
                 _.bind(function () {
                   var ex;
                   try {
@@ -349,8 +355,7 @@ define(
                     ex = e;
                   }
                   done(ex);
-                }, this),
-                1
+                }, this)
               );
             });
           });
@@ -571,6 +576,8 @@ define(
               name: "some " + type
             };
           };
+
+          stubFetchData(this.editor);
           this.editor.render();
           this.editor.$("input[data-key=name]").val("some name");
           this.editor.$("input[data-key=link]").val("some link");
