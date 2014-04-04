@@ -12,7 +12,7 @@ select
   ST_AsText(place.location) as location,
   ST_Distance (
     place.location,
-    ST_Point($1, $2)
+    ST_SetSRID(ST_Point($1, $2), 4326)
   ) as distance
 from thing as place_thing
 inner join place on place.thing_id = place_thing.id
@@ -26,7 +26,7 @@ inner join type on thing.type_id = type.id
   ""
 ) %>
 where  ST_Covers (
-  ST_GeometryFromText('<%= boundingBox %>'),
+  ST_SetSRID(ST_GeometryFromText('<%= boundingBox %>'), 4326),
   place.location
 )
 and event.start_date >= $3

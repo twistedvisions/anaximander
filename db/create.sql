@@ -36,8 +36,10 @@ CREATE TABLE event
   id BIGSERIAL,
   name character varying(300) NOT NULL,
   place_id bigint NOT NULL REFERENCES thing(id),
-  start_date timestamp,
-  end_date timestamp,
+  start_date timestamp with time zone NOT NULL,
+  start_offset_seconds int NOT NULL,
+  end_date timestamp with time zone NOT NULL,
+  end_offset_seconds int NOT NULL,
   link character varying(200),
   type_id bigint REFERENCES type(id),
   CONSTRAINT event_pkey PRIMARY KEY (id)

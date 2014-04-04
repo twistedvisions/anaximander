@@ -60,17 +60,37 @@ describe("adding events", function () {
     it("should combine normal dates", function () {
       var timestamp = addEvent.combineDateTime(
         "2013-12-13",
-        "09:34"
+        "09:34",
+        0
       );
-      timestamp.should.equal("2013-12-13 09:34");
+      timestamp.should.equal("2013-12-13 09:34 +0:00:00");
     });
 
     it("should handle BCE dates", function () {
       var timestamp = addEvent.combineDateTime(
         "-0046-12-13",
-        "09:34"
+        "09:34",
+        0
       );
-      timestamp.should.equal("0046-12-13 09:34 BC");
+      timestamp.should.equal("0046-12-13 09:34 +0:00:00 BC");
+    });
+
+    it("should handle positive time offsets", function () {
+      var timestamp = addEvent.combineDateTime(
+        "-0046-12-13",
+        "09:34",
+        5 * 60 * 60 + 30 * 60
+      );
+      timestamp.should.equal("0046-12-13 09:34 +5:30:00 BC");
+    });
+
+    it("should handle negative time offsets", function () {
+      var timestamp = addEvent.combineDateTime(
+        "-0046-12-13",
+        "09:34",
+        -10 * 60 * 60
+      );
+      timestamp.should.equal("0046-12-13 09:34 -10:00:00 BC");
     });
 
   });
