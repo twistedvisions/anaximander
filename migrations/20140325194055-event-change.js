@@ -3,13 +3,11 @@
 require("db-migrate");
 var async = require("async");
 
-//todo: shouldn't be called event change?
-
 exports.up = function (db, callback) {
   var actions = [
     db.createTable.bind(db, "change", {
       id:            {type: "bigint",    primaryKey: true, autoIncrement: true},
-      date:          {type: "timestamp", notNull: true,    defaultValue: "now()" },
+      date:          {type: "timestamp", notNull: false },
       user_id:       {type: "bigint",    notNull: true },
 
       event_id:      {type: "bigint",    notNull: false },
@@ -19,7 +17,9 @@ exports.up = function (db, callback) {
       type_id:       {type: "bigint",    notNull: false }
     }),
     db.all.bind(db, "ALTER TABLE change ADD COLUMN old json NOT NULL;"),
-    db.all.bind(db, "ALTER TABLE change ADD COLUMN new json NOT NULL;")
+    db.all.bind(db, "ALTER TABLE change ADD COLUMN new json NOT NULL;"),
+    db.all.bind(db, "ALTER TABLE change ALTER COLUMN date SET DEFAULT now();"),
+    db.all.bind(db, "ALTER TABLE change ALTER COLUMN date SET NOT NULL;")
   ];
 
   async.series(actions, callback);

@@ -7,9 +7,11 @@ exports.up = function (db, callback) {
   var actions = [
     db.createTable.bind(db, "creator", {
       id:      {type: "bigint",       primaryKey: true, autoIncrement: true},
-      date:    {type: "timestamp", notNull: true, defaultValue: "now()" },
+      date:    {type: "timestamp", notNull: false },
       user_id: {type: "bigint",    notNull: true }
-    })
+    }),
+    db.all.bind(db, "ALTER TABLE creator ALTER COLUMN date SET DEFAULT now();"),
+    db.all.bind(db, "ALTER TABLE creator ALTER COLUMN date SET NOT NULL;")
   ];
 
   actions.push(db.insert.bind(db, "registered_user",
