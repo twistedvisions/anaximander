@@ -673,6 +673,21 @@ define(
               this.editor.getDifferences(values);
               values.participants.length.should.equal(1);
             });
+            it("should not send empty newParticipants", function () {
+              var values = {
+                start_date: moment(),
+                end_date: moment()
+              };
+              should.not.exist(this.editor.getDifferences(values).newParticipants);
+            });
+            it("should not send empty removedParticipants", function () {
+              var values = {
+                start_date: moment(),
+                end_date: moment(),
+                participants: [{thing: {id: 3}}]
+              };
+              should.not.exist(this.editor.getDifferences(values).removedParticipants);
+            });
           });
         });
       });

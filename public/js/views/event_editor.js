@@ -437,10 +437,10 @@ define([
       values.participants = originalParticipants;
 
       var toSend = {id: this.model.id};
-      if (newParticipants) {
+      if (newParticipants.length > 0) {
         toSend.newParticipants = newParticipants;
       }
-      if (oldParticipants) {
+      if (oldParticipants.length > 0) {
         toSend.removedParticipants = _.map(_.keys(this.getParticipantArrayKeys(oldParticipants)), parseInt);
       }
 
