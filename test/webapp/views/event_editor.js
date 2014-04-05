@@ -119,8 +119,20 @@ define(
           });
           stubFetchData(this.editor);
         });
-        it("should set the end when the start is set if it is empty", function () {
+        describe("tabs", function () {
+          it("should fetch the history only once when the history tab is selected", function () {
+            sinon.stub(this.editor, "fetchHistory", function () {
+              this.historyCollection = {};
+              return when.resolve();
+            });
+            sinon.stub(this.editor, "renderHistory");
+            this.editor.showHistoryTab();
+            this.editor.showHistoryTab();
+            this.editor.fetchHistory.calledOnce.should.equal(true);
+          });
+        });
 
+        it("should set the end when the start is set if it is empty", function () {
           this.editor.render();
           this.editor.$("input[data-key=end]").val().should.equal("");
           this.editor.$("input[data-key=start]").val("2012-12-04");
@@ -144,6 +156,82 @@ define(
           this.editor.render();
           this.editor.$("input[data-key=participants]").trigger("change");
           this.editor.addParticipant.calledOnce.should.equal(true);
+        });
+      });
+
+      describe("history", function () {
+        beforeEach(function () {
+          this.editor = new EventEditor({
+            state: new Backbone.Model({date: [1900, 2000]})
+          });
+          stubFetchData(this.editor);
+        });
+        it("should show single changes with authors and dates for each line", function () {
+          this.editor.historyCollection = new Backbone.Collection([
+            {
+              date: new Date().toISOString(),
+              username: "x",
+              new_values: {
+                "key": "value1"
+              }
+            },
+            {
+              date: new Date().toISOString(),
+              username: "y",
+              new_values: {
+                "key": "value2"
+              }
+            }
+          ]);
+          this.editor.render();
+          this.editor.renderHistory();
+          this.editor.$(".history td.username").length.should.equal(2);
+          this.editor.$(".history td.username")[0].textContent.length.should.be.greaterThan(0);
+          this.editor.$(".history td.username")[1].textContent.length.should.be.greaterThan(0);
+
+          this.editor.$(".history td.date").length.should.equal(2);
+          this.editor.$(".history td.date")[0].textContent.length.should.be.greaterThan(0);
+          this.editor.$(".history td.date")[1].textContent.length.should.be.greaterThan(0);
+
+          this.editor.$(".history td.field")[0].textContent.should.equal("key");
+          this.editor.$(".history td.value")[0].textContent.should.equal("value1");
+
+        });
+        it("should show multiple changes with only one author and date per change set", function () {
+          this.editor.historyCollection = new Backbone.Collection([
+            {
+              date: new Date().toISOString(),
+              username: "x",
+              new_values: {
+                "key1": "value1",
+                "key2": "value2"
+              }
+            }
+          ]);
+          this.editor.render();
+          this.editor.renderHistory();
+          this.editor.$(".history td.username").length.should.equal(2);
+          this.editor.$(".history td.username")[0].textContent.length.should.be.greaterThan(0);
+          this.editor.$(".history td.username")[1].textContent.length.should.equal(0);
+
+          this.editor.$(".history td.date").length.should.equal(2);
+          this.editor.$(".history td.date")[0].textContent.length.should.be.greaterThan(0);
+          this.editor.$(".history td.date")[1].textContent.length.should.equal(0);
+        });
+        it("should create an entry for ids", function () {
+          this.editor.historyCollection = new Backbone.Collection([
+            {
+              date: new Date().toISOString(),
+              username: "x",
+              new_values: {
+                "id": "value1",
+                "key2": "value2"
+              }
+            }
+          ]);
+          this.editor.render();
+          this.editor.renderHistory();
+          this.editor.$(".history td.username").length.should.equal(1);
         });
       });
 

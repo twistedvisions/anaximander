@@ -1,4 +1,12 @@
 .event-editor {
+  .nav-tabs a,
+  .nav-tabs a:hover,
+  .nav-tabs a:focus {
+    color: #888;
+  }
+  form {
+    margin-top: 10px;
+  }
   fieldset {
     border: 1px solid #eee;
     padding: 0 18px;
@@ -121,6 +129,25 @@
         float: right;
         position: relative;
         top: 9px;
+      }
+    }
+  }
+  .history {
+    table {
+      font-size: 12px;
+      td {
+        white-space: nowrap;
+        &.date {
+          width: 150px;
+        }
+        &.username {
+          width: 100px;
+        }
+        &.changes {
+          max-width: 386px;
+          white-space: nowrap;
+          overflow: hidden;
+        }
       }
     }
   }

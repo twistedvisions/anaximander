@@ -66,6 +66,7 @@ require.config({
     "range-slider": "libs/jQAllRangeSliders-min",
     "socketio": "../socket.io/socket.io",
     cookies: "./libs/cookies",
+    moment: "./libs/moment",
     datetimepicker: "./libs/datetimepicker"
   }
 });

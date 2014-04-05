@@ -13,6 +13,8 @@ define([
   "views/participant_editor",
   "analytics",
   "text!templates/event_editor.htm",
+  "text!templates/event_history.htm",
+  "text!templates/event_history_item.htm",
   "bootstrap",
   "datetimepicker",
   "parsley",
@@ -22,7 +24,7 @@ define([
 ], function ($, _, Backbone, when, DeepDiff, Event, EventsCollection,
     Types, Roles, EventTypes,
     TypeSelector, ParticipantEditor,
-    analytics, template) {
+    analytics, template, historyTemplate, historyItemTemplate) {
 
   var EventEditor = Backbone.View.extend({
     className: "",
@@ -36,6 +38,9 @@ define([
       this.roles = Roles.instance;
       this.eventTypes = EventTypes.instance;
 
+      this.historyTemplate = _.template(historyTemplate);
+      this.historyItemTemplate = _.template(historyItemTemplate);
+
       this.nextParticipantId = 1;
       this.participants = {};
     },
@@ -43,6 +48,8 @@ define([
     render: function () {
       this.$el.html(template);
       $("body").append(this.$el);
+
+      this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
       this.setValues();
 
@@ -57,6 +64,57 @@ define([
       this.fetchData().then(_.bind(this.populateView, this));
 
       return this.$el;
+    },
+
+    showHistoryTab: function () {
+      if (!this.historyCollection) {
+        this.fetchHistory().then(_.bind(this.renderHistory, this));
+      }
+    },
+
+    fetchHistory: function () {
+      this.historyCollection = new (Backbone.Collection.extend({
+        url: "event/" + this.model.id + "/change",
+        parse: function (changes) {
+          return _.map(changes, function (change) {
+            change.date = new Date(change.date);
+            return change;
+          });
+        }
+      }))();
+      return when(this.historyCollection.fetch());
+    },
+
+    renderHistory: function () {
+      this.$(".tab-pane.history").html($(this.historyTemplate()));
+      this.historyCollection.each(function (change) {
+        try {
+          change = change.toJSON();
+          change.new_values = _.omit(change.new_values, ["id"]);
+          var keys = _.keys(change.new_values);
+          var first = _.first(keys);
+          var body = this.$(".tab-pane.history tbody");
+          body.append($(this.historyItemTemplate(
+            _.extend(change, {
+              field: first,
+              value: change.new_values[first]
+            })
+          )));
+          _.each(_.rest(keys), function (key) {
+            body.append($(this.historyItemTemplate(
+              {
+                date: "",
+                username: "",
+                field: key,
+                value: change.new_values[key]
+              }
+            )));
+          }, this);
+        } catch (e) {
+          console.log(change);
+          console.log(e);
+        }
+      }, this);
     },
 
     getDatePickerOpts: function (isStart) {
