@@ -11,6 +11,9 @@ require.config({
       deps: ["jquery"],
       exports: "$"
     },
+    "datetimepicker": {
+      deps: ["jqueryui"]
+    },
     "styled_marker": {
       deps: ["async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
         "&sensor=false!callback"],
@@ -62,7 +65,8 @@ require.config({
     sha256: "./libs/sha256",
     "range-slider": "libs/jQAllRangeSliders-min",
     "socketio": "../socket.io/socket.io",
-    cookies: "./libs/cookies"
+    cookies: "./libs/cookies",
+    datetimepicker: "./libs/datetimepicker"
   }
 });
 

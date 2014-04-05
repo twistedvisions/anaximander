@@ -14,10 +14,11 @@ define([
   "analytics",
   "text!templates/event_editor.htm",
   "bootstrap",
-  "jqueryui",
+  "datetimepicker",
   "parsley",
   "css!/css/event_editor",
-  "css!/css/select2-bootstrap"
+  "css!/css/select2-bootstrap",
+  "css!/css/datetimepicker"
 ], function ($, _, Backbone, when, DeepDiff, Event, EventsCollection,
     Types, Roles, EventTypes,
     TypeSelector, ParticipantEditor,
@@ -48,8 +49,8 @@ define([
       this.$(".modal").modal();
       this.$(".modal").modal("show");
 
-      this.$("input[data-key=end]").datepicker(this.getDatePickerOpts());
-      this.$("input[data-key=start]").datepicker(this.getDatePickerOpts(true));
+      this.$("input[data-key=end]").datetimepicker(this.getDatePickerOpts());
+      this.$("input[data-key=start]").datetimepicker(this.getDatePickerOpts(true));
       this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$(".save").on("click", _.bind(this.handleSave, this));
 

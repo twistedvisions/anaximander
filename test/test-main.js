@@ -22,6 +22,9 @@ require.config({
       deps: ["jquery"],
       exports: "$"
     },
+    "datetimepicker": {
+      deps: ["jqueryui"]
+    },
     "chroma": {
       exports: "chroma"
     },
@@ -71,7 +74,8 @@ require.config({
     sha256: "./libs/sha256",
     cookies: "./libs/cookies",
     "range-slider": "libs/jQAllRangeSliders-min",
-    socketio: "../../node_modules/socket.io-client/dist/socket.io.min"
+    socketio: "../../node_modules/socket.io-client/dist/socket.io.min",
+    datetimepicker: "./libs/datetimepicker"
   },
 
   deps: tests,
