@@ -1,11 +1,11 @@
 /*global describe, it, beforeEach, afterEach, sinon */
 define(
 
-  ["chai", "underscore", "backbone", "when", "views/event_editor",
+  ["chai", "underscore", "backbone", "when", "moment", "views/event_editor",
     "collections/roles", "collections/event_types", "collections/types",
     "analytics", "models/event"],
 
-  function (chai, _, Backbone, when, EventEditor,
+  function (chai, _, Backbone, when, moment, EventEditor,
       Roles, EventTypes, Types,
       Analytics, Event) {
 
@@ -342,8 +342,10 @@ define(
             link: "//www.link.com",
             type: {id: 1},
             importance: {id: 10},
-            start_date: new Date(1900, 11, 13).getTime(),
-            end_date: new Date(2000, 0, 1, 23, 59).getTime(),
+            start_date: new Date(1900, 11, 12, 22).getTime(),
+            end_date: new Date(2000, 0, 1, 21, 59).getTime(),
+            start_offset_seconds: 2 * 60 * 60,
+            end_offset_seconds: 2 * 60 * 60,
             participants: [
               {
                 thing: {id: 3, name: "John Smith"},
@@ -368,11 +370,11 @@ define(
           it("should set the event link", function () {
             this.editor.$("input[data-key=link]").val().should.equal("//www.link.com");
           });
-          it("should set the event start date", function () {
-            this.editor.$("input[data-key=start]").val().should.equal("1900-12-13");
+          it("should set the event start date at the local time", function () {
+            this.editor.$("input[data-key=start]").val().should.equal("1900-12-13 00:00");
           });
-          it("should set the event end date", function () {
-            this.editor.$("input[data-key=end]").val().should.equal("2000-01-01");
+          it("should set the event end date at the local time", function () {
+            this.editor.$("input[data-key=end]").val().should.equal("2000-01-01 23:59");
           });
           it("should show each event participant", function () {
             this.editor.$(".participant-editor").length.should.equal(1);
@@ -456,10 +458,25 @@ define(
               differences.length.should.equal(1);
             });
           });
+          describe("collectValues", function () {
+            it("should collect the start time in UTC time", function () {
+              this.editor.$("input[data-key=start]").val("1900-12-13 00:00");
+              this.editor.collectValues().start_date.toISOString().should.equal("1900-12-12T22:00:00.000Z");
+            });
+            it("should collect the end time in UTC time", function () {
+              this.editor.$("input[data-key=start]").val("2000-01-01 23:59");
+              this.editor.collectValues().end_date.toISOString().should.equal("2000-01-01T21:59:00.000Z");
+            });
+          });
           describe("differences", function () {
             it("should always have an id", function () {
               this.editor.$("input[data-key=name]").val("something different");
               this.editor.getDifferences(this.editor.collectValues()).id.should.equal(123);
+            });
+            it("shouldn't diff the offset", function () {
+              this.editor.$("input[data-key=name]").val("something different");
+              should.not.exist(this.editor.getDifferences(this.editor.collectValues()).start_offset_seconds);
+              should.not.exist(this.editor.getDifferences(this.editor.collectValues()).end_offset_seconds);
             });
             it("should send the name if it has changed", function () {
               this.editor.$("input[data-key=name]").val("something different");
@@ -469,13 +486,21 @@ define(
               this.editor.$("input[data-key=link]").val("//www.someotherlink.com");
               this.editor.getDifferences(this.editor.collectValues()).link.should.equal("//www.someotherlink.com");
             });
-            it("should send the start if it has changed", function () {
-              this.editor.$("input[data-key=start]").val("1500-12-24");
-              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 24).toISOString());
+            it("should send the start in utc without the browsers timezone if it has changed", function () {
+              this.editor.$("input[data-key=start]").val("1500-12-24 00:00");
+              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 23, 22).toISOString());
             });
-            it("should send the end if it has changed", function () {
-              this.editor.$("input[data-key=end]").val("2010-10-20");
-              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 9, 20, 23, 59).toISOString());
+            it("should send the end in utc without the browsers timezone  if it has changed", function () {
+              this.editor.$("input[data-key=end]").val("2010-11-20 23:59");
+              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 10, 20, 21, 59).toISOString());
+            });
+            it("should remove the timezone from the start date if it exists", function () {
+              this.editor.$("input[data-key=start]").val("2010-10-20 00:00");
+              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(2010, 9, 19, 23).toISOString());
+            });
+            it("should remove the timezone from the end date if it exists", function () {
+              this.editor.$("input[data-key=end]").val("2010-10-20 23:59");
+              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 9, 20, 22, 59).toISOString());
             });
             it("should send the event type if it has changed to a different existing one", function () {
               this.editor.eventTypeSelector.setValue(2, 20);
@@ -641,6 +666,8 @@ define(
             });
             it("should not remove elements from participants", function () {
               var values = {
+                start_date: moment(),
+                end_date: moment(),
                 participants: [{thing: {id: 1234}}]
               };
               this.editor.getDifferences(values);
@@ -664,8 +691,9 @@ define(
               name: "some " + type
             };
           };
-
           stubFetchData(this.editor);
+          this.editor.startOffset = 0;
+          this.editor.endOffset = 0;
           this.editor.render();
           this.editor.$("input[data-key=name]").val("some name");
           this.editor.$("input[data-key=link]").val("some link");

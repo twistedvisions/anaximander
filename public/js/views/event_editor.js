@@ -3,6 +3,7 @@ define([
   "underscore",
   "backbone",
   "when",
+  "moment",
   "deep-diff",
   "models/event",
   "collections/events",
@@ -21,7 +22,7 @@ define([
   "css!/css/event_editor",
   "css!/css/select2-bootstrap",
   "css!/css/datetimepicker"
-], function ($, _, Backbone, when, DeepDiff, Event, EventsCollection,
+], function ($, _, Backbone, when, moment, DeepDiff, Event, EventsCollection,
     Types, Roles, EventTypes,
     TypeSelector, ParticipantEditor,
     analytics, template, historyTemplate, historyItemTemplate) {
@@ -326,8 +327,12 @@ define([
 
     renderExistingEvent: function () {
       var data = this.currentViewData;
-      data.start_date = new Date(data.start_date);
-      data.end_date = new Date(data.end_date);
+      data.start_date = moment(data.start_date);
+      data.end_date = moment(data.end_date);
+
+      data.start_date.add("minutes", data.start_date.zone());
+      data.end_date.add("minutes", data.end_date.zone());
+
       this.model = new Backbone.Model(data);
       this.$el.find("input[data-key=name]").val(this.model.get("name"));
       this.$el.find("input[data-key=place]").val(this.model.get("place").name);
@@ -336,8 +341,12 @@ define([
         this.model.get("importance").id
       );
       this.$el.find("input[data-key=link]").val(this.model.get("link"));
-      this.$el.find("input[data-key=start]").datepicker("setDate", this.model.get("start_date"));
-      this.$el.find("input[data-key=end]").datepicker("setDate", this.model.get("end_date"));
+
+      var localStartTime = this.model.get("start_date").clone().add("seconds", this.model.get("start_offset_seconds"));
+      var localEndTime = this.model.get("end_date").clone().add("seconds", this.model.get("end_offset_seconds"));
+      this.$el.find("input[data-key=start]").datetimepicker("setDate", localStartTime.toDate());
+      this.$el.find("input[data-key=end]").datepicker("setDate", localEndTime.toDate());
+
       _.each(this.model.get("participants"), _.bind(this.addParticipant, this));
     },
 
@@ -363,12 +372,24 @@ define([
       values.name = this.$el.find("input[data-key=name]").val();
       values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
       values.place = this.getPlace();
-      values.start_date = new Date(this.$el.find("input[data-key=start]").val());
-      values.end_date = new Date(this.$el.find("input[data-key=end]").val());
+      values.start_date = moment(this.$el.find("input[data-key=start]").val());
+      values.end_date = moment(this.$el.find("input[data-key=end]").val());
+
+      values.start_date.add("seconds", -this.getStartOffset());
+      values.end_date.add("seconds", -this.getEndOffset());
+
       _.extend(values, this.eventTypeSelector.getValue());
       values.participants = this.getParticipantValues();
 
       return values;
+    },
+
+    getStartOffset: function () {
+      return (this.startOffset !== undefined) ? this.startOffste : this.model.get("start_offset_seconds");
+    },
+
+    getEndOffset: function () {
+      return (this.endOffset !== undefined) ? this.endOffset : this.model.get("end_offset_seconds");
     },
 
     getParticipantValues: function () {
@@ -432,10 +453,14 @@ define([
           toSend.link = difference.rhs;
         }
         else if (difference.path[0] === "start_date") {
-          toSend.start_date = new Date(difference.rhs).toISOString();
+          toSend.start_date = moment(difference.rhs);
+          toSend.start_date.add("minutes", -toSend.start_date.zone());
+          toSend.start_date = toSend.start_date.toISOString();
         }
         else if (difference.path[0] === "end_date") {
-          toSend.end_date = new Date(difference.rhs).toISOString();
+          toSend.end_date = moment(difference.rhs);
+          toSend.end_date.add("minutes", -toSend.end_date.zone());
+          toSend.end_date = toSend.end_date.toISOString();
         }
         else if (difference.path[0] === "type") {
           if (!toSend.type) {
@@ -503,17 +528,23 @@ define([
     },
 
     getRawDifferences: function (oldValues, values) {
-      var previous = _.omit(oldValues, ["location", "place"]);
-      values = _.omit(values, ["place"]);
-      if (values.end_date) {
-        values.end_date.setHours(23);
-        values.end_date.setMinutes(59);
-      }
-      var diff = DeepDiff.diff(previous, values);
+      var previous = _.omit(oldValues, ["location", "place",
+        "start_offset_seconds", "end_offset_seconds"]);
+      var current = _.omit(values, ["place"]);
+      previous.start_date = previous.start_date.toISOString();
+      previous.end_date = previous.end_date.toISOString();
+      current.start_date = current.start_date.toISOString();
+      current.end_date = current.end_date.toISOString();
+
+      var diff = DeepDiff.diff(previous, current);
       return diff;
     },
 
     saveNewEvent: function (values) {
+      //TODO: do I need to do this here?
+
+      // toSend.start_date.add("minutes", -toSend.start_date.zone());
+      // toSend.end_date.add("minutes", -toSend.end_date.zone());
       var model = new Event(values);
       this.eventsCollection.add(model);
       model.save(null, {
