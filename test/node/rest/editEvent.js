@@ -106,7 +106,7 @@ describe("editEvent", function () {
       this.stubValues = [[], []];
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type").should.equal(false);
-        this.eventEditor.params.typeId.should.equal(3);
+        should.not.exist(this.eventEditor.params.typeId);
       }, done);
     });
     it("should ensure event importances if one is passed", function (done) {
