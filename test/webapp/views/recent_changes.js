@@ -33,7 +33,7 @@ define(
           this.recentChanges.render().appendTo($("body"));
         });
         afterEach(function () {
-          $("body").remove("recent-changes");
+          $("body").remove(".recent-changes");
         });
         it("should filter the table by the input box", function (done) {
           _.defer(_.bind(function () {

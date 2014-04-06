@@ -55,7 +55,7 @@ define(
           html.find("td.username span").filter(visibleFilter).length.should.equal(1);
           html.find("td.date span:visible").filter(visibleFilter).length.should.equal(1);
         } finally {
-          $("body").remove("table");
+          $("body").remove(".table");
         }
       });
       it("should create an entry for ids", function () {

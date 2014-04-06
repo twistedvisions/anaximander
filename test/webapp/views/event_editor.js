@@ -119,6 +119,10 @@ define(
           });
           stubFetchData(this.editor);
         });
+        afterEach(function () {
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
+        });
         describe("tabs", function () {
           it("should fetch the history only once when the history tab is selected", function () {
             sinon.stub(this.editor, "fetchHistory", function () {
@@ -139,6 +143,7 @@ define(
           this.editor.$("input[data-key=start]").trigger("change");
           this.editor.$("input[data-key=end]").val().should.equal("2012-12-04");
           this.editor.$("input.date").datepicker("hide");
+          this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
         });
 
@@ -149,6 +154,7 @@ define(
           this.editor.$("input[data-key=start]").trigger("change");
           this.editor.$("input[data-key=end]").val().should.equal("2012-12-05");
           this.editor.$("input.date").datepicker("hide");
+          this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
         });
         it("should add a participant when the participant select box changes", function () {
@@ -160,10 +166,16 @@ define(
       });
 
       describe("participant selector", function () {
-        it("shouldn't allow you to select an existing thing", function () {
+        beforeEach(function () {
           this.editor = new EventEditor({
             state: new Backbone.Model({date: [1900, 2000]})
           });
+        });
+        afterEach(function () {
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
+        });
+        it("shouldn't allow you to select an existing thing", function () {
           this.editor.participants = {
             1: {
               model: new Backbone.Model({
@@ -198,6 +210,10 @@ define(
               }
             };
           });
+        });
+        afterEach(function () {
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
         });
         it("should add a model to the participants collection", function () {
           _.keys(this.editor.participants).length.should.equal(0);
@@ -240,6 +256,8 @@ define(
           this.editor.getSelectedParticipant.restore();
           Analytics.participantAdded.restore();
           Analytics.participantRemoved.restore();
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
         });
         it("should log when someone adds a participant", function () {
           this.editor.addParticipant();
@@ -279,6 +297,10 @@ define(
             ]
           };
           this.editor.render();
+        });
+        afterEach(function () {
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
         });
         describe("rendering", function () {
           it("should display the event name", function () {
@@ -647,6 +669,8 @@ define(
         afterEach(function () {
           Analytics.eventAdded.restore();
           Event.prototype.save.restore();
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
         });
 
         it("should track when an event is added", function () {
