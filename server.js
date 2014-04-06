@@ -85,12 +85,13 @@ new Provider.provider("twitter");
 new Provider.provider("github");
 
 require("./lib/rest/editEvent").init(secureApp);
-require("./lib/rest/getParticipant").init(secureApp);
 require("./lib/rest/getEvent").init(secureApp);
 require("./lib/rest/getEventChanges").init(secureApp);
 require("./lib/rest/getEvents").init(secureApp);
 require("./lib/rest/getEventTypes").init(secureApp);
+require("./lib/rest/getParticipant").init(secureApp);
 require("./lib/rest/getPlaces").init(secureApp);
+require("./lib/rest/getRecentChanges").init(secureApp);
 require("./lib/rest/getRoles").init(secureApp);
 require("./lib/rest/getThingSubtypes").init(secureApp);
 require("./lib/rest/getThingTypes").init(secureApp);

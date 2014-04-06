@@ -1,0 +1,41 @@
+table {
+  &:not(.show-all) {
+    tr:first-of-type {
+      .date span,
+      .username span {
+        visibility: visible;
+      }
+    }
+    .date span,
+    .username span {
+      visibility: hidden;
+    }
+  }
+  &.show-all {
+    tr.show-details {
+      .date span,
+      .username span {
+        visibility: visible;
+      }
+    }
+    tr:not(.show-details) {
+      .date span,
+      .username span {
+        visibility: hidden;
+      }
+    }
+  }
+  tbody {
+    &:nth-child(odd) {
+      background:#f9f9f9;
+    }
+    tr {
+      td {
+        white-space: nowrap;
+        &.changes {
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}

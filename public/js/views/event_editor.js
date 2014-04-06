@@ -12,10 +12,9 @@ define([
   "collections/event_types",
   "views/type_selector",
   "views/participant_editor",
+  "utils/history_renderer",
   "analytics",
   "text!templates/event_editor.htm",
-  "text!templates/event_history.htm",
-  "text!templates/event_history_item.htm",
   "bootstrap",
   "datetimepicker",
   "parsley",
@@ -24,7 +23,7 @@ define([
   "css!/css/datetimepicker"
 ], function ($, _, Backbone, when, moment, DeepDiff, Event, EventsCollection,
     Types, Roles, EventTypes,
-    TypeSelector, ParticipantEditor,
+    TypeSelector, ParticipantEditor, HistoryRenderer,
     analytics, template, historyTemplate, historyItemTemplate) {
 
   var EventEditor = Backbone.View.extend({
