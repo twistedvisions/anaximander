@@ -560,12 +560,9 @@ define([
 
     handleSaveComplete: function (values) {
       this.$el.find(".modal").modal("hide");
-      var updatedModel = this.updateHighlight(values);
-      if (!updatedModel) {
-        //don't always do this because the above may have
-        //triggered it with an extra more specific event
-        this.state.trigger("change:center");
-      }
+      this.updateHighlight(values);
+      //force a refresh of data
+      this.state.trigger("change:center");
     },
 
     updateHighlight: function (values) {
