@@ -86,35 +86,7 @@ define([
     },
 
     renderHistory: function () {
-      this.$(".tab-pane.history").html($(this.historyTemplate()));
-      this.historyCollection.each(function (change) {
-        try {
-          change = change.toJSON();
-          change.new_values = _.omit(change.new_values, ["id"]);
-          var keys = _.keys(change.new_values);
-          var first = _.first(keys);
-          var body = this.$(".tab-pane.history tbody");
-          body.append($(this.historyItemTemplate(
-            _.extend(change, {
-              field: first,
-              value: change.new_values[first]
-            })
-          )));
-          _.each(_.rest(keys), function (key) {
-            body.append($(this.historyItemTemplate(
-              {
-                date: "",
-                username: "",
-                field: key,
-                value: change.new_values[key]
-              }
-            )));
-          }, this);
-        } catch (e) {
-          console.log(change);
-          console.log(e);
-        }
-      }, this);
+      this.$(".tab-pane.history").append(HistoryRenderer(this.historyCollection));
     },
 
     getDatePickerOpts: function (isStart) {
