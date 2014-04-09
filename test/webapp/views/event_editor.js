@@ -375,6 +375,26 @@ define(
                 }, this)
               );
             });
+            it("should contain the last_edit time in the differences", function (done) {
+              this.differences = {
+                name: "new name"
+              };
+              var time = new Date();
+              this.editor.model.set("last_edited", time);
+              sinon.stub(this.editor, "handleSaveComplete");
+              this.editor.updateExistingEvent();
+              _.defer(
+                _.bind(function () {
+                  var ex;
+                  try {
+                    this.editor.sendChangeRequest.args[0][0].last_edited.should.eql(time);
+                  } catch (e) {
+                    ex = e;
+                  }
+                  done(ex);
+                }, this)
+              );
+            });
             it("should call handleSaveFail when the request failed", function (done) {
               this.differences = {
                 name: "new name"
@@ -710,11 +730,11 @@ define(
           }
         });
 
-        it("should not save if no type is added", function () {
+        it("should not save if no type is added");/*, function () {
           this.editor.$("input[data-key=type]").val("");
           this.editor.handleSave();
           this.editor.eventsCollection.toJSON().length.should.equal(0);
-        });
+        });*/
         it("should not save if no place is added", function () {
           this.editor.$("input[data-key=place]").val("");
           this.editor.handleSave();
@@ -791,6 +811,12 @@ define(
         //   this.editor.handleSave();
         //   this.editor.eventsCollection.toJSON().length.should.equal(0);
         // });
+        describe("handleSaveFail", function () {
+          it("should put a custom message in if someone else edited the event", function () {
+            this.editor.handleSaveFail(null, {responseText: "last_edited times do not match"});
+            this.editor.$(".error-message").text().indexOf("Event can't be saved").should.equal(0);
+          });
+        });
       });
     });
 

@@ -14,8 +14,8 @@ exports.up = function (db, callback) {
 
 exports.down = function (db, callback) {
   var actions = [
-    db.all.bind(db, "ALTER TABLE timezone REMOVE COLUMN normal_offset;"),
-    db.all.bind(db, "ALTER TABLE timezone REMOVE COLUMN ds_offset;")
+    db.all.bind(db, "ALTER TABLE timezone DROP COLUMN normal_offset;"),
+    db.all.bind(db, "ALTER TABLE timezone DROP COLUMN ds_offset;")
   ];
 
   async.series(actions, callback);

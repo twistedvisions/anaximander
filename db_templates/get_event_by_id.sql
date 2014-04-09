@@ -1,6 +1,7 @@
 select
   event.id,
   event.name,
+  event.last_edited,
   place_thing.id as place_id,
   place_thing.name as place_name,
   ST_AsGeoJSON(place.location) as location,

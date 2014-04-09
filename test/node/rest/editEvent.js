@@ -85,13 +85,54 @@ describe("editEvent", function () {
         done();
       });
     });
-    it("should ensure event types if one is passed", function (done) {
+    it("should fail if no last_edited time is passed", function (done) {
       this.fullBody = {
         id: 1,
         type: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], [], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}]
+      ];
+
+      this.testEdit(function () {
+        throw new Error("should not get here");
+      }, done, function () {
+        done();
+      });
+    });
+    it("should fail if the last_edited is different", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        type: {id: 2}
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-02"}]
+      ];
+
+      this.testEdit(function () {
+        throw new Error("should not get here");
+      }, done, function () {
+        done();
+      });
+    });
+    // it("should fail if the row is already locked - how to test this?");
+    it("should ensure event types if one is passed", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        type: {id: 2}
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_type_by_id", id: 2}],
+        [{db_call: "update_event_type", id: 2}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type").should.equal(true);
@@ -100,10 +141,16 @@ describe("editEvent", function () {
     it("should not ensure event types if one is not passed", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         name: "new name"
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type").should.equal(false);
         should.not.exist(this.eventEditor.params.typeId);
@@ -112,10 +159,17 @@ describe("editEvent", function () {
     it("should ensure event importances if one is passed", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         importance: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], [], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_importance_by_id", id: 2}],
+        [{db_call: "update_event_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type importance").should.equal(true);
@@ -124,10 +178,16 @@ describe("editEvent", function () {
     it("should not ensure event importances if one is not passed", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         name: "new name"
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type importance").should.equal(false);
@@ -136,89 +196,132 @@ describe("editEvent", function () {
     it("should save a changed name", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         name: "new name"
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("update_event_name");
-        this.args[0][2][1].should.equal("new name");
+        this.args[1][1].should.equal("update_event_name");
+        this.args[1][2][1].should.equal("new name");
       }, done);
     });
     it("should save a changed link", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         link: "new link"
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_link"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("update_event_link");
-        this.args[0][2][1].should.equal("new link");
+        this.args[1][1].should.equal("update_event_link");
+        this.args[1][2][1].should.equal("new link");
       }, done);
     });
     it("should save a changed start date", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         start_date: new Date(1900, 0, 1)
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_start_date"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("update_event_start_date");
-        this.args[0][2][1].should.eql(new Date(1900, 0, 1));
+        this.args[1][1].should.equal("update_event_start_date");
+        this.args[1][2][1].should.eql(new Date(1900, 0, 1));
       }, done);
     });
     it("should save a changed end date", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         end_date: new Date(2000, 0, 1)
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_end_date"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("update_event_end_date");
-        this.args[0][2][1].should.eql(new Date(2000, 0, 1));
+        this.args[1][1].should.equal("update_event_end_date");
+        this.args[1][2][1].should.eql(new Date(2000, 0, 1));
       }, done);
     });
     it("should save a changed event type", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         type: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], [], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_type_by_id", id: 2}],
+        [{db_call: "update_event_type"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_event_type");
-        this.args[1][2][1].should.eql(2);
+        this.args[2][1].should.equal("update_event_type");
+        this.args[2][2][1].should.eql(2);
       }, done);
     });
     it("should save a changed event importance", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         importance: {id: 2}
       };
 
-      this.stubValues = [[{id: 2}], [], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_importance_by_id", id: 2}],
+        [{db_call: "update_event_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_event_importance");
-        this.args[1][2][1].should.eql(2);
+        this.args[2][1].should.equal("update_event_importance");
+        this.args[2][2][1].should.eql(2);
       }, done);
     });
 
     it("should ensure that new participants exist", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         newParticipants: [{}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
@@ -227,10 +330,15 @@ describe("editEvent", function () {
     it("should add new participants", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         newParticipants: [{}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
         this.eventEditor.addParticipant.calledOnce.should.equal(true);
@@ -240,6 +348,7 @@ describe("editEvent", function () {
     it("should not change participants that are not part of the event", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         editedParticipants: [{thing: {id: 1}}]
       };
 
@@ -250,7 +359,9 @@ describe("editEvent", function () {
         participants: []
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}]
+      ];
 
       this.testEdit(function () {
         throw new Error("should not get here");
@@ -262,6 +373,7 @@ describe("editEvent", function () {
     it("should ensure that changed participants' values exist", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         editedParticipants: [{thing: {id: 2}}]
       };
 
@@ -272,15 +384,21 @@ describe("editEvent", function () {
         participants: [{thing: {id: 2}}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
       }, done);
     });
+
     it("should change the role of existing participants", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         editedParticipants: [{thing: {id: 2}, type: {id: 3}}]
       };
 
@@ -291,15 +409,21 @@ describe("editEvent", function () {
         participants: [{thing: {id: 2}}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_participant_role", id: 2}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("update_participant_role");
+        this.args[1][1].should.equal("update_participant_role");
       }, done);
     });
     it("should change the importance of existing participants", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         editedParticipants: [{thing: {id: 2}, importance: {id: 3}}]
       };
 
@@ -310,16 +434,22 @@ describe("editEvent", function () {
         participants: [{thing: {id: 2}}]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_participant_importance", id: 2}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("update_participant_importance");
+        this.args[1][1].should.equal("update_participant_importance");
       }, done);
     });
 
     it("should remove exisiting participants", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         removedParticipants: [1]
       };
 
@@ -332,16 +462,23 @@ describe("editEvent", function () {
         ]
       };
 
-      this.stubValues = [[{id: 2}], []];
+      this.stubValues = [
+
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "remove_participant", id: 2}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[0][1].should.equal("remove_participant");
+        this.args[1][1].should.equal("remove_participant");
       }, done);
     });
 
     it("should not remove participants that do not exist", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         removedParticipants: [1]
       };
 
@@ -352,7 +489,9 @@ describe("editEvent", function () {
         participants: []
       };
 
-      this.stubValues = [[{id: 2}]];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}]
+      ];
 
       this.testEdit(function () {
         throw new Error("should not get here");
@@ -364,19 +503,21 @@ describe("editEvent", function () {
     it("should call save_change after a change has happened", function (done) {
       this.fullBody = {
         id: 1,
+        last_edited: "2000-01-01",
         name: "new name"
       };
 
-      this.stubValues = [[], []];
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("save_event_change");
+        this.args[2][1].should.equal("save_event_change");
       }, done);
     });
-
-  });
-
-  describe("transaction", function () {
 
   });
 });

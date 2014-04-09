@@ -373,6 +373,7 @@ define([
     updateExistingEvent: function (values) {
       var differences = this.getDifferences(values);
       if (_.keys(_.omit(differences, "id")).length > 0) {
+        differences.last_edited = this.model.get("last_edited");
         this.sendChangeRequest(differences).then(
           _.bind(this.handleSaveComplete, this, values),
           _.bind(this.handleSaveFail, this, null)
@@ -583,7 +584,13 @@ define([
 
     handleSaveFail: function (model, res) {
       this.$(".error-message").show();
-      this.$(".error-message").text(res.responseText.substring(0, 100));
+      var text;
+      if (res.responseText.indexOf("last_edited times do not match") >= 0) {
+        text = "Event can't be saved - it has been edited by someone else. Refresh and try again";
+      } else {
+        text = res.responseText.substring(0, 100);
+      }
+      this.$(".error-message").text(text);
     }
 
   });
