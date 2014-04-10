@@ -32,7 +32,7 @@ describe("GetEvent", function () {
       getEvent.handleGetEvent([this.firstRow]);
       time.should.equal(1000000 - 120 * 60 * 1000);
     });
-    ("should take the local timezone ofset out of the start date, so the iso time looks right", function () {
+    it("should take the local timezone ofset out of the start date, so the iso time looks right", function () {
       var time;
       this.firstRow.start_date = {
         setTime: function (_time) {

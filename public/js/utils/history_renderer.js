@@ -14,32 +14,27 @@ define([
     // var table = html.find("table");
     historyCollection.each(function (change) {
       groupId += 1;
-      try {
-        change = change.toJSON();
-        change.date = moment.utc(change.date);
-        change.new_values = _.omit(change.new_values, ["id"]);
-        var keys = _.keys(change.new_values);
-        var first = _.first(keys);
-        var body = $("<tbody class='group-" + groupId + "'/>");
-        html.append(body);
+      change = change.toJSON();
+      change.date = moment.utc(change.date);
+      change.new_values = _.omit(change.new_values, ["id"]);
+      var keys = _.keys(change.new_values);
+      var first = _.first(keys);
+      var body = $("<tbody class='group-" + groupId + "'/>");
+      html.append(body);
+      body.append($(historyItemTemplate(
+        _.extend(change, {
+          field: first,
+          value: change.new_values[first]
+        })
+      )));
+      _.each(_.rest(keys), function (key) {
         body.append($(historyItemTemplate(
           _.extend(change, {
-            field: first,
-            value: change.new_values[first]
+            field: key,
+            value: change.new_values[key]
           })
         )));
-        _.each(_.rest(keys), function (key) {
-          body.append($(historyItemTemplate(
-            _.extend(change, {
-              field: key,
-              value: change.new_values[key]
-            })
-          )));
-        });
-      } catch (e) {
-        console.log(change);
-        console.log(e);
-      }
+      });
     }, this);
     return html;
   };
