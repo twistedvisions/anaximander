@@ -13,6 +13,26 @@ define(
 
     describe("event editor", function () {
 
+      var selectParticipant = function (editor) {
+        editor.$(".participant-editor input[data-key=type]").select2("val", 1).trigger("change");
+        sinon.stub(editor, "getSelectedParticipant", function () {
+          return {
+            thing: {
+              id: -1,
+              name: "new thing name"
+            }
+          };
+        });
+
+        editor.addParticipant();
+
+        editor
+          .$(".participant-editor input[data-key=type]")
+          .last()
+          .select2("val", 2)
+          .trigger("change");
+      };
+
       var stubFetchData = function (editor) {
         sinon.stub(editor, "fetchData", function () {
           return {
@@ -157,6 +177,7 @@ define(
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
         });
+
         it("should add a participant when the participant select box changes", function () {
           sinon.stub(this.editor, "addParticipant");
           this.editor.render();
@@ -202,6 +223,7 @@ define(
           this.editor = new EventEditor({
             state: new Backbone.Model({date: [1900, 2000]})
           });
+          stubFetchData(this.editor);
           this.editor.render();
           sinon.stub(this.editor, "getSelectedParticipant", function () {
             return {
@@ -244,9 +266,12 @@ define(
         beforeEach(function () {
           sinon.stub(Analytics, "participantAdded");
           sinon.stub(Analytics, "participantRemoved");
+          sinon.stub(Analytics, "eventSaveClicked");
+          sinon.stub(Analytics, "eventSaveValidationFailed");
           this.editor = new EventEditor({
             state: new Backbone.Model({date: [1900, 2000]})
           });
+          stubFetchData(this.editor);
           this.editor.render();
           sinon.stub(this.editor, "getSelectedParticipant", function () {
             return {thing: {id: 1, name: "some name"}};
@@ -256,6 +281,8 @@ define(
           this.editor.getSelectedParticipant.restore();
           Analytics.participantAdded.restore();
           Analytics.participantRemoved.restore();
+          Analytics.eventSaveClicked.restore();
+          Analytics.eventSaveValidationFailed.restore();
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
         });
@@ -267,6 +294,15 @@ define(
           this.editor.addParticipant();
           _.values(this.editor.participants)[0].trigger("remove");
           Analytics.participantRemoved.calledOnce.should.equal(true);
+        });
+        it("should log when a use clicks save", function () {
+          this.editor.handleSave();
+          Analytics.eventSaveClicked.calledOnce.should.equal(true);
+        });
+        it("should log when the validation fails", function () {
+          this.editor.$("input[data-key=name]").val("");
+          this.editor.handleSave();
+          Analytics.eventSaveValidationFailed.calledOnce.should.equal(true);
         });
       });
 
@@ -417,6 +453,34 @@ define(
           });
         });
         describe("saving", function () {
+          describe("validation", function () {
+            beforeEach(function () {
+              sinon.stub(Analytics, "eventSaved");
+              sinon.stub(Analytics, "eventSaveClicked");
+              sinon.stub(this.editor, "sendChangeRequest", function () {
+                return when.resolve();
+              });
+              sinon.stub(this.editor, "updateHighlight");
+
+            });
+            afterEach(function () {
+              Analytics.eventSaved.restore();
+              this.editor.sendChangeRequest.restore();
+              this.editor.updateHighlight.restore();
+            });
+            it("should track when an event is saved", function (done) {
+              this.editor.$("input[data-key=name]").val("something different");
+              this.editor.handleSave().then(function () {
+                var ex;
+                try {
+                  Analytics.eventSaved.calledOnce.should.equal(true);
+                } catch (e) {
+                  ex = e;
+                }
+                done(ex);
+              }, done);
+            });
+          });
           describe("raw differences", function () {
             it("should return one difference if the name has changed", function () {
               this.editor.$("input[data-key=name]").val("something different");
@@ -526,45 +590,14 @@ define(
               differences.importance.name.should.equal("new importance name");
             });
             it("should send new participants", function () {
-              sinon.stub(this.editor, "getSelectedParticipant", function () {
-                return {
-                  thing: {
-                    id: -1,
-                    name: "new thing name"
-                  }
-                };
-              });
-              this.editor.addParticipant();
-
-              this.editor
-                .$(".participant-editor input[data-key=type]")
-                .last()
-                .select2("val", 2)
-                .trigger("change");
-
+              selectParticipant(this.editor);
               var differences = this.editor.getDifferences(this.editor.collectValues());
               differences.newParticipants[0].thing.id.should.equal(-1);
               differences.newParticipants[0].type.id.should.equal(2);
               differences.newParticipants[0].importance.id.should.equal(20);
             });
             it("should send new and changed participants together", function () {
-              this.editor.$(".participant-editor input[data-key=type]").select2("val", 1).trigger("change");
-              sinon.stub(this.editor, "getSelectedParticipant", function () {
-                return {
-                  thing: {
-                    id: -1,
-                    name: "new thing name"
-                  }
-                };
-              });
-              this.editor.addParticipant();
-
-              this.editor
-                .$(".participant-editor input[data-key=type]")
-                .last()
-                .select2("val", 2)
-                .trigger("change");
-
+              selectParticipant(this.editor);
               var differences = this.editor.getDifferences(this.editor.collectValues());
               differences.newParticipants.length.should.equal(1);
               differences.editedParticipants.length.should.equal(1);
@@ -684,6 +717,9 @@ define(
           this.editor.$("input[data-key=place]").select2("data", {id: 1, text: "some place"});
           this.editor.$("input[data-key=type]").select2("data", {id: 1, text: "some type"});
           this.editor.$("input[data-key=importance]").select2("data", {id: 1, text: "some importance"});
+
+          selectParticipant(this.editor);
+
         });
 
         afterEach(function () {
@@ -693,9 +729,12 @@ define(
           this.editor.$el.remove();
         });
 
-        it("should track when an event is added", function () {
-          this.editor.handleSave();
-          Analytics.eventAdded.calledOnce.should.equal(true);
+        it("should track when an event is added", function (done) {
+          sinon.stub(this.editor, "updateHighlight");
+          this.editor.handleSave().then(function () {
+            Analytics.eventAdded.calledOnce.should.equal(true);
+            done();
+          });
         });
 
         it("should save the place with a lat and lon if it is a new place", function () {
@@ -830,7 +869,17 @@ define(
           });
         });
       });
+      describe("closing", function () {
+        it("should remove the form from the DOM when it is closed", function () {
+          this.editor = new EventEditor({
+            state: new Backbone.Model({date: [1900, 2000]})
+          });
+          stubFetchData(this.editor);
+          this.editor.render();
+          this.editor.$(".modal").trigger("hidden.bs.modal");
+          this.editor.$el.parent().length.should.equal(0);
+        });
+      });
     });
-
   }
 );

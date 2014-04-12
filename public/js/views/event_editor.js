@@ -60,7 +60,7 @@ define([
       this.$("input[data-key=start]").datetimepicker(this.getDatePickerOpts(true));
       this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$(".save").on("click", _.bind(this.handleSave, this));
-
+      this.$(".modal").on("hidden.bs.modal", _.bind(this.handleClose, this));
       this.addValidators();
 
       this.fetchData().then(_.bind(this.populateView, this));
@@ -328,15 +328,33 @@ define([
     },
 
     handleSave: function () {
-
+      analytics.eventSaveClicked(this.model ? this.model.toJSON() : {
+        name: this.$el.find("input[data-key=name]").val()
+      });
       if (this.validate()) {
         var values = this.collectValues();
         if (this.model) {
-          this.updateExistingEvent(values);
+          return this.updateExistingEvent(values);
         } else {
-          this.saveNewEvent(values);
+          return this.saveNewEvent(values);
         }
+      } else {
+        analytics.eventSaveValidationFailed({
+          fields: this.getErrorFields()
+        });
+        return when.reject();
       }
+    },
+
+    getErrorFields: function () {
+      return _.toArray(
+        this.$(".parsley-errors-list.filled")
+          .parent()
+          .find("label")
+          .map(function (i, el) {
+            return $(el).text();
+          })
+        );
     },
 
     collectValues: function () {
@@ -380,10 +398,12 @@ define([
       var differences = this.getDifferences(values);
       if (_.keys(_.omit(differences, "id")).length > 0) {
         differences.last_edited = this.model.get("last_edited");
-        this.sendChangeRequest(differences).then(
+        return this.sendChangeRequest(differences).then(
           _.bind(this.handleSaveComplete, this, values),
           _.bind(this.handleSaveFail, this, null)
         );
+      } else {
+        return when.reject();
       }
     },
 
@@ -519,17 +539,12 @@ define([
     },
 
     saveNewEvent: function (values) {
-      //TODO: do I need to do this here?
-
-      // toSend.start_date.add("minutes", -toSend.start_date.zone());
-      // toSend.end_date.add("minutes", -toSend.end_date.zone());
       var model = new Event(values);
       this.eventsCollection.add(model);
-      model.save(null, {
-        success: _.bind(this.handleSaveComplete, this, values),
-        error: _.bind(this.handleSaveFail, this)
-      });
-      analytics.eventAdded(values);
+      return when(model.save(null, {})).then(
+        _.bind(this.handleSaveComplete, this, values),
+        _.bind(this.handleSaveFail, this)
+      );
     },
 
     validate: function () {
@@ -567,6 +582,12 @@ define([
     },
 
     handleSaveComplete: function (values) {
+      if (this.model) {
+        analytics.eventSaved(values);
+      } else {
+        analytics.eventAdded(values);
+      }
+
       this.$el.find(".modal").modal("hide");
       this.updateHighlight(values);
       //force a refresh of data
@@ -598,6 +619,10 @@ define([
         text = res.responseText.substring(0, 100);
       }
       this.$(".error-message").text(text);
+    },
+
+    handleClose: function () {
+      this.$el.remove();
     }
 
   });

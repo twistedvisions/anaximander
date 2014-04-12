@@ -52,10 +52,14 @@ define(["underscore"], function (_) {
     "optionsMenuShown",
     "optionSelected",
     "eventAdded",
+    "eventSaved",
     "participantAdded",
     "participantRemoved",
     "newTypeAdded",
     "newImportanceAdded",
+    "eventSaveClicked",
+    "eventSaveValidationFailed",
+
 
     //filters
     "showFilters",
