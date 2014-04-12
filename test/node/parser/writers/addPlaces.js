@@ -4,8 +4,9 @@ var when = require("when");
 var should = require("should");
 var tryTest = require("../../tryTest");
 var db = require("../../../../lib/parser/raw_db");
+require("../stubRedis");
+
 var addPlaces = require("../../../../lib/parser/writers/addPlaces");
-var acquireLock = require("../../../../lib/parser/acquireLock");
 
 describe("addPlaces", function () {
 
@@ -27,10 +28,6 @@ describe("addPlaces", function () {
       return d.promise;
     });
 
-    sinon.stub(acquireLock, "start");
-    sinon.stub(acquireLock, "acquireLock", function () {
-      return when.resolve();
-    });
   });
 
   var job;
