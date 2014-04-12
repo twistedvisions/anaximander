@@ -1,6 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 var openidStrategy = require("../../../../lib/rest/auth/openidStrategy");
 var should = require("should");
+var _ = require("underscore");
 var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
 
@@ -38,7 +39,19 @@ describe("openidStrategy", function () {
       }, done));
     stubDb.setQueryValues(this, [
       [],
-      [{id: 43}]
+      [{id: 43}],
+      [{}]
+    ]);
+  });
+  it("should add initial permissions to the first user", function (done) {
+    this.facebookStrategy(null, null, {id: 1},
+      tryTest(_.bind(function (/*err, user*/) {
+        this.args[2][1].should.equal("add_initial_user_permissions");
+      }, this), done));
+    stubDb.setQueryValues(this, [
+      [],
+      [{id: 43}],
+      [{}]
     ]);
   });
   it("should callback with an error if the user cannot be added", function (done) {
