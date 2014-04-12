@@ -4,9 +4,10 @@ define([
   "backbone",
   "when",
   "utils/history_renderer",
+  "analytics",
   "text!templates/recent_changes.htm",
   "css!/css/recent_changes.css"
-], function ($, _, Backbone, when, HistoryRenderer, template) {
+], function ($, _, Backbone, when, HistoryRenderer, analytics, template) {
   var RecentChanges = Backbone.View.extend({
     className: "recent-changes",
     initialize: function (/*options*/) {},
@@ -14,6 +15,7 @@ define([
     render: function () {
       $(this.el).html(template);
       this.getRecentChanges().then(_.bind(this.renderTable, this));
+      analytics.recentChangesViewed();
       return this.$el;
     },
 

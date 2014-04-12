@@ -76,7 +76,10 @@ define(["underscore"], function (_) {
     "loginSucceeded",
     "loginFailed",
     "logout",
-    "register"
+    "register",
+
+    //recent changes
+    "recentChangesViewed"
   ];
   _.each(events, function (event) {
     analytics._addEvent(event);
