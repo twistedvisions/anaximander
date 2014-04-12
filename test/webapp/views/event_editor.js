@@ -24,6 +24,13 @@ define(
       };
 
       beforeEach(function () {
+        window.ParsleyValidator = {};
+        window.ParsleyValidator.addValidator = function () {
+          return window.ParsleyValidator;
+        };
+        window.ParsleyValidator.addMessage = function () {
+          return window.ParsleyValidator;
+        };
         Roles.instance = new Roles();
         Roles.instance.reset([
           {
@@ -430,7 +437,7 @@ define(
               this.editor.collectValues().start_date.toISOString().should.equal("1900-12-12T22:00:00.000Z");
             });
             it("should collect the end time in UTC time", function () {
-              this.editor.$("input[data-key=start]").val("2000-01-01 23:59");
+              this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
               this.editor.collectValues().end_date.toISOString().should.equal("2000-01-01T21:59:00.000Z");
             });
           });
@@ -730,15 +737,33 @@ define(
           }
         });
 
-        it("should not save if no type is added");/*, function () {
-          this.editor.$("input[data-key=type]").val("");
-          this.editor.handleSave();
-          this.editor.eventsCollection.toJSON().length.should.equal(0);
-        });*/
-        it("should not save if no place is added", function () {
-          this.editor.$("input[data-key=place]").val("");
-          this.editor.handleSave();
-          this.editor.eventsCollection.toJSON().length.should.equal(0);
+        describe("validation", function () {
+          it("should not save if no type is added", function () {
+            this.editor.$("input[data-key=type]").val("");
+            this.editor.handleSave();
+            this.editor.eventsCollection.toJSON().length.should.equal(0);
+          });
+
+          it("should not save if no place is added", function () {
+            this.editor.$("input[data-key=place]").val("");
+            this.editor.handleSave();
+            this.editor.eventsCollection.toJSON().length.should.equal(0);
+          });
+
+          //can't get parsley to work inside a test for custom validators
+          // it("should not save if the end is before the start", function () {
+          //   this.editor.$("input[data-key=start]").val("2000-01-02 00:00");
+          //   this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
+          //   this.editor.handleSave();
+          //   this.editor.eventsCollection.toJSON().length.should.equal(0);
+          // });
+
+          // it("should not save if no participants are added", function () {
+          //   this.editor.participants.length.should.equal(0);
+          //   this.editor.eventsCollection.toJSON().length.should.equal(0);
+          //   this.editor.handleSave();
+          //   this.editor.eventsCollection.toJSON().length.should.equal(0);
+          // });
         });
 
         it("should update the highlight if the added participant is already highlighted", function () {
@@ -804,13 +829,6 @@ define(
             .should.equal("//something.com");
         });
 
-        // it("should not save if no participants are added", function () {
-        //   //can't get parsley to work inside a test for custom validators
-        //   this.editor.participants.length.should.equal(0);
-        //   this.editor.eventsCollection.toJSON().length.should.equal(0);
-        //   this.editor.handleSave();
-        //   this.editor.eventsCollection.toJSON().length.should.equal(0);
-        // });
         describe("handleSaveFail", function () {
           it("should put a custom message in if someone else edited the event", function () {
             this.editor.handleSaveFail(null, {responseText: "last_edited times do not match"});

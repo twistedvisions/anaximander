@@ -61,6 +61,8 @@ define([
       this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$(".save").on("click", _.bind(this.handleSave, this));
 
+      this.addValidators();
+
       this.fetchData().then(_.bind(this.populateView, this));
 
       return this.$el;
@@ -107,6 +109,25 @@ define([
       if (!end) {
         this.$el.find("input[data-key=end]").val(this.$el.find("input[data-key=start]").val());
       }
+    },
+
+    addValidators: function () {
+      var el = this.$el;
+
+      window.ParsleyValidator
+        .addValidator("endafterstart", function () {
+          var start = new Date(el.find("input[data-key=start]").val()).getTime();
+          var end = new Date(el.find("input[data-key=end]").val()).getTime();
+          return end >= start;
+        }, 32)
+        .addMessage("en", "endafterstart", "The end date should be after the start");
+
+      window.ParsleyValidator
+        .addValidator("participantexists", function () {
+          return el.find(".participant-editor").length > 0;
+        }, 33)
+        .addMessage("en", "participantexists", "Please add a participant");
+
     },
 
     setValues: function () {
@@ -209,21 +230,6 @@ define([
 
       el.on("change", _.bind(this.addParticipant, this, null));
 
-      this.$("form").parsley({
-        validators: {
-          participantexists: function () {
-            return {
-              validate: function () {
-                return el.find(".participant").length > 0;
-              },
-              priority: 3
-            };
-          }
-        },
-        messages: {
-          participantexists: "Please add a participant"
-        }
-      });
     },
 
     getSelectableParticipants: function (data/*, page*/) {
@@ -529,7 +535,8 @@ define([
     validate: function () {
       var ok = true;
       this.$(".error-message").hide();
-      ok = ok && this.$("form").parsley("validate");
+
+      ok = ok && this.$("form").parsley().validate();
       _.each(_.values(this.participants), function (participant) {
         ok = ok && participant.validate();
       });
