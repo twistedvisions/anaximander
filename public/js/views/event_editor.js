@@ -116,8 +116,8 @@ define([
 
       window.ParsleyValidator
         .addValidator("endafterstart", function () {
-          var start = new Date(el.find("input[data-key=start]").val()).getTime();
-          var end = new Date(el.find("input[data-key=end]").val()).getTime();
+          var start = new Date(el.find("input[data-key=start]").datetimepicker("getDate")).getTime();
+          var end = new Date(el.find("input[data-key=end]").datetimepicker("getDate")).getTime();
           return end >= start;
         }, 32)
         .addMessage("en", "endafterstart", "The end date should be after the start");

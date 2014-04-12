@@ -24,13 +24,6 @@ define(
       };
 
       beforeEach(function () {
-        window.ParsleyValidator = {};
-        window.ParsleyValidator.addValidator = function () {
-          return window.ParsleyValidator;
-        };
-        window.ParsleyValidator.addMessage = function () {
-          return window.ParsleyValidator;
-        };
         Roles.instance = new Roles();
         Roles.instance.reset([
           {
@@ -750,20 +743,21 @@ define(
             this.editor.eventsCollection.toJSON().length.should.equal(0);
           });
 
-          //can't get parsley to work inside a test for custom validators
-          // it("should not save if the end is before the start", function () {
-          //   this.editor.$("input[data-key=start]").val("2000-01-02 00:00");
-          //   this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
-          //   this.editor.handleSave();
-          //   this.editor.eventsCollection.toJSON().length.should.equal(0);
-          // });
+          it("should not save if the end is before the start", function () {
+            this.editor.$("input[data-key=start]").val("2000-01-02 00:00");
+            this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
+            this.editor.handleSave();
+            this.editor.eventsCollection.toJSON().length.should.equal(0);
+          });
 
-          // it("should not save if no participants are added", function () {
-          //   this.editor.participants.length.should.equal(0);
-          //   this.editor.eventsCollection.toJSON().length.should.equal(0);
-          //   this.editor.handleSave();
-          //   this.editor.eventsCollection.toJSON().length.should.equal(0);
-          // });
+          it("should not save if no participants are added", function () {
+            this.editor.participants[_.keys(this.editor.participants)[0]].trigger("remove");
+            this.editor.$(".participant-editor").remove();
+            _.keys(this.editor.participants).length.should.equal(0);
+            this.editor.eventsCollection.toJSON().length.should.equal(0);
+            this.editor.handleSave();
+            this.editor.eventsCollection.toJSON().length.should.equal(0);
+          });
         });
 
         it("should update the highlight if the added participant is already highlighted", function () {

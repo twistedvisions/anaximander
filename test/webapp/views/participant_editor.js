@@ -4,8 +4,7 @@ define(
   ["chai", "backbone", "views/participant_editor", "collections/roles"],
 
   function (chai, Backbone, ParticipantEditor, RolesCollection) {
-
-    describe("rendering", function () {
+    describe("participant editor", function () {
       beforeEach(function () {
         this.typesCollection = new RolesCollection([{
           id: 1,
@@ -30,63 +29,65 @@ define(
         this.existingModel = new Backbone.Model({thing: {id: 10, name: "existing thing name"}});
         this.newModel = new Backbone.Model({thing: {id: -1, name: "new thing name"}});
       });
-      it("should show the thing's name if it exists", function () {
-        this.participantEditor = new ParticipantEditor({
-          model: this.existingModel,
-          roles: this.typesCollection
+      describe("rendering", function () {
+        it("should show the thing's name if it exists", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.existingModel,
+            roles: this.typesCollection
+          });
+          this.participantEditor.render();
+          this.participantEditor.$(".name").text().should.equal("existing thing name");
         });
-        this.participantEditor.render();
-        this.participantEditor.$(".name").text().should.equal("existing thing name");
-      });
-      it("should make the thing name's editable if it is a new thing", function () {
-        this.participantEditor = new ParticipantEditor({
-          model: this.newModel,
-          roles: this.typesCollection
+        it("should make the thing name's editable if it is a new thing", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.newModel,
+            roles: this.typesCollection
+          });
+          this.participantEditor.render();
+          this.participantEditor.$(".new-thing input[data-key=thing-name]").val().should.equal("new thing name");
         });
-        this.participantEditor.render();
-        this.participantEditor.$(".new-thing input[data-key=thing-name]").val().should.equal("new thing name");
-      });
-      it("should remove participants when the remove button is clicked", function () {
-        this.participantEditor = new ParticipantEditor({
-          model: this.newModel,
-          roles: this.typesCollection
+        it("should remove participants when the remove button is clicked", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.newModel,
+            roles: this.typesCollection
+          });
+          this.participantEditor.render();
+          sinon.stub(this.participantEditor.$el, "remove");
+          this.participantEditor.removeParticipant();
+          this.participantEditor.$el.remove.calledOnce.should.equal(true);
         });
-        this.participantEditor.render();
-        sinon.stub(this.participantEditor.$el, "remove");
-        this.participantEditor.removeParticipant();
-        this.participantEditor.$el.remove.calledOnce.should.equal(true);
       });
-    });
 
-    describe("getValue", function () {
-      it("should get the value of the thing editor if it is a new thing", function () {
-        this.participantEditor = new ParticipantEditor({
-          model: this.newModel,
-          roles: this.typesCollection
+      describe("getValue", function () {
+        it("should get the value of the thing editor if it is a new thing", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.newModel,
+            roles: this.typesCollection
+          });
+          this.participantEditor.render();
+          var value = this.participantEditor.getValue();
+          value.thing.id.should.equal(-1);
+          value.thing.name.should.equal("new thing name");
         });
-        this.participantEditor.render();
-        var value = this.participantEditor.getValue();
-        value.thing.id.should.equal(-1);
-        value.thing.name.should.equal("new thing name");
-      });
-      it("should get the id of the thing if it already exists", function () {
-        this.participantEditor = new ParticipantEditor({
-          model: this.existingModel,
-          roles: this.typesCollection
+        it("should get the id of the thing if it already exists", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.existingModel,
+            roles: this.typesCollection
+          });
+          this.participantEditor.render();
+          this.participantEditor.getValue().thing.id.should.equal(10);
         });
-        this.participantEditor.render();
-        this.participantEditor.getValue().thing.id.should.equal(10);
-      });
-      it("should get the value of the type selector", function () {
-        this.participantEditor = new ParticipantEditor({
-          model: this.existingModel,
-          roles: this.typesCollection
+        it("should get the value of the type selector", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.existingModel,
+            roles: this.typesCollection
+          });
+          this.participantEditor.render();
+          sinon.stub(this.participantEditor.typeSelector, "getValue", function () {
+            return {type: "type value"};
+          });
+          this.participantEditor.getValue().type.should.equal("type value");
         });
-        this.participantEditor.render();
-        sinon.stub(this.participantEditor.typeSelector, "getValue", function () {
-          return {type: "type value"};
-        });
-        this.participantEditor.getValue().type.should.equal("type value");
       });
     });
   }

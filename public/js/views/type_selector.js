@@ -209,13 +209,13 @@ define([
 
     validate: function () {
       var ok = true;
-      ok = ok && this.$("input[data-key=type]").parsley().validate();
+      ok = ok && !_.isArray(this.$("input[data-key=type]").parsley().validate());
       if (this.selectMode) {
-        ok = ok && this.$("input[data-key=importance]").parsley().validate();
+        ok = ok && !_.isArray(this.$("input[data-key=importance]").parsley().validate());
       } else {
-        ok = ok && this.$("input[data-key=importance-name]").parsley().validate();
-        ok = ok && this.$("textarea[data-key=importance-description]").parsley().validate();
-        ok = ok && this.$("input[data-key=importance-value]").parsley().validate();
+        ok = ok && !_.isArray(this.$("input[data-key=importance-name]").parsley().validate());
+        ok = ok && !_.isArray(this.$("textarea[data-key=importance-description]").parsley().validate());
+        ok = ok && !_.isArray(this.$("input[data-key=importance-value]").parsley().validate());
       }
       return ok;
     }
