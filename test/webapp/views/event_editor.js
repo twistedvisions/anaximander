@@ -339,6 +339,10 @@ define(
           this.editor.$el.remove();
         });
         describe("rendering", function () {
+
+          it("should make the reason required if it is a change", function () {
+            this.editor.$("textarea[data-key=reason]").attr("required").length.should.not.equal(0);
+          });
           it("should display the event name", function () {
             this.editor.$("input[data-key=name]").val().should.equal("existing event name");
           });
@@ -453,7 +457,7 @@ define(
           });
         });
         describe("saving", function () {
-          describe("validation", function () {
+          describe("analytics", function () {
             beforeEach(function () {
               sinon.stub(Analytics, "eventSaved");
               sinon.stub(Analytics, "eventSaveClicked");
@@ -502,6 +506,10 @@ define(
             it("should always have an id", function () {
               this.editor.$("input[data-key=name]").val("something different");
               this.editor.getDifferences(this.editor.collectValues()).id.should.equal(123);
+            });
+            it("should always have a reason", function () {
+              this.editor.$("textarea[data-key=reason]").val("the reason");
+              this.editor.getDifferences(this.editor.collectValues()).reason.should.equal("the reason");
             });
             it("shouldn't diff the offset", function () {
               this.editor.$("input[data-key=name]").val("something different");
@@ -727,6 +735,13 @@ define(
           Event.prototype.save.restore();
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
+        });
+
+        it("should not make the reason required if it saving a new event", function () {
+          should.not.exist(this.editor.$("textarea[data-key=reason]").attr("required"));
+        });
+        it("should hide the reason if it is a new event", function () {
+          this.editor.$("textarea[data-key=reason]").parent().css("display").should.equal("none");
         });
 
         it("should track when an event is added", function (done) {

@@ -49,6 +49,8 @@ define([
       this.$el.html(template);
       $("body").append(this.$el);
 
+      this.renderEditReason();
+
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
       this.setValues();
@@ -66,6 +68,14 @@ define([
       this.fetchData().then(_.bind(this.populateView, this));
 
       return this.$el;
+    },
+
+    renderEditReason: function () {
+      if (this.model) {
+        this.$("textarea[data-key=reason]").attr("required", true);
+      } else {
+        this.$("textarea[data-key=reason]").parent().hide();
+      }
     },
 
     showHistoryTab: function () {
@@ -496,6 +506,8 @@ define([
           return obj;
         });
       }
+
+      toSend.reason = this.$("textarea[data-key=reason]").val();
       return toSend;
     },
 
