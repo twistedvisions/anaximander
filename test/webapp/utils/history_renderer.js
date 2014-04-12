@@ -55,8 +55,23 @@ define(
           html.find("td.username span").filter(visibleFilter).length.should.equal(1);
           html.find("td.date span:visible").filter(visibleFilter).length.should.equal(1);
         } finally {
-          $("body").remove(".table");
+          html.remove();
         }
+      });
+      it("should show the reason first", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "aaa": "value2",
+              "reason": "value1"
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.field").first().text().should.equal("reason");
+        html.find("td.field").last().text().should.equal("aaa");
       });
       it("should create an entry for ids", function () {
         var historyCollection = new Backbone.Collection([

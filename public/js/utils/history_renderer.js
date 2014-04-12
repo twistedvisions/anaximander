@@ -18,6 +18,16 @@ define([
       change.date = moment.utc(change.date);
       change.new_values = _.omit(change.new_values, ["id"]);
       var keys = _.keys(change.new_values);
+      keys.sort(function (a, b) {
+        if (a === "reason") {
+          return -1;
+        } else if (b === "reason") {
+          return 1;
+        }
+        else {
+          return a < b ? -1 : (a === b ? 0 : 1);
+        }
+      });
       var first = _.first(keys);
       var body = $("<tbody class='group-" + groupId + "'/>");
       html.append(body);
