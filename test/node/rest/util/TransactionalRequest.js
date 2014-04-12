@@ -73,5 +73,23 @@ describe("TransactionalRequest", function () {
       this.transactionalRequest.call(req, res, next);
       this.transactionalRequest.userId.should.equal(100);
     });
+    it("should set the user ip if you are logged in", function () {
+      var req = {
+        isAuthenticated: function () {
+          return true;
+        },
+        user: {id: 100},
+        ip: "123.45.67.89"
+      };
+      var res = {};
+      var ex;
+      var next = function (e) {
+        ex = e;
+      };
+      this.transactionalRequest.getCalls = function () { return []; };
+      this.transactionalRequest.setResponse = function () {};
+      this.transactionalRequest.call(req, res, next);
+      this.transactionalRequest.userIp.should.equal("123.45.67.89");
+    });
   });
 });
