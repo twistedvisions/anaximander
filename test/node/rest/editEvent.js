@@ -57,7 +57,8 @@ describe("editEvent", function () {
       this.originalEvent = {
         type: {
           id: 3
-        }
+        },
+        last_edited: "1999-01-01"
       };
     });
     afterEach(function () {
@@ -516,6 +517,28 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[2][1].should.equal("save_event_change");
+      }, done);
+    });
+
+    it("should not save the last_edited time in the event change", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("save_event_change");
+        should.not.exist(JSON.parse(this.args[2][2][3]).last_edited);
+        should.not.exist(JSON.parse(this.args[2][2][4]).last_edited);
+
       }, done);
     });
 
