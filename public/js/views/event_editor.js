@@ -375,6 +375,7 @@ define([
           return this.saveNewEvent(values);
         }
       } else {
+        this.$("ul.parsley-errors-list.filled").addClass("alert alert-danger");
         analytics.eventSaveValidationFailed({
           fields: this.getErrorFields()
         });
