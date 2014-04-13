@@ -397,21 +397,15 @@ define([
       values.start_date = moment(this.$el.find("input[data-key=start]").val());
       values.end_date = moment(this.$el.find("input[data-key=end]").val());
 
-      values.start_date.add("seconds", -this.getStartOffset());
-      values.end_date.add("seconds", -this.getEndOffset());
+      if (this.model) {
+        values.start_date.add("seconds", -this.model.get("start_offset_seconds"));
+        values.end_date.add("seconds", -this.model.get("end_offset_seconds"));
+      }
 
       _.extend(values, this.eventTypeSelector.getValue());
       values.participants = this.getParticipantValues();
 
       return values;
-    },
-
-    getStartOffset: function () {
-      return (this.startOffset !== undefined) ? this.startOffste : this.model.get("start_offset_seconds");
-    },
-
-    getEndOffset: function () {
-      return (this.endOffset !== undefined) ? this.endOffset : this.model.get("end_offset_seconds");
     },
 
     getParticipantValues: function () {

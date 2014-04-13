@@ -42,7 +42,7 @@ describe("saveEvent", function () {
       name: "a test",
       link: "http://testlink.com",
       start_date: "2013-03-12T00:00:00.000Z",
-      end_date: "2013-03-12T00:00:00.000Z",
+      end_date: "2013-03-12T23:59:00.000Z",
       type: {
         id: 1,
         name: "test type"
@@ -78,7 +78,8 @@ describe("saveEvent", function () {
       [{id: 6}],
       [{id: 7}],
       [{id: 8}],
-      [{id: 9}]
+      [{id: 9}],
+      [{id: 10}]
     ];
     stubDb.setup(this);
   });
@@ -121,6 +122,28 @@ describe("saveEvent", function () {
             done();
           }, this));
           stubDb.setQueryValues(this, this.stubValues);
+        });
+        it("should update the start time by the offset at the place", function (done) {
+          this.fullBody.placeId = 1;
+          this.stubValues[6] = [{offset: 60 * 60}];
+          this.testSave(_.bind(function () {
+            this.fullBody.start_date.toISOString().should.equal("2013-03-11T23:00:00.000Z");
+          }, this), done);
+        });
+        it("should update the end time by the offset at the place", function (done) {
+          this.fullBody.placeId = 1;
+          this.stubValues[6] = [{offset: 60 * 60}];
+          this.testSave(_.bind(function () {
+            this.fullBody.end_date.toISOString().should.equal("2013-03-12T22:59:00.000Z");
+          }, this), done);
+        });
+        it("should save the offset at the place", function (done) {
+          this.fullBody.placeId = 1;
+          this.stubValues[6] = [{offset: 60 * 60}];
+          this.testSave(_.bind(function () {
+            this.fullBody.end_offset_seconds.should.equal(3600);
+            this.fullBody.start_offset_seconds.should.equal(3600);
+          }, this), done);
         });
       });
       describe("participants", function () {

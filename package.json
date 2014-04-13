@@ -31,7 +31,8 @@
     "node-uuid": "1.x",
     "socket.io": "0.9.x",
     "async": "0.2.x",
-    "execSync": "1.0.1-pre"
+    "execSync": "1.0.1-pre",
+    "moment": "2.6.x"
   },
   "devDependencies": {
     "mocha": "1.x",
