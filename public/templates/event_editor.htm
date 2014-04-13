@@ -55,7 +55,19 @@
               </div>
               <div class="form-group">
                 <label>Describe the change</label>
-                <textarea class="form-control" data-key="reason"/>
+                <textarea
+                  class="form-control"
+                  data-key="reason"
+                  data-parsley-minlength="10"
+                />
+
+                <input type="text"
+                  style="display:none"
+                  class="form-control"
+                  data-key="changes-dummy"
+                  data-parsley-changemade="true"
+                  value="xxxxxx"
+                />
               </div>
             </form>
           </div>

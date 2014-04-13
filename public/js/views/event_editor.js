@@ -145,6 +145,17 @@ define([
         }, 33)
         .addMessage("en", "participantexists", "Please add a participant");
 
+      window.ParsleyValidator
+        .addValidator("changemade", _.bind(function () {
+          if (this.model) {
+            var differences = this.getDifferences(this.collectValues());
+            return _.keys(_.omit(differences, this.ignoredKeys)).length > 0;
+          } else {
+            return true;
+          }
+        }, this), 3)
+        .addMessage("en", "changemade", "No changes made");
+
     },
 
     fetchData: function () {
@@ -425,10 +436,11 @@ define([
       return values;
     },
 
+    ignoredKeys: ["id", "last_edited", "reason"],
+
     updateExistingEvent: function (values) {
       var differences = this.getDifferences(values);
-      var ignoredKeys = ["id", "last_edited", "reason"];
-      if (_.keys(_.omit(differences, ignoredKeys)).length > 0) {
+      if (_.keys(_.omit(differences, this.ignoredKeys)).length > 0) {
         differences.last_edited = this.model.get("last_edited");
         return this.sendChangeRequest(differences).then(
           _.bind(this.handleSaveComplete, this, values),
@@ -598,6 +610,7 @@ define([
       _.each(_.values(this.participants), function (participant) {
         ok = ok && participant.validate();
       });
+
       return ok;
     },
 

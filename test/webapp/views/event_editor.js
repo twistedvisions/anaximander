@@ -387,6 +387,12 @@ define(
           it("should show each event participant", function () {
             this.editor.$(".participant-editor").length.should.equal(1);
           });
+          it("should not save if no changes were made", function () {
+            this.editor.$("textarea[data-key=reason]").val("some reason");
+            this.editor.validate().should.equal(false);
+            this.editor.$("input[data-key=name]").val("some new name");
+            this.editor.validate().should.equal(true);
+          });
         });
         describe("updateExistingEvent", function () {
           describe("differences", function () {
@@ -838,6 +844,7 @@ define(
             this.editor.handleSave();
             this.editor.eventsCollection.toJSON().length.should.equal(0);
           });
+
         });
 
         it("should update the highlight if the added participant is already highlighted", function () {
