@@ -53,8 +53,6 @@ define([
 
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
-      this.setValues();
-
       this.$(".modal").modal();
       this.$(".modal").modal("show");
 
@@ -140,47 +138,14 @@ define([
 
     },
 
-    setValues: function () {
-      if (this.newEvent) {
-        $.get(
-          "/place",
-          {
-            lat: this.newEvent.location.lat,
-            lon: this.newEvent.location.lon
-          },
-          _.bind(this.handleGetPlaces, this)
-        );
-      }
-    },
-
-    handleGetPlaces: function (places) {
-
-      var queryResults = _.map(places, function (place) {
-        return {
-          id: place.id,
-          text: place.name + " (" + Math.round(place.distance) + "m)"
-        };
-      });
-
-      this.$("input[data-key=place]").select2({
-        placeholder: "Select or add a place",
-        data: queryResults,
-        createSearchChoice: function (text) {
-          return {
-            id: -1,
-            text: text
-          };
-        }
-      });
-
-    },
-
     fetchData: function () {
       var thingsToFetch = [];
 
       thingsToFetch.push(when(this.types.fetch()));
       thingsToFetch.push(when(this.roles.fetch()));
       thingsToFetch.push(when(this.eventTypes.fetch()));
+
+      thingsToFetch.push(this.getNearestPlaces());
 
       if (this.model) {
         thingsToFetch.push(
@@ -194,12 +159,38 @@ define([
       return when.all(thingsToFetch);
     },
 
+    getNearestPlaces: function () {
+      var coords;
+      if (this.newEvent) {
+        coords = {
+          lat: this.newEvent.location.lat,
+          lon: this.newEvent.location.lon
+        };
+      } else if (this.model) {
+        coords = {
+          lat: this.model.get("lat"),
+          lon: this.model.get("lon")
+        };
+      }
+      //todo: store this in a collection
+      return when($.get(
+        "/place",
+        coords,
+        _.bind(this.handleGetNearestPlaces, this)
+      ));
+    },
+
+    handleGetNearestPlaces: function (places) {
+      this.nearestPlaces = places;
+    },
+
     populateView: function () {
       this.renderEventTypes();
       this.renderParticipants();
       if (this.model) {
         this.renderExistingEvent();
       }
+      this.renderPlaces();
     },
 
     renderEventTypes: function () {
@@ -240,6 +231,32 @@ define([
 
       el.on("change", _.bind(this.addParticipant, this, null));
 
+    },
+
+    renderPlaces: function () {
+
+      var queryResults = _.map(this.nearestPlaces, function (place) {
+        return {
+          id: place.id,
+          text: place.name + " (" + Math.round(place.distance) + "m)"
+        };
+      });
+
+      this.$("input[data-key=place]").select2({
+        placeholder: "Select or add a place",
+        data: queryResults,
+        createSearchChoice: function (text) {
+          return {
+            id: -1,
+            text: text
+          };
+        }
+      });
+
+      if (this.model) {
+        this.$("input[data-key=place]")
+          .select2("val", this.model.get("place").id);
+      }
     },
 
     getSelectableParticipants: function (data/*, page*/) {
@@ -406,7 +423,8 @@ define([
 
     updateExistingEvent: function (values) {
       var differences = this.getDifferences(values);
-      if (_.keys(_.omit(differences, "id")).length > 0) {
+      var ignoredKeys = ["id", "last_edited", "reason"];
+      if (_.keys(_.omit(differences, ignoredKeys)).length > 0) {
         differences.last_edited = this.model.get("last_edited");
         return this.sendChangeRequest(differences).then(
           _.bind(this.handleSaveComplete, this, values),
@@ -456,6 +474,9 @@ define([
       _.forEach(differences, function (difference) {
         if (difference.path[0] === "name") {
           toSend.name = difference.rhs;
+        }
+        else if (difference.path[0] === "placeId") {
+          toSend.placeId = difference.rhs;
         }
         else if (difference.path[0] === "link") {
           toSend.link = difference.rhs;
@@ -539,8 +560,14 @@ define([
 
     getRawDifferences: function (oldValues, values) {
       var previous = _.omit(oldValues, ["location", "place",
-        "start_offset_seconds", "end_offset_seconds"]);
+        "start_offset_seconds", "end_offset_seconds", "last_edited"]);
       var current = _.omit(values, ["place"]);
+      if (oldValues.place) {
+        previous.placeId = oldValues.place.id;
+      }
+      if (values.place) {
+        current.placeId = values.place.id;
+      }
       previous.start_date = previous.start_date.toISOString();
       previous.end_date = previous.end_date.toISOString();
       current.start_date = current.start_date.toISOString();

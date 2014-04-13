@@ -213,6 +213,25 @@ describe("editEvent", function () {
         this.args[1][2][1].should.equal("new name");
       }, done);
     });
+    it("should save a changed placeId", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        placeId: 2
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_place"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[1][1].should.equal("update_event_place");
+        this.args[1][2][1].should.equal(2);
+      }, done);
+    });
     it("should save a changed link", function (done) {
       this.fullBody = {
         id: 1,

@@ -316,7 +316,10 @@ define(
           this.editor.currentViewData = {
             id: 123,
             name: "existing event name",
-            place: {name: "existing place name"},
+            place: {
+              id: 4,
+              name: "existing place name"
+            },
             link: "//www.link.com",
             type: {id: 1},
             importance: {id: 10},
@@ -333,6 +336,11 @@ define(
             ]
           };
           this.editor.render();
+          this.editor.nearestPlaces = [
+            {id: 4, name: "existing place name", distance: 0},
+            {id: 5, name: "existing place name1", distance: 1}
+          ];
+          this.editor.renderPlaces();
         });
         afterEach(function () {
           this.editor.$el.find(".modal").modal("hide");
@@ -347,7 +355,8 @@ define(
             this.editor.$("input[data-key=name]").val().should.equal("existing event name");
           });
           it("should display the event place", function () {
-            this.editor.$("input[data-key=place]").val().should.equal("existing place name");
+            this.editor.$("input[data-key=place]").val().should.equal("4");
+            this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name (0m)");
           });
           it("should set the event type editor", function () {
             this.editor.eventTypeSelector.getValue().type.id.should.equal(1);
@@ -523,6 +532,10 @@ define(
             it("should send the link if it has changed", function () {
               this.editor.$("input[data-key=link]").val("//www.someotherlink.com");
               this.editor.getDifferences(this.editor.collectValues()).link.should.equal("//www.someotherlink.com");
+            });
+            it("should send the placeId if it has changed", function () {
+              this.editor.$("input[data-key=place]").select2("val", 5);
+              this.editor.getDifferences(this.editor.collectValues()).placeId.should.equal(5);
             });
             it("should send the start in utc without the browsers timezone if it has changed", function () {
               this.editor.$("input[data-key=start]").val("1500-12-24 00:00");
@@ -884,6 +897,7 @@ define(
           });
         });
       });
+
       describe("closing", function () {
         it("should remove the form from the DOM when it is closed", function () {
           this.editor = new EventEditor({
