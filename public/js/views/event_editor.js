@@ -13,6 +13,7 @@ define([
   "views/type_selector",
   "views/participant_editor",
   "utils/history_renderer",
+  "utils/parsley_listener",
   "analytics",
   "text!templates/event_editor.htm",
   "bootstrap",
@@ -23,7 +24,7 @@ define([
   "css!/css/datetimepicker"
 ], function ($, _, Backbone, when, moment, DeepDiff, Event, EventsCollection,
     Types, Roles, EventTypes,
-    TypeSelector, ParticipantEditor, HistoryRenderer,
+    TypeSelector, ParticipantEditor, HistoryRenderer, ParsleyListener,
     analytics, template, historyTemplate, historyItemTemplate) {
 
   var EventEditor = Backbone.View.extend({
@@ -386,12 +387,18 @@ define([
           return this.saveNewEvent(values);
         }
       } else {
-        this.$("ul.parsley-errors-list.filled").addClass("alert alert-danger");
-        analytics.eventSaveValidationFailed({
-          fields: this.getErrorFields()
-        });
-        return when.reject();
+        return this.validationFailed();
       }
+    },
+
+    validationFailed: function () {
+      this.$("ul.parsley-errors-list").removeClass("alert alert-danger");
+      ParsleyListener.bindGlobalParsleyListener();
+      this.$("ul.parsley-errors-list.filled").addClass("alert alert-danger");
+      analytics.eventSaveValidationFailed({
+        fields: this.getErrorFields()
+      });
+      return when.reject();
     },
 
     getErrorFields: function () {
