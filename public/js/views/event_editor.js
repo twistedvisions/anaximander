@@ -113,10 +113,19 @@ define([
     },
 
     updateEnd: function () {
+      var format = "YYYY-MM-DD HH:mm";
+      var start = moment(this.$el.find("input[data-key=start]").val());
+      var endOfDay = start.endOf("day").format(format);
       var end = this.$el.find("input[data-key=end]").val();
       if (!end) {
-        this.$el.find("input[data-key=end]").val(this.$el.find("input[data-key=start]").val());
+        this.$el.find("input[data-key=end]").val(endOfDay);
+      } else if (this.lastStart) {
+        end = moment(end);
+        if (this.lastStart.endOf("day").isSame(end, "minute")) {
+          this.$el.find("input[data-key=end]").val(endOfDay);
+        }
       }
+      this.lastStart = start;
     },
 
     addValidators: function () {

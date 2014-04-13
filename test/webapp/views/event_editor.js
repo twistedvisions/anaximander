@@ -161,14 +161,27 @@ define(
           this.editor.$("input[data-key=end]").val().should.equal("");
           this.editor.$("input[data-key=start]").val("2012-12-04");
           this.editor.$("input[data-key=start]").trigger("change");
-          this.editor.$("input[data-key=end]").val().should.equal("2012-12-04");
+          this.editor.$("input[data-key=end]").val().should.equal("2012-12-04 23:59");
           this.editor.$("input.date").datepicker("hide");
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
         });
 
-        it("should not set the end when the start is set if it is already set", function () {
+        it("should move the end when the start moves", function () {
           this.editor.render();
+          this.editor.lastStart = moment("2012-12-04");
+          this.editor.$("input[data-key=end]").val().should.equal("");
+          this.editor.$("input[data-key=start]").val("2012-12-01");
+          this.editor.$("input[data-key=start]").trigger("change");
+          this.editor.$("input[data-key=end]").val().should.equal("2012-12-01 23:59");
+          this.editor.$("input.date").datepicker("hide");
+          this.editor.$el.find(".modal").modal("hide");
+          this.editor.$el.remove();
+        });
+
+        it("should not move the end when the start is not the same day", function () {
+          this.editor.render();
+          this.editor.lastStart = moment("2012-12-04");
           this.editor.$("input[data-key=end]").val("2012-12-05");
           this.editor.$("input[data-key=start]").val("2012-12-04");
           this.editor.$("input[data-key=start]").trigger("change");
