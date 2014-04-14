@@ -5,8 +5,8 @@ var stubDb = require("../../stubDb");
 
 var processChanges = require("../../../../lib/rest/util/processChanges");
 
-describe("processChanges", function () {
-  ["type", "importance"].forEach(function (key) {
+describe.only("processChanges", function () {
+  ["type", "importance", "place"].forEach(function (key) {
     describe(key, function () {
       before(function (done) {
         var changes = [];
