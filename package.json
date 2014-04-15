@@ -46,7 +46,8 @@
     "grunt-cli": "0.1.x",
     "grunt-contrib-jshint": "0.7.x",
     "supertest": "0.8.x",
-    "socket.io-client": "0.9.x"
+    "socket.io-client": "0.9.x",
+    "grunt-contrib-less": "0.11.x"
   },
   "scripts": {
     "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test && mocha $(find test/node -name '*.js') && ./node_modules/.bin/karma start --single-run --browsers PhantomJS",

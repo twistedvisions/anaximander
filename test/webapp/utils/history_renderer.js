@@ -52,7 +52,7 @@ define(
           var visibleFilter = function (i, el) {
             return $(el).css("visibility") === "visible";
           };
-          html.find("td.username span").filter(visibleFilter).length.should.equal(1);
+          html.find("td.username span:visible").filter(visibleFilter).length.should.equal(1);
           html.find("td.date span:visible").filter(visibleFilter).length.should.equal(1);
         } finally {
           html.remove();
