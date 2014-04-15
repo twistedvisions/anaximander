@@ -54,11 +54,9 @@ describe("processChanges", function () {
           for (var j = 0; j < i; j += 1) {
             var change = {new_values: {}};
             change.new_values[participantType] = [{}];
-            ["type", "importance", "thing"].forEach(function (key) {
-              change.new_values[participantType][0][key] = {
-                id: i
-              };
-            });
+            change.new_values[participantType][0].type = {id: i};
+            change.new_values[participantType][0].importance = {id: i};
+            change.new_values[participantType][0].thing = {id: i};
             changes.push(change);
           }
         });
