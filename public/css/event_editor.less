@@ -137,12 +137,15 @@
     table {
       font-size: 12px;
       td {
-        white-space: nowrap;
+        white-space: normal;
         &.date {
           width: 150px;
         }
         &.username {
           width: 100px;
+        }
+        &.field:first-letter {
+          text-transform: capitalize;
         }
         &.changes {
           max-width: 386px;
