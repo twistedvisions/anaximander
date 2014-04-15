@@ -4,7 +4,7 @@ define(
   ["underscore", "jquery", "backbone", "utils/history_renderer"],
 
   function (_, $, Backbone, HistoryRenderer) {
-    describe.only("history renderer", function () {
+    describe("history renderer", function () {
       it("should show single changes with authors and dates for each line", function () {
         var historyCollection = new Backbone.Collection([
           {
