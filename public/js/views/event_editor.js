@@ -355,8 +355,8 @@ define([
       data.start_date = moment(data.start_date);
       data.end_date = moment(data.end_date);
 
-      data.start_date.add("minutes", data.start_date.zone());
-      data.end_date.add("minutes", data.end_date.zone());
+      data.start_date.add("minutes", this.getTimezoneOffset(data.start_date));
+      data.end_date.add("minutes", this.getTimezoneOffset(data.end_date));
 
       this.model = new Backbone.Model(data);
       this.$el.find("input[data-key=name]").val(this.model.get("name"));
@@ -506,12 +506,12 @@ define([
         }
         else if (difference.path[0] === "start_date") {
           toSend.start_date = moment(difference.rhs);
-          toSend.start_date.add("minutes", -toSend.start_date.zone());
+          toSend.start_date.add("minutes", -this.getTimezoneOffset(toSend.start_date));
           toSend.start_date = toSend.start_date.toISOString();
         }
         else if (difference.path[0] === "end_date") {
           toSend.end_date = moment(difference.rhs);
-          toSend.end_date.add("minutes", -toSend.end_date.zone());
+          toSend.end_date.add("minutes", -this.getTimezoneOffset(toSend.end_date));
           toSend.end_date = toSend.end_date.toISOString();
         }
         else if (difference.path[0] === "type") {
@@ -536,7 +536,7 @@ define([
           editedParticipant[path[0]] = editedParticipant[path[0]] || {};
           editedParticipant[path[0]][path[1]] = difference.item.rhs;
         }
-      });
+      }, this);
       if (_.keys(editedParticipants).length > 0) {
         toSend.editedParticipants = _.map(editedParticipants, function (value, key) {
           var obj = {
@@ -553,6 +553,11 @@ define([
 
       toSend.reason = this.$("textarea[data-key=reason]").val();
       return toSend;
+    },
+
+    //just so can be stubbed for testing
+    getTimezoneOffset: function (moment) {
+      return moment.zone();
     },
 
     getParticipantDifference: function (base, comparator) {

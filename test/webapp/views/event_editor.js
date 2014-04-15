@@ -531,6 +531,14 @@ define(
             });
           });
           describe("differences", function () {
+            beforeEach(function () {
+              sinon.stub(this.editor, "getTimezoneOffset", function () {
+                return -60;
+              });
+            });
+            afterEach(function () {
+              this.editor.getTimezoneOffset.restore();
+            });
             it("should always have an id", function () {
               this.editor.$("input[data-key=name]").val("something different");
               this.editor.getDifferences(this.editor.collectValues()).id.should.equal(123);
@@ -558,11 +566,11 @@ define(
             });
             it("should send the start in utc without the browsers timezone if it has changed", function () {
               this.editor.$("input[data-key=start]").val("1500-12-24 00:00");
-              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 23, 22).toISOString());
+              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 23, 23).toISOString());
             });
             it("should send the end in utc without the browsers timezone  if it has changed", function () {
               this.editor.$("input[data-key=end]").val("2010-11-20 23:59");
-              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 10, 20, 21, 59).toISOString());
+              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 10, 20, 22, 59).toISOString());
             });
             it("should remove the timezone from the start date if it exists", function () {
               this.editor.$("input[data-key=start]").val("2010-10-20 00:00");
