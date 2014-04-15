@@ -8,6 +8,8 @@ define(
       beforeEach(function () {
         this.historyCollection = new Backbone.Collection([
           {
+            name: "event 1",
+            type: "event",
             date: new Date().toISOString(),
             username: "x",
             new_values: {
@@ -16,6 +18,8 @@ define(
             }
           },
           {
+            name: "event 2",
+            type: "event",
             date: new Date().toISOString(),
             username: "y",
             new_values: {
@@ -39,7 +43,7 @@ define(
         });
         it("should filter the table by the input box", function (done) {
           _.defer(_.bind(function () {
-            this.recentChanges.$("tbody tr:visible").length.should.equal(4);
+            this.recentChanges.$("tbody tr:visible").length.should.equal(6);
             this.recentChanges.$(".filter input").val("dd");
             this.recentChanges.$(".filter input").trigger("keyup");
             this.recentChanges.$("tbody tr:visible").length.should.equal(2);
@@ -48,7 +52,7 @@ define(
         });
         it("should filter the table case insensitively", function (done) {
           _.defer(_.bind(function () {
-            this.recentChanges.$("tbody tr:visible").length.should.equal(4);
+            this.recentChanges.$("tbody tr:visible").length.should.equal(6);
             this.recentChanges.$(".filter input").val("Dd");
             this.recentChanges.$(".filter input").trigger("keyup");
             this.recentChanges.$("tbody tr:visible").length.should.equal(2);
@@ -57,16 +61,16 @@ define(
         });
         it("should not filter if the input is empty", function (done) {
           _.defer(_.bind(function () {
-            this.recentChanges.$("tbody tr:visible").length.should.equal(4);
+            this.recentChanges.$("tbody tr:visible").length.should.equal(6);
             this.recentChanges.$(".filter input").val("");
             this.recentChanges.$(".filter input").trigger("keyup");
-            this.recentChanges.$("tbody tr:visible").length.should.equal(4);
+            this.recentChanges.$("tbody tr:visible").length.should.equal(6);
             done();
           }, this));
         });
         it("should make the top visible row show extra details when filtered", function (done) {
           _.defer(_.bind(function () {
-            this.recentChanges.$("tbody tr:visible").length.should.equal(4);
+            this.recentChanges.$("tbody tr:visible").length.should.equal(6);
             this.recentChanges.$(".filter input").val("ddeeff");
             this.recentChanges.$(".filter input").trigger("keyup");
             this.recentChanges.$("tbody tr:visible .username span:visible").length.should.equal(1);

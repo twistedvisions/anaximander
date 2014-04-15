@@ -57,16 +57,15 @@ define([
           return a < b ? -1 : (a === b ? 0 : 1);
         }
       });
-      var first = _.first(keyValues);
       var body = $("<tbody class='group-" + groupId + "'/>");
       html.append(body);
       body.append($(historyItemTemplate(
         _.extend(change, {
-          field: first[0],
-          value: getValue(first[1])
+          field: change.type,
+          value: change.name
         })
       )));
-      _.each(_.rest(keyValues), function (keyValue) {
+      _.each(keyValues, function (keyValue) {
         body.append($(historyItemTemplate(
           _.extend(change, {
             field: keyValue[0],
