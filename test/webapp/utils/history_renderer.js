@@ -4,7 +4,7 @@ define(
   ["underscore", "jquery", "backbone", "utils/history_renderer"],
 
   function (_, $, Backbone, HistoryRenderer) {
-    describe("history renderer", function () {
+    describe.only("history renderer", function () {
       it("should show single changes with authors and dates for each line", function () {
         var historyCollection = new Backbone.Collection([
           {
@@ -86,6 +86,52 @@ define(
         ]);
         var html = $(HistoryRenderer(historyCollection));
         html.find("td.username").length.should.equal(1);
+      });
+      it("should show arrays of participants as multiple entries", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "id": "value1",
+              "newParticipants": [
+                {
+                  thing: "thingName1",
+                  type: "typeName1",
+                  importance: "importanceName1"
+                },
+                {
+                  thing: "thingName2",
+                  type: "typeName2",
+                  importance: "importanceName2"
+                }
+              ]
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value").length.should.equal(2);
+      });
+      it("should format the json of participants into text", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "id": "value1",
+              "newParticipants": [
+                {
+                  thing: "thingName1",
+                  type: "typeName1",
+                  importance: "importanceName1"
+                }
+              ]
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value").text()
+          .should.equal("thingName1 as typeName1 with importance: importanceName1");
       });
     });
   }
