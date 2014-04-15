@@ -39,7 +39,7 @@ define([
     },
 
     filterTable: function () {
-      var text = this.$(".filter input").val();
+      var text = this.$(".filter input").val().toLowerCase();
       if (text.length === 0) {
         this.showAllRows();
       } else {
@@ -65,7 +65,7 @@ define([
     },
 
     containsText: function (text, row) {
-      return row.text().indexOf(text) > 0;
+      return row.text().toLowerCase().indexOf(text) > 0;
     }
   });
   return RecentChanges;

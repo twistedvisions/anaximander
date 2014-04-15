@@ -12,7 +12,7 @@ define(
             username: "x",
             new_values: {
               "key1": "aabbcc",
-              "key2": "ddeeff"
+              "key2": "dDeeff"
             }
           },
           {
@@ -41,6 +41,15 @@ define(
           _.defer(_.bind(function () {
             this.recentChanges.$("tbody tr:visible").length.should.equal(4);
             this.recentChanges.$(".filter input").val("dd");
+            this.recentChanges.$(".filter input").trigger("keyup");
+            this.recentChanges.$("tbody tr:visible").length.should.equal(2);
+            done();
+          }, this));
+        });
+        it("should filter the table case insensitively", function (done) {
+          _.defer(_.bind(function () {
+            this.recentChanges.$("tbody tr:visible").length.should.equal(4);
+            this.recentChanges.$(".filter input").val("Dd");
             this.recentChanges.$(".filter input").trigger("keyup");
             this.recentChanges.$("tbody tr:visible").length.should.equal(2);
             done();
