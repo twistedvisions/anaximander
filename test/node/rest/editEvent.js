@@ -2,6 +2,7 @@
 
 var sinon = require("sinon");
 var should = require("should");
+var moment = require("moment");
 var _ = require("underscore");
 
 var tryTest = require("../tryTest");
@@ -58,7 +59,14 @@ describe("editEvent", function () {
         type: {
           id: 3
         },
-        last_edited: "1999-01-01"
+        last_edited: "1999-01-01",
+        start_date: new Date(1901, 0, 1),
+        end_date: new Date(2001, 0, 1),
+        start_offset_seconds: 2 * 60 * 60,
+        end_offset_seconds: 2 * 60 * 60,
+        place: {
+          id: 88
+        }
       };
     });
     afterEach(function () {
@@ -213,24 +221,215 @@ describe("editEvent", function () {
         this.args[1][2][1].should.equal("new name");
       }, done);
     });
-    it("should save a changed placeId", function (done) {
-      this.fullBody = {
-        id: 1,
-        last_edited: "2000-01-01",
-        placeId: 2
-      };
+    describe("place", function () {
+      it("should ensure places if one exists", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 2
+        };
 
-      this.stubValues = [
-        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_event_place"}],
-        [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
-      ];
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 2}],
+          [{db_call: "get_timezone_offset_at_place", offset: 60 * 60}],
+          [{db_call: "update_event_place"}],
+          [{db_call: "update_event_start_date"}],
+          [{db_call: "update_event_end_date"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
 
-      this.testEdit(function () {
-        this.args[1][1].should.equal("update_event_place");
-        this.args[1][2][1].should.equal(2);
-      }, done);
+        this.testEdit(function () {
+          this.args[1][1].should.equal("find_place_by_id");
+          this.args[1][2][0].should.equal(2);
+        }, done);
+      });
+      it("should save a changed placeId", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 2
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 2}],
+          [{db_call: "get_timezone_offset_at_place", offset: 60 * 60}],
+          [{db_call: "update_event_place"}],
+          [{db_call: "update_event_start_date"}],
+          [{db_call: "update_event_end_date"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[3][1].should.equal("update_event_place");
+          this.args[3][2][1].should.equal(2);
+        }, done);
+      });
+    });
+    describe("timezone", function (done) {
+      it("should get the timezone if the place has changed", function () {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 8
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 8}],
+          [{db_call: "get_timezone_offset_at_place", offset: 60 * 60}],
+          [{db_call: "update_event_place"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[2][1].should.equal("get_timezone_offset_at_place");
+        }, done);
+      });
+      it("should get the timezone if the start_time has changed", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          start_date: new Date(1900, 0, 1)
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
+          [{db_call: "update_event_start_date"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[1][1].should.equal("get_timezone_offset_at_place");
+        }, done);
+      });
+      it("should get the timezone if the end_time has changed", function () {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          end_date: new Date(2000, 0, 1)
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "get_timezone_offset_at_place", offset: 60 * 60}],
+          [{db_call: "update_event_end_date"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[1][1].should.equal("get_timezone_offset_at_place");
+        }, done);
+      });
+      it("should not get the timezone if other things have changed", function () {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          link: "adomain.com"
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "update_event_link"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[1][1].should.not.equal("get_timezone_offset_at_place");
+        }, done);
+      });
+      it("should update the start time and offset if the place has changed and the timezone offset is now different", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 8
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 8}],
+          [{db_call: "get_timezone_offset_at_place", offset: 3 * 60 * 60}],
+          [{db_call: "save_event_updatee"}],
+          [{db_call: "update_event_start_date"}],
+          [{db_call: "update_event_end_date"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[4][1].should.equal("update_event_start_date");
+        }, done);
+      });
+      it("should update the end time and offset if the place has changed and the timezone offset is now different", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 8
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 8}],
+          [{db_call: "get_timezone_offset_at_place", offset: 3 * 60 * 60}],
+          [{db_call: "update_event_place"}],
+          [{db_call: "update_event_start_date"}],
+          [{db_call: "update_event_end_date"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[5][1].should.equal("update_event_end_date");
+        }, done);
+      });
+      it("should not update the start time and offset if the place has changed and the timezone offset is the same", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 8
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 8}],
+          [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
+          [{db_call: "update_event_place"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[4][1].should.not.equal("update_event_start_date");
+        }, done);
+      });
+      it("should not update the end time and offset if the place has changed and the timezone offset is the same", function (done) {
+        this.fullBody = {
+          id: 1,
+          last_edited: "2000-01-01",
+          placeId: 8
+        };
+
+        this.stubValues = [
+          [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+          [{db_call: "find_place_by_id", id: 8}],
+          [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
+          [{db_call: "update_event_place"}],
+          [{db_call: "save_event_change"}],
+          [{db_call: "update_event_last_edited"}]
+        ];
+
+        this.testEdit(function () {
+          this.args[5][1].should.not.equal("update_event_end_date");
+        }, done);
+      });
     });
     it("should save a changed link", function (done) {
       this.fullBody = {
@@ -251,7 +450,7 @@ describe("editEvent", function () {
         this.args[1][2][1].should.equal("new link");
       }, done);
     });
-    it("should save a changed start date", function (done) {
+    it("should save a changed start date at the right timezone offset", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
@@ -260,17 +459,20 @@ describe("editEvent", function () {
 
       this.stubValues = [
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
         [{db_call: "update_event_start_date"}],
+        [{db_call: "save_event_change"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}]
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_event_start_date");
-        this.args[1][2][1].should.eql(new Date(1900, 0, 1));
+        this.args[2][1].should.equal("update_event_start_date");
+        this.args[2][2][1].should.eql(moment(new Date(1900, 0, 1)));
+        this.args[2][2][2].should.equal(2 * 60 * 60);
       }, done);
     });
-    it("should save a changed end date", function (done) {
+    it("should save a changed end date at the right timezone offset", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
@@ -279,14 +481,16 @@ describe("editEvent", function () {
 
       this.stubValues = [
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
         [{db_call: "update_event_end_date"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}]
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_event_end_date");
-        this.args[1][2][1].should.eql(new Date(2000, 0, 1));
+        this.args[2][1].should.equal("update_event_end_date");
+        this.args[2][2][1].should.eql(moment(new Date(2000, 0, 1)));
+        this.args[2][2][2].should.equal(2 * 60 * 60);
       }, done);
     });
     it("should save a changed event type", function (done) {
