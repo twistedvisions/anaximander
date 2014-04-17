@@ -116,7 +116,8 @@ describe("saveEvent", function () {
         });
         it("should create a place if the thing doesn't exist", function (done) {
           this.eventSaver.ensurePlace({
-            id: -1
+            id: -1,
+            name: "place name"
           }).then(_.bind(function () {
             this.args[2][1].should.equal("save_place");
             done();

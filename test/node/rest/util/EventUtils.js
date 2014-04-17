@@ -117,6 +117,20 @@ describe("EventUtils", function () {
       );
       stubDb.setQueryValues(this, [[]]);
     });
+    it("should throw an exception if the ensured thing does not have all the necessary data passed", function (done) {
+      this.fnArgs[0].name = null;
+      this.fnArgs[5] = ["name"];
+      this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+        function () { done(new Error("should not get here")); },
+        tryTest(function (e) {
+          should.exist(e);
+        }, done)
+      );
+      stubDb.setQueryValues(this, [
+        [{id: 1}],
+        [{id: 2}]
+      ]);
+    });
   });
 
   describe("addAttendees", function () {
