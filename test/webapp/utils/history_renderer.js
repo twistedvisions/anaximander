@@ -1,9 +1,9 @@
 /*global describe, it */
 define(
 
-  ["underscore", "jquery", "backbone", "utils/history_renderer"],
+  ["underscore", "jquery", "backbone", "moment", "utils/history_renderer"],
 
-  function (_, $, Backbone, HistoryRenderer) {
+  function (_, $, Backbone, moment, HistoryRenderer) {
     describe("history renderer", function () {
       it("should show single changes with authors and dates for each line", function () {
         var historyCollection = new Backbone.Collection([
@@ -149,6 +149,43 @@ define(
         var html = $(HistoryRenderer(historyCollection));
         html.find("td.value").text()
           .should.equal("thingName1 as typeName1 with importance: importanceName1");
+      });
+      it("should format the json of participants into text", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "id": "value1",
+              "newParticipants": [
+                {
+                  thing: "thingName1",
+                  type: "typeName1",
+                  importance: "importanceName1"
+                }
+              ]
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value").text()
+          .should.equal("thingName1 as typeName1 with importance: importanceName1");
+      });
+      it("should format dates correctly in local event time", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              id: "value1",
+              start_date: "1837-06-22T06:00:00.000Z",
+              start_offset_seconds: -21600
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value").text()
+          .should.equal(moment([1837, 5, 22]).format("lll"));
       });
     });
   }

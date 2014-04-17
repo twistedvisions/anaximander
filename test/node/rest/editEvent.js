@@ -468,7 +468,7 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[2][1].should.equal("update_event_start_date");
-        this.args[2][2][1].should.eql(moment(new Date(1900, 0, 1)));
+        this.args[2][2][1].isSame(moment([1900, 0, 1])).should.equal(true);
         this.args[2][2][2].should.equal(2 * 60 * 60);
       }, done);
     });
@@ -489,7 +489,7 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[2][1].should.equal("update_event_end_date");
-        this.args[2][2][1].should.eql(moment(new Date(2000, 0, 1)));
+        this.args[2][2][1].isSame(moment([2000, 0, 1])).should.equal(true);
         this.args[2][2][2].should.equal(2 * 60 * 60);
       }, done);
     });

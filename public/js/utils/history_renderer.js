@@ -28,8 +28,18 @@ define([
     });
     return keyValues;
   };
-  var getValue = function (value) {
-    if (_.isString(value)) {
+  var getValue = function (key, value, change) {
+    if (key.indexOf("date") >= 0) {
+      var date = moment(value);
+      date.add("minutes", date.zone());
+      var offsetKey = key.replace("_date", "_offset_seconds");
+      if (change.new_values[offsetKey]) {
+        date.add("seconds", change.new_values[offsetKey]);
+      }
+      return date.format("lll");
+    } else if (key.indexOf("offset") >= 0) {
+      return null;
+    } else if (_.isString(value) || _.isNumber(value)) {
       return value;
     } else {
       return value.thing + " as " + value.type + " with importance: " + value.importance;
@@ -66,12 +76,15 @@ define([
         })
       )));
       _.each(keyValues, function (keyValue) {
-        body.append($(historyItemTemplate(
-          _.extend(change, {
-            field: keyValue[0],
-            value: getValue(keyValue[1])
-          })
-        )));
+        var value = getValue(keyValue[0], keyValue[1], change);
+        if (value) {
+          body.append($(historyItemTemplate(
+            _.extend(change, {
+              field: keyValue[0].replace("_", " "),
+              value: value
+            })
+          )));
+        }
       });
     }, this);
     return html;
