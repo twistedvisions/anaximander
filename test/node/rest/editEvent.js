@@ -533,6 +533,31 @@ describe("editEvent", function () {
         this.args[2][2][1].should.eql(2);
       }, done);
     });
+    it("should save a changed event importance when the importance is new", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        importance: {
+          name: "new importance",
+          description: "importance description",
+          value: 1
+        }
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_importance_by_id", id: 2}],
+        [{db_call: "update_event_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("save_importance");
+        //should set the type id
+        this.args[2][2][3].should.eql(3);
+      }, done);
+    });
 
     it("should ensure that new participants exist", function (done) {
       this.fullBody = {
