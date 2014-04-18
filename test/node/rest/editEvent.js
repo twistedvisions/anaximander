@@ -202,6 +202,40 @@ describe("editEvent", function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type importance").should.equal(false);
       }, done);
     });
+
+    it("should save a default importance if it is a new type", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        type: {
+          id: -1,
+          name: "new type"
+        },
+        importance: {
+          id: -1,
+          name: "new type",
+          description: "new type description",
+          value: 5
+        }
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "save_creator"}],
+        [{db_call: "save_type"}],
+        [{db_call: "save_creator"}],
+        [{db_call: "save_importance"}],
+        [{db_call: "update_type_default_importance_when_null"}],
+        [{db_call: "update_event_type"}],
+        [{db_call: "update_event_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[5][1].should.equal("update_type_default_importance_when_null");
+      }, done);
+    });
     it("should save a changed name", function (done) {
       this.fullBody = {
         id: 1,

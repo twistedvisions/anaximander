@@ -107,6 +107,13 @@ describe("saveEvent", function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "event type importance").should.equal(true);
           }, done);
         });
+        it("should save the default importance if it is a new type", function (done) {
+          this.fullBody.type.id = -1;
+          this.stubValues.push([{id: 11}]);
+          this.testSave(function () {
+            this.args[3][1].should.equal("update_type_default_importance_when_null");
+          }, done);
+        });
       });
       describe("place", function () {
         it("should ensure the place's thing", function (done) {

@@ -245,6 +245,18 @@ describe("EventUtils", function () {
         );
         stubDb.setQueryValues(this, [[]]);
       });
+      it("should save a default importance if it is a new type", function (done) {
+        this.eventUtils.ensureParticipant({
+          thing: {id: 1},
+          type: {id: -1},
+          importance: {id: -1}
+        }).then(
+          tryTest(_.bind(function () {
+            this.args[0][1].should.equal("update_type_default_importance_when_null");
+          }, this), done)
+        );
+        stubDb.setQueryValues(this, [[]]);
+      });
       describe("existing things", function () {
         it("should ensure participant things", function (done) {
           this.eventUtils.ensureParticipant({
@@ -292,6 +304,29 @@ describe("EventUtils", function () {
             }, this), done)
           );
           stubDb.setQueryValues(this, [[]]);
+        });
+        it("should add a save a default importance when the type is new", function (done) {
+          this.participant = {
+            thing: {
+              id: -1,
+              name: "new thing",
+              typeId: 1,
+              subtypes: [
+                {
+                  type: {id: -1},
+                  importance: {id: -1}
+                }
+              ]
+            },
+            type: {id: 2},
+            importance: {id: 3}
+          };
+          this.eventUtils.ensureParticipant(this.participant).then(
+            tryTest(_.bind(function () {
+              this.args[0][1].should.equal("update_type_default_importance_when_null");
+            }, this), done)
+          );
+          stubDb.setQueryValues(this, [[], []]);
         });
         it("should create new participants things", function (done) {
           this.eventUtils.ensureParticipant(this.participant).then(
