@@ -16,6 +16,8 @@ define([
       this.importancePlaceholder = options.importancePlaceholder;
       this.importanceDisplay = options.importanceDisplay;
       this.defaultNewImportanceName = "Nominal";
+      this.defaultNewImportanceDescription = "a default value of importance";
+      this.defaultNewImportanceValue = 5;
       this.importanceSelectData = {
         placeholder: this.importancePlaceholder,
         data: [],
@@ -140,7 +142,7 @@ define([
 
     setImportanceDropdownValues: function (importances) {
       this.$("input[data-key=importance]").select2(
-        _.extend(this.importanceSelectData, {
+        _.extend(_.clone(this.importanceSelectData), {
         data: _.map(importances, function (type) {
           return {
             id: type.id,
@@ -151,18 +153,22 @@ define([
     },
 
     setImportancesForNewType: function () {
-      this.$("input[data-key=importance]").select2(
-        _.extend(this.importanceSelectData, {
-        data: [{
-          id: -1,
-          text: this.defaultNewImportanceName
-        }]
-      }));
-      this.$("input[data-key=importance]").select2("val", -1).trigger("change");
+      this.setDefaultNewImportanceValue();
       Analytics.newTypeAdded({
         type: this.typeName,
         name: name
       });
+    },
+
+    setDefaultNewImportanceValue: function () {
+      this.$("input[data-key=importance]").select2(
+        _.extend(_.clone(this.importanceSelectData), {
+        data: [{
+          id: -2,
+          text: this.defaultNewImportanceName
+        }]
+      }));
+      this.$("input[data-key=importance]").select2("val", -2).trigger("change");
     },
 
     setValue: function (typeId, importanceId) {
@@ -181,7 +187,7 @@ define([
 
     getTypeValue: function () {
       var data = _.clone(this.$("input[data-key=type]").select2("data"));
-      if (data.id === -1) {
+      if (data.id < 0) {
         data.name = data.text;
       }
       delete data.text;
@@ -191,9 +197,11 @@ define([
     getImportanceValue: function () {
       var value;
       if (this.selectMode) {
-        value = this.$("input[data-key=importance]").select2("data");
-        if (value.id === -1) {
+        value = _.clone(this.$("input[data-key=importance]").select2("data"));
+        if (value.id < 0) {
           value.name = value.text;
+          value.description = this.defaultNewImportanceDescription + " for " + this.getTypeName();
+          value.value = this.defaultNewImportanceValue;
         }
         delete value.text;
       } else {
@@ -201,10 +209,14 @@ define([
           id: -1,
           name: this.$("input[data-key=importance-name]").val(),
           description: this.$("textarea[data-key=importance-description]").val(),
-          value: this.$("input[data-key=importance-value]").val()
+          value: parseInt(this.$("input[data-key=importance-value]").val(), 10)
         };
       }
       return value;
+    },
+
+    getTypeName: function () {
+      return this.$("input[data-key=type]").select2("data").text;
     },
 
     validate: function () {

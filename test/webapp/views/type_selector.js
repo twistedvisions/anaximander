@@ -104,7 +104,7 @@ define(
             {id: -1, text: "new type"});
           this.typeSelector.$("input[data-key=type]").trigger("change");
           this.typeSelector.$("input[data-key=importance]").select2("data")
-            .should.eql({id: -1, text: "Nominal"});
+            .should.eql({id: -2, text: "Nominal"});
         });
 
       });
@@ -122,12 +122,25 @@ define(
           this.typeSelector.$("input[data-key=type]").trigger("change");
           this.typeSelector.getValue().type.id.should.equal(2);
         });
-        it("should get the importance value for new importances", function () {
+        it("should get the importance value for new user-entered importances", function () {
           this.typeSelector.$("input[data-key=importance]").select2("data",
             {id: -1, text: "new importance"});
           this.typeSelector.$("input[data-key=importance]").trigger("change");
+          this.typeSelector.$("textarea[data-key=importance-description]").val("new description");
+          this.typeSelector.$("input[data-key=importance-value]").val(3);
           this.typeSelector.getValue().importance.id.should.equal(-1);
           this.typeSelector.getValue().importance.name.should.equal("new importance");
+          this.typeSelector.getValue().importance.description.should.equal("new description");
+          this.typeSelector.getValue().importance.value.should.equal(3);
+        });
+        it("should get the importance value for new default importances", function () {
+          this.typeSelector.$("input[data-key=type]").select2("data",
+            {id: -1, text: "Type Name"});this.typeSelector.setDefaultNewImportanceValue();
+          this.typeSelector.$("input[data-key=type]").trigger("change");
+          this.typeSelector.getValue().importance.id.should.equal(-2);
+          this.typeSelector.getValue().importance.name.should.equal("Nominal");
+          this.typeSelector.getValue().importance.description.should.equal("a default value of importance for Type Name");
+          this.typeSelector.getValue().importance.value.should.equal(5);
         });
         it("should get the importance value for existing importances", function () {
           this.typeSelector.$("input[data-key=type]").val(2);

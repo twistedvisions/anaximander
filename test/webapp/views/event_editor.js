@@ -615,7 +615,7 @@ define(
               }));
               this.editor.eventTypeSelector.$("input[data-key=type]").select2("val", -1).trigger("change");
               var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.importance.id.should.equal(-1);
+              differences.importance.id.should.be.lessThan(0);
               differences.importance.name.should.equal("Nominal");
             });
             it("should send the event importance if has changed to a different existing one", function () {
@@ -624,18 +624,15 @@ define(
               differences.importance.id.should.equal(11);
               should.not.exist(differences.importance.name);
             });
-            it("should send the event importance if has changed to a new one", function () {
-              this.editor.eventTypeSelector.$("input[data-key=importance]").select2(
-                _.extend(this.editor.eventTypeSelector.importanceSelectData, {
-                data: [{
-                  id: -1,
-                  text: "new importance name"
-                }]
-              }));
-              this.editor.eventTypeSelector.$("input[data-key=importance]").select2("val", -1).trigger("change");
+            it("should send the event importance", function () {
+              this.editor.eventTypeSelector.setDefaultNewImportanceValue();
+              this.editor.eventTypeSelector.$("input[data-key=importance-description]").val("new description");
+              this.editor.eventTypeSelector.$("input[data-key=importance-value]").val(3);
               var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.importance.id.should.equal(-1);
-              differences.importance.name.should.equal("new importance name");
+              differences.importance.id.should.be.lessThan(0);
+              differences.importance.name.should.equal("Nominal");
+              differences.importance.description.should.equal("a default value of importance for event type 1");
+              differences.importance.value.should.equal(5);
             });
             it("should send new participants", function () {
               selectParticipant(this.editor);
@@ -681,7 +678,7 @@ define(
               should.not.exist(differences.editedParticipants[0].thing.name);
               differences.editedParticipants[0].type.id.should.equal(-1);
               differences.editedParticipants[0].type.name.should.equal("new type name");
-              differences.editedParticipants[0].importance.id.should.equal(-1);
+              differences.editedParticipants[0].importance.id.should.be.lessThan(0);
               differences.editedParticipants[0].importance.name.should.equal("Nominal");
             });
             it("should send participants with changed existing importance", function () {

@@ -525,10 +525,9 @@ define([
           }
         }
         else if ((difference.path[0] === "importance") && (difference.path[1] === "id")) {
-          toSend.importance = {
-            id: difference.rhs,
-            name: values.importance.name
-          };
+          toSend.importance = _.extend({
+            id: difference.rhs
+          }, values.importance);
         } else if (difference.path[0] === "participants") {
           editedParticipants[difference.index] = editedParticipants[difference.index] || {};
           var editedParticipant = editedParticipants[difference.index];
