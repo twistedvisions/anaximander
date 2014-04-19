@@ -345,6 +345,11 @@ define(
                 thing: {id: 3, name: "John Smith"},
                 type: {id: 2},
                 importance: {id: 20}
+              },
+              {
+                thing: {id: 4, name: "John Smith"},
+                type: {id: 2},
+                importance: {id: 20}
               }
             ]
           };
@@ -385,7 +390,7 @@ define(
             this.editor.$("input[data-key=end]").val().should.equal("2000-01-01 23:59");
           });
           it("should show each event participant", function () {
-            this.editor.$(".participant-editor").length.should.equal(1);
+            this.editor.$(".participant-editor").length.should.equal(2);
           });
           it("should not save if no changes were made", function () {
             this.editor.$("textarea[data-key=reason]").val("some reason");
@@ -648,9 +653,14 @@ define(
               differences.editedParticipants.length.should.equal(1);
             });
             it("should send removed participants", function () {
-              this.editor.$(".remove-participant").trigger("click");
+              this.editor.$(".remove-participant").first().trigger("click");
               var differences = this.editor.getDifferences(this.editor.collectValues());
               differences.removedParticipants.should.eql([3]);
+            });
+            it("should send multiple removed participants", function () {
+              this.editor.$(".remove-participant").trigger("click");
+              var differences = this.editor.getDifferences(this.editor.collectValues());
+              differences.removedParticipants.should.eql([3, 4]);
             });
             it("should send participants with changed existing role", function () {
               this.editor.$(".participant-editor input[data-key=type]").select2("val", 1).trigger("change");
@@ -664,14 +674,14 @@ define(
               should.not.exist(differences.editedParticipants[0].importance.name);
             });
             it("should send participants with changed new role", function () {
-              this.editor.$(".participant-editor input[data-key=type]").select2(
+              this.editor.$(".participant-editor input[data-key=type]").first().select2(
                 _.extend(this.editor.eventTypeSelector.importanceSelectData, {
                 data: [{
                   id: -1,
                   text: "new type name"
                 }]
               }));
-              this.editor.$(".participant-editor input[data-key=type]").select2("val", -1).trigger("change");
+              this.editor.$(".participant-editor input[data-key=type]").first().select2("val", -1).trigger("change");
               var differences = this.editor.getDifferences(this.editor.collectValues());
               differences.editedParticipants.length.should.equal(1);
               differences.editedParticipants[0].thing.id.should.equal(3);
@@ -692,14 +702,14 @@ define(
               should.not.exist(differences.editedParticipants[0].importance.name);
             });
             it("should send participants with changed new importance", function () {
-              this.editor.$(".participant-editor input[data-key=importance]").select2(
+              this.editor.$(".participant-editor input[data-key=importance]").first().select2(
                 _.extend(this.editor.eventTypeSelector.importanceSelectData, {
                 data: [{
                   id: -1,
                   text: "new importance name"
                 }]
               }));
-              this.editor.$(".participant-editor input[data-key=importance]").select2("val", -1).trigger("change");
+              this.editor.$(".participant-editor input[data-key=importance]").first().select2("val", -1).trigger("change");
               var differences = this.editor.getDifferences(this.editor.collectValues());
               differences.editedParticipants.length.should.equal(1);
               differences.editedParticipants[0].thing.id.should.equal(3);
@@ -728,7 +738,7 @@ define(
               var values = {
                 start_date: moment(),
                 end_date: moment(),
-                participants: [{thing: {id: 3}}]
+                participants: [{thing: {id: 3}}, {thing: {id: 4}}]
               };
               should.not.exist(this.editor.getDifferences(values).removedParticipants);
             });

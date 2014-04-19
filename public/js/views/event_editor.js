@@ -490,7 +490,9 @@ define([
         toSend.newParticipants = newParticipants;
       }
       if (oldParticipants.length > 0) {
-        toSend.removedParticipants = _.map(_.keys(this.getParticipantArrayKeys(oldParticipants)), parseInt);
+        toSend.removedParticipants = _.map(_.keys(this.getParticipantArrayKeys(oldParticipants)), function (id) {
+          return parseInt(id, 10);
+        });
       }
 
       var editedParticipants = {};
