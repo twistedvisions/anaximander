@@ -549,14 +549,19 @@ define([
       if (_.keys(editedParticipants).length > 0) {
 
         toSend.editedParticipants = _.map(editedParticipants, function (value, key) {
+          var originalParticipant = oldValues.participants[key];
           var obj = {
             thing: {
-              id: values.participants[key].thing.id
+              id: originalParticipant.thing.id
             }
           };
           _.forEach(value, function (value, key) {
             obj[key] = value;
           });
+
+          if (!obj.type) {
+            obj.type = originalParticipant.type;
+          }
           return obj;
         });
       }

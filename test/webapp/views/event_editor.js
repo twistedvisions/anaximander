@@ -687,7 +687,7 @@ define(
               differences.editedParticipants.length.should.equal(1);
               differences.editedParticipants[0].thing.id.should.equal(3);
               should.not.exist(differences.editedParticipants[0].thing.name);
-              should.not.exist(differences.editedParticipants[0].type);
+              differences.editedParticipants[0].type.id.should.equal(2);
               differences.editedParticipants[0].importance.id.should.equal(21);
               should.not.exist(differences.editedParticipants[0].importance.name);
             });
@@ -704,7 +704,7 @@ define(
               differences.editedParticipants.length.should.equal(1);
               differences.editedParticipants[0].thing.id.should.equal(3);
               should.not.exist(differences.editedParticipants[0].thing.name);
-              should.not.exist(differences.editedParticipants[0].type);
+              differences.editedParticipants[0].type.id.should.equal(2);
               differences.editedParticipants[0].importance.id.should.equal(-1);
               differences.editedParticipants[0].importance.name.should.equal("new importance name");
             });
