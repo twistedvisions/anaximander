@@ -18,14 +18,13 @@ define(
         sinon.stub(editor, "getSelectedParticipant", function () {
           return {
             thing: {
-              id: -1,
-              name: "new thing name"
+              id: 1,
+              name: "existant thing name"
             }
           };
         });
 
         editor.addParticipant();
-
         editor
           .$(".participant-editor input[data-key=type]")
           .last()
@@ -647,7 +646,7 @@ define(
             it("should send new participants", function () {
               selectParticipant(this.editor);
               var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.newParticipants[0].thing.id.should.equal(-1);
+              differences.newParticipants[0].thing.id.should.equal(1);
               differences.newParticipants[0].type.id.should.equal(2);
               differences.newParticipants[0].importance.id.should.equal(20);
             });

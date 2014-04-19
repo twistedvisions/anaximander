@@ -108,6 +108,14 @@ define(
             this.thingEditor.$(".subtypes .subtype .remove-subtype").first().trigger("click");
             this.thingEditor.$(".subtypes .subtype").length.should.equal(1);
           });
+          it("should ensure that the last subtype cannot be removed", function () {
+            this.thingEditor.$(".subtypes .subtype").length.should.equal(0);
+            this.thingEditor.$("input[data-key=thing-type]").val(1);
+            this.thingEditor.typeSelected();
+            this.thingEditor.$(".subtypes .subtype").length.should.equal(1);
+            this.thingEditor.$(".subtypes .subtype .remove-subtype").first().trigger("click");
+            this.thingEditor.$(".subtypes .subtype").length.should.equal(1);
+          });
         });
       });
 

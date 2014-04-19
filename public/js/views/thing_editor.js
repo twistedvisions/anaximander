@@ -73,8 +73,10 @@ define([
       holder.append(remove);
       holder.append(this.subtypeSelector.render());
       remove.on("click", _.bind(function (subtypeId) {
-        holder.remove();
-        delete this.subtypeSelectors[subtypeId];
+        if (_.keys(this.subtypeSelectors).length > 1) {
+          holder.remove();
+          delete this.subtypeSelectors[subtypeId];
+        }
       }, this, subtypeId));
       this.$(".subtypes").append(holder);
     },
