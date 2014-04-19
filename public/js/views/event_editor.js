@@ -4,6 +4,7 @@ define([
   "backbone",
   "when",
   "moment",
+  "numeral",
   "deep-diff",
   "models/event",
   "collections/events",
@@ -22,7 +23,8 @@ define([
   "css!/css/event_editor",
   "css!/css/select2-bootstrap",
   "css!/css/datetimepicker"
-], function ($, _, Backbone, when, moment, DeepDiff, Event, EventsCollection,
+], function ($, _, Backbone, when, moment, numeral, DeepDiff,
+    Event, EventsCollection,
     Types, Roles, EventTypes,
     TypeSelector, ParticipantEditor, HistoryRenderer, ParsleyListener,
     analytics, template, historyTemplate, historyItemTemplate) {
@@ -257,9 +259,13 @@ define([
     renderPlaces: function () {
 
       var queryResults = _.map(this.nearestPlaces, function (place) {
+        var text = place.name;
+        if (place.distance > 100) {
+          text += " (" + numeral(place.distance / 1000).format("0,0.0") + " km)";
+        }
         return {
           id: place.id,
-          text: place.name + " (" + Math.round(place.distance) + "m)"
+          text: text
         };
       });
 

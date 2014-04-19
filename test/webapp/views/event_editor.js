@@ -356,7 +356,7 @@ define(
           this.editor.render();
           this.editor.nearestPlaces = [
             {id: 4, name: "existing place name", distance: 0},
-            {id: 5, name: "existing place name1", distance: 1}
+            {id: 5, name: "existing place name1", distance: 1200}
           ];
           this.editor.renderPlaces();
         });
@@ -372,9 +372,14 @@ define(
           it("should display the event name", function () {
             this.editor.$("input[data-key=name]").val().should.equal("existing event name");
           });
-          it("should display the event place", function () {
+          it("should display the event place without distance if right there", function () {
             this.editor.$("input[data-key=place]").val().should.equal("4");
-            this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name (0m)");
+            this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name");
+          });
+          it("should display the event place with distance if further away", function () {
+            this.editor.$("input[data-key=place]").select2("val", 5);
+            this.editor.$("input[data-key=place]").val().should.equal("5");
+            this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name1 (1.2 km)");
           });
           it("should set the event type editor", function () {
             this.editor.eventTypeSelector.getValue().type.id.should.equal(1);
