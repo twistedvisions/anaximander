@@ -135,7 +135,8 @@ define(
         });
         it("should get the importance value for new default importances", function () {
           this.typeSelector.$("input[data-key=type]").select2("data",
-            {id: -1, text: "Type Name"});this.typeSelector.setDefaultNewImportanceValue();
+            {id: -1, text: "Type Name"});
+          this.typeSelector.setDefaultNewImportanceValue();
           this.typeSelector.$("input[data-key=type]").trigger("change");
           this.typeSelector.getValue().importance.id.should.equal(-2);
           this.typeSelector.getValue().importance.name.should.equal("Nominal");
