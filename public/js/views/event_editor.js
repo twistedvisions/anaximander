@@ -5,7 +5,6 @@ define([
   "when",
   "moment",
   "numeral",
-  "deep-diff",
   "models/event",
   "collections/events",
   "collections/types",
@@ -23,7 +22,7 @@ define([
   "css!/css/event_editor",
   "css!/css/select2-bootstrap",
   "css!/css/datetimepicker"
-], function ($, _, Backbone, when, moment, numeral, DeepDiff,
+], function ($, _, Backbone, when, moment, numeral,
     Event, EventsCollection,
     Types, Roles, EventTypes,
     TypeSelector, ParticipantEditor, HistoryRenderer, ParsleyListener,
@@ -54,7 +53,6 @@ define([
       this.renderEditReason();
 
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
-
 
       this.$("input[data-key=end]").datetimepicker(this.getDatePickerOpts());
       this.$("input[data-key=start]").datetimepicker(this.getDatePickerOpts(true));
@@ -155,8 +153,7 @@ define([
       window.ParsleyValidator
         .addValidator("changemade", _.bind(function () {
           if (this.model) {
-            var differences = this.getDifferences(this.collectValues());
-            return _.keys(_.omit(differences, this.ignoredKeys)).length > 0;
+            return this.model.hasDifferences(this.collectValues());
           } else {
             return true;
           }
@@ -175,12 +172,7 @@ define([
       thingsToFetch.push(this.getNearestPlaces());
 
       if (this.model) {
-        thingsToFetch.push(
-          //todo: get this data from a model
-          when($.get("/event/" + this.model.id)).then(_.bind(function (data) {
-            this.currentViewData = data;
-          }, this))
-        );
+        thingsToFetch.push(when(this.model.fetch()));
       }
 
       return when.all(thingsToFetch);
@@ -361,14 +353,6 @@ define([
     },
 
     renderExistingEvent: function () {
-      var data = this.currentViewData;
-      data.start_date = moment(data.start_date);
-      data.end_date = moment(data.end_date);
-
-      data.start_date.add("minutes", this.getTimezoneOffset(data.start_date));
-      data.end_date.add("minutes", this.getTimezoneOffset(data.end_date));
-
-      this.model = new Backbone.Model(data);
       this.$el.find("input[data-key=name]").val(this.model.get("name"));
       this.$el.find("input[data-key=place]").val(this.model.get("place").name);
       this.eventTypeSelector.setValue(
@@ -464,183 +448,14 @@ define([
       return values;
     },
 
-    ignoredKeys: ["id", "last_edited", "reason"],
-
     updateExistingEvent: function (values) {
-      var differences = this.getDifferences(values);
-      if (_.keys(_.omit(differences, this.ignoredKeys)).length > 0) {
-        differences.last_edited = this.model.get("last_edited");
-        return this.sendChangeRequest(differences).then(
-          _.bind(this.handleSaveComplete, this, values),
-          _.bind(this.handleSaveFail, this, null)
-        );
-      } else {
-        return when.reject();
-      }
-    },
 
-    sendChangeRequest: function (differences) {
-      var d = when($.ajax({
-        url: "/event",
-        type: "PUT",
-        processData: false,
-        contentType: "application/json",
-        data: JSON.stringify(differences)
-      }));
-      return d;
-    },
+      var reason = this.$("textarea[data-key=reason]").val();
+      return this.model.update(values, reason).then(
+        _.bind(this.handleSaveComplete, this, values),
+        _.bind(this.handleSaveFail, this, null)
+      );
 
-    getDifferences: function (values) {
-
-      var oldValues = this.model.toJSON();
-
-      var newParticipants = this.getParticipantDifference(oldValues.participants, values.participants);
-      var oldParticipants = this.getParticipantDifference(values.participants, oldValues.participants);
-
-      var originalParticipants = values.participants;
-
-      oldValues.participants = this.removeParticipantsFromArray(oldValues.participants, oldParticipants);
-      values.participants = this.removeParticipantsFromArray(values.participants, newParticipants);
-
-      var differences = this.getRawDifferences(oldValues, values);
-
-      values.participants = originalParticipants;
-
-      var toSend = {id: this.model.id};
-      if (newParticipants.length > 0) {
-        toSend.newParticipants = newParticipants;
-      }
-      if (oldParticipants.length > 0) {
-        toSend.removedParticipants = _.map(_.keys(this.getParticipantArrayKeys(oldParticipants)), function (id) {
-          return parseInt(id, 10);
-        });
-      }
-
-      var editedParticipants = {};
-      _.forEach(differences, function (difference) {
-        if (difference.path[0] === "name") {
-          toSend.name = difference.rhs;
-
-        } else if (difference.path[0] === "placeId") {
-
-          toSend.placeId = difference.rhs;
-
-        } else if (difference.path[0] === "link") {
-
-          toSend.link = difference.rhs;
-
-        } else if (difference.path[0] === "start_date") {
-
-          toSend.start_date = moment(difference.rhs);
-          toSend.start_date.add("minutes", -this.getTimezoneOffset(toSend.start_date));
-          toSend.start_date = toSend.start_date.toISOString();
-
-        } else if (difference.path[0] === "end_date") {
-
-          toSend.end_date = moment(difference.rhs);
-          toSend.end_date.add("minutes", -this.getTimezoneOffset(toSend.end_date));
-          toSend.end_date = toSend.end_date.toISOString();
-
-        } else if (difference.path[0] === "type") {
-
-          if (!toSend.type) {
-            toSend.type = {};
-          }
-          if (difference.path[1] === "id") {
-            toSend.type.id = difference.rhs;
-          } else if (difference.path[1] === "name") {
-            toSend.type.name = difference.rhs;
-          }
-
-        } else if ((difference.path[0] === "importance") && (difference.path[1] === "id")) {
-
-          toSend.importance = _.extend({
-            id: difference.rhs
-          }, values.importance);
-
-        } else if (difference.path[0] === "participants") {
-
-          editedParticipants[difference.index] = editedParticipants[difference.index] || {};
-          var editedParticipant = editedParticipants[difference.index];
-          var path = difference.item.path;
-          editedParticipant[path[0]] = editedParticipant[path[0]] || {};
-          editedParticipant[path[0]][path[1]] = difference.item.rhs;
-
-        }
-      }, this);
-
-      if (_.keys(editedParticipants).length > 0) {
-
-        toSend.editedParticipants = _.map(editedParticipants, function (value, key) {
-          var originalParticipant = oldValues.participants[key];
-          var obj = {
-            thing: {
-              id: originalParticipant.thing.id
-            }
-          };
-          _.forEach(value, function (value, key) {
-            obj[key] = value;
-          });
-
-          if (!obj.type) {
-            obj.type = originalParticipant.type;
-          }
-          return obj;
-        });
-      }
-
-      toSend.reason = this.$("textarea[data-key=reason]").val();
-      return toSend;
-    },
-
-    //just so can be stubbed for testing
-    getTimezoneOffset: function (moment) {
-      return moment.zone();
-    },
-
-    getParticipantDifference: function (base, comparator) {
-      var keys = this.getParticipantArrayKeys(base);
-      var onlyInComparator = _.filter(comparator, function (participant) {
-        var id = participant.thing.id;
-        if (id === -1) {
-          return true;
-        }
-        return !keys[id];
-      });
-      return onlyInComparator;
-    },
-
-    removeParticipantsFromArray: function (base, toRemove) {
-      var keys = this.getParticipantArrayKeys(toRemove);
-      var filteredParticipants = _.filter(base, function (participant) {
-        return !keys[participant.thing.id];
-      });
-      return filteredParticipants;
-    },
-
-    getParticipantArrayKeys: function (participants) {
-      return _.groupBy(participants, function (participant) {
-        return participant.thing.id;
-      });
-    },
-
-    getRawDifferences: function (oldValues, values) {
-      var previous = _.omit(oldValues, ["location", "place",
-        "start_offset_seconds", "end_offset_seconds", "last_edited"]);
-      var current = _.omit(values, ["place"]);
-      if (oldValues.place) {
-        previous.placeId = oldValues.place.id;
-      }
-      if (values.place) {
-        current.placeId = values.place.id;
-      }
-      previous.start_date = previous.start_date.toISOString();
-      previous.end_date = previous.end_date.toISOString();
-      current.start_date = current.start_date.toISOString();
-      current.end_date = current.end_date.toISOString();
-
-      var diff = DeepDiff.diff(previous, current);
-      return diff;
     },
 
     saveNewEvent: function (values) {

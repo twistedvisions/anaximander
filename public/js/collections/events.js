@@ -6,6 +6,7 @@ define([
 
   var events = Backbone.Collection.extend({
 
+    url: "/event",
     model: Event,
 
     initialize: function () {

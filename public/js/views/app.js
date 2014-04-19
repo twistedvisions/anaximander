@@ -10,11 +10,12 @@ define([
   "collections/subtypes",
   "collections/roles",
   "collections/event_types",
+  "collections/events",
   "text!templates/layout.htm"
 ], function ($, jqueryui, _, Backbone, Bootstrap, when,
     EventLocationsCollection,
     TypeCollection, SubtypeCollection,
-    RolesCollection, EventTypesCollection, layoutTemplate) {
+    RolesCollection, EventTypesCollection, EventsCollection, layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
 
@@ -27,6 +28,7 @@ define([
       RolesCollection.instance = this.rolesCollection;
       this.eventTypesCollection = new EventTypesCollection();
       EventTypesCollection.instance = this.eventTypesCollection;
+      EventsCollection.instance = new EventsCollection();
       this.user = options.user;
     },
 

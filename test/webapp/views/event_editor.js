@@ -2,10 +2,10 @@
 define(
 
   ["chai", "underscore", "backbone", "when", "moment", "views/event_editor",
-    "collections/roles", "collections/event_types", "collections/types",
+    "models/event", "collections/roles", "collections/event_types", "collections/types",
     "analytics", "models/event"],
 
-  function (chai, _, Backbone, when, moment, EventEditor,
+  function (chai, _, Backbone, when, moment, EventEditor, Event,
       Roles, EventTypes, Types,
       Analytics, Event) {
 
@@ -325,7 +325,7 @@ define(
             model: new Backbone.Model()
           });
           stubFetchData(this.editor);
-          this.editor.currentViewData = {
+          this.editor.model = new Event({
             id: 123,
             name: "existing event name",
             place: {
@@ -351,7 +351,7 @@ define(
                 importance: {id: 20}
               }
             ]
-          };
+          }, {parse: true});
           //rendering times is slow, so only do it when necessary
           sinon.stub(this.editor, "renderTimes");
           this.editor.nearestPlaces = [
@@ -420,10 +420,7 @@ define(
           describe("differences", function () {
             beforeEach(function () {
               this.shouldSucceed = true;
-              sinon.stub(this.editor, "getDifferences", _.bind(function () {
-                return this.differences;
-              }, this));
-              sinon.stub(this.editor, "sendChangeRequest", _.bind(function () {
+              sinon.stub(this.editor.model, "update", _.bind(function () {
                 if (this.shouldSucceed) {
                   return when.resolve();
                 } else {
@@ -432,9 +429,6 @@ define(
               }, this));
             });
             it("should make a server call when there are differences", function (done) {
-              this.differences = {
-                name: "new name"
-              };
               sinon.stub(this.editor, "handleSaveComplete");
               this.editor.updateExistingEvent();
               _.defer(
@@ -450,7 +444,7 @@ define(
               );
             });
             it("should not make a server call when there are no differences", function (done) {
-              this.differences = {};
+              this.shouldSucceed = false;
               sinon.stub(this.editor, "handleSaveComplete");
               this.editor.updateExistingEvent();
               _.defer(
@@ -458,26 +452,6 @@ define(
                   var ex;
                   try {
                     this.editor.handleSaveComplete.calledOnce.should.equal(false);
-                  } catch (e) {
-                    ex = e;
-                  }
-                  done(ex);
-                }, this)
-              );
-            });
-            it("should contain the last_edit time in the differences", function (done) {
-              this.differences = {
-                name: "new name"
-              };
-              var time = new Date();
-              this.editor.model.set("last_edited", time);
-              sinon.stub(this.editor, "handleSaveComplete");
-              this.editor.updateExistingEvent();
-              _.defer(
-                _.bind(function () {
-                  var ex;
-                  try {
-                    this.editor.sendChangeRequest.args[0][0].last_edited.should.eql(time);
                   } catch (e) {
                     ex = e;
                   }
@@ -511,15 +485,11 @@ define(
             beforeEach(function () {
               sinon.stub(Analytics, "eventSaved");
               sinon.stub(Analytics, "eventSaveClicked");
-              sinon.stub(this.editor, "sendChangeRequest", function () {
-                return when.resolve();
-              });
               sinon.stub(this.editor, "updateHighlight");
               this.editor.render();
             });
             afterEach(function () {
               Analytics.eventSaved.restore();
-              this.editor.sendChangeRequest.restore();
               this.editor.updateHighlight.restore();
             });
             it("should track when an event is saved", function (done) {
@@ -535,15 +505,6 @@ define(
               }, done);
             });
           });
-          describe("raw differences", function () {
-            it("should return one difference if the name has changed", function () {
-              this.editor.renderTimes.restore();
-              this.editor.render();
-              this.editor.$("input[data-key=name]").val("something different");
-              var differences = this.editor.getRawDifferences(this.editor.model.toJSON(), this.editor.collectValues());
-              differences.length.should.equal(1);
-            });
-          });
           describe("collectValues", function () {
             it("should collect the start time in UTC time", function () {
               this.editor.render();
@@ -555,214 +516,51 @@ define(
               this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
               this.editor.collectValues().end_date.toISOString().should.equal("2000-01-01T21:59:00.000Z");
             });
-          });
-          describe("differences", function () {
-            beforeEach(function () {
-              sinon.stub(this.editor, "getTimezoneOffset", function () {
-                return -60;
-              });
+            it("should strip out the name from the event type if the type exists", function () {
               this.editor.render();
-            });
-            afterEach(function () {
-              this.editor.getTimezoneOffset.restore();
-            });
-            it("should always have an id", function () {
-              this.editor.$("input[data-key=name]").val("something different");
-              this.editor.getDifferences(this.editor.collectValues()).id.should.equal(123);
-            });
-            it("should always have a reason", function () {
-              this.editor.$("textarea[data-key=reason]").val("the reason");
-              this.editor.getDifferences(this.editor.collectValues()).reason.should.equal("the reason");
-            });
-            it("shouldn't diff the offset", function () {
-              this.editor.$("input[data-key=name]").val("something different");
-              should.not.exist(this.editor.getDifferences(this.editor.collectValues()).start_offset_seconds);
-              should.not.exist(this.editor.getDifferences(this.editor.collectValues()).end_offset_seconds);
-            });
-            it("should send the name if it has changed", function () {
-              this.editor.$("input[data-key=name]").val("something different");
-              this.editor.getDifferences(this.editor.collectValues()).name.should.equal("something different");
-            });
-            it("should send the link if it has changed", function () {
-              this.editor.$("input[data-key=link]").val("//www.someotherlink.com");
-              this.editor.getDifferences(this.editor.collectValues()).link.should.equal("//www.someotherlink.com");
-            });
-            it("should send the placeId if it has changed", function () {
-              this.editor.$("input[data-key=place]").select2("val", 5);
-              this.editor.getDifferences(this.editor.collectValues()).placeId.should.equal(5);
-            });
-            it("should send the start in utc without the browsers timezone if it has changed", function () {
-              this.editor.$("input[data-key=start]").val("1500-12-24 00:00");
-              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(1500, 11, 23, 23).toISOString());
-            });
-            it("should send the end in utc without the browsers timezone  if it has changed", function () {
-              this.editor.$("input[data-key=end]").val("2010-11-20 23:59");
-              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 10, 20, 22, 59).toISOString());
-            });
-            it("should remove the timezone from the start date if it exists", function () {
-              this.editor.$("input[data-key=start]").val("2010-10-20 00:00");
-              this.editor.getDifferences(this.editor.collectValues()).start_date.should.eql(new Date(2010, 9, 19, 23).toISOString());
-            });
-            it("should remove the timezone from the end date if it exists", function () {
-              this.editor.$("input[data-key=end]").val("2010-10-20 23:59");
-              this.editor.getDifferences(this.editor.collectValues()).end_date.should.eql(new Date(2010, 9, 20, 22, 59).toISOString());
-            });
-            it("should send the event type if it has changed to a different existing one", function () {
               this.editor.eventTypeSelector.setValue(2, 20);
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.type.id.should.equal(2);
-              should.not.exist(differences.type.name);
+              var values = this.editor.collectValues();
+              values.type.id.should.equal(2);
+              should.not.exist(values.type.name);
             });
-            it("should send the event importance if the event type has changed to a different existing one", function () {
+            it("should strip out the name from the event importance if they exist", function () {
+              this.editor.render();
               this.editor.eventTypeSelector.setValue(2, 20);
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.importance.id.should.equal(20);
-              should.not.exist(differences.importance.name);
+              var values = this.editor.collectValues();
+              values.importance.id.should.equal(20);
+              should.not.exist(values.importance.name);
             });
-            it("should send the event type if it has changed to a new one", function () {
-              this.editor.eventTypeSelector.$("input[data-key=type]").select2(
-                _.extend(this.editor.eventTypeSelector.importanceSelectData, {
-                data: [{
-                  id: -1,
-                  text: "new type name"
-                }]
-              }));
-              this.editor.eventTypeSelector.$("input[data-key=type]").select2("val", -1).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.type.id.should.equal(-1);
-              differences.type.name.should.equal("new type name");
-            });
-            it("should send the event importance if the event type has changed to a new one", function () {
-              this.editor.eventTypeSelector.$("input[data-key=type]").select2(
-                _.extend(this.editor.eventTypeSelector.importanceSelectData, {
-                data: [{
-                  id: -1,
-                  text: "new type name"
-                }]
-              }));
-              this.editor.eventTypeSelector.$("input[data-key=type]").select2("val", -1).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.importance.id.should.be.lessThan(0);
-              differences.importance.name.should.equal("Nominal");
-            });
-            it("should send the event importance if has changed to a different existing one", function () {
-              this.editor.eventTypeSelector.$("input[data-key=importance]").select2("val", 11).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.importance.id.should.equal(11);
-              should.not.exist(differences.importance.name);
-            });
-            it("should send the event importance", function () {
+            it("should get all the values for new importances", function () {
+              this.editor.render();
               this.editor.eventTypeSelector.setDefaultNewImportanceValue();
               this.editor.eventTypeSelector.$("input[data-key=importance-description]").val("new description");
               this.editor.eventTypeSelector.$("input[data-key=importance-value]").val(3);
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.importance.id.should.be.lessThan(0);
-              differences.importance.name.should.equal("Nominal");
-              differences.importance.description.should.equal("a default value of importance for event type 1");
-              differences.importance.value.should.equal(5);
+
+              var values = this.editor.collectValues();
+              values.importance.id.should.be.lessThan(0);
+              values.importance.name.should.equal("Nominal");
+              values.importance.description.should.equal("a default value of importance for event type 1");
+              values.importance.value.should.equal(5);
             });
-            it("should send new participants", function () {
+            it("should collect new participants", function () {
+              this.editor.render();
               selectParticipant(this.editor);
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.newParticipants[0].thing.id.should.equal(1);
-              differences.newParticipants[0].type.id.should.equal(2);
-              differences.newParticipants[0].importance.id.should.equal(20);
+              var values = this.editor.collectValues();
+              values.participants[2].thing.id.should.equal(1);
+              values.participants[2].type.id.should.equal(2);
+              values.participants[2].importance.id.should.equal(20);
             });
-            it("should send new and changed participants together", function () {
+            it("should collect changed participants", function () {
+              this.editor.render();
               selectParticipant(this.editor);
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.newParticipants.length.should.equal(1);
-              differences.editedParticipants.length.should.equal(1);
+              var values = this.editor.collectValues();
+              values.participants[1].type.id.should.equal(2);
             });
-            it("should send removed participants", function () {
+            it("should not collect removed participants", function () {
+              this.editor.render();
               this.editor.$(".remove-participant").first().trigger("click");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.removedParticipants.should.eql([3]);
-            });
-            it("should send multiple removed participants", function () {
-              this.editor.$(".remove-participant").trigger("click");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.removedParticipants.should.eql([3, 4]);
-            });
-            it("should send participants with changed existing role", function () {
-              this.editor.$(".participant-editor input[data-key=type]").select2("val", 1).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.editedParticipants.length.should.equal(1);
-              differences.editedParticipants[0].thing.id.should.equal(3);
-              should.not.exist(differences.editedParticipants[0].thing.name);
-              differences.editedParticipants[0].type.id.should.equal(1);
-              should.not.exist(differences.editedParticipants[0].type.name);
-              differences.editedParticipants[0].importance.id.should.equal(10);
-              should.not.exist(differences.editedParticipants[0].importance.name);
-            });
-            it("should send participants with changed new role", function () {
-              this.editor.$(".participant-editor input[data-key=type]").first().select2(
-                _.extend(this.editor.eventTypeSelector.importanceSelectData, {
-                data: [{
-                  id: -1,
-                  text: "new type name"
-                }]
-              }));
-              this.editor.$(".participant-editor input[data-key=type]").first().select2("val", -1).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.editedParticipants.length.should.equal(1);
-              differences.editedParticipants[0].thing.id.should.equal(3);
-              should.not.exist(differences.editedParticipants[0].thing.name);
-              differences.editedParticipants[0].type.id.should.equal(-1);
-              differences.editedParticipants[0].type.name.should.equal("new type name");
-              differences.editedParticipants[0].importance.id.should.be.lessThan(0);
-              differences.editedParticipants[0].importance.name.should.equal("Nominal");
-            });
-            it("should send participants with changed existing importance", function () {
-              this.editor.$(".participant-editor input[data-key=importance]").select2("val", 21).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.editedParticipants.length.should.equal(1);
-              differences.editedParticipants[0].thing.id.should.equal(3);
-              should.not.exist(differences.editedParticipants[0].thing.name);
-              differences.editedParticipants[0].type.id.should.equal(2);
-              differences.editedParticipants[0].importance.id.should.equal(21);
-              should.not.exist(differences.editedParticipants[0].importance.name);
-            });
-            it("should send participants with changed new importance", function () {
-              this.editor.$(".participant-editor input[data-key=importance]").first().select2(
-                _.extend(this.editor.eventTypeSelector.importanceSelectData, {
-                data: [{
-                  id: -1,
-                  text: "new importance name"
-                }]
-              }));
-              this.editor.$(".participant-editor input[data-key=importance]").first().select2("val", -1).trigger("change");
-              var differences = this.editor.getDifferences(this.editor.collectValues());
-              differences.editedParticipants.length.should.equal(1);
-              differences.editedParticipants[0].thing.id.should.equal(3);
-              should.not.exist(differences.editedParticipants[0].thing.name);
-              differences.editedParticipants[0].type.id.should.equal(2);
-              differences.editedParticipants[0].importance.id.should.equal(-1);
-              differences.editedParticipants[0].importance.name.should.equal("new importance name");
-            });
-            it("should not remove elements from participants", function () {
-              var values = {
-                start_date: moment(),
-                end_date: moment(),
-                participants: [{thing: {id: 1234}}]
-              };
-              this.editor.getDifferences(values);
+              var values = this.editor.collectValues();
               values.participants.length.should.equal(1);
-            });
-            it("should not send empty newParticipants", function () {
-              var values = {
-                start_date: moment(),
-                end_date: moment()
-              };
-              should.not.exist(this.editor.getDifferences(values).newParticipants);
-            });
-            it("should not send empty removedParticipants", function () {
-              var values = {
-                start_date: moment(),
-                end_date: moment(),
-                participants: [{thing: {id: 3}}, {thing: {id: 4}}]
-              };
-              should.not.exist(this.editor.getDifferences(values).removedParticipants);
             });
           });
         });

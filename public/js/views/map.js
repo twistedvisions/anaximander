@@ -8,6 +8,7 @@ define([
         "&sensor=false!callback",
   "views/options_menu",
   "views/event_editor",
+  "collections/events",
   "utils/position",
   "utils/scroll",
   "styled_marker",
@@ -16,7 +17,8 @@ define([
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
   "css!/css/map"
-], function ($, _, Backbone, analytics, maps, OptionsMenu, EventEditor,
+], function ($, _, Backbone, analytics, maps, OptionsMenu,
+    EventEditor, Events,
     Position, Scroll, StyledMarker, chroma,
     infoWindowSummaryTemplate, infoWindowEntryTemplate,
     infoWindowEntryParticipantTemplate) {
@@ -368,7 +370,7 @@ define([
     createEventEditor: function (data) {
       return new EventEditor({
         state: this.model,
-        model: new Backbone.Model(data)
+        model: new Events.instance.model(data, {collection: Events.instance})
       }).render();
     },
 
