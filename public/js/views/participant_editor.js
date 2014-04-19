@@ -75,7 +75,12 @@ define([
     },
 
     validate: function () {
-      return this.typeSelector.validate();
+      var ok = true;
+      if (this.model.get("thing").id === -1) {
+        ok = this.thingEditor.validate() && ok;
+      }
+      ok = this.typeSelector.validate() && ok;
+      return ok;
     }
   });
 
