@@ -50,14 +50,11 @@ define([
 
     render: function () {
       this.$el.html(template);
-      $("body").append(this.$el);
 
       this.renderEditReason();
 
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
-      this.$(".modal").modal();
-      this.$(".modal").modal("show");
 
       this.$("input[data-key=end]").datetimepicker(this.getDatePickerOpts());
       this.$("input[data-key=start]").datetimepicker(this.getDatePickerOpts(true));
@@ -68,7 +65,15 @@ define([
 
       this.fetchData().then(_.bind(this.populateView, this));
 
+      this.show();
+
       return this.$el;
+    },
+
+    show: function () {
+      $("body").append(this.$el);
+      this.$(".modal").modal();
+      this.$(".modal").modal("show");
     },
 
     renderEditReason: function () {
@@ -372,12 +377,23 @@ define([
       );
       this.$el.find("input[data-key=link]").val(this.model.get("link"));
 
-      var localStartTime = this.model.get("start_date").clone().add("seconds", this.model.get("start_offset_seconds"));
-      var localEndTime = this.model.get("end_date").clone().add("seconds", this.model.get("end_offset_seconds"));
-      this.$el.find("input[data-key=start]").datetimepicker("setDate", localStartTime.toDate());
-      this.$el.find("input[data-key=end]").datepicker("setDate", localEndTime.toDate());
+      var localStartTime = this.getLocalTime("start_date", "start_offset_seconds");
+      var localEndTime = this.getLocalTime("end_date", "end_offset_seconds");
+
+      this.renderTimes(localStartTime, localEndTime);
 
       _.each(this.model.get("participants"), _.bind(this.addParticipant, this));
+    },
+
+    getLocalTime: function (key, offsetKey) {
+      return this.model.get(key)
+        .clone()
+        .add("seconds", this.model.get(offsetKey));
+    },
+
+    renderTimes: function (localStartTime, localEndTime) {
+      this.$el.find("input[data-key=start]").datetimepicker("setDate", localStartTime.toDate());
+      this.$el.find("input[data-key=end]").datepicker("setDate", localEndTime.toDate());
     },
 
     handleSave: function () {
@@ -678,10 +694,14 @@ define([
         analytics.eventAdded(values);
       }
 
-      this.$el.find(".modal").modal("hide");
+      this.hide();
       this.updateHighlight(values);
       //force a refresh of data
       this.state.trigger("change:center");
+    },
+
+    hide: function () {
+      this.$el.find(".modal").modal("hide");
     },
 
     updateHighlight: function (values) {

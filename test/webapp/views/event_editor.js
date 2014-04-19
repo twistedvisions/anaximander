@@ -136,11 +136,11 @@ define(
           this.editor = new EventEditor({
             state: new Backbone.Model({date: [1900, 2000]})
           });
+          sinon.stub(this.editor, "show");
           stubFetchData(this.editor);
         });
         afterEach(function () {
-          this.editor.$el.find(".modal").modal("hide");
-          this.editor.$el.remove();
+          this.editor.show.restore();
         });
         describe("tabs", function () {
           it("should fetch the history only once when the history tab is selected", function () {
@@ -352,12 +352,12 @@ define(
               }
             ]
           };
-          this.editor.render();
+          //rendering times is slow, so only do it when necessary
+          sinon.stub(this.editor, "renderTimes");
           this.editor.nearestPlaces = [
             {id: 4, name: "existing place name", distance: 0},
             {id: 5, name: "existing place name1", distance: 1200}
           ];
-          this.editor.renderPlaces();
         });
         afterEach(function () {
           this.editor.$el.find(".modal").modal("hide");
@@ -366,37 +366,50 @@ define(
         describe("rendering", function () {
 
           it("should make the reason required if it is a change", function () {
+            this.editor.render();
             this.editor.$("textarea[data-key=reason]").attr("required").length.should.not.equal(0);
           });
           it("should display the event name", function () {
+            this.editor.render();
             this.editor.$("input[data-key=name]").val().should.equal("existing event name");
           });
           it("should display the event place without distance if right there", function () {
+            this.editor.render();
             this.editor.$("input[data-key=place]").val().should.equal("4");
             this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name");
           });
           it("should display the event place with distance if further away", function () {
+            this.editor.render();
             this.editor.$("input[data-key=place]").select2("val", 5);
             this.editor.$("input[data-key=place]").val().should.equal("5");
             this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name1 (1.2 km)");
           });
           it("should set the event type editor", function () {
+            this.editor.render();
             this.editor.eventTypeSelector.getValue().type.id.should.equal(1);
             this.editor.eventTypeSelector.getValue().importance.id.should.equal(10);
           });
           it("should set the event link", function () {
+            this.editor.render();
             this.editor.$("input[data-key=link]").val().should.equal("//www.link.com");
           });
           it("should set the event start date at the local time", function () {
+            this.editor.renderTimes.restore();
+            this.editor.render();
             this.editor.$("input[data-key=start]").val().should.equal("1900-12-13 00:00");
           });
           it("should set the event end date at the local time", function () {
+            this.editor.renderTimes.restore();
+            this.editor.render();
             this.editor.$("input[data-key=end]").val().should.equal("2000-01-01 23:59");
           });
           it("should show each event participant", function () {
+            this.editor.render();
             this.editor.$(".participant-editor").length.should.equal(2);
           });
           it("should not save if no changes were made", function () {
+            this.editor.renderTimes.restore();
+            this.editor.render();
             this.editor.$("textarea[data-key=reason]").val("some reason");
             this.editor.validate().should.equal(false);
             this.editor.$("input[data-key=name]").val("some new name");
@@ -502,7 +515,7 @@ define(
                 return when.resolve();
               });
               sinon.stub(this.editor, "updateHighlight");
-
+              this.editor.render();
             });
             afterEach(function () {
               Analytics.eventSaved.restore();
@@ -524,6 +537,8 @@ define(
           });
           describe("raw differences", function () {
             it("should return one difference if the name has changed", function () {
+              this.editor.renderTimes.restore();
+              this.editor.render();
               this.editor.$("input[data-key=name]").val("something different");
               var differences = this.editor.getRawDifferences(this.editor.model.toJSON(), this.editor.collectValues());
               differences.length.should.equal(1);
@@ -531,10 +546,12 @@ define(
           });
           describe("collectValues", function () {
             it("should collect the start time in UTC time", function () {
+              this.editor.render();
               this.editor.$("input[data-key=start]").val("1900-12-13 00:00");
               this.editor.collectValues().start_date.toISOString().should.equal("1900-12-12T22:00:00.000Z");
             });
             it("should collect the end time in UTC time", function () {
+              this.editor.render();
               this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
               this.editor.collectValues().end_date.toISOString().should.equal("2000-01-01T21:59:00.000Z");
             });
@@ -544,6 +561,7 @@ define(
               sinon.stub(this.editor, "getTimezoneOffset", function () {
                 return -60;
               });
+              this.editor.render();
             });
             afterEach(function () {
               this.editor.getTimezoneOffset.restore();
@@ -797,6 +815,7 @@ define(
 
         it("should track when an event is added", function (done) {
           sinon.stub(this.editor, "updateHighlight");
+          sinon.stub(this.editor, "hide");
           this.editor.handleSave().then(function () {
             Analytics.eventAdded.calledOnce.should.equal(true);
             done();
@@ -827,6 +846,7 @@ define(
         it("should trigger a change on the model to say it needs updating", function () {
           sinon.stub(this.editor.state, "trigger");
           sinon.stub(this.editor, "updateHighlight");
+          sinon.stub(this.editor, "hide");
           try {
             this.editor.handleSaveComplete();
             this.editor.state.trigger.calledWith("change:center").should.equal(true);
