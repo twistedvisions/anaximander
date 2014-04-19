@@ -680,7 +680,7 @@ describe("editEvent", function () {
 
     it("should change the role of existing participants", function (done) {
       this.fullBody = {
-        id: 1,
+        id: 126,
         last_edited: "2000-01-01",
         editedParticipants: [{thing: {id: 2}, type: {id: 3}}]
       };
@@ -701,6 +701,7 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[1][1].should.equal("update_participant_role");
+        this.args[1][2][0].should.equal(126);
       }, done);
     });
     it("should change the importance of existing participants", function (done) {
