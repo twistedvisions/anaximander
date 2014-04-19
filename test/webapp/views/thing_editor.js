@@ -120,6 +120,12 @@ define(
       });
 
       describe("validate", function () {
+        it("should ensure that a type has been selected", function () {
+          this.thingEditor.validateType().should.equal(false);
+          this.thingEditor.$("input[data-key=thing-type]").val(1);
+          this.thingEditor.typeSelected();
+          this.thingEditor.validateType().should.equal(true);
+        });
         it("should ensure that each subtype has a value", function () {
           this.thingEditor.$("input[data-key=thing-type]").val(1);
           this.thingEditor.typeSelected();
