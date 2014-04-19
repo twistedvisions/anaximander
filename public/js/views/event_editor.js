@@ -116,16 +116,15 @@ define([
     },
 
     updateEnd: function () {
-      var format = "YYYY-MM-DD HH:mm";
       var start = moment(this.$el.find("input[data-key=start]").val());
-      var endOfDay = start.endOf("day").format(format);
+      var endOfDay = start.endOf("day").toDate();
       var end = this.$el.find("input[data-key=end]").val();
       if (!end) {
-        this.$el.find("input[data-key=end]").val(endOfDay);
+        this.$el.find("input[data-key=end]").datetimepicker("setDate", endOfDay);
       } else if (this.lastStart) {
         end = moment(end);
         if (this.lastStart.endOf("day").isSame(end, "minute")) {
-          this.$el.find("input[data-key=end]").val(endOfDay);
+          this.$el.find("input[data-key=end]").datetimepicker("setDate", endOfDay);
         }
       }
       this.lastStart = start;
