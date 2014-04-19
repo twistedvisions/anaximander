@@ -32,13 +32,33 @@ define(
           name: "new thing"
         });
         this.thingEditor.render().appendTo(document.body);
-        this.thingEditor.subtypes.updateData = function () {
+        this.thingEditor.subtypes.updateData = _.bind(function () {
+          this.thingEditor.subtypes.reset([{
+            id: 1,
+            name: "subtype 1",
+            default_importance_id: 1,
+            importances: [{
+              id: 1,
+              name: "st importance 1"
+            }]
+          }, {
+            id: 2,
+            name: "subtype 2",
+            default_importance_id: 3,
+            importances: [{
+              id: 2,
+              name: "st importance 2"
+            }, {
+              id: 3,
+              name: "st importance 3"
+            }]
+          }]);
           return {
             then: function (fn) {
               fn();
             }
           };
-        };
+        }, this);
       });
       afterEach(function () {
         this.thingEditor.remove();
@@ -139,6 +159,18 @@ define(
           });
           this.thingEditor.validate();
           called.should.equal(2);
+        });
+        it("should ensure that duplicate subtypes are not selected", function () {
+          this.thingEditor.$("input[data-key=thing-type]").val(1);
+          this.thingEditor.typeSelected();
+          this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().select2("val", 1);
+          this.thingEditor.$(".add-subtype").trigger("click");
+          this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().select2("val", 1);
+
+          this.thingEditor.validateSubtypeDuplication().should.equal(false);
+          this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().select2("val", 2);
+
+          this.thingEditor.validateSubtypeDuplication().should.equal(true);
         });
       });
     });

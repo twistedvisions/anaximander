@@ -38,6 +38,9 @@ define([
       this.$("input[data-key=thing-type]").on("change", _.bind(this.typeSelected, this));
       this.$(".subtypes-holder").hide();
       this.$(".add-subtype").on("click", _.bind(this.addSubtype, this));
+
+      this.addValidators();
+
       return this.$el;
     },
 
@@ -50,6 +53,7 @@ define([
 
     showSubtypes: function () {
       this.$(".subtypes").html("");
+      this.subtypeSelectors = {};
       this.addSubtype();
     },
 
@@ -91,9 +95,45 @@ define([
       });
     },
 
+    addValidators: function () {
+
+      window.ParsleyValidator
+        .addValidator("duplicatesubtypes", _.bind(function () {
+          var subtypes = _.chain(this.getSubtypeValues()).pluck("type").pluck("id").value();
+          return subtypes.length === _.uniq(subtypes).length;
+        }, this), 32)
+        .addMessage("en", "duplicatesubtypes", "You cannot add duplicate subtypes");
+
+    },
+
     validate: function () {
-      return !!_.find(this.subtypeSelectors, function (typeSelector) {
-        return !typeSelector.validate();
+      var ok = true;
+
+      ok = this.validateType() && ok;
+      ok = this.validateSubtypeDuplication() && ok;
+      ok = this.validateSubtypeExistence() && ok;
+      ok = this.validateSubtypes() && ok;
+
+      return ok;
+    },
+
+    validateType: function () {
+      return !_.isArray(this.$("input[data-key=thing-type]").parsley().validate());
+    },
+
+    validateSubtypeDuplication: function () {
+      return !_.isArray(this.$("input[data-key=subtypes-dummy]").parsley().validate());
+    },
+
+    validateSubtypeExistence: function () {
+      //this shouldn't be possible UI-wise,
+      //but can't hurt to double check
+      return _.keys(this.subtypeSelectors).length > 0;
+    },
+
+    validateSubtypes: function () {
+      return _.every(this.subtypeSelectors, function (typeSelector) {
+        return typeSelector.validate();
       });
     }
   });
