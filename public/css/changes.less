@@ -4,11 +4,13 @@ table {
       .date span,
       .username span {
         visibility: visible;
+        font-size: inherit;
       }
     }
     .date span,
     .username span {
       visibility: hidden;
+      font-size: 1px;
     }
   }
   &.show-all {
@@ -16,12 +18,14 @@ table {
       .date span,
       .username span {
         visibility: visible;
+        font-size: inherit;
       }
     }
     tr:not(.show-details) {
       .date span,
       .username span {
         visibility: hidden;
+        font-size: 1px;
       }
     }
   }
@@ -31,7 +35,7 @@ table {
     }
     tr {
       td {
-        white-space: nowrap;
+        white-space: normal;
         &.field:first-letter {
           text-transform: capitalize;
         }
