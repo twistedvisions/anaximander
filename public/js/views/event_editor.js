@@ -497,24 +497,29 @@ define([
       _.forEach(differences, function (difference) {
         if (difference.path[0] === "name") {
           toSend.name = difference.rhs;
-        }
-        else if (difference.path[0] === "placeId") {
+
+        } else if (difference.path[0] === "placeId") {
+
           toSend.placeId = difference.rhs;
-        }
-        else if (difference.path[0] === "link") {
+
+        } else if (difference.path[0] === "link") {
+
           toSend.link = difference.rhs;
-        }
-        else if (difference.path[0] === "start_date") {
+
+        } else if (difference.path[0] === "start_date") {
+
           toSend.start_date = moment(difference.rhs);
           toSend.start_date.add("minutes", -this.getTimezoneOffset(toSend.start_date));
           toSend.start_date = toSend.start_date.toISOString();
-        }
-        else if (difference.path[0] === "end_date") {
+
+        } else if (difference.path[0] === "end_date") {
+
           toSend.end_date = moment(difference.rhs);
           toSend.end_date.add("minutes", -this.getTimezoneOffset(toSend.end_date));
           toSend.end_date = toSend.end_date.toISOString();
-        }
-        else if (difference.path[0] === "type") {
+
+        } else if (difference.path[0] === "type") {
+
           if (!toSend.type) {
             toSend.type = {};
           }
@@ -523,20 +528,26 @@ define([
           } else if (difference.path[1] === "name") {
             toSend.type.name = difference.rhs;
           }
-        }
-        else if ((difference.path[0] === "importance") && (difference.path[1] === "id")) {
+
+        } else if ((difference.path[0] === "importance") && (difference.path[1] === "id")) {
+
           toSend.importance = _.extend({
             id: difference.rhs
           }, values.importance);
+
         } else if (difference.path[0] === "participants") {
+
           editedParticipants[difference.index] = editedParticipants[difference.index] || {};
           var editedParticipant = editedParticipants[difference.index];
           var path = difference.item.path;
           editedParticipant[path[0]] = editedParticipant[path[0]] || {};
           editedParticipant[path[0]][path[1]] = difference.item.rhs;
+
         }
       }, this);
+
       if (_.keys(editedParticipants).length > 0) {
+
         toSend.editedParticipants = _.map(editedParticipants, function (value, key) {
           var obj = {
             thing: {
