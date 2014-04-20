@@ -3,12 +3,10 @@
 require("newrelic");
 
 var express = require("express");
-var https = require("https");
 var http = require("http");
 var lessMiddleware = require("less-middleware");
 var flash = require("connect-flash");
 var passport = require("passport");
-var fs = require("fs");
 
 var nconf = require("./lib/config");
 var winston = require("winston");
@@ -22,47 +20,31 @@ winston.add(winston.transports.Console, {
   "colorize": true
 });
 
-var options = {
-  key: fs.readFileSync("key.pem"),
-  cert: fs.readFileSync("cert.pem"),
-  ca: [
-    fs.readFileSync("AddTrustExternalCARoot.crt"),
-    fs.readFileSync("PositiveSSLCA2.crt"),
-    fs.readFileSync("retred_org.crt")
-  ]
-};
+var app = express();
 
-var secureApp = express();
-var unsecureApp = express();
+var server = http.createServer(app);
 
-var secureServer = https.createServer(options, secureApp);
-var unsecureServer = http.createServer(unsecureApp);
-
-unsecureApp.get("*", function (req, res) {
-  res.redirect(nconf.server.host + req.url);
-});
-
-secureApp.configure(function () {
-  secureApp.use(lessMiddleware({
+app.configure(function () {
+  app.use(lessMiddleware({
     src: __dirname + "/public",
     compress: true
   }));
 });
 
-secureApp.use(express["static"](__dirname + "/public"));
-secureApp.use(express.cookieParser());
-secureApp.use(express.json());
-secureApp.use(express.urlencoded());
-secureApp.use(express.cookieSession({
+app.use(express["static"](__dirname + "/public"));
+app.use(express.cookieParser());
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(express.cookieSession({
   secret: nconf.auth.sessionSecret,
   cookie: {
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
-secureApp.use(flash());
+app.use(flash());
 
-secureApp.use(passport.initialize());
-secureApp.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 
 require("./lib/rest/auth/localStrategy");
 require("./lib/rest/auth/facebookStrategy");
@@ -73,33 +55,32 @@ require("./lib/rest/auth/githubStrategy");
 require("./lib/rest/auth/serializeUser");
 require("./lib/rest/auth/deserializeUser");
 
-require("./lib/rest/getCurrentUser").init(secureApp);
-require("./lib/rest/logout").init(secureApp);
-require("./lib/rest/login").init(secureApp);
-require("./lib/rest/register").init(secureApp);
+require("./lib/rest/getCurrentUser").init(app);
+require("./lib/rest/logout").init(app);
+require("./lib/rest/login").init(app);
+require("./lib/rest/register").init(app);
 
-var Provider = new OpenIdProvider(secureApp, secureServer);
+var Provider = new OpenIdProvider(app, server);
 new Provider.provider("facebook");
 new Provider.provider("google");
 new Provider.provider("twitter");
 new Provider.provider("github");
 
-require("./lib/rest/editEvent").init(secureApp);
-require("./lib/rest/getEvent").init(secureApp);
-require("./lib/rest/getEventChanges").init(secureApp);
-require("./lib/rest/getEvents").init(secureApp);
-require("./lib/rest/getEventTypes").init(secureApp);
-require("./lib/rest/getParticipant").init(secureApp);
-require("./lib/rest/getPlaces").init(secureApp);
-require("./lib/rest/getRecentChanges").init(secureApp);
-require("./lib/rest/getRoles").init(secureApp);
-require("./lib/rest/getThingSubtypes").init(secureApp);
-require("./lib/rest/getThingTypes").init(secureApp);
-require("./lib/rest/saveEvent").init(secureApp);
+require("./lib/rest/editEvent").init(app);
+require("./lib/rest/getEvent").init(app);
+require("./lib/rest/getEventChanges").init(app);
+require("./lib/rest/getEvents").init(app);
+require("./lib/rest/getEventTypes").init(app);
+require("./lib/rest/getParticipant").init(app);
+require("./lib/rest/getPlaces").init(app);
+require("./lib/rest/getRecentChanges").init(app);
+require("./lib/rest/getRoles").init(app);
+require("./lib/rest/getThingSubtypes").init(app);
+require("./lib/rest/getThingTypes").init(app);
+require("./lib/rest/saveEvent").init(app);
 
-new (require("./lib/rest/search"))(secureApp);
+new (require("./lib/rest/search"))(app);
 
-secureServer.listen(nconf.server.securePort);
-unsecureServer.listen(nconf.server.unsecurePort);
+server.listen(nconf.server.port);
 
-winston.info("Listening on port ", nconf.server.securePort);
+winston.info("Listening on port ", nconf.server.port);
