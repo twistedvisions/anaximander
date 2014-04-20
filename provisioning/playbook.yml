@@ -1,0 +1,22 @@
+#hosts:local
+#connection: local
+- hosts: all
+  sudo: True
+
+  roles:
+    - common
+    - angstwad.docker_ubuntu
+
+  tasks:
+
+    - name: update apt
+      action: command apt-get update
+
+    - name: Update the apt cache
+      action: apt update-cache=yes
+
+    - name: install postgres + postgis in docker
+      action: docker image=helmi03/docker-postgis ports=5432:5432 name=postgres
+
+      #ansible vagrant -i hosts.ini --private-key=~/.vagrant.d/insecure_private_key -u vagrant  -m docker -a "image=helmi03/docker-postgis"
+

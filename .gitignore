@@ -6,3 +6,6 @@ public/css/*.css
 newrelic_agent.log
 *.pem
 *.crt
+.vagrant/*
+provisioning/roles/*
+!provisioning/roles/common
