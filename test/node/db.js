@@ -55,25 +55,45 @@ describe("db connector", function () {
       });
     });
 
-    it("should allow transactions", function (done) {
-      var errorHandler = function (e) {
-        done(e);
-      };
-      var db = this.db;
-      db.startTransaction().then(function (tx) {
-        db.runQueryInTransaction(tx, "", []).then(
-          function () {
-            db.endTransaction(tx).then(
-              function () {
-                done();
-              },
-              errorHandler
-            );
-          },
-          errorHandler
-        );
+    describe("transactions", function () {
+      it("should allow transactions", function (done) {
+        var errorHandler = function (e) {
+          done(e);
+        };
+        var db = this.db;
+        db.startTransaction().then(function (tx) {
+          db.runQueryInTransaction(tx, "", []).then(
+            function () {
+              db.endTransaction(tx).then(
+                function () {
+                  done();
+                },
+                errorHandler
+              );
+            },
+            errorHandler
+          );
+        });
       });
+
+      describe("startTransaction", function (done) {
+        it("should call begin on the transaction", function () {
+          var tx = {
+            begin: function () {
+              tx.begin.calledOnce.should.equal(true);
+              done();
+            }
+          };
+          sinon.spy(tx, "begin");
+          sinon.stub(this.db, "_createTransaction", function () {
+            return tx;
+          });
+          this.db.startTransaction();
+        });
+      });
+
     });
+
 
     it("should allow transactions to be rolled back", function (done) {
       var errorHandler = function (e) {

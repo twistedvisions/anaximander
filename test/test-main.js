@@ -22,8 +22,14 @@ require.config({
       deps: ["jquery"],
       exports: "$"
     },
+    "datetimepicker": {
+      deps: ["jqueryui"]
+    },
     "chroma": {
       exports: "chroma"
+    },
+    "deep-diff": {
+      exports: "DeepDiff"
     },
     "select2": {
       deps: ["jquery"],
@@ -57,17 +63,21 @@ require.config({
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
     chroma: "//cdnjs.cloudflare.com/ajax/libs/chroma-js/0.4.12/chroma.min",
     select2: "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.1/select2.min",
-    parsley: "//cdnjs.cloudflare.com/ajax/libs/parsley.js/1.1.16/parsley.min",
+    numeral: "//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min",
+    parsley: "./libs/parsley",
     templates: "../templates",
     async: "../../test/webapp/mocks/async",
     styled_marker: "./libs/styled_marker",
     underscore_string: "./libs/underscore_string",
     fuse: "./libs/fuse",
     when: "./libs/when",
+    "deep-diff": "./libs/deep-diff",
     sha256: "./libs/sha256",
     cookies: "./libs/cookies",
+    moment: "./libs/moment",
     "range-slider": "libs/jQAllRangeSliders-min",
-    socketio: "../../node_modules/socket.io-client/dist/socket.io.min"
+    socketio: "../../node_modules/socket.io-client/dist/socket.io.min",
+    datetimepicker: "./libs/datetimepicker"
   },
 
   deps: tests,

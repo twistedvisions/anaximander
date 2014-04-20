@@ -4,6 +4,8 @@ var when = require("when");
 var should = require("should");
 var tryTest = require("../../tryTest");
 var db = require("../../../../lib/parser/raw_db");
+require("../stubRedis");
+
 var addPlaces = require("../../../../lib/parser/writers/addPlaces");
 
 describe("addPlaces", function () {
@@ -25,6 +27,7 @@ describe("addPlaces", function () {
 
       return d.promise;
     });
+
   });
 
   var job;

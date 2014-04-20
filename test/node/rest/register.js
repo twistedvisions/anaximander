@@ -50,16 +50,72 @@ describe("register", function () {
         .expect(200)
         .end(function (err, res) {
           tryTest(function () {
-            res.text.should.eql("{\"id\":1}");
+            JSON.parse(res.text).id.should.equal(1);
           }, done)();
         });
     }, this), done, true)();
 
     stubDb.setQueryValues(this, [
-      [],
-      [{id: 1}]
+      [],  //get user
+      [{id: 1}], //add user
+      [{}], //add permissions
+      [], //get user permissions
+      []  //get group permissions
     ]);
   });
+
+  it("creates add permissions", function (done) {
+    this.a = 1;
+    tryTest(_.bind(function () {
+      supertest(this.app)
+        .post("/register")
+        .send({
+          username: "some username",
+          password: "some password"
+        })
+        .expect(200)
+        .end(_.bind(function (/*err, res*/) {
+          tryTest(_.bind(function () {
+            this.args[2][1].should.equal("add_initial_user_permissions");
+          }, this), done)();
+        }, this));
+    }, this), done, true)();
+
+    stubDb.setQueryValues(this, [
+      [],  //get user
+      [{id: 1}], //add user
+      [{}], //add permissions
+      [], //get user permissions
+      []  //get group permissions
+    ]);
+  });
+
+
+  it("it should return permissions", function (done) {
+    tryTest(_.bind(function () {
+      supertest(this.app)
+        .post("/register")
+        .send({
+          username: "some username",
+          password: "some password"
+        })
+        .expect(200)
+        .end(function (err, res) {
+          tryTest(function () {
+            _.pluck(JSON.parse(res.text).permissions, "id").should.eql([1, 2]);
+          }, done)();
+        });
+    }, this), done, true)();
+
+    stubDb.setQueryValues(this, [
+      [],  //get user
+      [{id: 1}], //add user
+      [{}], //add permissions
+      [{id: 1}], //get user permissions
+      [{id: 2}]  //get group permissions
+    ]);
+  });
+
 
   it("should log the user in if it succeeds", function (done) {
     var loginCalled;
@@ -84,7 +140,10 @@ describe("register", function () {
 
     stubDb.setQueryValues(this, [
       [],
-      [{id: 1}]
+      [{id: 1}],
+      [{}],
+      [],
+      []
     ]);
   });
 

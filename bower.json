@@ -16,6 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "requirejs-plugins": "~1.0.2"
+    "requirejs-plugins": "~1.0.2",
+    "momentjs": "~2.5.1"
   }
 }

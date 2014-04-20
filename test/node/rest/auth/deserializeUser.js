@@ -11,7 +11,7 @@ describe("deserializeUser", function () {
     stubDb.setup(this);
   });
   afterEach(function () {
-    stubDb.restore();
+    stubDb.restore(this);
   });
 
   it("should callback if a user is found", function (done) {

@@ -1,0 +1,48 @@
+table {
+  &:not(.show-all) {
+    tr:first-of-type {
+      .date span,
+      .username span {
+        visibility: visible;
+        font-size: inherit;
+      }
+    }
+    .date span,
+    .username span {
+      visibility: hidden;
+      font-size: 1px;
+    }
+  }
+  &.show-all {
+    tr.show-details {
+      .date span,
+      .username span {
+        visibility: visible;
+        font-size: inherit;
+      }
+    }
+    tr:not(.show-details) {
+      .date span,
+      .username span {
+        visibility: hidden;
+        font-size: 1px;
+      }
+    }
+  }
+  tbody {
+    &:nth-child(odd) {
+      background:#f9f9f9;
+    }
+    tr {
+      td {
+        white-space: normal;
+        &.field:first-letter {
+          text-transform: capitalize;
+        }
+        &.changes {
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}

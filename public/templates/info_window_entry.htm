@@ -1,5 +1,6 @@
 <div
   class="event-entry"
+  data-id="<%= event_id %>"
   data-name="<%= event_name %>"
   data-link="<%= event_link %>"
   data-lat="<%= location[0][0] %>"
@@ -16,20 +17,24 @@
       href="<%= encodeURI(event_link) %>"
       target="_blank"
   >
+
     <%= event_name %>
   </a>
 
-
+<% if (canEdit) { %>
+  <span class="toolbutton edit glyphicon glyphicon-pencil"></span>
+<% } %>
 <% if (participants.length === 1) { %>
-  <span class="search glyphicon glyphicon-search"></span>
+  <span class="toolbutton search glyphicon glyphicon-search"></span>
+  <span class="date">
+    <%= date.getDate() %>/<%= (date.getMonth() + 1)%>/<%= Math.abs(date.getFullYear()) %> <%= (date.getFullYear() < 0 ? " BC" : "") %>
+  </span>
 <% } else { %>
-
+  <span class="date">
+    <%= date.getDate() %>/<%= (date.getMonth() + 1)%>/<%= Math.abs(date.getFullYear()) %> <%= (date.getFullYear() < 0 ? " BC" : "") %>
+  </span>
   <% for (var i = 0, ii = participants.length; i < ii; i += 1) { %>
   <%= participantTemplate(participants[i])  %>
   <% } %>
 <% } %>
-
-  <span class="date">
-    <%= date.getDate() %>/<%= (date.getMonth() + 1)%>/<%= Math.abs(date.getFullYear()) %> <%= (date.getFullYear() < 0 ? " BC" : "") %>
-  </span>
 </div>

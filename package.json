@@ -11,6 +11,8 @@
     "humanize": "0.0.8",
     "lodash": "1.x",
     "kue": "0.6.x",
+    "redis": "0.10.x",
+    "redis-lock": "0.0.8",
     "nconf": "0.6.x",
     "optimist": "0.6.x",
     "newrelic": "1.x",
@@ -29,7 +31,8 @@
     "node-uuid": "1.x",
     "socket.io": "0.9.x",
     "async": "0.2.x",
-    "execSync": "1.0.1-pre"
+    "execSync": "1.0.1-pre",
+    "moment": "2.6.x"
   },
   "devDependencies": {
     "mocha": "1.x",
@@ -43,7 +46,8 @@
     "grunt-cli": "0.1.x",
     "grunt-contrib-jshint": "0.7.x",
     "supertest": "0.8.x",
-    "socket.io-client": "0.9.x"
+    "socket.io-client": "0.9.x",
+    "grunt-contrib-less": "0.11.x"
   },
   "scripts": {
     "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test && mocha $(find test/node -name '*.js') && ./node_modules/.bin/karma start --single-run --browsers PhantomJS",

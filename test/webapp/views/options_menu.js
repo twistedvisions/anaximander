@@ -69,7 +69,7 @@ define(
           }
         });
         sinon.stub(optionsMenu, "showEventEditor");
-        optionsMenu.handleAddEvent();
+        optionsMenu.handleAddEvent({preventDefault: function () {}});
         Analytics.optionSelected.calledWith({option: "addEvent"}).should.equal(true);
       });
 

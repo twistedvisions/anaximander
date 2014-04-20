@@ -26,6 +26,7 @@ define([
         return "change:" + event;
       }).join(" ");
       this.state.on(bindString, this.getDebouncedUpdateData(), this);
+      _.bind(this.getDebouncedUpdateData(), this)();
     },
 
     //Need to do this to facilitate testing.

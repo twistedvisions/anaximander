@@ -31,6 +31,7 @@ define(["underscore"], function (_) {
     "infoBoxShown",
     "linkClicked",
     "mapEntrySearched",
+    "mapEntryEdited",
 
     //search
     "searchBoxCharacterTyped",
@@ -51,6 +52,14 @@ define(["underscore"], function (_) {
     "optionsMenuShown",
     "optionSelected",
     "eventAdded",
+    "eventSaved",
+    "participantAdded",
+    "participantRemoved",
+    "newTypeAdded",
+    "newImportanceAdded",
+    "eventSaveClicked",
+    "eventSaveValidationFailed",
+
 
     //filters
     "showFilters",
@@ -67,7 +76,10 @@ define(["underscore"], function (_) {
     "loginSucceeded",
     "loginFailed",
     "logout",
-    "register"
+    "register",
+
+    //recent changes
+    "recentChangesViewed"
   ];
   _.each(events, function (event) {
     analytics._addEvent(event);

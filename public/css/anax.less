@@ -1,5 +1,4 @@
-@import "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css";
-@import "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css";
+@import "./common.less";
 @import "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css";
 @import "./select2.css";
 
@@ -7,6 +6,11 @@ body {
   margin: 0;
   font-size: 12px;
   font-family: Verdana, Helvetica, Arial;
+}
+
+label {
+  font-size: 14px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .filter label,
@@ -17,4 +21,13 @@ body {
 
 a, a:hover {
   color: rgb(0, 0, 238);
+}
+
+a.glyphicon {
+  color: 000;
+  cursor: pointer;
+}
+
+a.glyphicon:hover {
+  text-decoration: none;
 }

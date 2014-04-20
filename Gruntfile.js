@@ -16,11 +16,25 @@ module.exports = function (grunt) {
         jshintrc: ".jshintrc",
         ignores: "public/js/libs/**/*.js"
       }
+    },
+    less: {
+      options: {
+        paths: ["public/css"],
+        cleancss: true
+      },
+      src: {
+        expand: true,
+        cwd:    "public/css",
+        src:    "*.less",
+        dest:    "public/css",
+        ext:    ".css"
+      }
     }
   });
 
   grunt.loadNpmTasks("grunt-contrib-jshint");
+  grunt.loadNpmTasks("grunt-contrib-less");
 
-  grunt.registerTask("test", ["jshint"]);
+  grunt.registerTask("test", ["jshint", "less"]);
   grunt.registerTask("default", ["test"]);
 };

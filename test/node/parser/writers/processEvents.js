@@ -4,9 +4,14 @@ var sinon = require("sinon");
 var when = require("when");
 var should = require("should");
 var tryTest = require("../../tryTest");
+
+require("../stubRedis");
 var db = require("../../../../lib/parser/raw_db");
 var addEvent = require("../../../../lib/parser/writers/addEvent");
 var getPlace = require("../../../../lib/parser/writers/getPlace");
+
+
+
 var processEvents = require("../../../../lib/parser/writers/processEvents");
 
 describe("processing events", function () {

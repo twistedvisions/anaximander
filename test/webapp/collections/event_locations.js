@@ -27,6 +27,7 @@ define(
             return this.updateData;
           }, this.events);
           this.events.start();
+          this.events.updateData.reset();
           this.events.state.set(key, "some value");
           this.events.updateData.calledOnce.should.equal(true);
         });
@@ -83,7 +84,7 @@ define(
         this.events.updateData();
         $.get.args[0][1].subtypeFilters.should.equal(JSON.stringify([{
           id: 11,
-          parent_type: 4
+          parent_type_id: 4
         }]));
       });
       it("should pass the notSpecifedType filters", function () {

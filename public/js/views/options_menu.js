@@ -29,7 +29,8 @@ define([
       return this.$el;
     },
 
-    handleAddEvent: function () {
+    handleAddEvent: function (e) {
+      e.preventDefault();
       this.showEventEditor();
       analytics.optionSelected({option: "addEvent"});
       this.close();
@@ -37,7 +38,7 @@ define([
 
     showEventEditor: function () {
       new EventEditor({
-        model: this.model,
+        state: this.model,
         newEvent: {
           location: {
             lat: this.event.latLng.lat(),

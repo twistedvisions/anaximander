@@ -156,7 +156,7 @@ define([
           secondary,
           new Backbone.Model({
             id: this.getNotSelectedId(parentTypeId),
-            parent_type: parentTypeId,
+            parent_type_id: parentTypeId,
             name: "Not Specified",
             not_specified: true
           }
@@ -208,7 +208,7 @@ define([
       if (checked) {
         this.model.removeFilterStateKey(id);
       } else {
-        this.model.addFilterStateKey(id, filter.get("parent_type") || this.getParentTypeId());
+        this.model.addFilterStateKey(id, filter.get("parent_type_id") || this.getParentTypeId());
       }
       this.normaliseFilters();
     },

@@ -1,9 +1,32 @@
 .event-editor {
-  ul.parsley-error-list {
+  .nav-tabs a,
+  .nav-tabs a:hover,
+  .nav-tabs a:focus {
+    color: #888;
+  }
+  form {
+    margin-top: 10px;
+  }
+  fieldset {
+    border: 1px solid #eee;
+    padding: 0 18px;
+    margin-bottom: 12px;
+    legend {
+      font-size: 12px;
+      font-weight: bold;
+      width: initial;
+      border: 1px solid #eee;
+      padding: 7px;
+      border-radius: 8px;
+      margin-left: -9px;
+    }
+  }
+  ul.parsley-errors-list.filled {
     line-height: 11px;
     list-style-type: none;
-    padding-left: 0;
     margin-top: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     li {
       display: inline;
       padding-top: .2em;
@@ -14,21 +37,121 @@
     display: none;
   }
   .participant-list {
-    margin-bottom: 10px;
-    .participant {
-      font-size: 14px;
-      .name {
-        display: inline-block;;
-        width: 69%;
-        text-align: center;
-      }
-      .role {
-        display: inline-block;;
-        width: 25%;
-      }
-      .remove {
 
+    margin-bottom: 10px;
+    .participant-editor {
+      font-size: 14px;
+      .form {
+        margin-right: 24px;
+        .known-thing {
+          display: inline-block;
+          width: 50%;
+          .name {
+            text-align: left;
+            padding-top: 6px;
+          }
+          & + .type-selector {
+            label {
+              display: none;
+            }
+            &.selecting-importance {
+              display: inline-block;
+              width: 50%;
+              .form-group {
+                width: 49%;
+                padding-left: 1%;
+                display: inline-block;
+                input {
+                  width: 100%;
+                }
+              }
+            }
+            &.editing-importance {
+              display: block;
+              width: 100%;
+              position: relative;
+              top: -26px;
+              .type-holder {
+                position: relative;
+                width: 24%;
+                left: 50.5%;
+              }
+            }
+            fieldset {
+              margin-left: 5px;
+              margin-right: 5px;
+            }
+          }
+        }
+
+      }
+      &.creating-thing {
+        .form {
+          border: 1px solid #ccc;
+          padding: 15px;
+          margin-bottom: 10px;
+          margin-right: 30px;
+          .new-thing {
+            .thing-editor {
+              border: 1px solid #ccc;
+              padding: 13px;
+              margin-bottom: 14px;
+              .add-subtype {
+                margin-left: 6px;
+              }
+              .subtypes {
+                border: 1px solid #ddd;
+                padding: 14px;
+                .type-selector {
+                  margin-right: 24px;
+                  .form-group {
+                    width: 50%;
+                    display: inline-block;
+                    &.type-holder {
+                      padding-right: 1%;
+                    }
+                    label {
+                      display: none;
+                    }
+                  }
+                }
+                .remove-subtype {
+                  float: right;
+                  margin-top: 10px;
+                }
+              }
+            }
+            & + .type-selector {
+            }
+          }
+        }
+      }
+      .remove-participant {
+        float: right;
+        position: relative;
+        top: 9px;
       }
     }
   }
+  .history {
+    table {
+      font-size: 12px;
+      td {
+        white-space: normal;
+        &.date {
+          width: 150px;
+        }
+        &.username {
+          width: 100px;
+        }
+        &.changes {
+          max-width: 386px;
+        }
+      }
+    }
+  }
+}
+
+.modal-dialog {
+  width: 700px;
 }

@@ -31,6 +31,7 @@ define(
       beforeEach(function () {
         this.sampleEvent = {
           distance: 1,
+          event_id: 1,
           event_link: "somelink",
           event_name: "some event",
           thing_name: "some thing",
@@ -54,6 +55,14 @@ define(
             start: function () {}
           }))()
         });
+        this.map.user = {
+          get: function () {
+            return true;
+          },
+          hasPermission: function () {
+            return true;
+          }
+        };
         this.mockMap = function (opts) {
           this.map.map = _.extend({
             panTo: sinon.stub(),
@@ -202,6 +211,18 @@ define(
               el.remove();
             }
           });
+          it("should call onEditClick when the edit button is clicked", function () {
+            var el = $("<div class='edit'>");
+            sinon.stub(this.map, "onEditClick");
+            try {
+              el.appendTo(document.body);
+              this.map.afterMouseOverMarker();
+              el.click();
+              this.map.onEditClick.calledOnce.should.equal(true);
+            } finally {
+              el.remove();
+            }
+          });
 
           it("should track when a marker is hovered over", function () {
             this.clock = sinon.useFakeTimers();
@@ -243,6 +264,21 @@ define(
               Analytics.mapEntrySearched.calledWith(data).should.equal(true);
             } finally {
               Analytics.mapEntrySearched.restore();
+            }
+          });
+
+          it("should track when a marker edit is clicked on", function () {
+            try {
+              sinon.stub(Analytics, "mapEntryEdited");
+              var data = {someKey: "some value"};
+              sinon.stub(this.map, "getMarkerData", function () {
+                return data;
+              });
+              sinon.stub(this.map, "createEventEditor");
+              this.map.onEditClick();
+              Analytics.mapEntryEdited.calledWith(data).should.equal(true);
+            } finally {
+              Analytics.mapEntryEdited.restore();
             }
           });
 
@@ -834,6 +870,7 @@ define(
               thing_id: 123,
               thing_name: "some thing"
             }],
+            event_id: 1,
             event_name: "some name",
             thing_name: "some thing",
             event_link: "http://something.com/blah",

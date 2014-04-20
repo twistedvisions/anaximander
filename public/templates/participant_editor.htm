@@ -1,15 +1,8 @@
-<div class="participant">
-  <div class="name"><%= name %></div>
-  <select class="role form-control">
-    <% for (var i = 0, ii = roles.length; i < ii; i += 1) { %>
-    <%   var role = roles.at(i) %>
-    <option
-      value="<%= role.id %>"
-      <%= (role.id === roleId) ? "selected" : "" %>
-    >
-      <%= role.get("name") %>
-    </option>
-    <% } %>
-  </select>
-  <span class="remove glyphicon glyphicon-remove"></span>
-</div>
+<span class="remove-participant glyphicon glyphicon-remove"></span>
+<div class="form">
+  <div class="known-thing">
+    <div class="name"><%= thing.name %></div
+  ></div
+  ><div class="new-thing">
+  </div
+></div>
