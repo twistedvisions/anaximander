@@ -18,5 +18,34 @@
     - name: install postgres + postgis in docker
       action: docker image=helmi03/docker-postgis ports=5432:5432 name=postgres
 
+    #this is using the private docker repo in ~/projects/docker-registry-demo, running make build
+    #use  netstat -rn within vagrant ssh to find the gateway (ie the outside address)
+
+    - name: install anaximander in docker
+      action: docker image=10.0.2.2:5000/anaximander:0.2.0-dev.1 ports=6000:8000 name=anaximander
+
+    - name: prepare local tmp
+      sudo: False
+      local_action: file path=tmp state=directory
+
+    - name: get retred ghost theme
+      sudo: False
+      local_action: get_url url=https://github.com/twistedvisions/retred-ghost-theme/archive/0.1.0.zip dest=tmp/theme.zip
+
+    - name: prepare ghost theme dir
+      action: file path=/var/ghost-override/content/themes state=directory
+
+    - name: copy theme
+      action: unarchive src=tmp/theme.zip dest=/var/ghost-override/content/themes
+
+    - name: rename theme
+      action: command mv /var/ghost-override/content/themes/retred-ghost-theme-0.1.0
+                         /var/ghost-override/content/themes/retred-ghost-theme
+
+    - name: install blog in docker
+      action: docker image=dockerfile/ghost ports=6010:2368
+                name=blog volumes=/var/ghost-override:/ghost-override
+
       #ansible vagrant -i hosts.ini --private-key=~/.vagrant.d/insecure_private_key -u vagrant  -m docker -a "image=helmi03/docker-postgis"
+      #ansible vagrant -i hosts.ini --private-key=~/.vagrant.d/insecure_private_key -u vagrant  -m docker -a "image=localhost:5000/twistedvisions/anaximander"
 

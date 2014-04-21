@@ -11,6 +11,7 @@
       - curl
       - libcurl4-gnutls-dev
       - python-pycurl
+      - unzip
 
 - name: Install python packages
   pip: name={{ item }} state=latest

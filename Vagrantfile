@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "chef/ubuntu-13.04"
 
   config.vm.network :forwarded_port, guest: 5432, host: 5432
-
+  config.vm.network :forwarded_port, guest: 6010, host: 6010
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "provisioning/playbook.yml"
   end
