@@ -5,22 +5,41 @@
 
   roles:
     - common
+    #https://github.com/angstwad/docker.ubuntu
     - angstwad.docker_ubuntu
 
   tasks:
 
-    - name: update apt
-      action: command apt-get update
-
-    - name: Update the apt cache
-      action: apt update-cache=yes
-
+    #https://index.docker.io/u/helmi03/docker-postgis/
+    #http://docs.ansible.com/docker_module.html
     - name: install postgres + postgis in docker
       action: docker image=helmi03/docker-postgis ports=5432:5432 name=postgres
 
-    #this is using the private docker repo in ~/projects/docker-registry-demo, running make build
+    - name: create anax database
+      action: postgresql_db name=anax login_host=127.0.0.1 login_user=docker login_password=docker
+      # action: postgresql_db name=anax template=template_postgis login_host=127.0.0.1 login_user=docker login_password=docker
+
+    - name: ensure user has access to database
+      action: postgresql_user db=anax user=anax_user password=anax_password
+                role_attr_flags=CREATEDB,CREATEROLE,SUPERUSER
+                login_user=docker login_password=docker priv=ALL login_host=127.0.0.1
+
+    - name: setup local db access
+      sudo: False
+      local_action: command echo "127.0.0.1:5432:anax:anax_user:anax_password" > ~/.pgpass
+
+    - name: change local db acces file permissions
+      sudo: False
+      local_action: command chmod 0600 ~/.pgpass
+
+    - name: populate anax database
+      sudo: False
+      local_action: shell psql -h 127.0.0.1 anax anax_user < tmp/db.bak
+
+    #this is using the private docker repo in provisioning/docker-registry, running make build
     #use  netstat -rn within vagrant ssh to find the gateway (ie the outside address)
 
+    #todo: connect up to db via links: http://docs.docker.io/use/working_with_links_names/
     - name: install anaximander in docker
       action: docker image=10.0.2.2:5000/anaximander:0.2.0-dev.1 ports=6000:8000 name=anaximander
 

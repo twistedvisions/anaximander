@@ -7,11 +7,12 @@
   sudo: yes
   apt: pkg={{ item }} state=latest
   with_items:
-      - python-pip
+      - unzip
       - curl
       - libcurl4-gnutls-dev
+      - python-pip
       - python-pycurl
-      - unzip
+      - python-psycopg2
 
 - name: Install python packages
   pip: name={{ item }} state=latest
