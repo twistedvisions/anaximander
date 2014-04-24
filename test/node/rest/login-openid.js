@@ -78,7 +78,7 @@ _.each(["facebook", "google", "twitter", "github"], function (provider) {
       describe("reverse ajax", function () {
         beforeEach(function () {
           _.bind(setupApp, this)(provider);
-          var port = 5000;
+          var port = 5001;
           this.server.listen(port);
 
           var socketURL = "http://0.0.0.0:" + port;
