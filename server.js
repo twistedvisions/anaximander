@@ -86,6 +86,7 @@ new Provider.provider("github");
 
 require("./lib/rest/editEvent").init(secureApp);
 require("./lib/rest/getEvent").init(secureApp);
+require("./lib/rest/getThing").init(secureApp);
 require("./lib/rest/getEventChanges").init(secureApp);
 require("./lib/rest/getEvents").init(secureApp);
 require("./lib/rest/getEventTypes").init(secureApp);
