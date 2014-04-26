@@ -188,36 +188,36 @@ define(
           });
 
           it("should call onLinkClick when a link is clicked", function () {
-            var el = $("<div class='event-link'>");
+            var el = $("<div class='event-entry'><div class='event-link'>aaa</div></div>");
             sinon.stub(this.map, "onLinkClick");
             try {
               el.appendTo(document.body);
               this.map.afterMouseOverMarker();
-              el.click();
+              el.find(".event-link").click();
               this.map.onLinkClick.calledOnce.should.equal(true);
             } finally {
               el.remove();
             }
           });
           it("should call onSearchClick when the search button is clicked", function () {
-            var el = $("<div class='search'>");
+            var el = $("<div class='event-entry'><div class='search'></div></div>");
             sinon.stub(this.map, "onSearchClick");
             try {
               el.appendTo(document.body);
               this.map.afterMouseOverMarker();
-              el.click();
+              el.find(".search").click();
               this.map.onSearchClick.calledOnce.should.equal(true);
             } finally {
               el.remove();
             }
           });
           it("should call onEditClick when the edit button is clicked", function () {
-            var el = $("<div class='edit'>");
+            var el = $("<div class='event-entry'><div class='edit'></div></div>");
             sinon.stub(this.map, "onEditClick");
             try {
               el.appendTo(document.body);
               this.map.afterMouseOverMarker();
-              el.click();
+              el.find(".edit").click();
               this.map.onEditClick.calledOnce.should.equal(true);
             } finally {
               el.remove();

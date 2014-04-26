@@ -11,11 +11,14 @@ define([
   "collections/roles",
   "collections/event_types",
   "collections/events",
+  "collections/things",
   "text!templates/layout.htm"
 ], function ($, jqueryui, _, Backbone, Bootstrap, when,
     EventLocationsCollection,
     TypeCollection, SubtypeCollection,
-    RolesCollection, EventTypesCollection, EventsCollection, layoutTemplate) {
+    RolesCollection, EventTypesCollection,
+    EventsCollection, ThingsCollection,
+    layoutTemplate) {
   var AppView = Backbone.View.extend({
     el: "body",
 
@@ -29,6 +32,7 @@ define([
       this.eventTypesCollection = new EventTypesCollection();
       EventTypesCollection.instance = this.eventTypesCollection;
       EventsCollection.instance = new EventsCollection();
+      ThingsCollection.instance = new ThingsCollection();
       this.user = options.user;
     },
 
@@ -67,7 +71,10 @@ define([
       }, this));
 
       require(["views/search_box"], _.bind(function (SearchBoxView) {
-        this.searchBoxView = new SearchBoxView({model: this.model});
+        this.searchBoxView = new SearchBoxView({
+          model: this.model,
+          user: this.user
+        });
         this.searchBoxView.render();
       }, this));
 

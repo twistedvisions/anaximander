@@ -9,7 +9,8 @@ define(
           el: null,
           model: new Backbone.Model({
             highlight: {}
-          })
+          }),
+          user: new Backbone.Model()
         });
       });
       afterEach(function () {
@@ -388,6 +389,55 @@ define(
           this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
           this.searchBox.highlightSelectedResult.calledOnce
             .should.equal(true);
+        });
+
+        describe("editing search results", function () {
+          describe("user has permission", function () {
+            beforeEach(function () {
+              this.searchBox.user.set("logged-in", true);
+              this.searchBox.user.hasPermission = function () {
+                return true;
+              };
+              this.searchBox.$el.append("<div class='dropdown-menu'>");
+              this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
+              sinon.stub(this.searchBox, "createThingEditor");
+              sinon.stub(Analytics, "searchEntryEdited");
+            });
+            afterEach(function () {
+              Analytics.searchEntryEdited.restore();
+            });
+            it("should be editable if the user logs in and has permissions", function () {
+              this.searchBox.$(".search-result .edit").length.should.equal(1);
+            });
+            it("should show a thing editor when clicked", function () {
+              this.searchBox.$(".search-result .edit").trigger("click");
+              this.searchBox.createThingEditor.calledOnce.should.equal(true);
+            });
+            it("should collect analytics when it is clicked", function () {
+              this.searchBox.$(".search-result .edit").trigger("click");
+              Analytics.searchEntryEdited.calledOnce.should.equal(true);
+            });
+          });
+          describe("lacking permissions", function () {
+            it("should not be editable if the user is not logged in", function () {
+              this.searchBox.user.set("logged-in", false);
+              this.searchBox.user.hasPermission = function () {
+                return true;
+              };
+              this.searchBox.$el.append("<div class='dropdown-menu'>");
+              this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
+              this.searchBox.$(".search-result .edit").length.should.equal(0);
+            });
+            it("should not be editable if the user does not have the right permissions", function () {
+              this.searchBox.user.set("logged-in", true);
+              this.searchBox.user.hasPermission = function () {
+                return false;
+              };
+              this.searchBox.$el.append("<div class='dropdown-menu'>");
+              this.searchBox.handleSearchResults([new Backbone.Model(this.searchEntry)]);
+              this.searchBox.$(".search-result .edit").length.should.equal(0);
+            });
+          });
         });
       });
 

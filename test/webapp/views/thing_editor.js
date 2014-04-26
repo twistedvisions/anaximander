@@ -119,6 +119,41 @@ define(
         });
       });
 
+      describe("populateValues", function () {
+        beforeEach(function () {
+          this.thingEditor.model = new Backbone.Model({
+            name: "some name",
+            link: "some link",
+            type_id: 2,
+            subtypes: []
+          });
+        });
+        it("should populate the name", function () {
+          this.thingEditor.populateValues();
+          this.thingEditor.$("input[data-key=thing-name]").val().should.equal("some name");
+        });
+        it("should populate the link", function () {
+          this.thingEditor.populateValues();
+          this.thingEditor.$("input[data-key=thing-link]").val().should.equal("some link");
+        });
+        it("should populate the type", function () {
+          this.thingEditor.populateValues();
+          this.thingEditor.$("input[data-key=thing-type]").val().should.equal("2");
+        });
+        it("should add subtypes when they exist", function () {
+          this.thingEditor.model.set("subtypes", [
+            {type: {id: 1}, importance: {id: 1}},
+            {type: {id: 1}, importance: {id: 1}}
+          ]);
+          this.thingEditor.populateValues();
+          this.thingEditor.$(".subtypes-holder .subtype").length.should.equal(2);
+        });
+        it("should leave the subtypes empty when they do not exist", function () {
+          this.thingEditor.populateValues();
+          this.thingEditor.$(".subtypes-holder .subtype").length.should.equal(0);
+        });
+      });
+
       describe("getValue", function () {
         it("should get the thing name", function () {
           this.thingEditor.$("input[data-key=thing-name]").val("thing name 1");

@@ -6,18 +6,21 @@ define([
   "utils/position",
   "utils/scroll",
   "utils/filter_url_serialiser",
+  "views/thing_editor_modal",
   "collections/search_results",
+  "collections/things",
   "text!templates/search_box.htm",
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "css!/css/search_box"
-], function ($, _, Backbone, Analytics, Position, Scroll, FilterUrlSerialiser,
-    SearchResults, template, searchSummary, searchResult) {
+], function ($, _, Backbone, Analytics, Position, Scroll, FilterUrlSerialiser, ThingEditor,
+    SearchResults, Things, template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
     el: "#search-box",
 
-    initialize: function () {
+    initialize: function (opts) {
+      this.user = opts.user;
       this.searchSummaryTemplate = _.template(searchSummary);
       this.searchResultTemplate = _.template(searchResult);
       this.searchResults = new SearchResults();
@@ -156,7 +159,9 @@ define([
     },
 
     generateSearchEntry: function (x) {
-      var el = $(this.searchResultTemplate(x.toJSON()));
+      var el = $(this.searchResultTemplate(_.extend({
+        canEdit: this.user.get("logged-in") && this.user.hasPermission("edit-thing")
+      }, x.toJSON())));
       el.data("result", x.toJSON());
       return el;
     },
@@ -217,6 +222,25 @@ define([
       this.$(".dropdown-menu li.search-result").on("click", _.bind(this.resultSelected, this));
       this.$(".dropdown-menu li .name a").on("click", _.bind(this.searchLinkClicked, this));
       this.$(".dropdown-menu li .hide-button").on("click", _.bind(this.hideSearchResults, this));
+      this.$(".dropdown-menu li .edit").on("click", _.bind(this.handleSearchResultEdit, this));
+    },
+
+    handleSearchResultEdit: function (e) {
+      this.preventEventPropagation(e);
+      var data = $(e.target).parent().parent().data().result;
+      this.createThingEditor(data);
+      Analytics.searchEntryEdited(data);
+    },
+
+    createThingEditor: function (data) {
+      $.get("/thing/" + data.thing_id).then(_.bind(this._createThingEditor, this));
+    },
+
+    _createThingEditor: function (data) {
+      return new ThingEditor({
+        state: this.model,
+        model: new Things.instance.model(data, {collection: Things.instance})
+      }).render();
     },
 
     searchLinkClicked: function (e) {

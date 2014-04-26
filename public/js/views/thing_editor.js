@@ -5,7 +5,8 @@ define([
   "views/type_selector",
   "collections/types",
   "collections/subtypes",
-  "text!templates/thing_editor.htm"
+  "text!templates/thing_editor.htm",
+  "css!/css/thing_editor"
 ], function ($, _, Backbone, TypeSelector, TypesCollection, SubtypesCollection, template) {
 
   var ThingEditor = Backbone.View.extend({
@@ -23,7 +24,9 @@ define([
 
     render: function () {
       this.$el.html(template);
-      this.$("input[data-key=thing-name]").val(this.name);
+      if (this.name) {
+        this.$("input[data-key=thing-name]").val(this.name);
+      }
 
       this.$("input[data-key=thing-type]").select2({
         placeholder: "Select the type of thing this is",
@@ -41,7 +44,34 @@ define([
 
       this.addValidators();
 
+      if (this.model) {
+        this.populateValues();
+      }
+
       return this.$el;
+    },
+
+    populateValues: function () {
+      this.$("input[data-key=thing-name]").val(this.model.get("name"));
+      this.$("input[data-key=thing-link]").val(this.model.get("link"));
+
+      var typeId = this.model.get("type_id");
+      this.$("input[data-key=thing-type]").select2("val", typeId);
+
+      this.subtypes.updateData({
+        id: typeId
+      }).then(_.bind(function () {
+
+        var subtypes = this.model.get("subtypes");
+        if (subtypes.length > 0) {
+          _.each(subtypes, function (subtype) {
+            this.addSubtype();
+            this.subtypeSelectors[this.subtypeId].setValue(subtype.type.id, subtype.importance.id);
+          }, this);
+        }
+        this.$(".subtypes-holder").show();
+
+      }, this));
     },
 
     typeSelected: function () {
