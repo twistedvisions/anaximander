@@ -597,7 +597,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        newParticipants: [{}]
+        newParticipants: [{thing: {}, type: {}, importance: {}}]
       };
 
       this.stubValues = [
@@ -614,7 +614,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        newParticipants: [{}]
+        newParticipants: [{thing: {}, type: {}, importance: {}}]
       };
 
       this.stubValues = [
@@ -657,7 +657,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}}]
+        editedParticipants: [{thing: {id: 2}, type: {}, importance: {}}]
       };
 
       this.originalEvent = {
@@ -682,7 +682,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 126,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}, type: {id: 3}}]
+        editedParticipants: [{thing: {id: 2}, type: {id: 3}, importance: {}}]
       };
 
       this.originalEvent = {
@@ -708,7 +708,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}, importance: {id: 3}}]
+        editedParticipants: [{thing: {id: 2}, type: {}, importance: {id: 3}}]
       };
 
       this.originalEvent = {
@@ -822,6 +822,63 @@ describe("editEvent", function () {
         should.not.exist(JSON.parse(this.args[2][2][3]).last_edited);
         should.not.exist(JSON.parse(this.args[2][2][4]).last_edited);
 
+      }, done);
+    });
+
+    it("should not save unknown keys in the event change", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name",
+        funny: "business"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("save_event_change");
+        should.not.exist(JSON.parse(this.args[2][2][4]).funny);
+      }, done);
+    });
+
+    it("should not save unknown keys in event change newParticipants", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name",
+        newParticipants: [{
+          thing: {
+            id: 1,
+            funny: "business"
+          },
+          type: {
+            id: 1,
+            funny: "business"
+          },
+          importance: {
+            id: 1,
+            funny: "business"
+          }
+        }]
+      };
+
+      this.stubValues = [
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("save_event_change");
+        should.not.exist(JSON.parse(this.args[2][2][4]).newParticipants[0].thing.funny);
+        should.not.exist(JSON.parse(this.args[2][2][4]).newParticipants[0].type.funny);
+        should.not.exist(JSON.parse(this.args[2][2][4]).newParticipants[0].importance.funny);
       }, done);
     });
 

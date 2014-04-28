@@ -131,4 +131,124 @@ describe("processChanges", function () {
       this.updatedChanges[2].new_values.removedParticipants[0].should.equal("thing-name2");
     });
   });
+  describe("newSubtypes", function () {
+
+    before(function (done) {
+      var changes = [];
+      [1, 2].forEach(function (i) {
+        for (var j = 0; j < i; j += 1) {
+          var change = {new_values: {}};
+          change.new_values.newSubtypes = [{}];
+          change.new_values.newSubtypes[0].type = {id: i};
+          change.new_values.newSubtypes[0].importance = {id: i};
+          changes.push(change);
+        }
+      });
+      this.changes = changes;
+      stubDb.setup(this);
+      stubDb.setQueryValues(this, [
+        [
+          {id: 1, name: "type-name1"},
+          {id: 2, name: "type-name2"}
+        ],
+        [
+          {id: 1, name: "importance-name1"},
+          {id: 2, name: "importance-name2"}
+        ]
+      ]);
+      processChanges.processChanges(this.changes).then(_.bind(function (updatedChanges) {
+        this.updatedChanges = updatedChanges;
+        done();
+      }, this));
+    });
+    after(function () {
+      stubDb.restore(this);
+    });
+    it("should look the ids up from the db", function () {
+      this.args[0][0].should.equal("lookup_type_list");
+      this.args[1][0].should.equal("lookup_importance_list");
+      this.args[0][1][0].should.eql([1, 2]);
+      this.args[1][1][0].should.eql([1, 2]);
+    });
+    it("should update the changes object with the name", function () {
+      this.updatedChanges[0].new_values.newSubtypes[0].type.should.equal("type-name1");
+      this.updatedChanges[1].new_values.newSubtypes[0].importance.should.equal("importance-name2");
+    });
+  });
+  describe("editedSubtypes", function () {
+    before(function (done) {
+      var changes = [];
+      [1, 2].forEach(function (i) {
+        for (var j = 0; j < i; j += 1) {
+          var change = {new_values: {}};
+          change.new_values.editedSubtypes = {};
+          change.new_values.editedSubtypes[i] = {id: i};
+          changes.push(change);
+        }
+      });
+      this.changes = changes;
+      stubDb.setup(this);
+      stubDb.setQueryValues(this, [
+        [
+          {id: 1, name: "type-name1"},
+          {id: 2, name: "type-name2"}
+        ],
+        [
+          {id: 1, name: "importance-name1"},
+          {id: 2, name: "importance-name2"}
+        ]
+      ]);
+      processChanges.processChanges(this.changes).then(_.bind(function (updatedChanges) {
+        this.updatedChanges = updatedChanges;
+        done();
+      }, this));
+    });
+    after(function () {
+      stubDb.restore(this);
+    });
+    it("should look the ids up from the db", function () {
+      this.args[0][0].should.equal("lookup_type_list");
+      this.args[1][0].should.equal("lookup_importance_list");
+      this.args[0][1][0].should.eql([1, 2]);
+      this.args[1][1][0].should.eql([1, 2]);
+    });
+    it("should update the changes object with the name", function () {
+      this.updatedChanges[0].new_values.editedSubtypes[0].type.should.equal("type-name1");
+      this.updatedChanges[1].new_values.editedSubtypes[0].importance.should.equal("importance-name2");
+    });
+  });
+  describe("removedSubtypes", function () {
+    before(function (done) {
+      var changes = [];
+      [1, 2].forEach(function (i) {
+        for (var j = 0; j < i; j += 1) {
+          var change = {new_values: {}};
+          change.new_values.removedSubtypes = [i];
+          changes.push(change);
+        }
+      });
+      this.changes = changes;
+      stubDb.setup(this);
+      stubDb.setQueryValues(this, [
+        [
+          {id: 1, name: "type-name1"},
+          {id: 2, name: "type-name2"}
+        ]
+      ]);
+      processChanges.processChanges(this.changes).then(_.bind(function (updatedChanges) {
+        this.updatedChanges = updatedChanges;
+        done();
+      }, this));
+    });
+    after(function () {
+      stubDb.restore(this);
+    });
+    it("should look the ids up from the db", function () {
+      this.args[0][1][0].should.eql([1, 2]);
+    });
+    it("should update the changes object with the name", function () {
+      this.updatedChanges[0].new_values.removedSubtypes[0].should.equal("type-name1");
+      this.updatedChanges[2].new_values.removedSubtypes[0].should.equal("type-name2");
+    });
+  });
 });

@@ -1,9 +1,9 @@
 /*global describe, it */
-var getThing = require("../../../lib/rest/getThing");
+var getThing = require("../../../../lib/rest/util/GetThing");
 
 describe("getThing", function () {
   it("should format subtypes", function () {
-    var thing = getThing.getThingObj([
+    var thing = getThing.handleGetThing([
       {
         id: 1,
         name: "joe bloggs",
