@@ -37,8 +37,8 @@ define([
       }
     },
 
-
     sendChangeRequest: function (differences) {
+      //todo: the id should be in the url
       var d = when($.ajax({
         url: "/event",
         type: "PUT",
