@@ -43,6 +43,7 @@ define(["underscore"], function (_) {
     "searchSubmitted",
     "searchPasted",
     "searchCopied",
+    "searchEntryEdited",
 
     //period selector
     "periodSelectorOpened",
@@ -59,6 +60,10 @@ define(["underscore"], function (_) {
     "newImportanceAdded",
     "eventSaveClicked",
     "eventSaveValidationFailed",
+
+    //editing things
+    "thingSaveClicked",
+    "thingSaved",
 
 
     //filters

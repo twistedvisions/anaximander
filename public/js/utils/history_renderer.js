@@ -8,11 +8,16 @@ define([
 ], function ($, _, moment, historyTemplate, historyItemTemplate) {
   historyTemplate = _.template(historyTemplate);
   historyItemTemplate = _.template(historyItemTemplate);
-
+  var omittedKeys = [
+    //events
+    "newParticipants", "editedParticipants", "removedParticipants",
+    //things
+    "newSubtypes", "editedSubtypes", "removedSubtypes"
+  ];
   var getKeyValues = function (values) {
     var keyValues = [];
     _.chain(values)
-      .omit(["newParticipants", "editedParticipants", "removedParticipants"])
+      .omit(omittedKeys)
       .keys()
       .each(function (key) {
         keyValues.push([key, values[key]]);
@@ -25,6 +30,15 @@ define([
     });
     _.each(values.removedParticipants, function (participant) {
       keyValues.push(["participant removed", participant]);
+    });
+    _.each(values.newSubtypes, function (subtype) {
+      keyValues.push(["subtype added", subtype]);
+    });
+    _.each(values.editedSubtypes, function (subtype) {
+      keyValues.push(["subtype edited", subtype]);
+    });
+    _.each(values.removedSubtypes, function (subtype) {
+      keyValues.push(["subtype removed", subtype]);
     });
     return keyValues;
   };
@@ -41,8 +55,10 @@ define([
       return null;
     } else if (_.isString(value) || _.isNumber(value)) {
       return value;
-    } else {
+    } else if (key.indexOf("participant") >= 0) {
       return value.thing + " as " + value.type + " with importance: " + value.importance;
+    } else if (key.indexOf("subtype") >= 0) {
+      return value.type + " with importance: " + value.importance;
     }
   };
   return function (historyCollection) {

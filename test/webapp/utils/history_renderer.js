@@ -171,6 +171,26 @@ define(
         html.find("td.value").text()
           .should.equal("thingName1 as typeName1 with importance: importanceName1");
       });
+      it("should format the json of subtypes into text", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "id": "value1",
+              "newSubtypes": [
+                {
+                  type: "typeName1",
+                  importance: "importanceName1"
+                }
+              ]
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value").text()
+          .should.equal("typeName1 with importance: importanceName1");
+      });
       it("should format dates correctly in local event time", function () {
         var historyCollection = new Backbone.Collection([
           {

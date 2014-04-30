@@ -5,11 +5,19 @@
       </a>
       <%= thing_name %>
     </span>
+
     <span class="type-name">
       <%= thing_type_name %>
     </span>
+
     <br/>
+
     <span class="date">
+
+      <% if (canEdit) { %>
+        <span class="toolbutton edit glyphicon glyphicon-pencil"></span>
+      <% } %>
+
       <% if (end_date - start_date < 24 * 60 * 60 * 1000) { %>
 
       1 event on <%=  start_date.toLocaleDateString() %>

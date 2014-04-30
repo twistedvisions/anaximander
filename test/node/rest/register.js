@@ -31,7 +31,7 @@ describe("register", function () {
     register.init(this.app);
 
     this.server = http.createServer(this.app);
-    this.server.listen(5000);
+    this.server.listen(5001);
 
   });
   afterEach(function () {

@@ -313,11 +313,9 @@ define([
     },
 
     afterMouseOverMarker: function () {
-
-
-      $(".event-link").on("click", _.bind(this.onLinkClick, this));
-      $(".search").on("click", _.bind(this.onSearchClick, this));
-      $(".edit").on("click", _.bind(this.onEditClick, this));
+      $(".event-entry .event-link").on("click", _.bind(this.onLinkClick, this));
+      $(".event-entry .search").on("click", _.bind(this.onSearchClick, this));
+      $(".event-entry .edit").on("click", _.bind(this.onEditClick, this));
 
       if ($(".content-holder").height() === 200) {
         //This is an ugly hack to allow us to put scroll bars on.
