@@ -2,7 +2,6 @@
 
 var sinon = require("sinon");
 var should = require("should");
-var moment = require("moment");
 var _ = require("underscore");
 
 var tryTest = require("../tryTest");

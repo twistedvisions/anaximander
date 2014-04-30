@@ -1,13 +1,10 @@
-/*global describe, it, beforeEach, afterEach, sinon */
+/*global describe, it, beforeEach, sinon */
 define(
 
   ["chai", "underscore", "backbone", "when", "moment",
-    "models/thing", "collections/roles", "collections/event_types", "collections/types",
-    "analytics", "models/event"],
+    "models/thing"],
 
-  function (chai, _, Backbone, when, moment, Thing,
-      Roles, EventTypes, Types,
-      Analytics, Event) {
+  function (chai, _, Backbone, when, moment, Thing) {
 
     var should = chai.should();
 
