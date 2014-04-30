@@ -61,6 +61,10 @@ define(["underscore"], function (_) {
     "eventSaveClicked",
     "eventSaveValidationFailed",
 
+    //editing things
+    "thingSaveClicked",
+    "thingSaved",
+
 
     //filters
     "showFilters",

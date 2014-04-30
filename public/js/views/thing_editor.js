@@ -55,7 +55,7 @@ define([
       this.$("input[data-key=thing-name]").val(this.model.get("name"));
       this.$("input[data-key=thing-link]").val(this.model.get("link"));
 
-      var typeId = this.model.get("type_id");
+      var typeId = this.model.get("typeId");
       this.$("input[data-key=thing-type]").select2("val", typeId);
 
       this.subtypes.updateData({

@@ -2,6 +2,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "when",
   "analytics",
   "utils/position",
   "utils/scroll",
@@ -13,7 +14,8 @@ define([
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "css!/css/search_box"
-], function ($, _, Backbone, Analytics, Position, Scroll, FilterUrlSerialiser, ThingEditor,
+], function ($, _, Backbone, when,
+    Analytics, Position, Scroll, FilterUrlSerialiser, ThingEditor,
     SearchResults, Things, template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
@@ -233,13 +235,14 @@ define([
     },
 
     createThingEditor: function (data) {
-      $.get("/thing/" + data.thing_id).then(_.bind(this._createThingEditor, this));
+      var thing = new Things.instance.model({id: data.thing_id}, {collection: Things.instance});
+      when(thing.fetch()).then(_.bind(this._createThingEditor, this, thing));
     },
 
-    _createThingEditor: function (data) {
+    _createThingEditor: function (thing) {
       return new ThingEditor({
         state: this.model,
-        model: new Things.instance.model(data, {collection: Things.instance})
+        model: thing
       }).render();
     },
 

@@ -70,7 +70,6 @@ define([
 
       var editedSubtypes = {};
       _.forEach(differences, function (difference) {
-
         if (difference.path[0] === "name") {
 
           toSend.name = difference.rhs;
@@ -91,7 +90,7 @@ define([
           var typeId = oldValues.subtypes[difference.index].type.id;
           var importanceId = difference.item.rhs;
           if (importanceId === -1) {
-            editedSubtypes[typeId] = values.subtypes[1].importance;
+            editedSubtypes[typeId] = values.subtypes[difference.index].importance;
           } else {
             editedSubtypes[typeId] = {id: importanceId};
           }

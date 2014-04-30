@@ -124,7 +124,7 @@ define(
           this.thingEditor.model = new Backbone.Model({
             name: "some name",
             link: "some link",
-            type_id: 2,
+            typeId: 2,
             subtypes: []
           });
         });
