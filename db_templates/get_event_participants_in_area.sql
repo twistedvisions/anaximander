@@ -4,6 +4,10 @@ select
   thing.name as thing_name,
   place_thing.name as place_thing_name,
   type.name as thing_type,
+  case
+    when thing_importance.value is null then role_importance.value * 5
+    else role_importance.value * thing_importance.value
+  end as importance_value,
   event.id as event_id,
   event.name as event_name,
   event.link as event_link,
@@ -20,6 +24,9 @@ inner join event on event.place_id = place_thing.id
 inner join event_participant on event_participant.event_id = event.id
 inner join thing on event_participant.thing_id = thing.id
 inner join type on thing.type_id = type.id
+inner join importance role_importance on event_participant.importance_id = role_importance.id
+left join thing_subtype on thing_subtype.thing_id = thing.id
+left join importance thing_importance on thing_subtype.importance_id = thing_importance.id
 <%= (
   eventFilters.length > 0 ?
   "left join thing_subtype on thing.id = thing_subtype.thing_id" :
@@ -43,7 +50,8 @@ group by
   event.link,
   event.start_date,
   event.end_date,
-  place.location
+  place.location,
+  importance_value
 order by
   distance asc,
   event.start_date asc,

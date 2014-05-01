@@ -446,4 +446,129 @@ describe("getEvents", function () {
     });
 
   });
+  describe("handleResults", function () {
+    it("should group events by id", function () {
+      var result;
+      getEvents.handleResult(
+        {
+          send: function (_result) {
+            result = _result;
+          }
+        },
+        {
+          rows: [
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1000
+            },
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1001
+            },
+            {
+              event_id: 2,
+              distance: 20,
+              start_date: 200,
+              thing_id: 1000
+            }
+          ]
+        }
+      );
+      result.length.should.equal(2);
+      result[0].event_id.should.equal(1);
+      result[1].event_id.should.equal(2);
+    });
+    it("should order events by location and date", function () {
+      var result;
+      getEvents.handleResult(
+        {
+          send: function (_result) {
+            result = _result;
+          }
+        },
+        {
+          rows: [
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1000
+            },
+            {
+              event_id: 2,
+              distance: 5,
+              start_date: 200,
+              thing_id: 1000
+            }
+          ]
+        }
+      );
+      result.length.should.equal(2);
+      result[0].event_id.should.equal(2);
+      result[1].event_id.should.equal(1);
+    });
+    it("should group event participants by id", function () {
+      var result;
+      getEvents.handleResult(
+        {
+          send: function (_result) {
+            result = _result;
+          }
+        },
+        {
+          rows: [
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1000
+            },
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1001
+            }
+          ]
+        }
+      );
+      result.length.should.equal(1);
+      result[0].participants.length.should.equal(2);
+    });
+    it("should order event participants by importance", function () {
+      var result;
+      getEvents.handleResult(
+        {
+          send: function (_result) {
+            result = _result;
+          }
+        },
+        {
+          rows: [
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1000,
+              importance_value: 1
+            },
+            {
+              event_id: 1,
+              distance: 10,
+              start_date: 100,
+              thing_id: 1001,
+              importance_value: 2
+            }
+          ]
+        }
+      );
+      result[0].participants.length.should.equal(2);
+      result[0].participants[0].thing_id.should.equal(1001);
+      result[0].participants[1].thing_id.should.equal(1000);
+    });
+  });
 });
