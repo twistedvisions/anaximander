@@ -511,6 +511,36 @@ describe("getEvents", function () {
       result[0].event_id.should.equal(2);
       result[1].event_id.should.equal(1);
     });
+    it("should set the maximum importance", function () {
+      var result;
+      getEvents.handleResult(
+        {
+          send: function (_result) {
+            result = _result;
+          }
+        },
+        {
+          rows: [
+            {
+              event_id: 1,
+              distance: 10,
+              event_importance_value: 10,
+              start_date: 100,
+              thing_id: 1000
+            },
+            {
+              event_id: 1,
+              distance: 10,
+              event_importance_value: 20,
+              start_date: 100,
+              thing_id: 1000
+            }
+          ]
+        }
+      );
+      result.length.should.equal(1);
+      result[0].event_importance_value.should.equal(20);
+    });
     it("should group event participants by id", function () {
       var result;
       getEvents.handleResult(

@@ -8,30 +8,30 @@ define([
   var Router = Backbone.Router.extend({
 
     routes: {
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end": "mapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter": "filteredMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/query/:query": "queryMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/query/:query/highlight/:highlight": "queryHighlightedMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/filter/:filter/query/:query/highlight/:highlight": "filteredQueryHighlightedMapView"
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance": "mapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter": "filteredMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query": "queryMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight": "queryHighlightedMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter/query/:query/highlight/:highlight": "filteredQueryHighlightedMapView"
     },
 
-    mapView: function (lat, lon, zoom, start, end) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, null, null);
+    mapView: function (lat, lon, zoom, start, end, importance) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, null, null, null);
     },
 
-    filteredMapView: function (lat, lon, zoom, start, end, filters) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, filters, null, null);
+    filteredMapView: function (lat, lon, zoom, start, end, importance, filters) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, filters, null, null);
     },
 
-    queryMapView: function (lat, lon, zoom, start, end, query) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, query, null);
+    queryMapView: function (lat, lon, zoom, start, end, importance, query) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, null, query, null);
     },
 
-    queryHighlightedMapView: function (lat, lon, zoom, start, end, query, highlight) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, null, query, highlight);
+    queryHighlightedMapView: function (lat, lon, zoom, start, end, importance, query, highlight) {
+      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, null, query, highlight);
     },
 
-    filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, filters, query, highlight) {
+    filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, importance, filters, query, highlight) {
 
       this._setFromUrl = true;
 
@@ -39,6 +39,7 @@ define([
         date: [parseInt(start, 10), parseInt(end, 10)],
         center: [parseFloat(lat), parseFloat(lon)],
         zoom: parseInt(zoom, 10),
+        importance: parseInt(importance, 10),
         query: query && decodeURIComponent(query)
       };
 
@@ -93,6 +94,10 @@ define([
       if (data.query === this.model.get("query")) {
         delete data.query;
       }
+
+      if (data.importance === this.model.get("importance")) {
+        delete data.importance;
+      }
     },
 
     init: function (options) {
@@ -107,6 +112,7 @@ define([
       var center = this.model.get("center");
       var zoom = this.model.get("zoom");
       var query = this.model.get("query");
+      var importance = this.model.get("importance");
       var filterState = this.model.get("filterState").toJSON();
       var highlight = this.model.get("highlight");
       var filters = "";
@@ -115,7 +121,8 @@ define([
         "lon", center[1],
         "zoom", zoom,
         "start", date[0],
-        "end", date[1]
+        "end", date[1],
+        "importance", importance
       ];
 
       if (filterState.length > 0) {
@@ -139,16 +146,17 @@ define([
 
       this.navigate(location.join("/"));
 
-      this.sendAnalytics(center, zoom, date);
+      this.sendAnalytics(center, zoom, date, importance);
     },
 
-    sendAnalytics: _.debounce(function (center, zoom, date) {
+    sendAnalytics: _.debounce(function (center, zoom, date, importance) {
       analytics.navigation({
         lat: center[0],
         lon: center[1],
         zoom: zoom,
         start: parseInt(date[0], 10),
-        end: parseInt(date[1], 10)
+        end: parseInt(date[1], 10),
+        importance: parseInt(importance, 10)
       });
     }, 500)
 

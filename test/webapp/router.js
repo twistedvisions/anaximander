@@ -11,6 +11,7 @@ define(
           center: [1, 1],
           date: [1900, 2000],
           zoom: 3,
+          importance: 125,
           filterState: new Backbone.Collection(),
           highlight: {}
         });
@@ -35,20 +36,20 @@ define(
           this.router.filteredQueryHighlightedMapView.restore();
         });
         it("should call filteredQueryHighlightedMapView with no filter, query or highlight from mapView", function () {
-          this.router.mapView(1, 2, 3, 4, 5);
-          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, null).should.equal(true);
+          this.router.mapView(1, 2, 3, 4, 5, 125);
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, 125, null, null).should.equal(true);
         });
         it("should call filteredQueryHighlightedMapView with a filter but no query or highlight from filteredMapView", function () {
-          this.router.filteredMapView(1, 2, 3, 4, 5, "some filters");
-          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, "some filters", null, null).should.equal(true);
+          this.router.filteredMapView(1, 2, 3, 4, 5, 125, "some filters");
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, 125, "some filters", null, null).should.equal(true);
         });
         it("should call filteredQueryHighlightedMapView with query but no filter or highlight from queryMapView", function () {
-          this.router.queryMapView(1, 2, 3, 4, 5, "searchString");
-          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "searchString", null).should.equal(true);
+          this.router.queryMapView(1, 2, 3, 4, 5, 125, "searchString");
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, 125, null, "searchString", null).should.equal(true);
         });
         it("should call filteredQueryHighlightedMapView with query and highlight but no filter from queryHighlightedMapView", function () {
-          this.router.queryHighlightedMapView(1, 2, 3, 4, 5, "searchString", "[1]");
-          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, null, "searchString", "[1]").should.equal(true);
+          this.router.queryHighlightedMapView(1, 2, 3, 4, 5, 125, "searchString", "[1]");
+          this.router.filteredQueryHighlightedMapView.calledWith(1, 2, 3, 4, 5, 125, null, "searchString", "[1]").should.equal(true);
         });
       });
       describe("filteredQueryHighlightedMapView", function () {
@@ -65,15 +66,15 @@ define(
           this.router.model.on("change", function () {
             changeCalled = true;
           });
-          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, null, null, null);
+          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, 125, null, null, null);
           changeCalled.should.equal(false);
         });
-        _.each(["date", "center", "zoom", "query"], function (key) {
+        _.each(["date", "center", "zoom", "query", "importance"], function (key) {
           it("should not set '" + key + "' on the model if it has not changed", function () {
             this.router.model = this.model;
             this.model.set("query", "some query");
             sinon.stub(this.router.model, "set");
-            this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, null, "some query", null);
+            this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, 125, null, "some query", null);
             (this.router.model.set.args[0][0][key] === undefined).should.equal(true);
           });
         });
@@ -83,7 +84,7 @@ define(
           this.model.on("change:filterState", function () {
             called = true;
           });
-          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, "1:*", "some query", null);
+          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, 125, "1:*", "some query", null);
           called.should.equal(true);
         });
         it("should not trigger an event if the filterState has not changed", function () {
@@ -93,7 +94,7 @@ define(
           this.model.on("change:filterState", function () {
             called = true;
           });
-          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, "1:*", "some query", null);
+          this.router.filteredQueryHighlightedMapView(1, 1, 3, 1900, 2000, 125, "1:*", "some query", null);
           called.should.equal(false);
         });
       });
@@ -120,6 +121,11 @@ define(
           this.router.init({model: this.model});
           this.router.handleChange();
           /zoom\/3\//.test(this.location).should.equal(true);
+        });
+        it("should navigate with the importance value", function () {
+          this.router.init({model: this.model});
+          this.router.handleChange();
+          /importance\/125/.test(this.location).should.equal(true);
         });
         it("should navigate with filterstate value if it is set", function () {
           FilterUrlSerialiser.deserialise("1:u", this.model);
@@ -184,49 +190,6 @@ define(
         });
         after(function () {
           sinon.restore(Backbone.history.getFragment);
-        });
-      });
-      describe("startup", function () {
-        beforeEach(function () {
-          if (window.navigator && window.navigator.geolocation) {
-            sinon.stub(window.navigator.geolocation, "getCurrentPosition");
-          } else {
-            this.oldGeolocationObject = window.navigator.geolocation;
-            window.navigator.geolocation = {
-              getCurrentPosition: function () {}
-            };
-          }
-        });
-        afterEach(function () {
-          if (navigator.geolocation.getCurrentPosition.restore) {
-            navigator.geolocation.getCurrentPosition.restore();
-          } else {
-            window.navigator.geolocation = this.oldGeolocationObject;
-          }
-        });
-        it("should get the user's position if no position is set in the url", function () {
-          var model = new Backbone.Model({
-            center: [1, 2],
-            date: [1900, 2000],
-            zoom: 3,
-            filterState: new Backbone.Collection()
-          });
-
-          var router = new Router();
-          router.setFromUrl = false;
-          router.init({model: model});
-        });
-        it("should not get the user's position if a position is set in the url", function () {
-          var model = new Backbone.Model({
-            center: [1, 2],
-            date: [1900, 2000],
-            zoom: 3,
-            filterState: new Backbone.Collection()
-          });
-
-          var router = new Router();
-          router.setFromUrl = true;
-          router.init({model: model});
         });
       });
     });

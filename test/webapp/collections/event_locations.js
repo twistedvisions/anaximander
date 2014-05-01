@@ -10,6 +10,7 @@ define(
         center: [-10, 12],
         date: [1900, 2000],
         zoom: 3,
+        importance: 200,
         bounds: [{lat: 10, lon: 20}, {lat: -20, lon: -34}],
         filterState: new Backbone.Collection()
       });
@@ -19,7 +20,7 @@ define(
       });
     });
     describe("start", function () {
-      var keys = ["center", "date", "bounds", "filterState"];
+      var keys = ["center", "date", "bounds", "filterState", "importance"];
       _.each(keys, function (key) {
         it("should update on " + key + "'s change event", function () {
           sinon.stub(this.events, "updateData");
@@ -63,6 +64,10 @@ define(
       it("should take the lon from the model's position", function () {
         this.events.updateData();
         $.get.args[0][1].lon.should.equal(12);
+      });
+      it("should take the importance from the model", function () {
+        this.events.updateData();
+        $.get.args[0][1].importance.should.equal(200);
       });
       it("should pass the bounds as a nested array", function () {
         this.events.updateData();

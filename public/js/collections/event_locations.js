@@ -21,7 +21,7 @@ define([
     },
 
     start: function () {
-      var changeEvents = ["center", "date", "bounds", "filterState"];
+      var changeEvents = ["center", "date", "bounds", "filterState", "importance"];
       var bindString = _.map(changeEvents, function (event) {
         return "change:" + event;
       }).join(" ");
@@ -41,10 +41,12 @@ define([
         var timeRange = this.state.get("date");
         var bounds = this.state.get("bounds");
         var filterState = this.state.get("filterState");
+        var importance = this.state.get("importance");
 
         var params = {
           lat: position[0],
           lon: position[1],
+          importance: importance,
           start: this.getStartOfYear(timeRange[0]),
           end: this.getEndOfYear(timeRange[1]),
           roleFilters: _.pluck(FilterUrlSerialiser.getRoleFilterKeys(filterState), "id"),
