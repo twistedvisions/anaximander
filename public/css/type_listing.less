@@ -1,0 +1,128 @@
+@import "./common.less";
+
+h1 {
+  float: left;
+}
+
+.filter {
+  float: right;
+  margin-top: 28px;
+  margin-right: 10px;
+}
+
+.type-selector {
+  clear: left;
+  width: 100%;
+}
+
+.types, .importances {
+  margin: 10px 20px;
+  thead {
+    tr {
+      th {
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+      }
+    }
+  }
+  tbody {
+    tr:nth-child(1) td {
+      padding-top: 10px;
+    }
+    tr {
+      td {
+        vertical-align: bottom;
+        padding: 2px 0;
+        border-top: none;
+        font-size: 12px;
+        line-height: 26px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        &.editing {
+          padding: 0 5px 0 0;
+        }
+        input {
+          padding: 0 5px;
+          box-shadow: none;
+          &:focus {
+            box-shadow: none;
+          }
+        }
+        input[type=number] {
+          width: 50px;
+        }
+      }
+    }
+  }
+}
+
+.types {
+  thead {
+    tr {
+      th.name,
+      th.default-importance {
+        width: 30%;
+      }
+      th.importances {
+        width: 100px;
+      }
+      th.usage {
+        width: 100px;
+      }
+    }
+  }
+  tbody {
+    tr {
+
+      td.default-importance {
+        padding: 2px 5px;
+        select {
+          width: 100%;
+          border: 1px solid #eee;
+          box-shadow: none;
+          padding: 0;
+        }
+      }
+
+      td.importances,
+      td.usage,
+      td.view-importances {
+        text-align: right;
+      }
+    }
+  }
+  tbody, thead {
+    th.importances,
+    td.importances {
+      padding-right: 5px;
+    }
+  }
+}
+
+div.importances {
+  .table-holder {
+    margin: 5px;
+    .table {
+      margin-bottom: 0px;
+      tr {
+        th.name {
+          width: 30%;
+        }
+        th.description {
+          width: 60%;
+        }
+        th.value {
+          width: 10%;
+        }
+      }
+      tr {
+        td.value {
+          text-align: right;
+          padding-right: 5px;
+        }
+      }
+    }
+  }
+}

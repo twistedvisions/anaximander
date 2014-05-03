@@ -1,0 +1,23 @@
+<tr>
+  <td class="name"><%= obj.name %></td>
+  <td class="default-importance">
+    <select class="form-control input-sm">
+      <% _.each(obj.importances, function (importance) { %>
+        <option
+          value="<%= importance.id %>"
+          <%= obj.default_importance_id === importance.id ? "selected" : "" %>
+        >
+          <%= importance.name%>
+        </option>
+      <% }); %>
+    </select>
+  </td>
+  <td class="importances"><%= obj.importances.length %></td>
+  <td class="usage"><%= obj.usage %></td>
+  <td class="view-importances">
+    <span
+      class="toolbutton edit glyphicon glyphicon-chevron-right"
+      data-type_id="<%= obj.id%>">
+    </span>
+  </td>
+</tr>
