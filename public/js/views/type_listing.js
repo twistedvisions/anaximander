@@ -35,7 +35,7 @@ define([
     },
 
     getThingTypes: function () {
-      return when($.get("/type"));
+      return when(this.getData("/type"));
     },
 
     showThingTypes: function (types) {
@@ -55,20 +55,24 @@ define([
     },
 
     showEventTypes: function () {
-      when.all([$.get("/event_type"), $.get("/event_type/usage")])
+      when.all([this.getData("/event_type"), this.getData("/event_type/usage")])
         .then(_.bind(this.showTypes, this));
     },
 
     showRoles: function () {
-      when.all([$.get("/role"), $.get("/role/usage")])
+      when.all([this.getData("/role"), this.getData("/role/usage")])
         .then(_.bind(this.showTypes, this));
     },
 
     showThingSubtype: function (id) {
       when.all([
-        $.get("/type/" + id + "/type"),
-        $.get("/type/" + id + "/type/usage")
+        this.getData("/type/" + id + "/type"),
+        this.getData("/type/" + id + "/type/usage")
       ]).then(_.bind(this.showTypes, this));
+    },
+
+    getData: function (url) {
+      return $.get(url);
     },
 
     showTypes: function (args) {
@@ -85,13 +89,27 @@ define([
         })));
         this.$(".types tbody").append(html);
       }, this);
-      this.$(".types tbody td.name").on("click", _.bind(this.editCell, this, {}));
+      this.$(".types tbody td.name").on("click", _.bind(this.editCell, this, {
+        key: "name",
+        save: _.bind(this.saveTypeChange, this)
+      }));
       this.$(".types tbody td.view-importances span").on("click", _.bind(this.showImportances, this));
+    },
+
+    saveTypeChange: function (changes) {
+      var d = when($.ajax({
+        url: "/type",
+        type: "PUT",
+        processData: false,
+        contentType: "application/json",
+        data: JSON.stringify(changes)
+      }));
+      return d;
     },
 
     showImportances: function (e) {
       var el = $(e.target);
-      var id = el.data().type_id;
+      var id = el.parents("tr").data().id;
       this.$("div.types").hide();
       this.$("div.importances").show();
       this.$(".importances tbody").empty();
@@ -119,6 +137,7 @@ define([
       }
 
       var el = $(e.target);
+      var row = el.parents("tr");
       var value = el.text();
       el.empty();
       options.type = options.type || "text";
@@ -134,7 +153,22 @@ define([
       input.on("keydown", _.bind(function (e) {
         if (e.keyCode === 13) {
           value = input.val();
-          input.trigger("blur");
+          input.attr("disabled", true);
+          var data = row.data();
+          var id = data.id;
+          if (value !== this.types[id][options.key]) {
+            var result = {
+              id: id,
+              last_edited: data.lastEdited
+            };
+            result[options.key] = value;
+
+            options.save(result).then(function () {
+              input.trigger("blur");
+            });
+          } else {
+            input.trigger("blur");
+          }
         }
       }, this));
       input.focus();

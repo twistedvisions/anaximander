@@ -1,4 +1,4 @@
-<tr>
+<tr data-id="<%= obj.id %>" data-last-edited="<%= obj.last_edited %>">
   <td class="name"><%= obj.name %></td>
   <td class="default-importance">
     <select class="form-control input-sm">
@@ -15,9 +15,6 @@
   <td class="importances"><%= obj.importances.length %></td>
   <td class="usage"><%= obj.usage %></td>
   <td class="view-importances">
-    <span
-      class="toolbutton edit glyphicon glyphicon-chevron-right"
-      data-type_id="<%= obj.id%>">
-    </span>
+    <span class="toolbutton edit glyphicon glyphicon-chevron-right"></span>
   </td>
 </tr>

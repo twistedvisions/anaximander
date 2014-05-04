@@ -9,6 +9,7 @@ define(
       describe("startup", function () {
         before(function () {
           this.typeListing = new TypeListing();
+          sinon.stub(this.typeListing, "getData");
           sinon.stub(this.typeListing, "getThingTypes", function () {
             return {
               then: function (f) {
@@ -23,6 +24,7 @@ define(
         });
         after(function () {
           this.typeListing.getThingTypes.restore();
+          this.typeListing.getData.restore();
           this.typeListing.$el.remove();
         });
         it("should show event types by default", function () {
@@ -43,10 +45,12 @@ define(
 
         beforeEach(function () {
           this.typeListing = new TypeListing();
+          sinon.stub(this.typeListing, "getData");
           $("body").append(this.typeListing.render());
         });
         afterEach(function () {
           this.typeListing.$el.remove();
+          this.typeListing.getData.restore();
         });
         describe("showTypes", function () {
           it("should show the types table", function () {
@@ -184,12 +188,20 @@ define(
         });
         describe("editing cells", function () {
           beforeEach(function () {
+            sinon.stub(this.typeListing, "saveTypeChange", function () {
+              return {
+                then: function (fn) {
+                  fn();
+                }
+              };
+            });
             this.typeListing.showTypes(
               [
                 [
                   {
                     id: 1,
                     name: "type name",
+                    last_edited: "2014-04-28",
                     importances: []
                   }
                 ],
@@ -220,14 +232,46 @@ define(
             it("should remove the editing class when editing finishes", function () {
               this.el.hasClass("editing").should.equal(false);
             });
-            it("should finish editing without saving when focus is lost");
+            it("should finish editing without saving when focus is lost", function () {
+              this.typeListing.saveTypeChange.callCount.should.equal(0);
+            });
           });
-          it("should save when enter is pressed", function () {
-            this.el.find("input").val("new name");
-            var event = $.Event("keydown");
-            event.keyCode = 13;
-            this.el.find("input").trigger(event);
-            this.el.text().should.equal("new name");
+          describe("saving", function () {
+            beforeEach(function () {
+              this.el.find("input").val("new name");
+              var event = $.Event("keydown");
+              event.keyCode = 13;
+              this.el.find("input").trigger(event);
+            });
+            afterEach(function () {
+              this.typeListing.saveTypeChange.restore();
+            });
+            it("should save when enter is pressed", function () {
+              this.el.text().should.equal("new name");
+            });
+            it("should pass the id as a save parameter", function () {
+              this.typeListing.saveTypeChange.args[0][0].id.should.equal(1);
+            });
+            it("should pass the last_edited date as a save parameter", function () {
+              this.typeListing.saveTypeChange.args[0][0].last_edited.should.equal("2014-04-28");
+            });
+            it("should pass the changed key with the value as a save parameter", function () {
+              this.typeListing.saveTypeChange.args[0][0].name.should.equal("new name");
+            });
+          });
+          describe("no changes when saving", function () {
+            beforeEach(function () {
+              this.el.find("input").val("type name");
+              var event = $.Event("keydown");
+              event.keyCode = 13;
+              this.el.find("input").trigger(event);
+            });
+            afterEach(function () {
+              this.typeListing.saveTypeChange.restore();
+            });
+            it("should not call save if nothing actually changed", function () {
+              this.typeListing.saveTypeChange.callCount.should.equal(0);
+            });
           });
         });
       });

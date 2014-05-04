@@ -27,5 +27,20 @@ describe("getTypesById", function () {
       {id: 4, name: "t4", default_importance_id: 40, importance_id: 40, importance_name: "i40"}
     ]});
   });
+  it("should sort the results by name order", function (done) {
+    var res = {};
+    res.send = function (data) {
+      tryTest(function () {
+        data.length.should.equal(2);
+        data[0].name.should.equal("aaa");
+        data[1].name.should.equal("bbb");
+      }, done)();
+    };
+    TypeGrouper(res)({rows: [
+      {id: 3, name: "bbb", default_importance_id: 30, importance_id: 30, importance_name: "i30"},
+      {id: 3, name: "bbb", default_importance_id: 30, importance_id: 31, importance_name: "i31"},
+      {id: 4, name: "aaa", default_importance_id: 40, importance_id: 40, importance_name: "i40"}
+    ]});
+  });
 
 });
