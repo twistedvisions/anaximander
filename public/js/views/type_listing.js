@@ -93,7 +93,23 @@ define([
         key: "name",
         save: _.bind(this.saveTypeChange, this)
       }));
+      this.$(".default-importance select").on("change", _.bind(this.handleDefaultImportanceChange, this));
       this.$(".types tbody td.view-importances span").on("click", _.bind(this.showImportances, this));
+    },
+
+    handleDefaultImportanceChange: function (e) {
+      var el = $(e.target);
+      var row = el.parents("tr");
+      var value = el.val();
+      if (this.types[row.data().id].default_importance_id !== value) {
+        var result = this.getTypeChangeObject(row);
+        result.defaultImportanceId = value;
+        el.attr("disabled", true);
+        this.saveTypeChange(result).then(function () {
+          el.attr("disabled", false);
+        });
+      }
+
     },
 
     saveTypeChange: function (changes) {
@@ -145,24 +161,21 @@ define([
       input.val(value);
       el.append(input);
       el.addClass("editing");
+
       input.on("blur", _.bind(function () {
         el.removeClass("editing");
         el.empty();
         el.text(value);
       }, this));
+
       input.on("keydown", _.bind(function (e) {
         if (e.keyCode === 13) {
           value = input.val();
           input.attr("disabled", true);
           var data = row.data();
-          var id = data.id;
-          if (value !== this.types[id][options.key]) {
-            var result = {
-              id: id,
-              last_edited: data.lastEdited
-            };
+          if (value !== this.types[data.id][options.key]) {
+            var result = this.getTypeChangeObject(row);
             result[options.key] = value;
-
             options.save(result).then(function () {
               input.trigger("blur");
             });
@@ -171,10 +184,18 @@ define([
           }
         }
       }, this));
+
       input.focus();
       input.select();
-    }
+    },
 
+    getTypeChangeObject: function (row) {
+      var data = row.data();
+      return {
+        id: data.id,
+        last_edited: data.lastEdited
+      };
+    }
   });
   return TypeListing;
 });

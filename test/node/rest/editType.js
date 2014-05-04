@@ -155,6 +155,27 @@ describe("editType", function () {
       }, done);
     });
 
+    it("should save a changed default importance", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        defaultImportance: {id: 2}
+      };
+
+      this.stubValues = [
+        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_importance_by_id", id: 2}],
+        [{db_call: "update_default_importance_id"}],
+        [{db_call: "save_type_change"}],
+        [{db_call: "update_type_last_edited"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("update_default_importance_id");
+        this.args[2][2][1].should.equal(2);
+      }, done);
+    });
+
     it("should call save_change after a change has happened", function (done) {
       this.fullBody = {
         id: 1,

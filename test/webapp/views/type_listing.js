@@ -186,6 +186,44 @@ define(
             });
           });
         });
+        describe("editing default importance", function () {
+          beforeEach(function () {
+            this.typeListing.showTypes(
+              [
+                [
+                  {
+                    id: 1,
+                    name: "type name",
+                    default_importance_id: 1,
+                    importances: [
+                      {id: 1, name: "importance 1"},
+                      {id: 2, name: "importance 2"}
+                    ]
+                  }
+                ],
+                [
+                  {id: 1, usage: 10}
+                ]
+              ]
+            );
+            sinon.stub(this.typeListing, "saveTypeChange", function () {
+              return {
+                then: function (f) {
+                  f();
+                }
+              };
+            });
+          });
+          it("should save the importance if it is different", function () {
+            this.typeListing.$(".default-importance select").val().should.equal("1");
+            this.typeListing.$(".default-importance select").val(2);
+            this.typeListing.$(".default-importance select").val().should.equal("2");
+            this.typeListing.$(".default-importance select").trigger("change");
+            this.typeListing.saveTypeChange.calledOnce.should.equal(true);
+            this.typeListing.saveTypeChange.args[0][0].defaultImportanceId.should.equal("2");
+          });
+          it("should not save the importance if it is the same");
+        });
         describe("editing cells", function () {
           beforeEach(function () {
             sinon.stub(this.typeListing, "saveTypeChange", function () {
