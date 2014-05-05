@@ -4,17 +4,17 @@
 </div>
 <div class="type-selector">
   <ul class="nav nav-tabs">
-    <li class="active" id="event-tab">
+    <li class="active" id="event-tab" data-key="event_types">
       <a href="#event" data-toggle="tab">
         Event
       </a>
     </li>
-    <li id="role-tab">
+    <li id="role-tab" data-key="role">
       <a href="#role" data-toggle="tab">
         Role
       </a>
     </li>
-    <li class="thing-tab dropdown">
+    <li class="thing-tab dropdown" data-key="thing_subtype">
       <a href="#" id="thing-dropdown" class="dropdown-toggle" data-toggle="dropdown">
         Thing
         <b class="caret"></b>
@@ -55,6 +55,7 @@
           <th class="name">Name</th>
           <th class="description">Description</th>
           <th class="value">Value</th>
+          <th class="usage">Usage</th>
         </tr>
       </thead>
       <tbody>

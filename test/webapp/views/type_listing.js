@@ -1,11 +1,11 @@
 /*global sinon, describe, it, before, after, beforeEach, afterEach*/
 define(
 
-  ["jquery", "backbone", "views/type_listing"],
+  ["jquery", "backbone", "when", "views/type_listing"],
 
-  function ($, Backbone, TypeListing) {
+  function ($, Backbone, when, TypeListing) {
 
-    describe("type listing", function () {
+    describe.only("type listing", function () {
       describe("startup", function () {
         before(function () {
           this.typeListing = new TypeListing();
@@ -114,16 +114,31 @@ define(
             this.typeListing.$("div.types tbody tr td.default-importance select option[selected]").text().trim().should.equal("importance 2");
           });
           it("should show the importances for the type", function () {
+            sinon.stub(this.typeListing, "getImportanceData", function () {
+              return {
+                then: function (fn) {
+                  fn();
+                }
+              };
+            });
             sinon.stub(this.typeListing, "showImportances");
             this.typeListing.showTypes([[{id: 1, importances: []}], [{id: 1, usage: 10}]]);
             this.typeListing.$(".view-importances span").trigger("click");
             this.typeListing.showImportances.calledOnce.should.equal(true);
             this.typeListing.showImportances.restore();
+            this.typeListing.getImportanceData.restore();
           });
         });
 
         describe("showImportances", function () {
           beforeEach(function () {
+            sinon.stub(this.typeListing, "getImportanceData", function () {
+              return {
+                then: function (fn) {
+                  return fn([{id: 1, usage: 5}]);
+                }
+              };
+            });
             this.typeListing.$("div.importances tbody").append($("<tr>"));
             this.typeListing.showTypes(
               [
@@ -158,6 +173,9 @@ define(
           });
           it("should list the importances", function () {
             this.typeListing.$("div.importances tbody tr").length.should.equal(2);
+          });
+          it("should show usages", function () {
+            this.typeListing.$("div.importances tbody tr:nth-child(1) td.usage").text().should.equal("5");
           });
           it("should make names editable", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
@@ -220,9 +238,15 @@ define(
             this.typeListing.$(".default-importance select").val().should.equal("2");
             this.typeListing.$(".default-importance select").trigger("change");
             this.typeListing.saveTypeChange.calledOnce.should.equal(true);
-            this.typeListing.saveTypeChange.args[0][0].defaultImportanceId.should.equal("2");
+            this.typeListing.saveTypeChange.args[0][0].defaultImportanceId.should.equal(2);
           });
-          it("should not save the importance if it is the same");
+          it("should not save the importance if it is the same", function () {
+            this.typeListing.$(".default-importance select").val().should.equal("1");
+            this.typeListing.$(".default-importance select").val(1);
+            this.typeListing.$(".default-importance select").val().should.equal("1");
+            this.typeListing.$(".default-importance select").trigger("change");
+            this.typeListing.saveTypeChange.callCount.should.equal(0);
+          });
         });
         describe("editing cells", function () {
           beforeEach(function () {

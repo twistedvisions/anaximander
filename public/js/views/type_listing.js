@@ -50,7 +50,9 @@ define([
         this.$(".thing-tab ul").append(thingTab(type));
       }, this);
       this.$(".type-type-tab a").on("click", _.bind(function (e) {
-        this.showThingSubtype($(e.target).data().id);
+        var subtypeId = $(e.target).data().id;
+        this.currentSubtypeId = subtypeId;
+        this.showThingSubtype(subtypeId);
       }, this));
     },
 
@@ -72,7 +74,7 @@ define([
     },
 
     getData: function (url) {
-      return $.get(url);
+      return when($.get(url));
     },
 
     showTypes: function (args) {
@@ -94,13 +96,13 @@ define([
         save: _.bind(this.saveTypeChange, this)
       }));
       this.$(".default-importance select").on("change", _.bind(this.handleDefaultImportanceChange, this));
-      this.$(".types tbody td.view-importances span").on("click", _.bind(this.showImportances, this));
+      this.$(".types tbody td.view-importances span").on("click", _.bind(this.getImportances, this));
     },
 
     handleDefaultImportanceChange: function (e) {
       var el = $(e.target);
       var row = el.parents("tr");
-      var value = el.val();
+      var value = parseInt(el.val(), 10);
       if (this.types[row.data().id].default_importance_id !== value) {
         var result = this.getTypeChangeObject(row);
         result.defaultImportanceId = value;
@@ -123,16 +125,35 @@ define([
       return d;
     },
 
-    showImportances: function (e) {
+    getImportances: function (e) {
       var el = $(e.target);
       var id = el.parents("tr").data().id;
+      var type = this.$(".type-selector .active").data().key;
+      if (type === "thing_subtype") {
+        type = "type/" + this.currentSubtypeId + "/type";
+      }
+      var url = "/" + type + "/" + id + "/importance/usage";
+      this.getImportanceData(url).then(_.bind(this.showImportances, this, id));
+    },
+
+    getImportanceData: function (url) {
+      return when($.get(url));
+    },
+
+    showImportances: function (id, importanceUsage) {
       this.$("div.types").hide();
       this.$("div.importances").show();
       this.$(".importances tbody").empty();
       var type = this.types[id];
       this.$(".selected-type").text(type.name);
+      importanceUsage = _.groupBy(importanceUsage, "id");
       _.each(type.importances, function (importance) {
-        var html = $(importanceListingTemplate(importance));
+        var usage = importanceUsage[importance.id] ?
+          importanceUsage[importance.id][0].usage :
+          0;
+        var html = $(importanceListingTemplate(_.extend(importance, {
+          usage: usage
+        })));
         this.$(".importances tbody").append(html);
       }, this);
       this.$(".importances tbody td.name").on("click", _.bind(this.editCell, this, {}));
