@@ -1,14 +1,22 @@
 /*global sinon, describe, it, before, after, beforeEach, afterEach*/
 define(
 
-  ["jquery", "underscore", "backbone", "when", "views/type_listing", "analytics"],
+  ["jquery", "underscore", "backbone", "when",
+   "views/type_listing", "models/current_user", "analytics"],
 
-  function ($, _, Backbone, when, TypeListing, analytics) {
+  function ($, _, Backbone, when, TypeListing, User, analytics) {
 
-    describe("type listing", function () {
+    describe.only("type listing", function () {
+      var user = new User();
+      var hasPermission = true;
+      user.hasPermission = function () {
+        return hasPermission;
+      };
       describe("startup", function () {
         before(function () {
-          this.typeListing = new TypeListing();
+          this.typeListing = new TypeListing({
+            user: user
+          });
           sinon.stub(this.typeListing, "getData", function () {
             //dont ever return or it will try to render
             return when.defer().promise;
@@ -53,7 +61,9 @@ define(
       describe("interactions", function () {
 
         beforeEach(function () {
-          this.typeListing = new TypeListing();
+          this.typeListing = new TypeListing({
+            user: user
+          });
           sinon.stub(this.typeListing, "getData", function () {
             //dont ever return or it will try to render
             return when.defer().promise;
@@ -100,10 +110,17 @@ define(
             );
             this.typeListing.$("div.types tbody tr").length.should.equal(2);
           });
-          it("should make names editable", function () {
+          it("should make names editable if the user has permission", function () {
             this.typeListing.showTypes([[{id: 1, name: "importance name", importances: []}], []]);
             this.typeListing.$("div.types tbody tr td.name").trigger("click");
             this.typeListing.$("div.types tbody tr td.name.editing").length.should.equal(1);
+          });
+          it("should not make names editable if the user doesn't has permission", function () {
+            hasPermission = false;
+            this.typeListing.showTypes([[{id: 1, name: "importance name", importances: []}], []]);
+            this.typeListing.$("div.types tbody tr td.name").trigger("click");
+            this.typeListing.$("div.types tbody tr td.name.editing").length.should.equal(0);
+            hasPermission = true;
           });
           it("should show the default importances for a type", function () {
             this.typeListing.showTypes(
@@ -205,15 +222,24 @@ define(
             el.trigger("click");
             el.hasClass("editing").should.equal(true);
           });
+          it("should not make names editable if the user doesn't have permission", function () {
+            var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
+            el.trigger("click");
+            el.hasClass("editing").should.equal(true);
+          });
           it("should send analytics when the name is edited", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
             el.trigger("click");
             analytics.typeListing_importanceEdited.calledOnce.should.equal(true);
           });
           it("should make descriptions editable", function () {
+            hasPermission = false;
+            this.typeListing.$("div.importances .close").trigger("click");
+            this.typeListing.$(".view-importances span").trigger("click");
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.description");
             el.trigger("click");
-            el.hasClass("editing").should.equal(true);
+            el.hasClass("editing").should.equal(false);
+            hasPermission = true;
           });
           it("should make values editable", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.value");
@@ -279,6 +305,32 @@ define(
           });
           afterEach(function () {
             analytics.typeListing_typeSaved.restore();
+          });
+          it("should not change the importance if the user doesn't has permission", function () {
+            hasPermission = false;
+            try {
+              this.typeListing.showTypes(
+                [
+                  [
+                    {
+                      id: 1,
+                      name: "type name",
+                      default_importance_id: 1,
+                      importances: [
+                        {id: 1, name: "importance 1"},
+                        {id: 2, name: "importance 2"}
+                      ]
+                    }
+                  ],
+                  [
+                    {id: 1, usage: 10}
+                  ]
+                ]
+              );
+              this.typeListing.$(".default-importance select:disabled").length.should.equal(1);
+            } finally {
+              hasPermission = true;
+            }
           });
           it("should save the importance if it is different", function () {
             var select = this.typeListing.$(".default-importance select");

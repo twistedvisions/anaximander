@@ -14,8 +14,8 @@ define([
   template = _.template(template);
   var TypeListing = Backbone.View.extend({
     className: "type-listing",
-    initialize: function (/*options*/) {
-
+    initialize: function (options) {
+      this.user = options.user;
       this.typeListingTemplate = _.template(typeListingTemplate);
       this.importanceListingTemplate = _.template(importanceListingTemplate);
     },
@@ -116,13 +116,17 @@ define([
 
       var rows = row || this.$(".types tbody tr");
       var bindRowEvents = _.bind(this.bindTypeRowEvents, this);
-      rows.find("td.name").on("click", _.bind(this.editCell, this, {
-        valueType: "type",
-        key: "name",
-        save: _.bind(this.saveTypeChange, this),
-        bindRowEvents: bindRowEvents
-      }, this.types));
-      rows.find("td.default-importance select").on("change", _.bind(this.handleDefaultImportanceChange, this));
+      if (this.user.hasPermission("edit-type")) {
+        rows.find("td.name").on("click", _.bind(this.editCell, this, {
+          valueType: "type",
+          key: "name",
+          save: _.bind(this.saveTypeChange, this),
+          bindRowEvents: bindRowEvents
+        }, this.types));
+        rows.find("td.default-importance select").on("change", _.bind(this.handleDefaultImportanceChange, this));
+      } else {
+        rows.find("td.default-importance select").attr("disabled", true);
+      }
       rows.find("td.view-importances span").on("click", _.bind(this.getImportances, this));
 
     },
@@ -238,25 +242,27 @@ define([
       var saveCall = _.bind(this.saveImportanceChange, this, typeId);
       var bindRowEvents = _.bind(this.bindImportanceRowEvents, this, typeId);
       var rows = row || this.$(".importances tbody tr");
-      rows.find("td.name").on("click", _.bind(this.editCell, this, {
-        valueType: "importance",
-        key: "name",
-        save: saveCall,
-        bindRowEvents: bindRowEvents
-      }, this.importances));
-      rows.find("td.description").on("click", _.bind(this.editCell, this, {
-        valueType: "importance",
-        key: "description",
-        save: saveCall,
-        bindRowEvents: bindRowEvents
-      }, this.importances));
-      rows.find("td.value").on("click", _.bind(this.editCell, this, {
-        valueType: "importance",
-        type: "number",
-        key: "value",
-        save: saveCall,
-        bindRowEvents: bindRowEvents
-      }, this.importances));
+      if (this.user.hasPermission("edit-importance")) {
+        rows.find("td.name").on("click", _.bind(this.editCell, this, {
+          valueType: "importance",
+          key: "name",
+          save: saveCall,
+          bindRowEvents: bindRowEvents
+        }, this.importances));
+        rows.find("td.description").on("click", _.bind(this.editCell, this, {
+          valueType: "importance",
+          key: "description",
+          save: saveCall,
+          bindRowEvents: bindRowEvents
+        }, this.importances));
+        rows.find("td.value").on("click", _.bind(this.editCell, this, {
+          valueType: "importance",
+          type: "number",
+          key: "value",
+          save: saveCall,
+          bindRowEvents: bindRowEvents
+        }, this.importances));
+      }
     },
 
     saveImportanceChange: function (typeId, changes) {

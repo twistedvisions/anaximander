@@ -33,8 +33,23 @@ require.config({
 require([
   "jquery",
   "views/type_listing",
+  "models/current_user",
   "bootstrap"
-], function ($, AppView) {
-  var app = new AppView().render();
-  $("body").append(app);
+], function ($, AppView, User) {
+
+  var user = new User({
+    id: -1,
+    permissions: []
+  });
+  user.fetch({
+    success: function () {
+      var app = new AppView({
+        user: user
+      }).render();
+      $("body").append(app);
+    },
+    failure: function () {
+      window.console.log("failed to log in");
+    }
+  });
 });
