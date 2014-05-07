@@ -256,9 +256,10 @@ define(
                 ]
               ]
             );
+            this.callSuccessful = true;
             sinon.stub(this.typeListing, "saveTypeChange", _.bind(function () {
               return {
-                then: _.bind(function (fn) {
+                then: _.bind(function (fn, reject) {
                   var type = {
                     id: 1,
                     name: "type name",
@@ -266,7 +267,11 @@ define(
                     last_edited: "2014-04-29",
                     importances: []
                   };
-                  fn(this.typeListing.handleTypeChange(type));
+                  if (this.callSuccessful) {
+                    fn(this.typeListing.handleTypeChange(type));
+                  } else {
+                    reject();
+                  }
                 }, this)
               };
             }, this));
@@ -305,19 +310,31 @@ define(
             cell.find("select").trigger("change");
             analytics.typeListing_typeSaved.calledOnce.should.equal(true);
           });
+          it("should show an error message if it fails", function () {
+            this.callSuccessful = false;
+            var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.default-importance");
+            cell.find("select").val(2);
+            cell.find("select").trigger("change");
+            this.typeListing.$(".not-logged-in:visible").length.should.equal(1);
+          });
         });
         describe("editing cells", function () {
           beforeEach(function () {
+            this.callSuccessful = true;
             sinon.stub(this.typeListing, "saveTypeChange", _.bind(function () {
               return {
-                then: _.bind(function (fn) {
+                then: _.bind(function (fn, reject) {
                   var type = {
                     id: 1,
                     name: "new name",
                     last_edited: "2014-04-29",
                     importances: []
                   };
-                  fn(this.typeListing.handleTypeChange(type));
+                  if (this.callSuccessful) {
+                    fn(this.typeListing.handleTypeChange(type));
+                  } else {
+                    reject();
+                  }
                 }, this)
               };
             }, this));
@@ -419,6 +436,16 @@ define(
               event.keyCode = 13;
               cell.find("input").trigger(event);
               this.typeListing.saveTypeChange.callCount.should.equal(2);
+            });
+            it("should show an error message if it fails", function () {
+              this.callSuccessful = false;
+              var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.name");
+              cell.trigger("click");
+              cell.find("input").val("type name");
+              var event = $.Event("keydown");
+              event.keyCode = 13;
+              cell.find("input").trigger(event);
+              this.typeListing.$(".not-logged-in:visible").length.should.equal(1);
             });
           });
           describe("no changes when saving", function () {

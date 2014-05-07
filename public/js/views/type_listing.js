@@ -31,6 +31,10 @@ define([
 
       this.$("div.importances").hide();
 
+      this.$(".error-holder > div .close").on("click", function (e) {
+        $(e.target).parent().hide();
+      });
+
       return this.$el;
     },
 
@@ -133,20 +137,28 @@ define([
     handleDefaultImportanceChange: function (e) {
       var el = $(e.target);
       var row = el.parents("tr");
-      var value = parseInt(el.val(), 10);
       var id = row.data().id;
-      if (this.types[id].default_importance_id !== value) {
+      var oldValue = this.types[id].default_importance_id;
+      var value = parseInt(el.val(), 10);
+      if (oldValue !== value) {
         var result = this.getChangeObject(row);
         result.defaultImportanceId = value;
         el.attr("disabled", true);
-        this.saveTypeChange(result).then(function (newRow) {
-          analytics.typeListing_typeSaved({
-            key: "defaultImportanceId",
-            value: value
-          });
-          row.replaceWith(newRow);
-          el.attr("disabled", false);
-        });
+        this.saveTypeChange(result).then(
+          function (newRow) {
+            analytics.typeListing_typeSaved({
+              key: "defaultImportanceId",
+              value: value
+            });
+            row.replaceWith(newRow);
+            el.attr("disabled", false);
+          },
+          _.bind(function () {
+            el.val(oldValue);
+            this.$(".not-logged-in").show();
+            el.attr("disabled", false);
+          }, this)
+        );
       }
     },
 
@@ -301,21 +313,26 @@ define([
           if (newValue !== values[data.id][options.key]) {
             var result = this.getChangeObject(row);
             result[options.key] = newValue;
-            options.save(result).then(function (newRow) {
+            options.save(result).then(
+              function (newRow) {
 
-              analytics["typeListing_" + options.valueType + "Saved"]({
-                key: options.key,
-                value: newValue
-              });
+                analytics["typeListing_" + options.valueType + "Saved"]({
+                  key: options.key,
+                  value: newValue
+                });
 
-              if (newRow) {
-                row.replaceWith(newRow);
-                if (options.bindRowEvents) {
-                  options.bindRowEvents(newRow);
+                if (newRow) {
+                  row.replaceWith(newRow);
+                  if (options.bindRowEvents) {
+                    options.bindRowEvents(newRow);
+                  }
                 }
-              }
 
-            });
+              },
+              _.bind(function () {
+                this.$(".not-logged-in").show();
+              }, this)
+            );
           } else {
             input.trigger("blur");
           }
