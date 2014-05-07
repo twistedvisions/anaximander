@@ -1,15 +1,19 @@
 /*global sinon, describe, it, before, after, beforeEach, afterEach*/
 define(
 
-  ["jquery", "backbone", "when", "views/type_listing"],
+  ["jquery", "underscore", "backbone", "when", "views/type_listing"],
 
-  function ($, Backbone, when, TypeListing) {
+  function ($, _, Backbone, when, TypeListing) {
 
-    describe.only("type listing", function () {
+    describe("type listing", function () {
+    // describe.only("type listing", function () {
       describe("startup", function () {
         before(function () {
           this.typeListing = new TypeListing();
-          sinon.stub(this.typeListing, "getData");
+          sinon.stub(this.typeListing, "getData", function () {
+            //dont ever return or it will try to render
+            return when.defer().promise;
+          });
           sinon.stub(this.typeListing, "getThingTypes", function () {
             return {
               then: function (f) {
@@ -45,7 +49,10 @@ define(
 
         beforeEach(function () {
           this.typeListing = new TypeListing();
-          sinon.stub(this.typeListing, "getData");
+          sinon.stub(this.typeListing, "getData", function () {
+            //dont ever return or it will try to render
+            return when.defer().promise;
+          });
           $("body").append(this.typeListing.render());
         });
         afterEach(function () {
@@ -129,7 +136,6 @@ define(
             this.typeListing.getImportanceData.restore();
           });
         });
-
         describe("showImportances", function () {
           beforeEach(function () {
             sinon.stub(this.typeListing, "getImportanceData", function () {
@@ -224,39 +230,61 @@ define(
                 ]
               ]
             );
-            sinon.stub(this.typeListing, "saveTypeChange", function () {
+            sinon.stub(this.typeListing, "saveTypeChange", _.bind(function () {
               return {
-                then: function (f) {
-                  f();
-                }
+                then: _.bind(function (fn) {
+                  var type = {
+                    id: 1,
+                    name: "type name",
+                    defaultImportanceId: 2,
+                    last_edited: "2014-04-29",
+                    importances: []
+                  };
+                  fn(this.typeListing.handleTypeChange(type));
+                }, this)
               };
-            });
+            }, this));
           });
           it("should save the importance if it is different", function () {
-            this.typeListing.$(".default-importance select").val().should.equal("1");
-            this.typeListing.$(".default-importance select").val(2);
-            this.typeListing.$(".default-importance select").val().should.equal("2");
-            this.typeListing.$(".default-importance select").trigger("change");
+            var select = this.typeListing.$(".default-importance select");
+            select.val().should.equal("1");
+            select.val(2);
+            select.val().should.equal("2");
+            select.trigger("change");
             this.typeListing.saveTypeChange.calledOnce.should.equal(true);
             this.typeListing.saveTypeChange.args[0][0].defaultImportanceId.should.equal(2);
           });
           it("should not save the importance if it is the same", function () {
-            this.typeListing.$(".default-importance select").val().should.equal("1");
-            this.typeListing.$(".default-importance select").val(1);
-            this.typeListing.$(".default-importance select").val().should.equal("1");
-            this.typeListing.$(".default-importance select").trigger("change");
+            var select = this.typeListing.$(".default-importance select");
+            select.val().should.equal("1");
+            select.val(1);
+            select.val().should.equal("1");
+            select.trigger("change");
             this.typeListing.saveTypeChange.callCount.should.equal(0);
+          });
+          it("should update the last_edited time", function () {
+            var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.default-importance");
+            cell.find("select").val(2);
+            cell.find("select").trigger("change");
+            var row = this.typeListing.$(".types tbody tr:nth-child(1)");
+            row.data().lastEdited.should.equal("2014-04-29");
           });
         });
         describe("editing cells", function () {
           beforeEach(function () {
-            sinon.stub(this.typeListing, "saveTypeChange", function () {
+            sinon.stub(this.typeListing, "saveTypeChange", _.bind(function () {
               return {
-                then: function (fn) {
-                  fn();
-                }
+                then: _.bind(function (fn) {
+                  var type = {
+                    id: 1,
+                    name: "new name",
+                    last_edited: "2014-04-29",
+                    importances: []
+                  };
+                  fn(this.typeListing.handleTypeChange(type));
+                }, this)
               };
-            });
+            }, this));
             this.typeListing.showTypes(
               [
                 [
@@ -270,8 +298,11 @@ define(
                 []
               ]
             );
-            this.el = this.typeListing.$("div.types tbody td.name");
+            this.el = this.typeListing.$("div.types tbody tr:nth-child(1) td.name");
             this.el.trigger("click");
+          });
+          afterEach(function () {
+            this.typeListing.saveTypeChange.restore();
           });
           it("should take the current cell value and put it in a input field", function () {
             this.el.find("input").length.should.equal(1);
@@ -305,11 +336,8 @@ define(
               event.keyCode = 13;
               this.el.find("input").trigger(event);
             });
-            afterEach(function () {
-              this.typeListing.saveTypeChange.restore();
-            });
-            it("should save when enter is pressed", function () {
-              this.el.text().should.equal("new name");
+            it("should enter the new text when enter is pressed", function () {
+              this.typeListing.$(".types tbody tr:nth-child(1) td.name").text().should.equal("new name");
             });
             it("should pass the id as a save parameter", function () {
               this.typeListing.saveTypeChange.args[0][0].id.should.equal(1);
@@ -320,6 +348,32 @@ define(
             it("should pass the changed key with the value as a save parameter", function () {
               this.typeListing.saveTypeChange.args[0][0].name.should.equal("new name");
             });
+            it("should update the last edited time of the row after the save", function () {
+              this.typeListing.$(".types tbody tr:nth-child(1)").data().lastEdited.should.equal("2014-04-29");
+            });
+            it("should still be able to edit cells after the save", function () {
+              var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.name");
+              cell.trigger("click");
+              cell.hasClass("editing").should.equal(true);
+            });
+            it("should not allow you to save the new value a second time", function () {
+              var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.name");
+              cell.trigger("click");
+              cell.find("input").val("new name");
+              var event = $.Event("keydown");
+              event.keyCode = 13;
+              cell.find("input").trigger(event);
+              this.typeListing.saveTypeChange.callCount.should.equal(1);
+            });
+            it("should allow you to revert back to the original value", function () {
+              var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.name");
+              cell.trigger("click");
+              cell.find("input").val("type name");
+              var event = $.Event("keydown");
+              event.keyCode = 13;
+              cell.find("input").trigger(event);
+              this.typeListing.saveTypeChange.callCount.should.equal(2);
+            });
           });
           describe("no changes when saving", function () {
             beforeEach(function () {
@@ -327,9 +381,6 @@ define(
               var event = $.Event("keydown");
               event.keyCode = 13;
               this.el.find("input").trigger(event);
-            });
-            afterEach(function () {
-              this.typeListing.saveTypeChange.restore();
             });
             it("should not call save if nothing actually changed", function () {
               this.typeListing.saveTypeChange.callCount.should.equal(0);

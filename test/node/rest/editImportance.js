@@ -7,7 +7,7 @@ var _ = require("underscore");
 var tryTest = require("../tryTest");
 var stubDb = require("../stubDb");
 
-var editType = require("../../../lib/rest/editType");
+var editImportance = require("../../../lib/rest/editImportance");
 
 var winston = require("winston");
 try {
@@ -16,7 +16,7 @@ try {
   //wasn't there in the first place!
 }
 
-describe("editType", function () {
+describe("editImportance", function () {
   before(function () {
     this.testEdit = function (fn, done, failureFn) {
       var req = {
@@ -34,36 +34,36 @@ describe("editType", function () {
       var next = function (e) {
         return failureFn ? failureFn(e) : null;
       };
-      this.typeEditor.call(req, res, next).then(tryTest(_.bind(fn, this), done));
+      this.importanceEditor.call(req, res, next).then(tryTest(_.bind(fn, this), done));
       stubDb.setQueryValues(this, this.stubValues);
     };
   });
   beforeEach(function () {
-    this.typeEditor = new editType.TypeEditor();
+    this.importanceEditor = new editImportance.ImportanceEditor();
     stubDb.setup(this);
   });
   afterEach(function () {
     stubDb.restore(this);
-    this.typeEditor = null;
+    this.importanceEditor = null;
   });
   describe("component functions", function () {
     beforeEach(function () {
       this.stubValues = [];
-      sinon.spy(this.typeEditor, "ensure");
-      sinon.stub(this.typeEditor, "getType", _.bind(function () {
-        this.typeEditor.originalType = this.originalType;
+      sinon.spy(this.importanceEditor, "ensure");
+      sinon.stub(this.importanceEditor, "getImportance", _.bind(function () {
+        this.importanceEditor.originalImportance = this.originalImportance;
       }, this));
 
-      this.originalType = {
-        name: "type name",
+      this.originalImportance = {
+        name: "importance name",
         default_importance_id: 1,
         last_edited: "1999-01-01"
       };
     });
     afterEach(function () {
-      this.typeEditor.ensure.restore();
-      this.typeEditor.getType.restore();
-      this.originalType = null;
+      this.importanceEditor.ensure.restore();
+      this.importanceEditor.getImportance.restore();
+      this.originalImportance = null;
     });
     it("should throw an error if no id is passed", function (done) {
       this.fullBody = {};
@@ -83,15 +83,15 @@ describe("editType", function () {
         done();
       });
     });
-    //todo: this should live on the class editType extends
+
     it("should fail if no last_edited time is passed", function (done) {
       this.fullBody = {
         id: 1,
-        type: {id: 2}
+        name: "new name"
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}]
       ];
 
       this.testEdit(function () {
@@ -104,11 +104,11 @@ describe("editType", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        type: {id: 2}
+        name: "new name"
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-02"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-02"}]
       ];
 
       this.testEdit(function () {
@@ -116,26 +116,6 @@ describe("editType", function () {
       }, done, function () {
         done();
       });
-    });
-    it("should ensure the default importance if it is passed", function (done) {
-      this.fullBody = {
-        id: 1,
-        last_edited: "2000-01-01",
-        defaultImportance: {id: 2}
-      };
-
-      this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "find_importance_by_id", id: 2}],
-        [{db_call: "update_default_importance_id", id: 2}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
-      ];
-
-      this.testEdit(function () {
-        this.typeEditor.ensure.calledWith(sinon.match.any, "type importance").should.equal(true);
-      }, done);
     });
 
     it("should save a changed name", function (done) {
@@ -146,38 +126,58 @@ describe("editType", function () {
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_type_name"}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_type_name");
+        this.args[1][1].should.equal("update_importance_name");
         this.args[1][2][1].should.equal("new name");
       }, done);
     });
 
-    it("should save a changed default importance", function (done) {
+    it("should save a changed description", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        defaultImportance: {id: 2}
+        description: "new description"
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "find_importance_by_id", id: 2}],
-        [{db_call: "update_default_importance_id"}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_description"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("update_default_importance_id");
-        this.args[2][2][1].should.equal(2);
+        this.args[1][1].should.equal("update_importance_description");
+        this.args[1][2][1].should.equal("new description");
+      }, done);
+    });
+
+    it("should save a changed value", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        value: 8
+      };
+
+      this.stubValues = [
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_value"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[1][1].should.equal("update_importance_value");
+        this.args[1][2][1].should.equal(8);
       }, done);
     });
 
@@ -189,19 +189,19 @@ describe("editType", function () {
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_type_name"}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
+        this.args[2][1].should.equal("save_importance_change");
       }, done);
     });
 
-    it("should not save the last_edited time in the type change", function (done) {
+    it("should not save the last_edited time in the importance change", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
@@ -209,22 +209,22 @@ describe("editType", function () {
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_type_name"}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
+        this.args[2][1].should.equal("save_importance_change");
         should.not.exist(JSON.parse(this.args[2][2][3]).last_edited);
         should.not.exist(JSON.parse(this.args[2][2][4]).last_edited);
 
       }, done);
     });
 
-    it("should not save unknown keys in the type change", function (done) {
+    it("should not save unknown keys in the importance change", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
@@ -233,20 +233,20 @@ describe("editType", function () {
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_type_name"}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
+        this.args[2][1].should.equal("save_importance_change");
         should.not.exist(JSON.parse(this.args[2][2][4]).funny);
       }, done);
     });
 
-    it("should return the new type", function (done) {
+    it("should return the new importance", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
@@ -255,11 +255,11 @@ describe("editType", function () {
       };
 
       this.stubValues = [
-        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_type_name"}],
-        [{db_call: "save_type_change"}],
-        [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id", last_edited: "2014-01-01"}]
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id", last_edited: "2014-01-01"}]
       ];
 
       this.testEdit(function () {

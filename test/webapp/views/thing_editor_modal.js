@@ -21,6 +21,14 @@ define(
           }),
           state: new Backbone.Model()
         });
+        this.thingEditor.thingEditor.subtypes.updateData = _.bind(function () {
+          this.thingEditor.thingEditor.subtypes.reset([]);
+          return {
+            then: function (fn) {
+              fn();
+            }
+          };
+        }, this);
       });
       describe("interactions", function () {
         it("should show history when you click on the tab", function () {

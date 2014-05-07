@@ -12,12 +12,12 @@ define([
 ], function ($, _, Backbone, when, analytics,
     template, typeListingTemplate, importanceListingTemplate) {
   template = _.template(template);
-  typeListingTemplate = _.template(typeListingTemplate);
-  importanceListingTemplate = _.template(importanceListingTemplate);
   var TypeListing = Backbone.View.extend({
     className: "type-listing",
     initialize: function (/*options*/) {
 
+      this.typeListingTemplate = _.template(typeListingTemplate);
+      this.importanceListingTemplate = _.template(importanceListingTemplate);
     },
 
     render: function () {
@@ -57,16 +57,19 @@ define([
     },
 
     showEventTypes: function () {
+      this.selectedTypeId = 2;
       when.all([this.getData("/event_type"), this.getData("/event_type/usage")])
         .then(_.bind(this.showTypes, this));
     },
 
     showRoles: function () {
+      this.selectedTypeId = 3;
       when.all([this.getData("/role"), this.getData("/role/usage")])
         .then(_.bind(this.showTypes, this));
     },
 
     showThingSubtype: function (id) {
+      this.selectedTypeId = 4;
       when.all([
         this.getData("/type/" + id + "/type"),
         this.getData("/type/" + id + "/type/usage")
@@ -85,44 +88,70 @@ define([
       this.usages = _.indexBy(usages, "id");
       this.$(".types tbody").empty();
       _.each(types, function (type) {
-        var usage = this.usages[type.id];
-        var html = $(typeListingTemplate(_.extend(type, {
-          usage: usage ? usage.usage : 0
-        })));
+        var html = $(this.typeListingTemplate(this.getTypeObj(type)));
         this.$(".types tbody").append(html);
       }, this);
-      this.$(".types tbody td.name").on("click", _.bind(this.editCell, this, {
+      this.bindTypeRowEvents();
+    },
+
+    bindTypeRowEvents: function (row) {
+
+      var rows = row || this.$(".types tbody tr");
+      var bindRowEvents = _.bind(this.bindTypeRowEvents, this);
+      rows.find("td.name").on("click", _.bind(this.editCell, this, {
         key: "name",
-        save: _.bind(this.saveTypeChange, this)
-      }));
-      this.$(".default-importance select").on("change", _.bind(this.handleDefaultImportanceChange, this));
-      this.$(".types tbody td.view-importances span").on("click", _.bind(this.getImportances, this));
+        save: _.bind(this.saveTypeChange, this),
+        bindRowEvents: bindRowEvents
+      }, this.types));
+      rows.find("td.default-importance select").on("change", _.bind(this.handleDefaultImportanceChange, this));
+      rows.find("td.view-importances span").on("click", _.bind(this.getImportances, this));
+
+    },
+
+    getTypeObj: function (type) {
+      var usage = this.usages[type.id];
+      return _.extend(type, {
+        usage: usage ? usage.usage : 0
+      });
     },
 
     handleDefaultImportanceChange: function (e) {
       var el = $(e.target);
       var row = el.parents("tr");
       var value = parseInt(el.val(), 10);
-      if (this.types[row.data().id].default_importance_id !== value) {
-        var result = this.getTypeChangeObject(row);
+      var id = row.data().id;
+      if (this.types[id].default_importance_id !== value) {
+        var result = this.getChangeObject(row);
         result.defaultImportanceId = value;
         el.attr("disabled", true);
-        this.saveTypeChange(result).then(function () {
+        this.saveTypeChange(result).then(function (newRow) {
+          row.replaceWith(newRow);
           el.attr("disabled", false);
         });
       }
-
     },
 
     saveTypeChange: function (changes) {
-      var d = when($.ajax({
+      var d = when.defer();
+      changes.typeId = this.selectedTypeId;
+      when($.ajax({
         url: "/type",
         type: "PUT",
         processData: false,
         contentType: "application/json",
         data: JSON.stringify(changes)
-      }));
-      return d;
+      })).then(
+        _.bind(function (type) {
+          d.resolve(this.handleTypeChange(type));
+        }, this),
+        d.reject
+      );
+      return d.promise;
+    },
+
+    handleTypeChange: function (type) {
+      _.extend(this.types[type.id], type);
+      return $(this.typeListingTemplate(this.getTypeObj(this.types[type.id])));
     },
 
     getImportances: function (e) {
@@ -140,34 +169,76 @@ define([
       return when($.get(url));
     },
 
-    showImportances: function (id, importanceUsage) {
+    showImportances: function (typeId, importanceUsage) {
       this.$("div.types").hide();
       this.$("div.importances").show();
       this.$(".importances tbody").empty();
-      var type = this.types[id];
+      var type = this.types[typeId];
       this.$(".selected-type").text(type.name);
-      importanceUsage = _.groupBy(importanceUsage, "id");
+      this.importanceUsage = _.groupBy(importanceUsage, "id");
       _.each(type.importances, function (importance) {
-        var usage = importanceUsage[importance.id] ?
-          importanceUsage[importance.id][0].usage :
-          0;
-        var html = $(importanceListingTemplate(_.extend(importance, {
-          usage: usage
-        })));
+        var html = $(this.importanceListingTemplate(this.getImportanceObj(importance)));
         this.$(".importances tbody").append(html);
       }, this);
-      this.$(".importances tbody td.name").on("click", _.bind(this.editCell, this, {}));
-      this.$(".importances tbody td.description").on("click", _.bind(this.editCell, this, {}));
-      this.$(".importances tbody td.value").on("click", _.bind(this.editCell, this, {
-        type: "number"
-      }));
+      this.importances = _.groupBy(type.importances, "id");
+      this.bindImportanceRowEvents(typeId);
       this.$(".importances .close").on("click", _.bind(function () {
         this.$("div.types").show();
         this.$("div.importances").hide();
       }, this));
     },
 
-    editCell: function (options, e) {
+    getImportanceObj: function (importance) {
+      var usage = this.importanceUsage[importance.id] ?
+        this.importanceUsage[importance.id][0].usage :
+        0;
+      return _.extend(importance, {
+        usage: usage
+      });
+    },
+
+    bindImportanceRowEvents: function (typeId, row) {
+      var saveCall = _.bind(this.saveImportanceChange, this, typeId);
+      var bindRowEvents = _.bind(this.bindImportanceRowEvents, this, typeId);
+      var rows = row || this.$(".importances tbody tr");
+      rows.find("td.name").on("click", _.bind(this.editCell, this, {
+        key: "name",
+        save: saveCall,
+        bindRowEvents: bindRowEvents
+      }, this.importances));
+      rows.find("td.description").on("click", _.bind(this.editCell, this, {
+        key: "description",
+        save: saveCall,
+        bindRowEvents: bindRowEvents
+      }, this.importances));
+      rows.find("td.value").on("click", _.bind(this.editCell, this, {
+        type: "number",
+        key: "value",
+        save: saveCall,
+        bindRowEvents: bindRowEvents
+      }, this.importances));
+    },
+
+    saveImportanceChange: function (typeId, changes) {
+      var d = when.defer();
+      changes.typeId = typeId;
+      when($.ajax({
+        url: "/importance",
+        type: "PUT",
+        processData: false,
+        contentType: "application/json",
+        data: JSON.stringify(changes)
+      })).then(
+        _.bind(function (importance) {
+          _.extend(this.importances[importance.id], importance);
+          d.resolve($(this.importanceListingTemplate(this.getImportanceObj(this.importances[importance.id]))));
+        }, this),
+        d.reject
+      );
+      return d.promise;
+    },
+
+    editCell: function (options, values, e) {
       if (!e) {
         e = options;
         options = {};
@@ -191,14 +262,19 @@ define([
 
       input.on("keydown", _.bind(function (e) {
         if (e.keyCode === 13) {
-          value = input.val();
+          var newValue = input.val();
           input.attr("disabled", true);
           var data = row.data();
-          if (value !== this.types[data.id][options.key]) {
-            var result = this.getTypeChangeObject(row);
-            result[options.key] = value;
-            options.save(result).then(function () {
-              input.trigger("blur");
+          if (newValue !== values[data.id][options.key]) {
+            var result = this.getChangeObject(row);
+            result[options.key] = newValue;
+            options.save(result).then(function (newRow) {
+              if (newRow) {
+                row.replaceWith(newRow);
+                if (options.bindRowEvents) {
+                  options.bindRowEvents(newRow);
+                }
+              }
             });
           } else {
             input.trigger("blur");
@@ -210,7 +286,7 @@ define([
       input.select();
     },
 
-    getTypeChangeObject: function (row) {
+    getChangeObject: function (row) {
       var data = row.data();
       return {
         id: data.id,

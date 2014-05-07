@@ -85,6 +85,7 @@ new Provider.provider("twitter");
 new Provider.provider("github");
 
 require("./lib/rest/editEvent").init(secureApp);
+require("./lib/rest/editImportance").init(secureApp);
 require("./lib/rest/editThing").init(secureApp);
 require("./lib/rest/editType").init(secureApp);
 require("./lib/rest/getEvent").init(secureApp);
