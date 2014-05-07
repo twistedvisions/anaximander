@@ -5,7 +5,7 @@ define(
 
   function ($, _, Backbone, when, TypeListing, analytics) {
 
-    describe.only("type listing", function () {
+    describe("type listing", function () {
       describe("startup", function () {
         before(function () {
           this.typeListing = new TypeListing();
