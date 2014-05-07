@@ -1,12 +1,11 @@
 /*global sinon, describe, it, before, after, beforeEach, afterEach*/
 define(
 
-  ["jquery", "underscore", "backbone", "when", "views/type_listing"],
+  ["jquery", "underscore", "backbone", "when", "views/type_listing", "analytics"],
 
-  function ($, _, Backbone, when, TypeListing) {
+  function ($, _, Backbone, when, TypeListing, analytics) {
 
-    describe("type listing", function () {
-    // describe.only("type listing", function () {
+    describe.only("type listing", function () {
       describe("startup", function () {
         before(function () {
           this.typeListing = new TypeListing();
@@ -24,15 +23,21 @@ define(
               }
             };
           });
+          sinon.stub(analytics, "typeListing_showTypes");
           $("body").append(this.typeListing.render());
         });
         after(function () {
+          analytics.typeListing_showTypes.restore();
           this.typeListing.getThingTypes.restore();
           this.typeListing.getData.restore();
           this.typeListing.$el.remove();
         });
         it("should show event types by default", function () {
           this.typeListing.$("#event-tab").hasClass("active").should.equal(true);
+        });
+        it("should send analytics by default", function () {
+          analytics.typeListing_showTypes.calledOnce.should.equal(true);
+          analytics.typeListing_showTypes.args[0][0].typeId.should.equal(2);
         });
         it("should show types by default", function () {
           this.typeListing.$("div.types:visible").length.should.equal(1);
@@ -163,10 +168,22 @@ define(
                 ]
               ]
             );
+            sinon.stub(analytics, "typeListing_showImportances");
+            sinon.stub(analytics, "typeListing_hideImportances");
+            sinon.stub(analytics, "typeListing_importanceEdited");
             this.typeListing.$(".view-importances span").trigger("click");
+          });
+          afterEach(function () {
+            analytics.typeListing_showImportances.restore();
+            analytics.typeListing_hideImportances.restore();
+            analytics.typeListing_importanceEdited.restore();
           });
           it("should show the importances table", function () {
             this.typeListing.$("div.importances:visible").length.should.equal(1);
+          });
+          it("should send analytics", function () {
+            analytics.typeListing_showImportances.calledOnce.should.equal(true);
+            analytics.typeListing_showImportances.args[0][0].typeId.should.equal(1);
           });
           it("should hide the types table", function () {
             this.typeListing.$("div.types:visible").length.should.equal(0);
@@ -188,6 +205,11 @@ define(
             el.trigger("click");
             el.hasClass("editing").should.equal(true);
           });
+          it("should send analytics when the name is edited", function () {
+            var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
+            el.trigger("click");
+            analytics.typeListing_importanceEdited.calledOnce.should.equal(true);
+          });
           it("should make descriptions editable", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.description");
             el.trigger("click");
@@ -207,6 +229,10 @@ define(
             });
             it("should show types on close", function () {
               this.typeListing.$("div.types:visible").length.should.equal(1);
+            });
+            it("should send analytics", function () {
+              analytics.typeListing_hideImportances.calledOnce.should.equal(true);
+              analytics.typeListing_hideImportances.args[0][0].typeId.should.equal(1);
             });
           });
         });
@@ -244,6 +270,10 @@ define(
                 }, this)
               };
             }, this));
+            sinon.stub(analytics, "typeListing_typeSaved");
+          });
+          afterEach(function () {
+            analytics.typeListing_typeSaved.restore();
           });
           it("should save the importance if it is different", function () {
             var select = this.typeListing.$(".default-importance select");
@@ -268,6 +298,12 @@ define(
             cell.find("select").trigger("change");
             var row = this.typeListing.$(".types tbody tr:nth-child(1)");
             row.data().lastEdited.should.equal("2014-04-29");
+          });
+          it("should send analytics", function () {
+            var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.default-importance");
+            cell.find("select").val(2);
+            cell.find("select").trigger("change");
+            analytics.typeListing_typeSaved.calledOnce.should.equal(true);
           });
         });
         describe("editing cells", function () {
@@ -299,14 +335,21 @@ define(
               ]
             );
             this.el = this.typeListing.$("div.types tbody tr:nth-child(1) td.name");
+            sinon.stub(analytics, "typeListing_typeEdited");
+            sinon.stub(analytics, "typeListing_typeSaved");
             this.el.trigger("click");
           });
           afterEach(function () {
             this.typeListing.saveTypeChange.restore();
+            analytics.typeListing_typeEdited.restore();
+            analytics.typeListing_typeSaved.restore();
           });
           it("should take the current cell value and put it in a input field", function () {
             this.el.find("input").length.should.equal(1);
             this.el.find("input").val().should.equal("type name");
+          });
+          it("should send an analytics event", function () {
+            analytics.typeListing_typeEdited.calledOnce.should.equal(true);
           });
           it("should hide the current cell value", function () {
             this.el.text().should.equal("");
@@ -338,6 +381,9 @@ define(
             });
             it("should enter the new text when enter is pressed", function () {
               this.typeListing.$(".types tbody tr:nth-child(1) td.name").text().should.equal("new name");
+            });
+            it("should send analytics", function () {
+              analytics.typeListing_typeSaved.calledOnce.should.equal(true);
             });
             it("should pass the id as a save parameter", function () {
               this.typeListing.saveTypeChange.args[0][0].id.should.equal(1);

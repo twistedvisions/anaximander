@@ -50,26 +50,40 @@ define([
         this.$(".thing-tab ul").append(thingTab(type));
       }, this);
       this.$(".type-type-tab a").on("click", _.bind(function (e) {
-        var subtypeId = $(e.target).data().id;
+        var el = $(e.target);
+        var subtypeId = el.data().id;
         this.currentSubtypeId = subtypeId;
-        this.showThingSubtype(subtypeId);
+        this.showThingSubtype(subtypeId, el.text());
       }, this));
     },
 
     showEventTypes: function () {
       this.selectedTypeId = 2;
+      analytics.typeListing_showTypes({
+        typeId: this.selectedTypeId,
+        typeName: "event types"
+      });
       when.all([this.getData("/event_type"), this.getData("/event_type/usage")])
         .then(_.bind(this.showTypes, this));
     },
 
     showRoles: function () {
       this.selectedTypeId = 3;
+      analytics.typeListing_showTypes({
+        typeId: this.selectedTypeId,
+        typeName: "roles"
+      });
       when.all([this.getData("/role"), this.getData("/role/usage")])
         .then(_.bind(this.showTypes, this));
     },
 
-    showThingSubtype: function (id) {
+    showThingSubtype: function (id, name) {
       this.selectedTypeId = 4;
+      analytics.typeListing_showTypes({
+        typeId: this.selectedTypeId,
+        subtypeId: id,
+        typeName: name
+      });
       when.all([
         this.getData("/type/" + id + "/type"),
         this.getData("/type/" + id + "/type/usage")
@@ -99,6 +113,7 @@ define([
       var rows = row || this.$(".types tbody tr");
       var bindRowEvents = _.bind(this.bindTypeRowEvents, this);
       rows.find("td.name").on("click", _.bind(this.editCell, this, {
+        valueType: "type",
         key: "name",
         save: _.bind(this.saveTypeChange, this),
         bindRowEvents: bindRowEvents
@@ -125,6 +140,10 @@ define([
         result.defaultImportanceId = value;
         el.attr("disabled", true);
         this.saveTypeChange(result).then(function (newRow) {
+          analytics.typeListing_typeSaved({
+            key: "defaultImportanceId",
+            value: value
+          });
           row.replaceWith(newRow);
           el.attr("disabled", false);
         });
@@ -170,6 +189,9 @@ define([
     },
 
     showImportances: function (typeId, importanceUsage) {
+      analytics.typeListing_showImportances({
+        typeId: typeId
+      });
       this.$("div.types").hide();
       this.$("div.importances").show();
       this.$(".importances tbody").empty();
@@ -183,6 +205,9 @@ define([
       this.importances = _.groupBy(type.importances, "id");
       this.bindImportanceRowEvents(typeId);
       this.$(".importances .close").on("click", _.bind(function () {
+        analytics.typeListing_hideImportances({
+          typeId: typeId
+        });
         this.$("div.types").show();
         this.$("div.importances").hide();
       }, this));
@@ -202,16 +227,19 @@ define([
       var bindRowEvents = _.bind(this.bindImportanceRowEvents, this, typeId);
       var rows = row || this.$(".importances tbody tr");
       rows.find("td.name").on("click", _.bind(this.editCell, this, {
+        valueType: "importance",
         key: "name",
         save: saveCall,
         bindRowEvents: bindRowEvents
       }, this.importances));
       rows.find("td.description").on("click", _.bind(this.editCell, this, {
+        valueType: "importance",
         key: "description",
         save: saveCall,
         bindRowEvents: bindRowEvents
       }, this.importances));
       rows.find("td.value").on("click", _.bind(this.editCell, this, {
+        valueType: "importance",
         type: "number",
         key: "value",
         save: saveCall,
@@ -239,6 +267,11 @@ define([
     },
 
     editCell: function (options, values, e) {
+
+      analytics["typeListing_" + options.valueType + "Edited"]({
+        key: options.key
+      });
+
       if (!e) {
         e = options;
         options = {};
@@ -269,12 +302,19 @@ define([
             var result = this.getChangeObject(row);
             result[options.key] = newValue;
             options.save(result).then(function (newRow) {
+
+              analytics["typeListing_" + options.valueType + "Saved"]({
+                key: options.key,
+                value: newValue
+              });
+
               if (newRow) {
                 row.replaceWith(newRow);
                 if (options.bindRowEvents) {
                   options.bindRowEvents(newRow);
                 }
               }
+
             });
           } else {
             input.trigger("blur");
