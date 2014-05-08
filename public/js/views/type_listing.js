@@ -35,7 +35,31 @@ define([
         $(e.target).parent().hide();
       });
 
+      this.$(".filter input").on("keyup", _.bind(this.filterTables, this));
+      $("html").on("keyup", _.bind(function (e) {
+        if (e.keyCode === 8) {
+          this.filterTables();
+        }
+      }, this));
+
       return this.$el;
+    },
+
+    filterTables: function () {
+      var filterVal = this.$(".filter input").val();
+      var rowQuery = ".types table tbody tr, .importances table tbody tr";
+      if (filterVal === "") {
+        this.$(rowQuery).show();
+      } else {
+        this.$(rowQuery).each(function (index, row) {
+          row = $(row);
+          if (row.text().toLowerCase().indexOf(filterVal.toLowerCase()) === -1) {
+            row.hide();
+          } else {
+            row.show();
+          }
+        });
+      }
     },
 
     getThingTypes: function () {
@@ -230,6 +254,7 @@ define([
         this.$("div.types").show();
         this.$("div.importances").hide();
       }, this));
+      this.filterTables();
     },
 
     getImportanceObj: function (importance) {

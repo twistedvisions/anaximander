@@ -6,7 +6,7 @@ define(
 
   function ($, _, Backbone, when, TypeListing, User, analytics) {
 
-    describe.only("type listing", function () {
+    describe("type listing", function () {
       var user = new User();
       var hasPermission = true;
       user.hasPermission = function () {
@@ -260,6 +260,87 @@ define(
               analytics.typeListing_hideImportances.calledOnce.should.equal(true);
               analytics.typeListing_hideImportances.args[0][0].typeId.should.equal(1);
             });
+          });
+        });
+        describe("filtering", function () {
+          it("should filter the type table", function () {
+            this.typeListing.showTypes(
+              [
+                [
+                  {id: 1, name: "abc", importances: []},
+                  {id: 2, name: "def", importances: []}
+                ],
+                []
+              ]
+            );
+            this.typeListing.$(".types tbody tr:visible").length.should.equal(2);
+            this.typeListing.$(".filter input").val("ef");
+            this.typeListing.filterTables();
+            this.typeListing.$(".types tbody tr:visible").length.should.equal(1);
+          });
+          it("should filter the importance table", function () {
+            this.typeListing.$(".filter input").val("");
+            this.typeListing.showTypes(
+              [
+                [
+                  {
+                    id: 1,
+                    name: "type name",
+                    importances: [
+                      {id: 1, name: "importance 1"},
+                      {id: 2, name: "importance 2"}
+                    ]
+                  }
+                ],
+                []
+              ]
+            );
+            sinon.stub(this.typeListing, "getImportanceData", function () {
+              return {
+                then: function (fn) {
+                  fn();
+                }
+              };
+            });
+            this.typeListing.$(".view-importances span").trigger("click");
+            this.typeListing.$(".importances tbody tr:visible").length.should.equal(2);
+            this.typeListing.$(".filter input").val("e 2");
+            this.typeListing.filterTables();
+            this.typeListing.$(".importances tbody tr:visible").length.should.equal(1);
+          });
+          it("should change the filter when backspace is pressed", function () {
+            this.typeListing.$(".filter input").val("ef");
+            this.typeListing.showTypes(
+              [
+                [
+                  {id: 1, name: "abcde", importances: []},
+                  {id: 2, name: "def", importances: []}
+                ],
+                []
+              ]
+            );
+            this.typeListing.filterTables();
+            this.typeListing.$(".types tbody tr:visible").length.should.equal(1);
+            this.typeListing.$(".filter input").val("e");
+            var event = $.Event("keyup");
+            event.keyCode = 8;
+            $("html").trigger(event);
+            this.typeListing.$(".types tbody tr:visible").length.should.equal(2);
+          });
+          it("should filter without respect to case", function () {
+            this.typeListing.showTypes(
+              [
+                [
+                  {id: 1, name: "abc", importances: []},
+                  {id: 2, name: "deF", importances: []}
+                ],
+                []
+              ]
+            );
+            this.typeListing.$(".types tbody tr:visible").length.should.equal(2);
+            this.typeListing.$(".filter input").val("Ef");
+            this.typeListing.filterTables();
+            this.typeListing.$(".types tbody tr:visible").length.should.equal(1);
           });
         });
         describe("editing default importance", function () {
