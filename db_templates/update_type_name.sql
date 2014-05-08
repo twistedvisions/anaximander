@@ -1,3 +1,3 @@
 update type
-set name = $2
+set name = lower($2)
 where id = $1

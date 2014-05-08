@@ -120,6 +120,9 @@ define([
         rows.find("td.name").on("click", _.bind(this.editCell, this, {
           valueType: "type",
           key: "name",
+          isDifferent: function (newValue, oldValue) {
+            return newValue.toLowerCase() !== oldValue.toLowerCase();
+          },
           save: _.bind(this.saveTypeChange, this),
           bindRowEvents: bindRowEvents
         }, this.types));
@@ -246,6 +249,9 @@ define([
         rows.find("td.name").on("click", _.bind(this.editCell, this, {
           valueType: "importance",
           key: "name",
+          isDifferent: function (newValue, oldValue) {
+            return newValue.toLowerCase() !== oldValue.toLowerCase();
+          },
           save: saveCall,
           bindRowEvents: bindRowEvents
         }, this.importances));
@@ -295,6 +301,12 @@ define([
         options = {};
       }
 
+      if (!options.isDifferent) {
+        options.isDifferent = function (newValue, oldValue) {
+          return newValue !== oldValue;
+        };
+      }
+
       var el = $(e.target);
       var row = el.parents("tr");
       var value = el.text();
@@ -316,7 +328,7 @@ define([
           var newValue = input.val();
           input.attr("disabled", true);
           var data = row.data();
-          if (newValue !== values[data.id][options.key]) {
+          if (options.isDifferent(newValue, values[data.id][options.key])) {
             var result = this.getChangeObject(row);
             result[options.key] = newValue;
             options.save(result).then(

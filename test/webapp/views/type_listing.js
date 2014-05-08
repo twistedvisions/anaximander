@@ -511,6 +511,17 @@ define(
               this.typeListing.saveTypeChange.callCount.should.equal(0);
             });
           });
+          describe("only case change when saving name", function () {
+            beforeEach(function () {
+              this.el.find("input").val("Type Name");
+              var event = $.Event("keydown");
+              event.keyCode = 13;
+              this.el.find("input").trigger(event);
+            });
+            it("should not call save", function () {
+              this.typeListing.saveTypeChange.callCount.should.equal(0);
+            });
+          });
         });
       });
     });

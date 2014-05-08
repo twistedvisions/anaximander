@@ -201,6 +201,27 @@ describe("editType", function () {
       }, done);
     });
 
+    it("should save the name in lower case", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "New Name"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_type_name"}],
+        [{db_call: "save_type_change"}],
+        [{db_call: "update_type_last_edited"}],
+        [{db_call: "find_type_by_id"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("save_type_change");
+        JSON.parse(this.args[2][2][4]).name.should.equal("new name");
+      }, done);
+    });
+
     it("should not save the last_edited time in the type change", function (done) {
       this.fullBody = {
         id: 1,

@@ -246,6 +246,28 @@ describe("editImportance", function () {
       }, done);
     });
 
+    it("should save the name in lower case", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "New Name",
+        funny: "business"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[2][1].should.equal("save_importance_change");
+        JSON.parse(this.args[2][2][4]).name.should.equal("new name");
+      }, done);
+    });
+
     it("should return the new importance", function (done) {
       this.fullBody = {
         id: 1,
