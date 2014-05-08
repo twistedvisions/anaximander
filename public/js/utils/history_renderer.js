@@ -12,7 +12,9 @@ define([
     //events
     "newParticipants", "editedParticipants", "removedParticipants",
     //things
-    "newSubtypes", "editedSubtypes", "removedSubtypes"
+    "newSubtypes", "editedSubtypes", "removedSubtypes",
+    //type
+    "defaultImportance"
   ];
   var getKeyValues = function (values) {
     var keyValues = [];
@@ -40,6 +42,9 @@ define([
     _.each(values.removedSubtypes, function (subtype) {
       keyValues.push(["subtype removed", subtype]);
     });
+    if (values.defaultImportance) {
+      keyValues.push(["default importance", values.defaultImportance]);
+    }
     return keyValues;
   };
   var getValue = function (key, value, change) {

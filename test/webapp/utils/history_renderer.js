@@ -68,6 +68,24 @@ define(
           html.remove();
         }
       });
+      it("should show default importances with a nice key", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "defaultImportance": "new value"
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        try {
+          $("body").append(html);
+          html.find("td.field").text().should.equal("default importance");
+        } finally {
+          html.remove();
+        }
+      });
       it("should show the reason first", function () {
         var historyCollection = new Backbone.Collection([
           {

@@ -65,6 +65,15 @@ define(["underscore"], function (_) {
     "thingSaveClicked",
     "thingSaved",
 
+    //editing types
+    "typeListing_showTypes",
+    "typeListing_showImportances",
+    "typeListing_hideImportances",
+    "typeListing_typeEdited",
+    "typeListing_typeSaved",
+    "typeListing_importanceEdited",
+    "typeListing_importanceSaved",
+
 
     //filters
     "showFilters",

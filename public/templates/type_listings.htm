@@ -1,0 +1,72 @@
+<h1>Retred: Type listing</h1>
+<div class="filter">
+  <label>Filter: <input type="text"></label>
+</div>
+<div class="error-holder">
+  <div class="not-logged-in alert alert-danger alert-dismissable">
+    <button type="button" class="close" aria-hidden="true">&times;</button>
+    <strong>Change not saved!</strong>
+    Please go back to the main app and log in.
+  </div>
+</div>
+<div class="type-selector">
+  <ul class="nav nav-tabs">
+    <li class="active" id="event-tab" data-key="event_types">
+      <a href="#event" data-toggle="tab">
+        Event
+      </a>
+    </li>
+    <li id="role-tab" data-key="role">
+      <a href="#role" data-toggle="tab">
+        Role
+      </a>
+    </li>
+    <li class="thing-tab dropdown" data-key="thing_subtype">
+      <a href="#" id="thing-dropdown" class="dropdown-toggle" data-toggle="dropdown">
+        Thing
+        <b class="caret"></b>
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="thing-dropdown">
+
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div class="types">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="name">Name</th>
+        <th class="default-importance">Default Importance</th>
+        <th class="importances">Importances</th>
+        <th class="usage">Usage</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+<div class="importances panel panel-default">
+  <div class="panel-heading">
+    <span class="selected-type"></span>
+    <button type="button" class="close" aria-hidden="true">&times;
+    </button>
+  </div>
+  <div class="table-holder">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="name">Name</th>
+          <th class="description">Description</th>
+          <th class="value">Value</th>
+          <th class="usage">Usage</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -55,8 +55,16 @@ exports.up = function (db, callback) {
     {name: "organisations' foundation", typeId: 12},
     {name: "places' dissolutions", typeId: 13},
     {name: "places' foundations", typeId: 14},
-    {name: "subjects", typeId: 15},
-    {name: "attendees", typeId: 16}
+    {name: "battle sites", typeId: 15},
+    {name: "babies", typeId: 16},
+    {name: "defunct constructions", typeId: 17},
+    {name: "construction sites", typeId: 18},
+    {name: "new constructions", typeId: 19},
+    {name: "dead people", typeId: 20},
+    {name: "defunct organisations", typeId: 21},
+    {name: "new organisations", typeId: 22},
+    {name: "defunct places", typeId: 23},
+    {name: "new places", typeId: 24}
   ];
   var counter = 0;
   defaultImportances.forEach(function (defaultImportance) {

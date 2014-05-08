@@ -251,4 +251,38 @@ describe("processChanges", function () {
       this.updatedChanges[2].new_values.removedSubtypes[0].should.equal("type-name2");
     });
   });
+  describe("default importances", function () {
+    before(function (done) {
+      var changes = [];
+      [1, 2].forEach(function (i) {
+        for (var j = 0; j < i; j += 1) {
+          var change = {new_values: {}};
+          change.new_values.defaultImportanceId = [i];
+          changes.push(change);
+        }
+      });
+      this.changes = changes;
+      stubDb.setup(this);
+      stubDb.setQueryValues(this, [
+        [
+          {id: 1, name: "importance-name1"},
+          {id: 2, name: "importance-name2"}
+        ]
+      ]);
+      processChanges.processChanges(this.changes).then(_.bind(function (updatedChanges) {
+        this.updatedChanges = updatedChanges;
+        done();
+      }, this));
+    });
+    after(function () {
+      stubDb.restore(this);
+    });
+    it("should look the ids up from the db", function () {
+      this.args[0][1][0].should.eql([1, 2]);
+    });
+    it("should update the changes object with the name", function () {
+      this.updatedChanges[0].new_values.defaultImportance.should.equal("importance-name1");
+      this.updatedChanges[2].new_values.defaultImportance.should.equal("importance-name2");
+    });
+  });
 });
