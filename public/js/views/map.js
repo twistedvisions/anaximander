@@ -228,6 +228,7 @@ define([
       if (!this.locationChanged && (window.lastEvent !== "resize")) {
         window.lastEvent = "map";
       }
+      this.hideOptionsMenu();
       this.dontRedraw = true;
       this.model.set({
         "bounds": this.getBounds(),
@@ -307,6 +308,10 @@ define([
       if (this.lastInfoWindow) {
         this.lastInfoWindow.close();
       }
+      this.hideOptionsMenu();
+    },
+
+    hideOptionsMenu: function () {
       if (this.lastOptionsMenu) {
         this.lastOptionsMenu.close();
       }
