@@ -49,6 +49,7 @@ secureApp.configure(function () {
   }));
 });
 
+secureApp.use(express.compress());
 secureApp.use(express["static"](__dirname + "/public"));
 secureApp.use(express.cookieParser());
 secureApp.use(express.json());
