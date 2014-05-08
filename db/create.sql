@@ -108,10 +108,19 @@ INSERT INTO type (name, type_id, parent_type_id) VALUES
   ('place dissolution', 2, NULL),          --13
   ('place foundation', 2, NULL),           --14
 
-  ('subject', 3, NULL),                    --15
-  ('attendee', 3, NULL),                   --16
+  ('battle site', 3, NULL),                --15
+  ('baby', 3, NULL),                       --16
 
   ('person', 4, NULL),                     --17
   ('organisation', 4, NULL),               --18
   ('place', 4, NULL),                      --19
-  ('construction', 4, NULL);               --20
+  ('construction', 4, NULL),               --20
+
+  ('defunct construction', 3, NULL),       --21
+  ('construction site', 3, NULL),          --22
+  ('new construction', 3, NULL),           --23
+  ('dead person', 3, NULL),                --24
+  ('defunct organisation', 3, NULL),       --25
+  ('new organisation', 3, NULL),           --26
+  ('defunct place', 3, NULL),              --27
+  ('new place', 3, NULL);                  --28
