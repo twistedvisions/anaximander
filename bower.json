@@ -16,7 +16,36 @@
     "tests"
   ],
   "dependencies": {
-    "requirejs-plugins": "~1.0.2",
-    "momentjs": "~2.5.1"
+    "backbone": "1.x",
+    "bootstrap": "3.x",
+    "chroma-js": "0.5.x",
+    "cookies-js": "0.4.x",
+    "cryptojslib": "*",
+    "deep-diff": "0.1.x",
+    "jquery": "2.x",
+    "jquery-ui": "1.x",
+    "jqueryui-timepicker-addon": "1.x",
+    "lodash": "2.x",
+    "momentjs": "2.x",
+    "numeral": "1.x",
+    "parsleyjs": "2.x",
+    "requirejs-plugins": "1.x",
+    "requirejs-text": "2.x",
+    "select2": "3.x",
+    "underscore.string": "2.x",
+    "when": "2.x",
+    "require-css": "0.1.x",
+    "socket.io-client": "0.9.x"
+  },
+  "exportsOverride": {
+    "bootstrap": {
+      "bootstrap/less": "less/*.less",
+      "bootstrap/fonts": "fonts/*",
+      ".": "./dist/js/bootstrap.js"
+    },
+    "jquery-ui": {
+      ".": "./ui/jquery-ui.js",
+      "jquery-ui/themes/smoothness": "themes/smoothness/*"
+    }
   }
 }

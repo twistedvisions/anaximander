@@ -42,33 +42,36 @@ require.config({
   },
   map: {
     "*": {
-      "css": "libs/require-css/css"
+      "css": "libs/bower/require-css/css"
     }
   },
   paths: {
-    underscore: "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.0.0/lodash.min", // https://github.com/amdjs
-    jquery: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
-    jqueryui: "//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min",
-    backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
-    bootstrap: "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min",
-    text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
-    chroma: "//cdnjs.cloudflare.com/ajax/libs/chroma-js/0.4.12/chroma.min",
-    select2: "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2.min",
-    numeral: "//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min",
-    parsley: "libs/parsley",
-    templates: "../templates",
-    async: "./libs/async",
-    when: "./libs/when",
-    "deep-diff": "./libs/deep-diff",
-    styled_marker: "./libs/styled_marker",
-    underscore_string: "./libs/underscore_string",
-    fuse: "./libs/fuse",
-    sha256: "./libs/sha256",
+    "backbone": "./libs/bower/backbone/backbone",
+    "bootstrap": "./libs/bower/bootstrap/bootstrap",
+    "chroma": "./libs/bower/chroma-js/chroma",
+    "cookies": "./libs/bower/cookies-js/cookies",
+    "datetimepicker": "./libs/bower/jqueryui-timepicker-addon/src/jquery-ui-timepicker-addon",
+    "deep-diff": "./libs/bower/deep-diff/index",
+    "jquery": "./libs/bower/jquery/jquery",
+    "jqueryui": "./libs/bower/jquery-ui/jquery-ui",
+    "moment": "./libs/bower/momentjs/moment",
+    "numeral": "./libs/bower/numeral/numeral",
+    "parsley": "libs/bower/parsleyjs/parsley",
+    "select2": "./libs/bower/select2/select2",
+    "sha256": "./libs/bower/cryptojslib/sha256",
+    "text": "./libs/bower/requirejs-text/text",
+    "underscore": "./libs/bower/lodash/lodash.compat",
+    "underscore_string": "./libs/bower/underscore.string/lib/underscore.string",
+
+    // "when": "./libs/when",
+    "when": "./libs/bower/when/when",
+
+    "templates": "../templates",
+    "async": "./libs/async",
+    "fuse": "./libs/fuse",
     "range-slider": "libs/jQAllRangeSliders-min",
     "socketio": "../socket.io/socket.io",
-    cookies: "./libs/cookies",
-    moment: "./libs/moment",
-    datetimepicker: "./libs/datetimepicker"
+    "styled_marker": "./libs/styled_marker"
   }
 });
 

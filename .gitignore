@@ -6,3 +6,9 @@ public/css/*.css
 newrelic_agent.log
 *.pem
 *.crt
+provisioning/docker-registry/registry/*
+provisioning/roles/*
+provisioning/tmp/*
+out/*
+public/js/libs/bower/*
+public/js-prod/*

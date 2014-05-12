@@ -4,7 +4,7 @@ define([
   "underscore",
   "backbone",
   "bootstrap",
-  "libs/when",
+  "when",
   "collections/event_locations",
   "collections/types",
   "collections/subtypes",

@@ -20,7 +20,7 @@ require.config({
     bootstrap: "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min",
     text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
     templates: "../templates",
-    when: "./libs/when",
+    when: "./libs/bower/when/when",
     moment: "./libs/moment"
   }
 });
