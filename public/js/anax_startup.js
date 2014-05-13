@@ -6,7 +6,7 @@ define([
   "models/view_state",
   "models/current_user",
   "analytics",
-  "css!/css/anax"
+  "less!/css/anax"
 ], function (_, AppView, Router, ViewState, User, Analytics) {
   var App = function () {
     var defaultState = {

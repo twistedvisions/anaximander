@@ -6,7 +6,7 @@ define([
   "collections/types",
   "collections/subtypes",
   "text!templates/thing_editor.htm",
-  "css!/css/thing_editor"
+  "less!/css/thing_editor"
 ], function ($, _, Backbone, TypeSelector, TypesCollection, SubtypesCollection, template) {
 
   var ThingEditor = Backbone.View.extend({

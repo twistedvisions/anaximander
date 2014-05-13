@@ -34,7 +34,7 @@
     "select2": "3.x",
     "underscore.string": "2.x",
     "when": "2.x",
-    "require-css": "0.1.x",
+    "require-less": "0.1.x",
     "socket.io-client": "0.9.x"
   },
   "exportsOverride": {

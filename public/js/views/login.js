@@ -9,7 +9,7 @@ define([
   "views/login_local",
   "text!templates/login.htm",
   "bootstrap",
-  "css!/css/login"
+  "less!/css/login"
 ], function ($, _, Backbone, when, io, cookies, Analytics, LoginLocal, template) {
   var loginIdCookieKey = "login-id";
   var Login = Backbone.View.extend({

@@ -8,7 +8,7 @@ define([
   "analytics",
   "text!templates/login-retred.htm",
   "bootstrap",
-  "css!/css/login"
+  "less!/css/login"
 ], function ($, _, Backbone, bootstrap, sha256, when, Analytics, template) {
 
   var Login = Backbone.View.extend({

@@ -7,7 +7,7 @@ define([
   "utils/filter_url_serialiser",
   "analytics",
   "text!templates/summary_bar.htm",
-  "css!/css/summary_bar"
+  "less!/css/summary_bar"
 ], function ($, _, Backbone, Select2, Login, FilterUrlSerialiser,
     analytics, template) {
 

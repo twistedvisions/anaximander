@@ -8,7 +8,7 @@ define([
   "views/filters/secondary_filters",
   "text!templates/filters.htm",
   "text!templates/filter.htm",
-  "css!/css/filters"
+  "less!/css/filters"
 ], function ($, _, Backbone, Fuse, analytics,
     PrimaryFilters, SecondaryFilters,
     template, filterTemplate) {

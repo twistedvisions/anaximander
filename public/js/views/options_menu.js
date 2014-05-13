@@ -5,7 +5,7 @@ define([
   "views/event_editor",
   "analytics",
   "text!templates/options_menu.htm",
-  "css!/css/options_menu"
+  "less!/css/options_menu"
 ], function ($, _, Backbone, EventEditor, analytics, template) {
 
   var OptionsMenu = Backbone.View.extend({

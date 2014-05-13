@@ -6,7 +6,7 @@ define([
   "utils/history_renderer",
   "analytics",
   "text!templates/recent_changes.htm",
-  "css!/css/recent_changes.css"
+  "less!/css/recent_changes.css"
 ], function ($, _, Backbone, when, HistoryRenderer, analytics, template) {
   var RecentChanges = Backbone.View.extend({
     className: "recent-changes",

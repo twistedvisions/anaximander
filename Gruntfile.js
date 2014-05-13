@@ -75,7 +75,7 @@ module.exports = function (grunt) {
           findNestedDependencies: true,
           "map": {
             "*": {
-              "css": "libs/bower/require-css/css"
+              "less": "libs/bower/require-less/less"
             },
             "when": {
               "./lib/": "libs/bower/when/when/lib"
