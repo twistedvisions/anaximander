@@ -42,47 +42,45 @@ module.exports = function (grunt) {
     requirejs: {
       compile: {
         options: {
-          // "appDir": "public/js",
-          // "baseUrl": ".",
-          // "dir": "out",
-          // name: "anax",
-          mainConfigFile: "main.build.js",
-          // name: "path/to/almond", // assumes a production build using almond
-          // out: "public/anax.js",
+          appDir: "public/js/",
+          baseUrl: "./",
 
-          "appDir": "public/js",
-          "baseUrl": ".",
-          "dir": "public/js-prod",
-          "siteRoot": "../css",
-          "modules": [
+          dir: "public/js-prod",
+          siteRoot: "../",
+          modules: [
             {
-              name: "socketio"
-            },
-            {
-              // "separateCSS": true,
               "name": "anax",
               "insertRequire": ["anax"]
-              // ,
-              // "exclude": [
-              //   "../socket.io/socket.io",
-              //   "socket.io/socket.io",
-              //   "socketio",
-              //   "/home/pretzel/projects/anaximander/public/socket.io/socket.io.js"
-              // ]
-              // "exclude": ["css/normalize"]
+            },
+            {
+              "name": "type_listing",
+              "insertRequire": ["type_listing"]
+            },
+            {
+              "name": "recent_changes",
+              "insertRequire": ["recent_changes"]
             }
           ],
           findNestedDependencies: true,
-          "map": {
+          map: {
             "*": {
-              "less": "libs/bower/require-less/less"
+              "less": "libs/bower/require-less/less",
+              "async": "libs/bower/requirejs-plugins/async"
             },
             "when": {
               "./lib/": "libs/bower/when/when/lib"
             }
           },
-          "cssDir": "../",
-          "paths": {
+          skipDirOptimize: true,
+          cssDir: "../",
+          optimizeCss: "none",
+
+          // separateCSS: true,
+          optimize: "none",
+          paths: {
+            "css": "./css",
+
+            "async": "./libs/bower/requirejs-plugins/async",
             "backbone": "./libs/bower/backbone/backbone",
             "bootstrap": "./libs/bower/bootstrap/bootstrap",
             "chroma": "./libs/bower/chroma-js/chroma",
@@ -91,11 +89,15 @@ module.exports = function (grunt) {
             "deep-diff": "./libs/bower/deep-diff/index",
             "jquery": "./libs/bower/jquery/jquery",
             "jqueryui": "./libs/bower/jquery-ui/jquery-ui",
+            "less": "./libs/bower/require-less/less",
+            "less-builder": "./libs/bower/require-less/less-builder",
             "moment": "./libs/bower/momentjs/moment",
+            "normalize": "./libs/bower/require-less/normalize",
             "numeral": "./libs/bower/numeral/numeral",
             "parsley": "libs/bower/parsleyjs/parsley",
             "select2": "./libs/bower/select2/select2",
             "sha256": "./libs/bower/cryptojslib/sha256",
+            "socketio": "./libs/bower/socket.io-client/dist/socket.io",
             "text": "./libs/bower/requirejs-text/text",
             "underscore": "./libs/bower/lodash/lodash.compat",
             "underscore_string": "./libs/bower/underscore.string/lib/underscore.string",
@@ -103,11 +105,8 @@ module.exports = function (grunt) {
             "when": "./libs/bower/when/when",
 
             "templates": "../templates",
-            "async": "./libs/async",
             "fuse": "./libs/fuse",
             "range-slider": "libs/jQAllRangeSliders-min",
-            "socketio": "./libs/bower/socket.io-client/dist/socket.io",
-            // "socketio": "../socket.io/socket.io",
             "styled_marker": "./libs/styled_marker"
           }
         }

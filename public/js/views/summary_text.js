@@ -2,7 +2,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "less!/css/summary_text"
+  "less!../../css/summary_text"
 ], function ($, _, Backbone) {
 
   var SummaryTextView = Backbone.View.extend({

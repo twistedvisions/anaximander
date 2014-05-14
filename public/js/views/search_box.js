@@ -13,7 +13,7 @@ define([
   "text!templates/search_box.htm",
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
-  "less!/css/search_box"
+  "less!../../css/search_box"
 ], function ($, _, Backbone, when,
     Analytics, Position, Scroll, FilterUrlSerialiser, ThingEditor,
     SearchResults, Things, template, searchSummary, searchResult) {

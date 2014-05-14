@@ -3,7 +3,7 @@ define([
   "underscore",
   "backbone",
   "text!templates/importance_slider.htm",
-  "less!/css/importance_slider"
+  "less!../../css/importance_slider"
 ], function ($, _, Backbone, template) {
 
   var ImportanceSlider = Backbone.View.extend({

@@ -16,7 +16,7 @@ define([
   "text!templates/info_window_summary.htm",
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
-  "less!/css/map"
+  "less!../../css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
     EventEditor, Events,
     Position, Scroll, StyledMarker, chroma,

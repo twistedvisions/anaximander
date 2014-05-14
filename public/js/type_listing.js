@@ -14,7 +14,7 @@ require.config({
   },
   map: {
     "*": {
-      "css": "libs/require-css/css"
+      "less": "libs/bower/require-less/less"
     }
   },
   paths: {

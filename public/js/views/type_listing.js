@@ -7,7 +7,7 @@ define([
   "text!templates/type_listings.htm",
   "text!templates/type_entry.htm",
   "text!templates/importance_entry.htm",
-  "less!/css/type_listing.css",
+  "less!../../css/type_listing",
   "underscore_string"
 ], function ($, _, Backbone, when, analytics,
     template, typeListingTemplate, importanceListingTemplate) {

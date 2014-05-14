@@ -46,6 +46,9 @@ require.config({
     }
   },
   paths: {
+    "css": "./css",
+
+    "async": "./libs/bower/requirejs-plugins/async",
     "backbone": "./libs/bower/backbone/backbone",
     "bootstrap": "./libs/bower/bootstrap/bootstrap",
     "chroma": "./libs/bower/chroma-js/chroma",
@@ -54,6 +57,7 @@ require.config({
     "deep-diff": "./libs/bower/deep-diff/index",
     "jquery": "./libs/bower/jquery/jquery",
     "jqueryui": "./libs/bower/jquery-ui/jquery-ui",
+    "less": "./libs/bower/require-less/less",
     "moment": "./libs/bower/momentjs/moment",
     "numeral": "./libs/bower/numeral/numeral",
     "parsley": "libs/bower/parsleyjs/parsley",
@@ -62,12 +66,9 @@ require.config({
     "text": "./libs/bower/requirejs-text/text",
     "underscore": "./libs/bower/lodash/lodash.compat",
     "underscore_string": "./libs/bower/underscore.string/lib/underscore.string",
-
-    // "when": "./libs/when",
     "when": "./libs/bower/when/when",
 
     "templates": "../templates",
-    "async": "./libs/async",
     "fuse": "./libs/fuse",
     "range-slider": "libs/jQAllRangeSliders-min",
     "socketio": "../socket.io/socket.io",

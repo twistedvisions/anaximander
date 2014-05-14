@@ -3,8 +3,8 @@ define([
   "underscore",
   "backbone",
   "range-slider",
-  "less!/css/rangeslider",
-  "less!/css/date_slider"
+  "less!../../css/rangeslider",
+  "less!../../css/date_slider"
 ], function ($, _, Backbone) {
 
   var DateSliderView = Backbone.View.extend({
