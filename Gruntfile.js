@@ -44,7 +44,6 @@ module.exports = function (grunt) {
         options: {
           appDir: "public/js/",
           baseUrl: "./",
-
           dir: "public/js-prod",
           siteRoot: "../",
           shim: {
@@ -78,10 +77,20 @@ module.exports = function (grunt) {
           },
           skipDirOptimize: true,
           cssDir: "../",
-          optimizeCss: "none",
 
-          // separateCSS: true,
-          optimize: "none",
+          optimize: "uglify2",
+          preserveLicenseComments: false,
+          generateSourceMaps: true,
+          uglify2: {
+            output: {
+              beautify: false
+            },
+            compress: {
+              sequences: false
+            },
+            mangle: true
+          },
+
           paths: {
             "css": "./css",
 
