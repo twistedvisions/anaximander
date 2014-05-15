@@ -47,6 +47,11 @@ module.exports = function (grunt) {
 
           dir: "public/js-prod",
           siteRoot: "../",
+          shim: {
+            "deep-diff": {
+              exports: "DeepDiff"
+            }
+          },
           modules: [
             {
               "name": "anax",
