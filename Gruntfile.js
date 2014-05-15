@@ -17,19 +17,6 @@ module.exports = function (grunt) {
         ignores: "public/js/libs/**/*.js"
       }
     },
-    less: {
-      options: {
-        paths: ["public/css"],
-        cleancss: true
-      },
-      src: {
-        expand: true,
-        cwd:    "public/css",
-        src:    "*.less",
-        dest:    "public/css",
-        ext:    ".css"
-      }
-    },
     bower: {
       install: {
         options: {
