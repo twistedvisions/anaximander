@@ -29,6 +29,7 @@
     "momentjs": "2.x",
     "numeral": "1.x",
     "parsleyjs": "2.x",
+    "requirejs": "2.x",
     "requirejs-plugins": "1.x",
     "requirejs-text": "2.x",
     "select2": "3.x",
