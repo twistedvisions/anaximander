@@ -139,6 +139,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask("deps", ["bower"]);
   grunt.registerTask("test", ["deps", "jshint"]);
-  grunt.registerTask("build", ["requirejs"]);
+  grunt.registerTask("build", ["deps", "requirejs"]);
   grunt.registerTask("default", ["test", "build"]);
 };
