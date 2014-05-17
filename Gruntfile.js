@@ -120,7 +120,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-contrib-less");
   grunt.loadNpmTasks("grunt-contrib-requirejs");
 
-  grunt.registerTask("test", ["jshint", "less"]);
-  grunt.registerTask("build", ["bower", "requirejs", "less"]);
+  grunt.registerTask("test", ["jshint"]);
+  grunt.registerTask("build", ["bower", "requirejs"]);
   grunt.registerTask("default", ["test", "build"]);
 };
