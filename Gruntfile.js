@@ -5,6 +5,10 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
+    clean: {
+      build: ["public/js/libs/bower", "public/js-prod"],
+      bower: ["./bower_components"]
+    },
     jshint: {
       all: [
         "Gruntfile.js",
@@ -128,11 +132,13 @@ module.exports = function (grunt) {
   });
 
   grunt.loadNpmTasks("grunt-bower-task");
+  grunt.loadNpmTasks("grunt-contrib-clean");
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-less");
   grunt.loadNpmTasks("grunt-contrib-requirejs");
 
-  grunt.registerTask("test", ["jshint"]);
-  grunt.registerTask("build", ["bower", "requirejs"]);
+  grunt.registerTask("deps", ["bower"]);
+  grunt.registerTask("test", ["deps", "jshint"]);
+  grunt.registerTask("build", ["requirejs"]);
   grunt.registerTask("default", ["test", "build"]);
 };
