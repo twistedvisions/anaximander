@@ -17,7 +17,9 @@ module.exports = function (config) {
       "test/test-main.js",
       {pattern: "test/webapp/**/*.js", included: false},
       {pattern: "public/js/**/*.js", included: false},
-      {pattern: "public/css/**/*.css", included: false},
+      {pattern: "public/js/libs/bower/**/*.less", included: false},
+      {pattern: "public/js/libs/bower/**/*.css", included: false},
+      {pattern: "public/css/**/*.less", included: false},
       {pattern: "public/templates/**/*.htm*", included: false, served: true},
       {pattern: "node_modules/socket.io-client/dist/*.js", included: false, served: true}
     ],
@@ -25,7 +27,7 @@ module.exports = function (config) {
 
     // list of files to exclude
     exclude: [
-      
+
     ],
 
 

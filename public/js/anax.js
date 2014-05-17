@@ -63,6 +63,7 @@ require.config({
     "parsley": "libs/bower/parsleyjs/parsley",
     "select2": "./libs/bower/select2/select2",
     "sha256": "./libs/bower/cryptojslib/sha256",
+    "socketio": "./libs/bower/socket.io-client/dist/socket.io",
     "text": "./libs/bower/requirejs-text/text",
     "underscore": "./libs/bower/lodash/lodash.compat",
     "underscore_string": "./libs/bower/underscore.string/lib/underscore.string",
@@ -71,7 +72,6 @@ require.config({
     "templates": "../templates",
     "fuse": "./libs/fuse",
     "range-slider": "libs/jQAllRangeSliders-min",
-    "socketio": "../socket.io/socket.io",
     "styled_marker": "./libs/styled_marker"
   }
 });

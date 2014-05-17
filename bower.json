@@ -22,6 +22,7 @@
     "cookies-js": "0.4.x",
     "cryptojslib": "*",
     "deep-diff": "0.1.x",
+    "es5-shim": "3.x",
     "jquery": "2.x",
     "jquery-ui": "1.x",
     "jqueryui-timepicker-addon": "1.x",
