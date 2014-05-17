@@ -21,6 +21,20 @@ module.exports = function (grunt) {
         ignores: "public/js/libs/**/*.js"
       }
     },
+    mochaTest: {
+      test: {
+        src: ["test/node/**/*.js"]
+      }
+    },
+    karma: {
+      unit: {
+        configFile: "karma.conf.js",
+        runnerPort: 9999,
+        singleRun: true,
+        browsers: ["PhantomJS"],
+        logLevel: "ERROR"
+      }
+    },
     bower: {
       install: {
         options: {
@@ -136,9 +150,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-less");
   grunt.loadNpmTasks("grunt-contrib-requirejs");
+  grunt.loadNpmTasks("grunt-mocha-test");
+  grunt.loadNpmTasks("grunt-karma");
 
   grunt.registerTask("deps", ["bower"]);
-  grunt.registerTask("test", ["deps", "jshint"]);
+  grunt.registerTask("test", ["deps", "jshint", "mochaTest", "karma"]);
   grunt.registerTask("build", ["deps", "requirejs"]);
   grunt.registerTask("default", ["test", "build"]);
 };
