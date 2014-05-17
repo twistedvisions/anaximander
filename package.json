@@ -50,6 +50,7 @@
     "karma-chai": "0.0.1",
     "karma-chai-plugins": "0.1.2",
     "karma-mocha": "0.1.x",
+    "karma-requirejs": "0.2.x",
     "mocha": "1.x",
     "should": "1.x",
     "sinon": "1.7.x",
