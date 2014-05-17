@@ -53,7 +53,7 @@
     "supertest": "0.8.x"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test && mocha $(find test/node -name '*.js') && ./node_modules/.bin/karma start --single-run --browsers PhantomJS",
+    "test": "export NODE_ENV=test && ./node_modules/.bin/grunt bower && ./node_modules/.bin/grunt test && mocha $(find test/node -name '*.js') && ./node_modules/.bin/karma start --single-run --browsers PhantomJS",
     "update": "./node_modules/db-migrate/bin/db-migrate up --config config/database.json"
   }
 }
