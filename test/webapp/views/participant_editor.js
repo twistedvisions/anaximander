@@ -48,8 +48,14 @@ define(
             name: "importance 3"
           }]
         }]);
-        this.existingModel = new Backbone.Model({thing: {id: 10, name: "existing thing name"}});
-        this.newModel = new Backbone.Model({thing: {id: -1, name: "new thing name"}});
+        this.existingModel = new Backbone.Model({
+          thing: {id: 10, name: "existing thing name"},
+          type: {id: 1},
+          importance: {id: 1}
+        });
+        this.newModel = new Backbone.Model({
+          thing: {id: -1, name: "new thing name"}
+        });
       });
       describe("rendering", function () {
         it("should show the thing's name if it exists", function () {
@@ -111,6 +117,9 @@ define(
             roles: this.rolesCollection
           });
           this.participantEditor.render();
+          sinon.stub(this.participantEditor.typeSelector, "getValue", function () {
+            return {type: "type value"};
+          });
           var value = this.participantEditor.getValue();
           value.thing.id.should.equal(-1);
           value.thing.name.should.equal("new thing name");

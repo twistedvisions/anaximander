@@ -19,9 +19,9 @@ define([
   "bootstrap",
   "datetimepicker",
   "parsley",
-  "css!/css/event_editor",
-  "css!/css/select2-bootstrap",
-  "css!/css/datetimepicker"
+  "less!../../css/event_editor",
+  "less!../../css/select2-bootstrap",
+  "less!../../css/datetimepicker"
 ], function ($, _, Backbone, when, moment, numeral,
     Event, EventsCollection,
     Types, Roles, EventTypes,

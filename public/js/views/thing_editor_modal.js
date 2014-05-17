@@ -12,9 +12,9 @@ define([
   "bootstrap",
   "datetimepicker",
   "parsley",
-  "css!/css/thing_editor_modal",
-  "css!/css/select2-bootstrap",
-  "css!/css/datetimepicker"
+  "less!../../css/thing_editor_modal",
+  "less!../../css/select2-bootstrap",
+  "less!../../css/datetimepicker"
 ], function ($, _, Backbone, when,
     Thing, ThingsCollection,
     ThingEditor, HistoryRenderer,

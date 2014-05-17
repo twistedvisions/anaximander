@@ -5,7 +5,6 @@ require("newrelic");
 var express = require("express");
 var https = require("https");
 var http = require("http");
-var lessMiddleware = require("less-middleware");
 var flash = require("connect-flash");
 var passport = require("passport");
 var fs = require("fs");
@@ -42,13 +41,7 @@ unsecureApp.get("*", function (req, res) {
   res.redirect(nconf.server.host + req.url);
 });
 
-secureApp.configure(function () {
-  secureApp.use(lessMiddleware({
-    src: __dirname + "/public",
-    compress: true
-  }));
-});
-
+secureApp.use(express.compress());
 secureApp.use(express["static"](__dirname + "/public"));
 secureApp.use(express.cookieParser());
 secureApp.use(express.json());

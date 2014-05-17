@@ -4,7 +4,7 @@ define([
   "moment",
   "text!templates/event_history.htm",
   "text!templates/event_history_item.htm",
-  "css!/css/changes.css"
+  "less!../../css/changes"
 ], function ($, _, moment, historyTemplate, historyItemTemplate) {
   historyTemplate = _.template(historyTemplate);
   historyItemTemplate = _.template(historyItemTemplate);

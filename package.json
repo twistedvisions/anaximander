@@ -35,22 +35,31 @@
     "moment": "2.6.x"
   },
   "devDependencies": {
-    "mocha": "1.x",
-    "sinon": "1.7.x",
-    "should": "1.x",
-    "karma": "0.10.x",
-    "karma-mocha": "0.1.x",
+    "grunt": "0.4.x",
+    "grunt-bower-task": "^0.3.4",
+    "grunt-cli": "0.1.x",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-jshint": "0.7.x",
+    "grunt-contrib-less": "0.11.x",
+    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-mocha-test": "0.10.x",
+    "grunt-karma": "0.8",
+    "less": "1.x",
+    "csso": "1.x",
+    "karma": "0.12.x",
     "karma-chai": "0.0.1",
     "karma-chai-plugins": "0.1.2",
-    "grunt": "0.4.x",
-    "grunt-cli": "0.1.x",
-    "grunt-contrib-jshint": "0.7.x",
-    "supertest": "0.8.x",
+    "karma-mocha": "0.1.x",
+    "karma-requirejs": "0.2.x",
+    "karma-phantomjs-launcher": "0.1.x",
+    "mocha": "1.x",
+    "should": "1.x",
+    "sinon": "1.7.x",
     "socket.io-client": "0.9.x",
-    "grunt-contrib-less": "0.11.x"
+    "supertest": "0.8.x"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test && mocha $(find test/node -name '*.js') && ./node_modules/.bin/karma start --single-run --browsers PhantomJS",
+    "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test",
     "update": "./node_modules/db-migrate/bin/db-migrate up --config config/database.json"
   }
 }

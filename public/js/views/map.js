@@ -16,7 +16,7 @@ define([
   "text!templates/info_window_summary.htm",
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
-  "css!/css/map"
+  "less!../../css/map"
 ], function ($, _, Backbone, analytics, maps, OptionsMenu,
     EventEditor, Events,
     Position, Scroll, StyledMarker, chroma,
@@ -228,6 +228,7 @@ define([
       if (!this.locationChanged && (window.lastEvent !== "resize")) {
         window.lastEvent = "map";
       }
+      this.hideOptionsMenu();
       this.dontRedraw = true;
       this.model.set({
         "bounds": this.getBounds(),
@@ -307,6 +308,10 @@ define([
       if (this.lastInfoWindow) {
         this.lastInfoWindow.close();
       }
+      this.hideOptionsMenu();
+    },
+
+    hideOptionsMenu: function () {
       if (this.lastOptionsMenu) {
         this.lastOptionsMenu.close();
       }

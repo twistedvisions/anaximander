@@ -1,13 +1,13 @@
 /*global console*/
 define([
+  "less!../css/anax",
   "underscore",
   "views/app",
   "router",
   "models/view_state",
   "models/current_user",
-  "analytics",
-  "css!/css/anax"
-], function (_, AppView, Router, ViewState, User, Analytics) {
+  "analytics"
+], function (styles, _, AppView, Router, ViewState, User, Analytics) {
   var App = function () {
     var defaultState = {
       date: [1963, 2014],
