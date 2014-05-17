@@ -9,6 +9,7 @@
     "pg": "2.x",
     "lazy": "1.x",
     "humanize": "0.0.8",
+    "less": "1.x",
     "lodash": "1.x",
     "kue": "0.6.x",
     "redis": "0.10.x",
