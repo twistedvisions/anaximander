@@ -55,7 +55,7 @@ require.config({
   cssDir:  "/base/public",
 
   paths: {
-    "async": "./libs/bower/requirejs-plugins/async",
+    "async": "../../test/webapp/mocks/async",
     "backbone": "./libs/bower/backbone/backbone",
     "bootstrap": "./libs/bower/bootstrap/bootstrap",
     "chroma": "./libs/bower/chroma-js/chroma",

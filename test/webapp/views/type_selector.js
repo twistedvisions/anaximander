@@ -123,6 +123,8 @@ define(
           this.typeSelector.getValue().type.id.should.equal(2);
         });
         it("should get the importance value for new user-entered importances", function () {
+          this.typeSelector.$("input[data-key=type]").val(2);
+          this.typeSelector.$("input[data-key=type]").trigger("change");
           this.typeSelector.$("input[data-key=importance]").select2("data",
             {id: -1, text: "new importance"});
           this.typeSelector.$("input[data-key=importance]").trigger("change");

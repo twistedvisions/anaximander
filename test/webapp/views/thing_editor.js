@@ -207,8 +207,10 @@ define(
           this.thingEditor.$("input[data-key=thing-type]").val(1);
           this.thingEditor.typeSelected();
           this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().select2("val", 1);
+          this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().trigger("change");
           this.thingEditor.$(".add-subtype").trigger("click");
           this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().select2("val", 1);
+          this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().trigger("change");
 
           this.thingEditor.validateSubtypeDuplication().should.equal(false);
           this.thingEditor.$(".subtypes .subtype input[data-key=type]").last().select2("val", 2);

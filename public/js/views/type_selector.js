@@ -172,9 +172,9 @@ define([
     },
 
     setValue: function (typeId, importanceId) {
-      this.$("input[data-key=type]").select2("val", typeId);
+      this.$("input[data-key=type]").select2("val", typeId).trigger("change");
       this.updateTypeImportance();
-      this.$("input[data-key=importance]").select2("val", importanceId);
+      this.$("input[data-key=importance]").select2("val", importanceId).trigger("change");
     },
 
     getValue: function () {

@@ -14,7 +14,12 @@ define(
     describe("event editor", function () {
 
       var selectParticipant = function (editor) {
-        editor.$(".participant-editor input[data-key=type]").select2("val", 1).trigger("change");
+
+        editor.$(".participant-editor input[data-key=type]")
+          .last()
+          .select2("val", 1)
+          .trigger("change");
+
         sinon.stub(editor, "getSelectedParticipant", function () {
           return {
             thing: {
@@ -23,7 +28,6 @@ define(
             }
           };
         });
-
         editor.addParticipant();
         editor
           .$(".participant-editor input[data-key=type]")
@@ -346,7 +350,7 @@ define(
                 importance: {id: 20}
               },
               {
-                thing: {id: 4, name: "John Smith"},
+                thing: {id: 4, name: "Joan Doe"},
                 type: {id: 2},
                 importance: {id: 20}
               }
@@ -554,7 +558,7 @@ define(
               this.editor.render();
               selectParticipant(this.editor);
               var values = this.editor.collectValues();
-              values.participants[1].type.id.should.equal(2);
+              values.participants[1].type.id.should.equal(1);
             });
             it("should not collect removed participants", function () {
               this.editor.render();
