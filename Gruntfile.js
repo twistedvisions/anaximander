@@ -1,5 +1,5 @@
 /* jshint node: true */
-
+var path = require("path");
 module.exports = function (grunt) {
   "use strict";
 
@@ -21,9 +21,22 @@ module.exports = function (grunt) {
       install: {
         options: {
           targetDir: "public/js/libs/bower",
-          layout: "byType"
+
+          layout: function (type, component) {
+            var renamedType = type;
+
+            if (type.indexOf("smoothness") >= 0) {
+              return type;
+            }
+            if (type === "__untyped__") {
+              return component;
+            }
+            if (type.indexOf(component) === 0) {
+              return path.join(component, type.substring(component.length + 1));
+            }
+            return path.join(component, renamedType);
+          }
         }
-         //just run 'grunt bower:install' and you'll see files from your Bower packages in lib directory
       }
     },
     requirejs: {
@@ -55,8 +68,7 @@ module.exports = function (grunt) {
           findNestedDependencies: true,
           map: {
             "*": {
-              "less": "libs/bower/require-less/less",
-              "async": "libs/bower/requirejs-plugins/async"
+              "less": "libs/bower/require-less/less"
             },
             "when": {
               "./lib/": "libs/bower/when/when/lib"
