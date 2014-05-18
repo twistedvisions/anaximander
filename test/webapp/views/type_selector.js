@@ -1,9 +1,11 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
 
-  ["backbone", "views/type_selector", "analytics", "models/current_user"],
+  ["chai", "backbone", "views/type_selector", "analytics", "models/current_user"],
 
-  function (Backbone, TypeSelector, Analytics, User) {
+  function (chai, Backbone, TypeSelector, Analytics, User) {
+
+    var should = chai.should();
 
     var isSelect2ized = function (el) {
       return el[0].className.indexOf("select2") > -1;
@@ -106,6 +108,20 @@ define(
           this.typeSelector.$("input[data-key=type]").trigger("change");
           this.typeSelector.$("input[data-key=importance]").select2("data")
             .should.eql({id: -2, text: "Nominal"});
+        });
+        it("should not allow you to create new types if you do not have permission", function () {
+          User.user = new User();
+          User.user.hasPermission = function () {
+            return false;
+          };
+          should.not.exist(this.typeSelector.getTypeSelectOptions.createSearchChoice);
+        });
+        it("should not allow you to create new importances if you do not have permission", function () {
+          User.user = new User();
+          User.user.hasPermission = function () {
+            return false;
+          };
+          should.not.exist(this.typeSelector.getImportanceSelectOptions.createSearchChoice);
         });
 
       });
