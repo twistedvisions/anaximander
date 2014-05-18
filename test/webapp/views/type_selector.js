@@ -1,9 +1,9 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
 
-  ["backbone", "views/type_selector", "analytics"],
+  ["backbone", "views/type_selector", "analytics", "models/current_user"],
 
-  function (Backbone, TypeSelector, Analytics) {
+  function (Backbone, TypeSelector, Analytics, User) {
 
     var isSelect2ized = function (el) {
       return el[0].className.indexOf("select2") > -1;
@@ -11,6 +11,7 @@ define(
 
     describe("type selector", function () {
       beforeEach(function () {
+        User.user = new User();
         this.typeSelector = new TypeSelector({
           types: new Backbone.Collection([{
             id: 1,

@@ -5,22 +5,22 @@ define(
    "styled_marker", "views/options_menu", "models/current_user",
    "utils/scroll"],
   function (chai, $, _, Backbone, Map, Analytics,
-      StyledMarker, OptionsMenu, CurrentUser, Scroll) {
+      StyledMarker, OptionsMenu, User, Scroll) {
 
     var should = chai.should();
 
-    var userLoggedInWithAddEventPermission = new CurrentUser({
+    var userLoggedInWithAddEventPermission = new User({
       "logged-in": true,
       permissions: [
         {name: "add-event"}
       ]
     });
 
-    var userLoggedIn = new CurrentUser({
+    var userLoggedIn = new User({
       "logged-in": true
     });
 
-    var userLoggedOut = new CurrentUser({
+    var userLoggedOut = new User({
       "logged-in": false
     });
 
@@ -113,9 +113,9 @@ define(
           });
           google.maps.event.triggers = [];
 
+          User.user = userLoggedInWithAddEventPermission;
           this.map = new Map({
             model: this.model,
-            user: userLoggedInWithAddEventPermission,
             eventLocationsCollection: collection
           });
           sinon.stub(this.map, "getColor");
@@ -336,10 +336,9 @@ define(
       describe("marker manipulation", function () {
 
         beforeEach(function () {
-
+          User.user = userLoggedInWithAddEventPermission;
           this.map = new Map({
             model: this.model,
-            user: userLoggedInWithAddEventPermission,
             eventLocationsCollection: collection
           });
           this.mapObject = {
@@ -514,10 +513,9 @@ define(
       describe("updateLocation", function () {
 
         beforeEach(function () {
-
+          User.user = userLoggedInWithAddEventPermission;
           this.map = new Map({
             model: this.model,
-            user: userLoggedInWithAddEventPermission,
             eventLocationsCollection: collection
           });
 
@@ -972,7 +970,10 @@ define(
         });
 
         it("should show the options menu when the user is logged in and has permission", function () {
-          var map = new Map({model: this.model, user: userLoggedInWithAddEventPermission});
+          User.user = userLoggedInWithAddEventPermission;
+          var map = new Map({
+            model: this.model
+          });
           map.onClick();
           this.clock.tick(200);
           OptionsMenu.prototype.render.calledOnce.should.equal(true);
@@ -980,21 +981,28 @@ define(
 
 
         it("should not show the options menu when the user is logged in and without permission", function () {
-          var map = new Map({model: this.model, user: userLoggedIn});
+          User.user = userLoggedIn;
+          var map = new Map({
+            model: this.model
+          });
           map.onClick();
           this.clock.tick(200);
           OptionsMenu.prototype.render.calledOnce.should.equal(false);
         });
 
         it("should not show the options menu when the user is not logged in", function () {
-          var map = new Map({model: this.model, user: userLoggedOut});
+          User.user = userLoggedOut;
+          var map = new Map({
+            model: this.model
+          });
           map.onClick();
           this.clock.tick(200);
           OptionsMenu.prototype.render.calledOnce.should.equal(false);
         });
 
         it("should close open windows when it shows the options menu", function () {
-          var map = new Map({model: this.model, user: userLoggedInWithAddEventPermission});
+          User.user = userLoggedInWithAddEventPermission;
+          var map = new Map({model: this.model});
           map.closeOpenWindows = sinon.stub();
           map.onClick();
           this.clock.tick(200);
@@ -1002,7 +1010,10 @@ define(
         });
 
         it("should not fire if it was double clicked", function () {
-          var map = new Map({model: this.model, user: userLoggedIn});
+          User.user = userLoggedIn;
+          var map = new Map({
+            model: this.model
+          });
           map.closeOpenWindows = sinon.stub();
           map.onClick();
           map.onDblClick();
@@ -1011,7 +1022,10 @@ define(
         });
 
         it("should close open windows if it was double clicked", function () {
-          var map = new Map({model: this.model, user: userLoggedIn});
+          User.user = userLoggedIn;
+          var map = new Map({
+            model: this.model
+          });
           map.closeOpenWindows = sinon.stub();
           map.onClick();
           map.onDblClick();
@@ -1024,14 +1038,20 @@ define(
       describe("closeOpenWindows", function () {
 
         it("should close an open info boxes", function () {
-          var map = new Map({model: this.model, user: userLoggedIn});
+          User.user = userLoggedIn;
+          var map = new Map({
+            model: this.model
+          });
           map.lastInfoWindow = {close: sinon.stub()};
           map.closeOpenWindows();
           map.lastInfoWindow.close.calledOnce.should.equal(true);
         });
 
         it("should close an existing options menu", function () {
-          var map = new Map({model: this.model, user: userLoggedIn});
+          User.user = userLoggedIn;
+          var map = new Map({
+            model: this.model
+          });
           map.lastOptionsMenu = {close: sinon.stub()};
           map.closeOpenWindows();
           map.lastOptionsMenu.close.calledOnce.should.equal(true);

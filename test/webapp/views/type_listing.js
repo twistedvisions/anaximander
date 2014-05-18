@@ -7,16 +7,12 @@ define(
   function ($, _, Backbone, when, TypeListing, User, analytics) {
 
     describe("type listing", function () {
-      var user = new User();
       var hasPermission = true;
-      user.hasPermission = function () {
-        return hasPermission;
-      };
+
       describe("startup", function () {
         before(function () {
-          this.typeListing = new TypeListing({
-            user: user
-          });
+
+          this.typeListing = new TypeListing();
           sinon.stub(this.typeListing, "getData", function () {
             //dont ever return or it will try to render
             return when.defer().promise;
@@ -61,9 +57,11 @@ define(
       describe("interactions", function () {
 
         beforeEach(function () {
-          this.typeListing = new TypeListing({
-            user: user
+          User.user = new User();
+          sinon.stub(User.user, "hasPermission", function () {
+            return hasPermission;
           });
+          this.typeListing = new TypeListing();
           sinon.stub(this.typeListing, "getData", function () {
             //dont ever return or it will try to render
             return when.defer().promise;
@@ -111,6 +109,7 @@ define(
             this.typeListing.$("div.types tbody tr").length.should.equal(2);
           });
           it("should make names editable if the user has permission", function () {
+            hasPermission = true;
             this.typeListing.showTypes([[{id: 1, name: "importance name", importances: []}], []]);
             this.typeListing.$("div.types tbody tr td.name").trigger("click");
             this.typeListing.$("div.types tbody tr td.name.editing").length.should.equal(1);
