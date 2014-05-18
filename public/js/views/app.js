@@ -22,7 +22,7 @@ define([
   var AppView = Backbone.View.extend({
     el: "body",
 
-    initialize: function (options) {
+    initialize: function (/*options*/) {
       this.eventLocationsCollection = new EventLocationsCollection({state: this.model});
       this.typesCollection = new TypeCollection();
       TypeCollection.instance = this.typesCollection;
