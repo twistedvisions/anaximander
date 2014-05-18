@@ -18,15 +18,17 @@ require.config({
     }
   },
   paths: {
-    underscore: "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.0.0/lodash.min", // https://github.com/amdjs
-    jquery: "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
-    backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min", // https://github.com/amdjs
-    bootstrap: "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min",
-    text: "//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.10/text",
-    templates: "../templates",
-    when: "./libs/bower/when/when",
-    underscore_string: "./libs/underscore_string",
-    moment: "./libs/moment"
+
+    "backbone": "./libs/bower/backbone/backbone",
+    "bootstrap": "./libs/bower/bootstrap/bootstrap",
+    "jquery": "./libs/bower/jquery/jquery",
+    "moment": "./libs/bower/momentjs/moment",
+    "text": "./libs/bower/requirejs-text/text",
+    "underscore": "./libs/bower/lodash/lodash.compat",
+    "underscore_string": "./libs/bower/underscore.string/lib/underscore.string",
+    "when": "./libs/bower/when/when",
+
+    "templates": "../templates"
   }
 });
 
