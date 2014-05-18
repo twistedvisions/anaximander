@@ -25,7 +25,7 @@ define([
     if (window.location.href.indexOf("login") > -1) {
       permissions = [{id: 1, name: "login"}];
     }
-    this.user = new User({
+    User.user = new User({
       id: -1,
       permissions: permissions
     });
@@ -65,15 +65,14 @@ define([
     return localStorage.getItem("retred_viewstate");
   };
   App.prototype.start = function () {
-    this.user.fetch({
+    User.user.fetch({
       success: _.bind(this.handleUserFetchSuccess, this),
       failure: _.bind(this.handleUserFetchFailure, this)
     });
   };
   App.prototype.handleUserFetchSuccess = function (user) {
     var appView = new AppView({
-      model: this.model,
-      user: this.user
+      model: this.model
     });
     appView.render();
     if (user.get("id") !== -1) {

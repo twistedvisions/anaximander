@@ -6,10 +6,11 @@ define([
   "sha256",
   "when",
   "analytics",
+  "models/current_user",
   "text!templates/login-retred.htm",
   "bootstrap",
   "less!../../css/login"
-], function ($, _, Backbone, bootstrap, sha256, when, Analytics, template) {
+], function ($, _, Backbone, bootstrap, sha256, when, Analytics, User, template) {
 
   var Login = Backbone.View.extend({
     registrationFailedMessage: "Registration failed",
@@ -17,8 +18,7 @@ define([
     noUsernameMessage: "a username must be given",
     noPasswordMessage: "a password must be given",
 
-    initialize: function (options) {
-      this.user = options.user;
+    initialize: function (/*options*/) {
     },
 
     render: function () {
@@ -96,8 +96,8 @@ define([
 
     logUserIn: function (user) {
       this.$("#login-retred").popover("toggle");
-      this.user.set("logged-in", true);
-      this.user.set("permissions", user.permissions);
+      User.user.set("logged-in", true);
+      User.user.set("permissions", user.permissions);
     },
 
     handleLoginFailure: function (err) {

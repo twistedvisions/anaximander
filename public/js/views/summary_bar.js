@@ -5,11 +5,12 @@ define([
   "select2",
   "views/login",
   "utils/filter_url_serialiser",
+  "models/current_user",
   "analytics",
   "text!templates/summary_bar.htm",
   "less!../../css/summary_bar",
   "less!../../css/select2-bootstrap"
-], function ($, _, Backbone, Select2, Login, FilterUrlSerialiser,
+], function ($, _, Backbone, Select2, Login, FilterUrlSerialiser, User,
     analytics, template) {
 
   var SummaryBar = Backbone.View.extend({
@@ -92,17 +93,14 @@ define([
 
     initialize: function (opts) {
       this.eventLocationsCollection = opts.eventLocationsCollection;
-      this.user = opts.user;
     },
 
     render: function () {
       this.$el.html(template);
       setTimeout(_.bind(this.showSelector, this), 100);
 
-      if (this.user.hasPermission("login")) {
-        this.login = new Login({
-          user: this.user
-        });
+      if (User.user.hasPermission("login")) {
+        this.login = new Login();
         this.login.render();//.appendTo(this.$("#login-holder"));
       }
 

@@ -39,15 +39,13 @@ require([
   "bootstrap"
 ], function ($, AppView, User) {
 
-  var user = new User({
+  User.user = new User({
     id: -1,
     permissions: []
   });
-  user.fetch({
+  User.user.fetch({
     success: function () {
-      var app = new AppView({
-        user: user
-      }).render();
+      var app = new AppView().render();
       $("body").append(app);
     },
     failure: function () {

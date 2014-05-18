@@ -4,18 +4,18 @@ define([
   "backbone",
   "when",
   "analytics",
+  "models/current_user",
   "text!templates/type_listings.htm",
   "text!templates/type_entry.htm",
   "text!templates/importance_entry.htm",
   "less!../../css/type_listing",
   "underscore_string"
-], function ($, _, Backbone, when, analytics,
+], function ($, _, Backbone, when, analytics, User,
     template, typeListingTemplate, importanceListingTemplate) {
   template = _.template(template);
   var TypeListing = Backbone.View.extend({
     className: "type-listing",
-    initialize: function (options) {
-      this.user = options.user;
+    initialize: function (/*options*/) {
       this.typeListingTemplate = _.template(typeListingTemplate);
       this.importanceListingTemplate = _.template(importanceListingTemplate);
     },
@@ -140,7 +140,7 @@ define([
 
       var rows = row || this.$(".types tbody tr");
       var bindRowEvents = _.bind(this.bindTypeRowEvents, this);
-      if (this.user.hasPermission("edit-type")) {
+      if (User.user.hasPermission("edit-type")) {
         rows.find("td.name").on("click", _.bind(this.editCell, this, {
           valueType: "type",
           key: "name",
@@ -270,7 +270,7 @@ define([
       var saveCall = _.bind(this.saveImportanceChange, this, typeId);
       var bindRowEvents = _.bind(this.bindImportanceRowEvents, this, typeId);
       var rows = row || this.$(".importances tbody tr");
-      if (this.user.hasPermission("edit-importance")) {
+      if (User.user.hasPermission("edit-importance")) {
         rows.find("td.name").on("click", _.bind(this.editCell, this, {
           valueType: "importance",
           key: "name",

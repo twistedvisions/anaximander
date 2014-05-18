@@ -7,6 +7,7 @@ define([
   "utils/position",
   "utils/scroll",
   "utils/filter_url_serialiser",
+  "models/current_user",
   "views/thing_editor_modal",
   "collections/search_results",
   "collections/things",
@@ -15,14 +16,13 @@ define([
   "text!templates/search_result.htm",
   "less!../../css/search_box"
 ], function ($, _, Backbone, when,
-    Analytics, Position, Scroll, FilterUrlSerialiser, ThingEditor,
+    Analytics, Position, Scroll, FilterUrlSerialiser, User, ThingEditor,
     SearchResults, Things, template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
     el: "#search-box",
 
-    initialize: function (opts) {
-      this.user = opts.user;
+    initialize: function (/*opts*/) {
       this.searchSummaryTemplate = _.template(searchSummary);
       this.searchResultTemplate = _.template(searchResult);
       this.searchResults = new SearchResults();
@@ -162,7 +162,7 @@ define([
 
     generateSearchEntry: function (x) {
       var el = $(this.searchResultTemplate(_.extend({
-        canEdit: this.user.get("logged-in") && this.user.hasPermission("edit-thing")
+        canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-thing")
       }, x.toJSON())));
       el.data("result", x.toJSON());
       return el;

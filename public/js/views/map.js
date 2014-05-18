@@ -3,6 +3,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "models/current_user",
   "analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
         "&sensor=false!callback",
@@ -17,7 +18,7 @@ define([
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
   "less!../../css/map"
-], function ($, _, Backbone, analytics, maps, OptionsMenu,
+], function ($, _, Backbone, User, analytics, maps, OptionsMenu,
     EventEditor, Events,
     Position, Scroll, StyledMarker, chroma,
     infoWindowSummaryTemplate, infoWindowEntryTemplate,
@@ -30,7 +31,6 @@ define([
     initialize: function (opts) {
 
       this.mapObjects = {};
-      this.user = opts.user;
       this.lastHighlight = {};
       this.lastModelPosition = {};
       this.eventLocationsCollection = opts.eventLocationsCollection;
@@ -202,7 +202,7 @@ define([
     onClick: function (e) {
       setTimeout(_.bind(function () {
         if (!this.dblClicked) {
-          if (this.user.get("logged-in") && this.user.hasPermission("add-event")) {
+          if (User.user.get("logged-in") && User.user.hasPermission("add-event")) {
             this.closeOpenWindows();
             this.lastOptionsMenu = new OptionsMenu({
               event: e,
@@ -467,7 +467,7 @@ define([
         ).length > 0;
 
       return this.infoWindowEntryTemplate(_.extend({
-        canEdit: this.user.get("logged-in") && this.user.hasPermission("edit-event"),
+        canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-event"),
         participantTemplate: this.infoWindowEntryParticipantTemplate,
         date: new Date(event.start_date),
         highlighted: highlighted

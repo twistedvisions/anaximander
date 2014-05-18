@@ -33,7 +33,6 @@ define([
       EventTypesCollection.instance = this.eventTypesCollection;
       EventsCollection.instance = new EventsCollection();
       ThingsCollection.instance = new ThingsCollection();
-      this.user = options.user;
     },
 
     fetchData: function (dataLoaded) {
@@ -64,7 +63,6 @@ define([
       require(["views/map"], _.bind(function (MapView) {
         this.mapView = new MapView({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.eventLocationsCollection
         });
         this.mapView.render();
@@ -72,8 +70,7 @@ define([
 
       require(["views/search_box"], _.bind(function (SearchBoxView) {
         this.searchBoxView = new SearchBoxView({
-          model: this.model,
-          user: this.user
+          model: this.model
         });
         this.searchBoxView.render();
       }, this));
@@ -96,7 +93,6 @@ define([
       require(["views/summary_bar"], _.bind(function (SummaryBar) {
         this.summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.eventLocationsCollection
         });
         this.summaryBar.render();
