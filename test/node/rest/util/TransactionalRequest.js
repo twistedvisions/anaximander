@@ -1,8 +1,12 @@
 /*global describe, it, beforeEach, afterEach */
 
+var sinon = require("sinon");
 var should = require("should");
+var _ = require("underscore");
 
 var stubDb = require("../../stubDb");
+
+var tryTest = require("../../tryTest");
 
 var TransactionalRequest = require("../../../../lib/rest/util/TransactionalRequest");
 
@@ -90,6 +94,61 @@ describe("TransactionalRequest", function () {
       this.transactionalRequest.setResponse = function () {};
       this.transactionalRequest.call(req, res, next);
       this.transactionalRequest.userIp.should.equal("123.45.67.89");
+    });
+
+    describe("permissions", function () {
+      beforeEach(function () {
+        this.stubValues = [
+          [{db_call: "get_thing_lock", name: "permission-name1"}]
+        ];
+        stubDb.setQueryValues(this, this.stubValues);
+        this.req = {
+          isAuthenticated: function () {
+            return true;
+          },
+          user: {id: 100}
+        };
+        this.res = {
+          send: function () {}
+        };
+        this.next = function () {};
+        this.transactionalRequest.getCalls = function () { return []; };
+        this.transactionalRequest.setResponse = function () {};
+        this.checkResponse = true;
+        sinon.stub(this.transactionalRequest, "checkUserPermissions", _.bind(function () {
+          if (!this.checkResponse) {
+            throw new Error("user lacks permissions");
+          }
+        }, this));
+      });
+      it("should save the user's permissions by permission name", function (done) {
+
+        this.transactionalRequest.call(this.req, this.res, this.next)
+          .then(tryTest(_.bind(function () {
+              should.exist(this.transactionalRequest.permissions["permission-name1"]);
+            }, this), done)
+          );
+      });
+      it("should check the user's permissions", function (done) {
+        this.transactionalRequest.call(this.req, this.res, this.next)
+          .then(tryTest(_.bind(function () {
+              this.transactionalRequest.checkUserPermissions.calledOnce.should.equal(true);
+            }, this), done)
+          );
+      });
+      it("should fail if the user's permissions are not acceptable", function (done) {
+        this.checkResponse = false;
+        this.transactionalRequest.call(this.req, this.res, this.next)
+          .then(
+            function () {
+              throw new Error("should not get here");
+            },
+            function (ex) {
+              should.exist(ex);
+              done();
+            }
+          );
+      });
     });
   });
 });

@@ -121,6 +121,7 @@ describe("EventUtils", function () {
         }).then(
           tryTest(_.bind(function () {
             this.eventUtils.ensure.calledWith(sinon.match.any, "participant type").should.equal(true);
+            this.eventUtils.ensure.args[0][6].should.eql(["add-type"]);
           }, this), done)
         );
         stubDb.setQueryValues(this, [[]]);
@@ -133,6 +134,7 @@ describe("EventUtils", function () {
         }).then(
           tryTest(_.bind(function () {
             this.eventUtils.ensure.calledWith(sinon.match.any, "participant importance").should.equal(true);
+            this.eventUtils.ensure.args[1][6].should.eql(["add-importance"]);
           }, this), done)
         );
         stubDb.setQueryValues(this, [[]]);
@@ -185,6 +187,7 @@ describe("EventUtils", function () {
           this.eventUtils.ensureParticipant(this.participant).then(
             tryTest(_.bind(function () {
               this.eventUtils.ensure.calledWith(sinon.match.any, "participant thing subtype type").should.equal(true);
+              this.eventUtils.ensure.args[2][6].should.eql(["add-type"]);
             }, this), done)
           );
           stubDb.setQueryValues(this, [[]]);
@@ -193,6 +196,7 @@ describe("EventUtils", function () {
           this.eventUtils.ensureParticipant(this.participant).then(
             tryTest(_.bind(function () {
               this.eventUtils.ensure.calledWith(sinon.match.any, "participant thing subtype importance").should.equal(true);
+              this.eventUtils.ensure.args[3][6].should.eql(["add-importance"]);
             }, this), done)
           );
           stubDb.setQueryValues(this, [[]]);
@@ -224,6 +228,7 @@ describe("EventUtils", function () {
           this.eventUtils.ensureParticipant(this.participant).then(
             tryTest(_.bind(function () {
               this.eventUtils.ensure.calledWith(sinon.match.any, "participant thing").should.equal(true);
+              this.eventUtils.ensure.args[4][6].should.eql(["add-thing"]);
             }, this), done)
           );
           stubDb.setQueryValues(this, [[]]);

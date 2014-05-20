@@ -126,6 +126,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
@@ -134,8 +135,8 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_importance_name");
-        this.args[1][2][1].should.equal("new name");
+        this.args[2][1].should.equal("update_importance_name");
+        this.args[2][2][1].should.equal("new name");
       }, done);
     });
 
@@ -147,6 +148,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_description"}],
         [{db_call: "save_importance_change"}],
@@ -155,8 +157,8 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_importance_description");
-        this.args[1][2][1].should.equal("new description");
+        this.args[2][1].should.equal("update_importance_description");
+        this.args[2][2][1].should.equal("new description");
       }, done);
     });
 
@@ -168,6 +170,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_value"}],
         [{db_call: "save_importance_change"}],
@@ -176,8 +179,8 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_importance_value");
-        this.args[1][2][1].should.equal(8);
+        this.args[2][1].should.equal("update_importance_value");
+        this.args[2][2][1].should.equal(8);
       }, done);
     });
 
@@ -189,6 +192,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
@@ -197,7 +201,7 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_importance_change");
+        this.args[3][1].should.equal("save_importance_change");
       }, done);
     });
 
@@ -209,6 +213,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
@@ -217,9 +222,9 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_importance_change");
-        should.not.exist(JSON.parse(this.args[2][2][3]).last_edited);
-        should.not.exist(JSON.parse(this.args[2][2][4]).last_edited);
+        this.args[3][1].should.equal("save_importance_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).last_edited);
+        should.not.exist(JSON.parse(this.args[3][2][4]).last_edited);
 
       }, done);
     });
@@ -233,6 +238,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
@@ -241,8 +247,8 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_importance_change");
-        should.not.exist(JSON.parse(this.args[2][2][4]).funny);
+        this.args[3][1].should.equal("save_importance_change");
+        should.not.exist(JSON.parse(this.args[3][2][4]).funny);
       }, done);
     });
 
@@ -255,6 +261,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
@@ -263,8 +270,8 @@ describe("editImportance", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_importance_change");
-        JSON.parse(this.args[2][2][4]).name.should.equal("new name");
+        this.args[3][1].should.equal("save_importance_change");
+        JSON.parse(this.args[3][2][4]).name.should.equal("new name");
       }, done);
     });
 
@@ -277,6 +284,7 @@ describe("editImportance", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
         [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],

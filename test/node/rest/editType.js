@@ -125,6 +125,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_default_importance_id", id: 2}],
@@ -146,6 +147,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
@@ -154,8 +156,8 @@ describe("editType", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_type_name");
-        this.args[1][2][1].should.equal("new name");
+        this.args[2][1].should.equal("update_type_name");
+        this.args[2][2][1].should.equal("new name");
       }, done);
     });
 
@@ -167,6 +169,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_default_importance_id"}],
@@ -176,8 +179,8 @@ describe("editType", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("update_default_importance_id");
-        this.args[2][2][1].should.equal(2);
+        this.args[3][1].should.equal("update_default_importance_id");
+        this.args[3][2][1].should.equal(2);
       }, done);
     });
 
@@ -189,6 +192,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
@@ -197,7 +201,7 @@ describe("editType", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
+        this.args[3][1].should.equal("save_type_change");
       }, done);
     });
 
@@ -209,6 +213,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
@@ -217,8 +222,8 @@ describe("editType", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
-        JSON.parse(this.args[2][2][4]).name.should.equal("new name");
+        this.args[3][1].should.equal("save_type_change");
+        JSON.parse(this.args[3][2][4]).name.should.equal("new name");
       }, done);
     });
 
@@ -230,6 +235,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
@@ -238,9 +244,9 @@ describe("editType", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
-        should.not.exist(JSON.parse(this.args[2][2][3]).last_edited);
-        should.not.exist(JSON.parse(this.args[2][2][4]).last_edited);
+        this.args[3][1].should.equal("save_type_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).last_edited);
+        should.not.exist(JSON.parse(this.args[3][2][4]).last_edited);
 
       }, done);
     });
@@ -254,6 +260,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
@@ -262,8 +269,8 @@ describe("editType", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_type_change");
-        should.not.exist(JSON.parse(this.args[2][2][4]).funny);
+        this.args[3][1].should.equal("save_type_change");
+        should.not.exist(JSON.parse(this.args[3][2][4]).funny);
       }, done);
     });
 
@@ -276,6 +283,7 @@ describe("editType", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
         [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
