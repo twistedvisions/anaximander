@@ -61,6 +61,7 @@ define(
             app.model.get("center").should.not.eql([1, -10]);
           });
         });
+/*
         describe("local storage", function () {
           it("should get the location from local storage if it exists", function () {
             this.useDelay = true;
@@ -85,6 +86,7 @@ define(
             }
           });
         });
+*/
       });
 
       it("should fetch a user model", function () {
