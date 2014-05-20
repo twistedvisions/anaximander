@@ -44,6 +44,13 @@ require.config({
     },
     "range-slider": {
       deps: ["jquery", "jqueryui"]
+    },
+    "cryptojs.core": {
+      exports: "CryptoJS"
+    },
+    "cryptojs.sha256": {
+      deps: ["cryptojs.core"],
+      exports: "CryptoJS"
     }
   },
   map: {
@@ -60,6 +67,8 @@ require.config({
     "bootstrap": "./libs/bower/bootstrap/bootstrap",
     "chroma": "./libs/bower/chroma-js/chroma",
     "cookies": "./libs/bower/cookies-js/cookies",
+    "cryptojs.core": "./libs/bower/cryptojslib/core",
+    "cryptojs.sha256": "./libs/bower/cryptojslib/sha256",
     "datetimepicker": "./libs/bower/jqueryui-timepicker-addon/src/jquery-ui-timepicker-addon",
     "deep-diff": "./libs/bower/deep-diff/index",
     "jquery": "./libs/bower/jquery/jquery",
@@ -73,7 +82,6 @@ require.config({
     "numeral": "./libs/bower/numeral/numeral",
     "parsley": "libs/bower/parsleyjs/parsley",
     "select2": "./libs/bower/select2/select2",
-    "sha256": "./libs/bower/cryptojslib/sha256",
     "socketio": "./libs/bower/socket.io-client/dist/socket.io",
     "text": "./libs/bower/requirejs-text/text",
     "underscore": "./libs/bower/lodash/lodash.compat",
