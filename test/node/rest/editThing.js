@@ -127,6 +127,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "find_type_by_id", id: 2}],
         [{db_call: "update_thing_type", id: 2}],
@@ -147,6 +148,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_change"}],
@@ -154,8 +156,8 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_thing_name");
-        this.args[1][2][1].should.equal("new name");
+        this.args[2][1].should.equal("update_thing_name");
+        this.args[2][2][1].should.equal("new name");
       }, done);
     });
 
@@ -167,6 +169,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_link"}],
         [{db_call: "save_thing_change"}],
@@ -174,8 +177,8 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_thing_link");
-        this.args[1][2][1].should.equal("new link");
+        this.args[2][1].should.equal("update_thing_link");
+        this.args[2][2][1].should.equal("new link");
       }, done);
     });
 
@@ -187,6 +190,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "find_type_by_id", id: 2}],
         [{db_call: "update_thing_type"}],
@@ -195,8 +199,8 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("update_thing_type");
-        this.args[2][2][1].should.eql(2);
+        this.args[3][1].should.equal("update_thing_type");
+        this.args[3][2][1].should.eql(2);
       }, done);
     });
 
@@ -209,6 +213,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_thing_subtype"}],
         [{db_call: "save_thing_change"}],
@@ -227,6 +232,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_thing_subtype"}],
         [{db_call: "save_thing_change"}],
@@ -234,7 +240,7 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("save_thing_subtype");
+        this.args[2][1].should.equal("save_thing_subtype");
       }, done);
     });
 
@@ -278,6 +284,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_thing_change"}],
         [{db_call: "save_thing_change"}],
@@ -306,6 +313,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_subtype_importance"}],
         [{db_call: "save_thing_change"}],
@@ -313,7 +321,7 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("update_thing_subtype_importance");
+        this.args[2][1].should.equal("update_thing_subtype_importance");
       }, done);
     });
 
@@ -335,6 +343,7 @@ describe("editThing", function () {
 
       this.stubValues = [
 
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "remove_thing_subtype"}],
         [{db_call: "save_thing_change"}],
@@ -342,7 +351,7 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[1][1].should.equal("remove_thing_subtype");
+        this.args[2][1].should.equal("remove_thing_subtype");
       }, done);
     });
 
@@ -379,6 +388,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_change"}],
@@ -386,7 +396,7 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_thing_change");
+        this.args[3][1].should.equal("save_thing_change");
       }, done);
     });
 
@@ -398,6 +408,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_change"}],
@@ -405,9 +416,9 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("save_thing_change");
-        should.not.exist(JSON.parse(this.args[2][2][3]).last_edited);
-        should.not.exist(JSON.parse(this.args[2][2][4]).last_edited);
+        this.args[3][1].should.equal("save_thing_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).last_edited);
+        should.not.exist(JSON.parse(this.args[3][2][4]).last_edited);
 
       }, done);
     });
@@ -422,6 +433,7 @@ describe("editThing", function () {
       };
 
       this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_subtype"}],
@@ -430,9 +442,9 @@ describe("editThing", function () {
       ];
 
       this.testEdit(function () {
-        this.args[3][1].should.equal("save_thing_change");
-        should.not.exist(JSON.parse(this.args[3][2][4]).funny);
-        should.not.exist(JSON.parse(this.args[3][2][4]).newSubtypes[0].funny);
+        this.args[4][1].should.equal("save_thing_change");
+        should.not.exist(JSON.parse(this.args[4][2][4]).funny);
+        should.not.exist(JSON.parse(this.args[4][2][4]).newSubtypes[0].funny);
       }, done);
     });
 

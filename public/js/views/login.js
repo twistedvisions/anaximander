@@ -7,16 +7,16 @@ define([
   "cookies",
   "analytics",
   "views/login_local",
+  "models/current_user",
   "text!templates/login.htm",
   "bootstrap",
   "less!../../css/login"
-], function ($, _, Backbone, when, io, cookies, Analytics, LoginLocal, template) {
+], function ($, _, Backbone, when, io, cookies, Analytics, LoginLocal, User, template) {
   var loginIdCookieKey = "login-id";
   var Login = Backbone.View.extend({
     el: "#login-holder",
 
-    initialize: function (opts) {
-      this.user = opts.user;
+    initialize: function (/*opts*/) {
     },
 
     render: function () {
@@ -26,11 +26,10 @@ define([
       this.$("#login").on("click", _.bind(this.handleLogin, this));
       this.$("#logout").on("click", _.bind(this.handleLogout, this));
       this.$("#cancel-login").on("click", _.bind(this.handleCancelLogin, this));
-      this.user.on("change:logged-in", this.updateView, this);
+      User.user.on("change:logged-in", this.updateView, this);
       new LoginLocal({
         el: "#login-holder",
-        target: "#login-retred",
-        user: this.user
+        target: "#login-retred"
       }).render();
 
       this.$("#login-facebook").on("click", _.bind(this.handleOpenidLogin, this, "facebook"));
@@ -43,7 +42,7 @@ define([
 
     updateView: function () {
       this.$("#login-options").hide();
-      if (this.user.get("logged-in")) {
+      if (User.user.get("logged-in")) {
         this.$("#login").hide();
         this.$("#logout").show();
         this.$("#cancel-login").hide();
@@ -63,7 +62,7 @@ define([
     },
 
     handleLogout: function () {
-      this.user.logout();
+      User.user.logout();
     },
 
     handleCancelLogin: function () {
@@ -124,8 +123,8 @@ define([
         _.extend({provider: provider}, user)
       );
       cookies.expire(loginIdCookieKey, {secure: true});
-      this.user.set("logged-in", true);
-      this.user.set("permissions", user.permissions);
+      User.user.set("logged-in", true);
+      User.user.set("permissions", user.permissions);
       this.socket.disconnect();
       this.socket = null;
     }

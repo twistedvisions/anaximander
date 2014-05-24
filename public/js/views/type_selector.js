@@ -3,8 +3,9 @@ define([
   "underscore",
   "backbone",
   "analytics",
+  "models/current_user",
   "text!templates/type_selector.htm"
-], function ($, _, Backbone, Analytics, template) {
+], function ($, _, Backbone, Analytics, User, template) {
 
   var TypeSelector = Backbone.View.extend({
 
@@ -18,16 +19,22 @@ define([
       this.defaultNewImportanceName = "Nominal";
       this.defaultNewImportanceDescription = "a default value of importance";
       this.defaultNewImportanceValue = 5;
-      this.importanceSelectData = {
+    },
+
+    getImportanceSelectOptions: function () {
+      var options = {
         placeholder: this.importancePlaceholder,
-        data: [],
-        createSearchChoice: function (text) {
+        data: []
+      };
+      if (User.user.hasPermission("add-importance")) {
+        options.createSearchChoice = function (text) {
           return {
             id: -1,
             text: text
           };
-        }
-      };
+        };
+      }
+      return options;
     },
 
     render: function () {
@@ -39,25 +46,32 @@ define([
     },
 
     renderTypes: function () {
-      this.$("input[data-key=type]").select2({
+      this.$("input[data-key=type]").select2(this.getTypeSelectOptions());
+    },
+
+    getTypeSelectOptions: function () {
+      var options = {
         placeholder: this.typePlaceholder,
         data: this.types.map(function (type) {
           return {
             id: type.id,
             text: type.get("name")
           };
-        }),
-        createSearchChoice: function (text) {
+        })
+      };
+      if (User.user.hasPermission("add-type")) {
+        options.createSearchChoice = function (text) {
           return {
             id: -1,
             text: text
           };
-        }
-      });
+        };
+      }
+      return options;
     },
 
     renderTypeImportances: function () {
-      this.$("input[data-key=importance]").select2(this.importanceSelectData);
+      this.$("input[data-key=importance]").select2(this.getImportanceSelectOptions());
       this.$("input[data-key=importance]").on("change",
         _.bind(this.updateTypeImportanceCreator, this));
       this.$("input[data-key=type]").on("change",
@@ -142,7 +156,7 @@ define([
 
     setImportanceDropdownValues: function (importances) {
       this.$("input[data-key=importance]").select2(
-        _.extend(_.clone(this.importanceSelectData), {
+        _.extend(_.clone(this.getImportanceSelectOptions()), {
         data: _.map(importances, function (type) {
           return {
             id: type.id,
@@ -162,7 +176,7 @@ define([
 
     setDefaultNewImportanceValue: function () {
       this.$("input[data-key=importance]").select2(
-        _.extend(_.clone(this.importanceSelectData), {
+        _.extend(_.clone(this.getImportanceSelectOptions()), {
         data: [{
           id: -2,
           text: this.defaultNewImportanceName

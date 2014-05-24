@@ -1,16 +1,16 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
   ["underscore", "jquery", "backbone", "views/search_box",
-    "utils/filter_url_serialiser", "utils/scroll", "analytics"],
-  function (_, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll, Analytics) {
+    "utils/filter_url_serialiser", "utils/scroll", "analytics", "models/current_user"],
+  function (_, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll, Analytics, User) {
     describe("search box", function () {
       beforeEach(function () {
+        User.user = new User();
         this.searchBox = new SearchBox({
           el: null,
           model: new Backbone.Model({
             highlight: {}
-          }),
-          user: new Backbone.Model()
+          })
         });
       });
       afterEach(function () {
@@ -394,8 +394,8 @@ define(
         describe("editing search results", function () {
           describe("user has permission", function () {
             beforeEach(function () {
-              this.searchBox.user.set("logged-in", true);
-              this.searchBox.user.hasPermission = function () {
+              User.user.set("logged-in", true);
+              User.user.hasPermission = function () {
                 return true;
               };
               this.searchBox.$el.append("<div class='dropdown-menu'>");
@@ -420,8 +420,8 @@ define(
           });
           describe("lacking permissions", function () {
             it("should not be editable if the user is not logged in", function () {
-              this.searchBox.user.set("logged-in", false);
-              this.searchBox.user.hasPermission = function () {
+              User.user.set("logged-in", false);
+              User.user.hasPermission = function () {
                 return true;
               };
               this.searchBox.$el.append("<div class='dropdown-menu'>");
@@ -429,8 +429,8 @@ define(
               this.searchBox.$(".search-result .edit").length.should.equal(0);
             });
             it("should not be editable if the user does not have the right permissions", function () {
-              this.searchBox.user.set("logged-in", true);
-              this.searchBox.user.hasPermission = function () {
+              User.user.set("logged-in", true);
+              User.user.hasPermission = function () {
                 return false;
               };
               this.searchBox.$el.append("<div class='dropdown-menu'>");

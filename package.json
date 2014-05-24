@@ -60,6 +60,6 @@
   },
   "scripts": {
     "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test",
-    "update": "./node_modules/db-migrate/bin/db-migrate up --config config/database.json"
+    "migrate": "./node_modules/db-migrate/bin/db-migrate up --config config/database.json"
   }
 }

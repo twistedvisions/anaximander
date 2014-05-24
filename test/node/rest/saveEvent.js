@@ -70,7 +70,7 @@ describe("saveEvent", function () {
       }]
     };
     this.stubValues = [
-      [{id: 1}],
+      [{id: 1, name: "add-event"}],
       [{id: 2}],
       [{id: 3}],
       [{id: 4}],
@@ -79,7 +79,8 @@ describe("saveEvent", function () {
       [{id: 7}],
       [{id: 8}],
       [{id: 9}],
-      [{id: 10}]
+      [{id: 10}],
+      [{id: 11}]
     ];
     stubDb.setup(this);
   });
@@ -109,10 +110,23 @@ describe("saveEvent", function () {
         });
         it("should save the default importance if it is a new type", function (done) {
           this.fullBody.type.id = -1;
+          this.stubValues[0].push({name: "add-type"});
           this.stubValues.push([{id: 11}]);
           this.testSave(function () {
-            this.args[3][1].should.equal("update_type_default_importance_when_null");
+            this.args[4][1].should.equal("update_type_default_importance_when_null");
           }, done);
+        });
+        it("should not save the default importance if it is a new type and lacks permission", function (done) {
+          this.fullBody.type.id = -1;
+          this.stubValues.push([{id: 11}]);
+          this.testSave(function () {
+            this.args[4][1].should.equal("update_type_default_importance_when_null");
+          }, function () {
+            done(new Error("shouldn't get here"));
+          }, function (ex) {
+            should.exist(ex);
+            done();
+          });
         });
       });
       describe("place", function () {
@@ -122,6 +136,7 @@ describe("saveEvent", function () {
           }, done);
         });
         it("should create a place if the thing doesn't exist", function (done) {
+          this.eventSaver.permissions = {"add-thing": {}};
           this.eventSaver.ensurePlace({
             id: -1,
             name: "place name"
@@ -131,23 +146,39 @@ describe("saveEvent", function () {
           }, this));
           stubDb.setQueryValues(this, this.stubValues);
         });
+        it("should not create a place if the thing doesn't exist if it lacks permission", function (done) {
+          this.eventSaver.permissions = {};
+          this.eventSaver.ensurePlace({
+            id: -1,
+            name: "place name"
+          }).then(
+            function () {
+              done(new Error("should not get here"));
+            },
+            function (ex) {
+              should.exist(ex);
+              done();
+            }
+          );
+          stubDb.setQueryValues(this, this.stubValues);
+        });
         it("should update the start time by the offset at the place", function (done) {
           this.fullBody.placeId = 1;
-          this.stubValues[6] = [{offset: 60 * 60}];
+          this.stubValues[7] = [{offset: 60 * 60}];
           this.testSave(_.bind(function () {
             this.fullBody.start_date.toISOString().should.equal("2013-03-11T23:00:00.000Z");
           }, this), done);
         });
         it("should update the end time by the offset at the place", function (done) {
           this.fullBody.placeId = 1;
-          this.stubValues[6] = [{offset: 60 * 60}];
+          this.stubValues[7] = [{offset: 60 * 60}];
           this.testSave(_.bind(function () {
             this.fullBody.end_date.toISOString().should.equal("2013-03-12T22:59:00.000Z");
           }, this), done);
         });
         it("should save the offset at the place", function (done) {
           this.fullBody.placeId = 1;
-          this.stubValues[6] = [{offset: 60 * 60}];
+          this.stubValues[7] = [{offset: 60 * 60}];
           this.testSave(_.bind(function () {
             this.fullBody.end_offset_seconds.should.equal(3600);
             this.fullBody.start_offset_seconds.should.equal(3600);
@@ -180,6 +211,7 @@ describe("saveEvent", function () {
               type: {id: 1},
               importance: {id: 1}
             }];
+            this.stubValues[0].push({name: "add-thing"});
             this.stubValues.push([{id: 9}]);
             this.stubValues.push([{id: 10}]);
             this.stubValues.push([{id: 11}]);
@@ -213,8 +245,19 @@ describe("saveEvent", function () {
           });
           it("should add subtypes to the new thing", function (done) {
             this.testSave(function () {
-              this.args[9][1].should.equal("save_thing_subtype");
+              this.args[10][1].should.equal("save_thing_subtype");
             }, done);
+          });
+          it("should not create things without permission", function (done) {
+            this.stubValues[0].pop();
+            this.testSave(function () {
+              this.eventSaver.ensure.calledWith(sinon.match.any, "participant thing").should.equal(true);
+            }, function () {
+              done(new Error("should not get here"));
+            }, function (ex) {
+              should.exist(ex);
+              done();
+            });
           });
         });
       });

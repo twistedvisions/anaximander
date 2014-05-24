@@ -3,7 +3,7 @@ define(
 
   ["chai", "jquery", "backbone", "views/login_local", "models/current_user", "analytics"],
 
-  function (chai, $, Backbone, LoginLocal, CurrentUser, Analytics) {
+  function (chai, $, Backbone, LoginLocal, User, Analytics) {
 
     var should = chai.should();
 
@@ -12,12 +12,11 @@ define(
       beforeEach(function () {
         this.targetEl = $("<div id='some-container'><div id='login-retred'></div></div>");
         this.targetEl.appendTo(document.body);
-
+        User.user = new User({
+          "logged-in": false
+        });
         this.loginLocal = new LoginLocal({
-          el: "#some-container",
-          user: new CurrentUser({
-            "logged-in": false
-          })
+          el: "#some-container"
         });
         sinon.stub(Analytics, "loginAttempted");
         sinon.stub(Analytics, "loginSucceeded");
@@ -61,7 +60,7 @@ define(
         it("should log the user in after registration success", function () {
           this.loginLocal.render();
           this.loginLocal.handleRegisterSuccess({});
-          this.loginLocal.user.get("logged-in").should.equal(true);
+          User.user.get("logged-in").should.equal(true);
         });
 
         it("should set the user's permissions after registration success", function () {
@@ -69,7 +68,7 @@ define(
           this.loginLocal.handleRegisterSuccess({
             permissions: [{id: 1, name: "some-permission"}]
           });
-          this.loginLocal.user.hasPermission("some-permission").should.equal(true);
+          User.user.hasPermission("some-permission").should.equal(true);
         });
 
         it("should track registration success", function () {
@@ -126,7 +125,7 @@ define(
         it("should log the user in after login success", function () {
           this.loginLocal.render();
           this.loginLocal.handleLoginSuccess({});
-          this.loginLocal.user.get("logged-in").should.equal(true);
+          User.user.get("logged-in").should.equal(true);
         });
 
         it("should set the user's permissions after login success", function () {
@@ -134,7 +133,7 @@ define(
           this.loginLocal.handleLoginSuccess({
             permissions: [{id: 1, name: "some-permission"}]
           });
-          this.loginLocal.user.hasPermission("some-permission").should.equal(true);
+          User.user.hasPermission("some-permission").should.equal(true);
         });
 
         it("should show a message upon login failure", function () {

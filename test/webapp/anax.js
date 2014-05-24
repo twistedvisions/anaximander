@@ -1,7 +1,7 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
-  ["underscore", "chai", "anax_startup", "views/app", "analytics"],
-  function (_, chai, App, AppView, Analytics) {
+  ["underscore", "chai", "anax_startup", "views/app", "models/current_user", "analytics"],
+  function (_, chai, App, AppView, User, Analytics) {
     var should = chai.should();
     describe("anax", function () {
       it("should have a default view state", function () {
@@ -61,6 +61,7 @@ define(
             app.model.get("center").should.not.eql([1, -10]);
           });
         });
+/*
         describe("local storage", function () {
           it("should get the location from local storage if it exists", function () {
             this.useDelay = true;
@@ -85,14 +86,16 @@ define(
             }
           });
         });
+*/
       });
 
-      it("should fetch a user model to AppView", function () {
+      it("should fetch a user model", function () {
         var app = new App();
-        sinon.stub(app.user, "fetch");
+        User.user = new User();
+        sinon.stub(User.user, "fetch");
         app.start();
-        app.user.fetch.calledOnce.should.equal(true);
-        app.user.fetch.restore();
+        User.user.fetch.calledOnce.should.equal(true);
+        User.user.fetch.restore();
       });
       describe("handleUserFetchSuccess", function () {
         beforeEach(function () {

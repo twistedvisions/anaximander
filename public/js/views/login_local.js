@@ -3,13 +3,14 @@ define([
   "underscore",
   "backbone",
   "bootstrap",
-  "sha256",
+  "cryptojs.sha256",
   "when",
   "analytics",
+  "models/current_user",
   "text!templates/login-retred.htm",
   "bootstrap",
   "less!../../css/login"
-], function ($, _, Backbone, bootstrap, sha256, when, Analytics, template) {
+], function ($, _, Backbone, bootstrap, cryptojs, when, Analytics, User, template) {
 
   var Login = Backbone.View.extend({
     registrationFailedMessage: "Registration failed",
@@ -17,8 +18,7 @@ define([
     noUsernameMessage: "a username must be given",
     noPasswordMessage: "a password must be given",
 
-    initialize: function (options) {
-      this.user = options.user;
+    initialize: function (/*options*/) {
     },
 
     render: function () {
@@ -55,7 +55,7 @@ define([
       } else {
         when($.post("/register", {
           username: this.$(".popover form input[name=username]").val(),
-          password: sha256.SHA256(this.$(".popover form input[name=password]").val()).toString()
+          password: cryptojs.SHA256(this.$(".popover form input[name=password]").val()).toString()
         })).then(
           _.bind(this.handleRegisterSuccess, this),
           _.bind(this.handleRegisterFailure, this)
@@ -79,7 +79,7 @@ define([
       var password = this.$(".popover form input[name=password]").val();
       when($.post("/login", {
         username: username,
-        password: sha256.SHA256(password).toString()
+        password: cryptojs.SHA256(password).toString()
       })).then(
         _.bind(this.handleLoginSuccess, this),
         _.bind(this.handleLoginFailure, this)
@@ -96,8 +96,8 @@ define([
 
     logUserIn: function (user) {
       this.$("#login-retred").popover("toggle");
-      this.user.set("logged-in", true);
-      this.user.set("permissions", user.permissions);
+      User.user.set("logged-in", true);
+      User.user.set("permissions", user.permissions);
     },
 
     handleLoginFailure: function (err) {

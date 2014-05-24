@@ -3,7 +3,7 @@ define(
 
   ["chai", "backbone", "views/summary_bar", "jquery", "models/current_user", "analytics"],
 
-  function (chai, Backbone, SummaryBar, $, CurrentUser, analytics) {
+  function (chai, Backbone, SummaryBar, $, User, analytics) {
 
     var should = chai.should();
 
@@ -15,7 +15,7 @@ define(
         zoom: 3,
         filterState: new Backbone.Collection()
       });
-      this.user = new CurrentUser({
+      User.user = new User({
         "logged-in": false
       });
 
@@ -31,7 +31,6 @@ define(
         this.clock = sinon.useFakeTimers();
         this.summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.collection
         });
         this.summaryBar.render();
@@ -81,7 +80,6 @@ define(
       it("should show the correct amount of locations", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.collection
         });
         summaryBar.getLocationCount(results).should.equal(2);
@@ -90,7 +88,6 @@ define(
       it("should show the correct amount of events", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.collection
         });
 
@@ -102,7 +99,6 @@ define(
       beforeEach(function () {
         this.summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.collection
         });
         sinon.stub(analytics, "showFilters");
@@ -118,7 +114,6 @@ define(
         this.model.get("filterState").reset({id: 1});
         this.summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.collection
         });
         this.summaryBar.render();
@@ -152,14 +147,13 @@ define(
       it("should not show if the user does not have the permission", function () {
         var summaryBar = new SummaryBar({
           model: this.model,
-          user: this.user,
           eventLocationsCollection: this.collection
         });
         summaryBar.render();
         should.not.exist(summaryBar.login);
       });
       it("should show if the user if the user has permission", function () {
-        this.userWhoCanLogin = new CurrentUser({
+        User.user = new User({
           "logged-in": false,
           permissions: [
             {id: 1, name: "login"}
@@ -167,7 +161,6 @@ define(
         });
         var summaryBar = new SummaryBar({
           model: this.model,
-          user: this.userWhoCanLogin,
           eventLocationsCollection: this.collection
         });
         summaryBar.render();

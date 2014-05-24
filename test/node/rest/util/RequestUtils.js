@@ -1,6 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 
 var should = require("should");
+var _ = require("underscore");
 
 var tryTest = require("../../tryTest");
 var stubDb = require("../../stubDb");
@@ -73,6 +74,91 @@ describe("RequestUtils", function () {
         [{id: 1}],
         [{id: 2}]
       ]);
+    });
+    describe("permissions", function () {
+      it("should create a new thing if the permissions match", function (done) {
+        var self = this;
+        this.fnArgs.push(["permission-name"]);
+        this.eventSaver.permissions = {
+          "permission-name": {}
+        };
+        this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+          tryTest(function () {
+            self.args[0][1].should.equal("save_creator");
+            self.args[1][1].should.equal("save_some_thing_by_id");
+          }, done
+        ), done);
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
+      });
+      it("should not create a new thing if the permissions do not match", function (done) {
+        this.fnArgs.push(["non-existent-permission-name"]);
+        this.eventSaver.permissions = {
+          "permission-name": {}
+        };
+        this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+          function () { throw new Error("should not get here"); },
+          function (ex) {
+            should.exist(ex);
+            done();
+          });
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
+      });
+      it("should allow permissions to be matched based on functions", function (done) {
+        this.fnArgs.push(function () {
+          return false;
+        });
+        this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+          function () { throw new Error("should not get here"); },
+          function (ex) {
+            should.exist(ex);
+            done();
+          });
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
+      });
+      it("should allow nominal importances to be created if you can edit-type", function (done) {
+        this.fnArgs[0].name = "Nominal";
+        this.fnArgs[0].value = 5;
+        this.fnArgs.push(_.bind(this.eventSaver.hasImportancePermission, this.eventSaver));
+        this.eventSaver.permissions = {
+          "add-type": {}
+        };
+
+        this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+          function () { done(); },
+          done
+        );
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
+      });
+      it("should not allow nominal importances to be created if you cannot edit-type", function (done) {
+        this.fnArgs[0].name = "Nominal";
+        this.fnArgs[0].value = 5;
+        this.fnArgs.push(_.bind(this.eventSaver.hasImportancePermission, this.eventSaver));
+        this.eventSaver.permissions = {};
+
+        this.eventSaver.ensure.apply(this.eventSaver, this.fnArgs).then(
+          function () { throw new Error("should not get here"); },
+          function (ex) {
+            should.exist(ex);
+            done();
+          }
+        );
+        stubDb.setQueryValues(this, [
+          [{id: 1}],
+          [{id: 2}]
+        ]);
+      });
     });
 
     it("should return the ensured-thing's id if it was created", function (done) {
