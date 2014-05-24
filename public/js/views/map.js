@@ -322,7 +322,7 @@ define([
       $(".event-entry .search").on("click", _.bind(this.onSearchClick, this));
       $(".event-entry .edit").on("click", _.bind(this.onEditClick, this));
 
-      if ($(".content-holder").height() === 200) {
+      if ($(".content-holder").height() >= 200) {
         //This is an ugly hack to allow us to put scroll bars on.
         //Without it some weird thing happens where the scroll
         //height takes into account the width with the scrollbars
