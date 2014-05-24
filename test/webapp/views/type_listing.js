@@ -342,6 +342,7 @@ define(
             this.typeListing.$(".types tbody tr:visible").length.should.equal(1);
           });
         });
+        var callSuccessful;
         describe("editing default importance", function () {
           beforeEach(function () {
             this.typeListing.showTypes(
@@ -362,7 +363,7 @@ define(
                 ]
               ]
             );
-            this.callSuccessful = true;
+            callSuccessful = true;
             sinon.stub(this.typeListing, "saveTypeChange", _.bind(function () {
               return {
                 then: _.bind(function (fn, reject) {
@@ -373,7 +374,7 @@ define(
                     last_edited: "2014-04-29",
                     importances: []
                   };
-                  if (this.callSuccessful) {
+                  if (callSuccessful) {
                     fn(this.typeListing.handleTypeChange(type));
                   } else {
                     reject();
@@ -443,7 +444,7 @@ define(
             analytics.typeListing_typeSaved.calledOnce.should.equal(true);
           });
           it("should show an error message if it fails", function () {
-            this.callSuccessful = false;
+            callSuccessful = false;
             var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.default-importance");
             cell.find("select").val(2);
             cell.find("select").trigger("change");
@@ -452,7 +453,7 @@ define(
         });
         describe("editing cells", function () {
           beforeEach(function () {
-            this.callSuccessful = true;
+            callSuccessful = true;
             sinon.stub(this.typeListing, "saveTypeChange", _.bind(function () {
               return {
                 then: _.bind(function (fn, reject) {
@@ -462,7 +463,7 @@ define(
                     last_edited: "2014-04-29",
                     importances: []
                   };
-                  if (this.callSuccessful) {
+                  if (callSuccessful) {
                     fn(this.typeListing.handleTypeChange(type));
                   } else {
                     reject();
@@ -570,7 +571,7 @@ define(
               this.typeListing.saveTypeChange.callCount.should.equal(2);
             });
             it("should show an error message if it fails", function () {
-              this.callSuccessful = false;
+              callSuccessful = false;
               var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.name");
               cell.trigger("click");
               cell.find("input").val("type name");
