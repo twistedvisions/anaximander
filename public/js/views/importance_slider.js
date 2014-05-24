@@ -28,14 +28,14 @@ define([
 
     },
 
-    update: function (value) {
+    update: function () {
       $("#importance-slider").slider({
-        value: this.getValue(value)
+        value: this.getValue(this.model.get("importance"))
       });
     },
 
     getValue: function (value) {
-      return Math.pow(value, 1.0 / 3);
+      return Math.round(Math.pow(value, 1.0 / 3) * 100);
     },
 
     handleSlide: function (e, ui) {
