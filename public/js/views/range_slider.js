@@ -58,6 +58,7 @@ define([
     attachListeners: function () {
       this.$(".slider").draggable({
         axis: "x",
+        containment: "parent",
         drag: _.bind(this.onDrag, this),
         stop: _.bind(this.onStop, this)
       });
