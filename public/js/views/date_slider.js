@@ -2,64 +2,72 @@ define([
   "jquery",
   "underscore",
   "backbone",
-  "range-slider",
-  "less!../../css/rangeslider",
+  "./range_slider",
   "less!../../css/date_slider"
-], function ($, _, Backbone) {
+], function ($, _, Backbone, RangeSlider) {
 
   var DateSliderView = Backbone.View.extend({
     el: "#slider-range",
 
     initialize: function () {
+      this.min = -2000;
+      this.max = new Date().getFullYear() + 1;
     },
 
     render: function () {
-      this.$el.html("<div class='slider'></div>");
+      this.$el.html("<div class='slider-holder'></div>");
       var date = this.model.get("date");
-
-      this.$(".slider").rangeSlider({ //dateRangeSlider({
-        bounds: {
-          min: -2000, //new Date(-2000, 0, 1),
-          max: new Date().getFullYear() //new Date(),
-        },
-        defaultValues: {
-          min: date[0],
-          max: date[1]
-        },
-        type: "double",
-        valueLabels: "hide",
-        arrows: false
+      this.slider = new RangeSlider({
+        el: ".slider-holder",
+        firstSliderPosition: this.convertToRatio(date[0]),
+        lastSliderPosition: this.convertToRatio(date[1])
       });
-      this.$(".slider").on("valuesChanging", _.bind(this.sliderChanged, this));
-
+      this.slider.render();
+      this.slider.on("update", this.sliderChanged, this);
       this.model.on("change:date", this.update, this);
-      // this.showDate();
+      this.showDate();
     },
 
-    sliderChanged: function (event, data) {
+    convertToRatio: function (x) {
+      return (x - this.min) / (this.max - this.min);
+    },
+
+    sliderChanged: function (data) {
       window.lastEvent = "slider";
       var timeRange = this.getTimeRange(data);
       this.model.set("date", timeRange);
-      // this.showDate();
+      this.showDate();
     },
 
     showDate: function () {
       var timeRange = this.model.get("date");
-      this.$(".ui-rangeSlider-leftHandle").text(this.toText(timeRange[0], timeRange[1]));
-      this.$(".ui-rangeSlider-rightHandle").text(this.toText(timeRange[1], timeRange[0]));
+      var minSlider, maxSlider;
+      if (parseInt(this.$(".slider-a").css("left"), 10) < parseInt(this.$(".slider-b").css("left"), 10)) {
+        minSlider = this.$(".slider-a");
+        maxSlider = this.$(".slider-b");
+      } else {
+        minSlider = this.$(".slider-b");
+        maxSlider = this.$(".slider-a");
+      }
+      minSlider.text(this.toText(timeRange[0], timeRange[1]));
+      maxSlider.text(this.toText(timeRange[1], timeRange[0]));
     },
 
     getTimeRange: function (data) {
-      return [Math.round(data.values.min), Math.round(data.values.max)];
+      var range = this.max - this.min;
+      return [
+        parseInt((data.min * range) + this.min, 10),
+        parseInt((data.max * range) + this.min, 10)
+      ];
     },
 
     update: function () {
       var date = this.model.get("date");
-      var currentPos = this.$(".slider").rangeSlider("values");
+      var currentPos = this.slider.getState();
 
-      if (Math.round(currentPos.min) !== date[0] ||
-          Math.round(currentPos.max, 10) !== date[1]) {
-        this.$(".slider").rangeSlider("values", date[0], date[1]);
+      if (Math.round(currentPos.min) !== this.convertToRatio(date[0]) ||
+          Math.round(currentPos.max, 10) !== this.convertToRatio(date[1])) {
+        this.slider.setState(this.convertToRatio(date[0]), this.convertToRatio(date[1]));
       }
     },
 
