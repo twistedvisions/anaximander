@@ -74,22 +74,47 @@ define([
       var leftPos = parseInt(this.$(".slider-a").css("left"), 10);
       var rightPos = parseInt(this.$(".slider-b").css("left"), 10);
 
-      if (this.getSelectedSlider(event) === "a") {
+      var selectedSlider = this.getSelectedSlider(event);
+
+      if (selectedSlider === "a") {
         this.selectSliderA();
       } else {
         this.selectSliderB();
       }
 
       var left, right;
-      if (this.state.leftAdjusted) {
-        left = (leftPos - this.dimensions.sliderA.width) / grooveWidth;
-      } else {
-        left = leftPos / grooveWidth;
-      }
 
-      if (this.state.rightAdjusted) {
-        right = (rightPos + this.dimensions.sliderB.width) / grooveWidth;
+      var selectedWidth = this.state.selected === "a" ?
+        this.dimensions.sliderA.width :
+        this.dimensions.sliderB.width;
+
+      if (leftPos > rightPos + selectedWidth) {
+        this.state.state = "crossed";
+        //crossed over
+        if (this.state.rightAdjusted) {
+          left = (leftPos - this.dimensions.sliderB.width) / grooveWidth;
+          right = (rightPos + this.dimensions.sliderB.width) / grooveWidth;
+        } else if (this.state.leftAdjusted) {
+          left = (leftPos - this.dimensions.sliderA.width) / grooveWidth;
+          right = (rightPos + this.dimensions.sliderA.width) / grooveWidth;
+        } else {
+          right = rightPos / grooveWidth;
+          left = leftPos / grooveWidth;
+        }
+      } else if (leftPos > rightPos) {
+        this.state.state = "crossing";
+        //crossing over
+        if (selectedSlider === "a") {
+          right = rightPos / grooveWidth;
+          left = rightPos / grooveWidth;
+        } else {
+          right = leftPos / grooveWidth;
+          left = leftPos / grooveWidth;
+        }
       } else {
+        this.state.state = "normal";
+        //normal
+        left = leftPos / grooveWidth;
         right = rightPos / grooveWidth;
       }
 
@@ -139,13 +164,10 @@ define([
       var sliderA_pos = this.state.left * grooveWidth;
       var sliderB_pos = this.state.right * grooveWidth;
 
-      var selectedWidth = this.state.selected === null ? 0 :
-        this.state.selected === "a" ? this.dimensions.sliderA.width : this.dimensions.sliderB.width;
-
       this.state.leftAdjusted = false;
       this.state.rightAdjusted = false;
 
-      if ((this.state.selected === null) || ((sliderB_pos + selectedWidth) > sliderA_pos)) {
+      if ((this.state.selected === null) || (sliderA_pos <= sliderB_pos)) {
         this.$(".slider-a").css("left", sliderA_pos);
         this.$(".slider-b").css("left", sliderB_pos);
       } else if (this.state.selected === "a") {
