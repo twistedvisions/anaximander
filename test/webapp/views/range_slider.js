@@ -110,19 +110,33 @@ define(
           });
         });
         describe("crossed over", function () {
-          it("should set the state of the left slider when the right slider has been dragged over it", function () {
+          it("should set the state of the left slider when the right slider has fully been dragged over it", function () {
             this.slider.$(".slider-a").css("left", 80);
             this.slider.$(".slider-b").css("left", 40);
             this.slider.onDrag({target: {className: "slider-a"}});
             this.slider.getState().min.should.equal(0.25);
             this.slider.getState().max.should.equal(0.5);
           });
-          it("should set the state of the right slider when the left slider has been dragged over it", function () {
+          it("should set the state of the right slider when the left slider has fully been dragged over it", function () {
             this.slider.$(".slider-a").css("left", 120);
             this.slider.$(".slider-b").css("left", 80);
             this.slider.onDrag({target: {className: "slider-b"}});
             this.slider.getState().min.should.equal(0.5);
             this.slider.getState().max.should.equal(0.75);
+          });
+          it("should set the state of the right slider when the left slider has just been dragged over it", function () {
+            this.slider.$(".slider-a").css("left", 81);
+            this.slider.$(".slider-b").css("left", 80);
+            this.slider.onDrag({target: {className: "slider-a"}});
+            this.slider.getState().min.should.equal(0.5);
+            this.slider.getState().max.should.equal(0.5);
+          });
+          it("should set the state of the left slider when the right slider has just been dragged over it", function () {
+            this.slider.$(".slider-a").css("left", 80);
+            this.slider.$(".slider-b").css("left", 79);
+            this.slider.onDrag({target: {className: "slider-b"}});
+            this.slider.getState().min.should.equal(0.5);
+            this.slider.getState().max.should.equal(0.5);
           });
         });
       });
@@ -202,30 +216,19 @@ define(
           });
         });
         describe("slider selected", function () {
-          describe("values close", function () {
-            it("should over lap the sliders", function () {
-              this.slider.selectSliderB();
-              this.slider.setState(0.5, 0.499);
-              this.slider.redraw();
-              parseInt(this.slider.$(".slider-a").css("left"), 10).should.equal(80);
-              right(this.slider.$(".slider-b")).should.equal(119);
-            });
+          it("should flip the location of unselected slider-a", function () {
+            this.slider.selectSliderB();
+            this.slider.setState(0.5, 0.25);
+            this.slider.redraw();
+            right(this.slider.$(".slider-a")).should.equal(140);
+            //other slider is being dragged so don't set it
           });
-          describe("value much smaller", function () {
-            it("should flip the location of unselected slider-a", function () {
-              this.slider.selectSliderB();
-              this.slider.setState(0.5, 0.25);
-              this.slider.redraw();
-              right(this.slider.$(".slider-a")).should.equal(140);
-              //other slider is being dragged so don't set it
-            });
-            it("should flip the location of unselected slider-b", function () {
-              this.slider.selectSliderA();
-              this.slider.setState(0.75, 0.5);
-              this.slider.redraw();
-              parseInt(this.slider.$(".slider-b").css("left"), 10).should.equal(60);
-              //other slider is being dragged so don't set it
-            });
+          it("should flip the location of unselected slider-b", function () {
+            this.slider.selectSliderA();
+            this.slider.setState(0.75, 0.5);
+            this.slider.redraw();
+            parseInt(this.slider.$(".slider-b").css("left"), 10).should.equal(60);
+            //other slider is being dragged so don't set it
           });
         });
       });

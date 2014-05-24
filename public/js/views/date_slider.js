@@ -19,8 +19,8 @@ define([
       var date = this.model.get("date");
       this.slider = new RangeSlider({
         el: ".slider-holder",
-        firstSliderPosition: this.convertToRatio(date[0]),
-        lastSliderPosition: this.convertToRatio(date[1])
+        min: this.convertToRatio(date[0]),
+        max: this.convertToRatio(date[1])
       });
       this.slider.render();
       this.slider.on("update", this.sliderChanged, this);
