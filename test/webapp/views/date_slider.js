@@ -17,11 +17,13 @@ define(
         var dateSlider = new DateSlider({model: model});
 
         dateSlider.$el.slider = sinon.stub();
-        dateSlider.getTimeRange = sinon.stub();
+        dateSlider.getTimeRange = function () {
+          return [0, 1];
+        };
         dateSlider.update = sinon.stub();
 
         // dateSlider.render();
-        dateSlider.sliderChanged();
+        dateSlider.sliderChanged({min: 0, max: 1});
         window.lastEvent.should.equal("slider");
       });
 

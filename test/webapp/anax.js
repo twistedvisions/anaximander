@@ -7,10 +7,10 @@ define(
       it("should have a default view state", function () {
         should.exist(new App().model);
       });
+      var useDelay;
       describe("initial model", function () {
         beforeEach(function () {
           var geolocation = {};
-          this.useDelay = true;
           this.result = {
             coords: {
               latitude: 1,
@@ -18,8 +18,9 @@ define(
             }
           };
           this.clock = sinon.useFakeTimers();
+          useDelay = true;
           geolocation.getCurrentPosition = _.bind(function (f) {
-            if (this.useDelay) {
+            if (useDelay) {
               setTimeout(_.bind(function () {
                 f(this.result);
               }, this), 1);
@@ -43,28 +44,27 @@ define(
             App.prototype.getStoredData.restore();
           });
           it("should get the location from geo data if it can at the start", function () {
-            this.useDelay = false;
+            useDelay = false;
             var app = new App();
             app.model.get("center").should.eql([1, -10]);
           });
           it("should update the location from geo data if does not get it immediately", function () {
-            this.useDelay = true;
+            useDelay = true;
             var app = new App();
             this.clock.tick(10);
             app.model.get("center").should.eql([1, -10]);
           });
           it("should not update the location from geo data if was set from the router", function () {
-            this.useDelay = true;
+            useDelay = true;
             var app = new App();
             app.router = {initialisedByUrl: true};
             this.clock.tick(10);
             app.model.get("center").should.not.eql([1, -10]);
           });
         });
-/*
         describe("local storage", function () {
           it("should get the location from local storage if it exists", function () {
-            this.useDelay = true;
+            useDelay = true;
             this.result = {};
             sinon.stub(App.prototype, "getLocalStorageState", function () {
               return JSON.stringify({
@@ -86,7 +86,6 @@ define(
             }
           });
         });
-*/
       });
 
       it("should fetch a user model", function () {
