@@ -71,7 +71,6 @@ require.config({
 
     "templates": "../templates",
     "fuse": "./libs/fuse",
-    "range-slider": "libs/jQAllRangeSliders-min",
     "styled_marker": "./libs/styled_marker"
   }
 });

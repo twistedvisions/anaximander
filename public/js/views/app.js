@@ -83,11 +83,6 @@ define([
         this.dateSliderView.render();
       }, this));
 
-      require(["views/summary_text"], _.bind(function (SummaryTextView) {
-        this.summaryTextView = new SummaryTextView({model: this.model});
-        this.summaryTextView.render();
-      }, this));
-
       require(["views/importance_slider"], _.bind(function (ImportanceSlider) {
         this.importanceSlider = new ImportanceSlider({model: this.model});
         this.importanceSlider.render();

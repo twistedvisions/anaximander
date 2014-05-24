@@ -1,8 +1,22 @@
 #importance-slider-container {
   position: fixed;
-  right: 6px;
-  top: 111px;
+  right: 13px;
+  top: 60px;
+  width: 32px;
+  height: 128px;
   background-color: rgba(255,255,255,0.5);
   padding: 10px;
   border: 1px solid rgba(100,100,100,0.5);
+
+  .text {
+    float: left;
+    left: -10px;
+    position: relative;
+    &.more {
+      top: -30px;
+    }
+    &.less {
+      top: 21px;
+    }
+  }
 }

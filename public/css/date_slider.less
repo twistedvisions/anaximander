@@ -3,26 +3,23 @@
   margin-left: 250px;
   height: 32px;
 
-  .slider {
+  .slider-holder {
+    top: 0;
+    height: 100%;
+    .groove {
+      background: linear-gradient(to bottom, #eee 0%,#ddd 30%,#ddd 70%,#eee 100%);
 
-    &.ui-rangeSlider {
-      .ui-rangeSlider-bar {
-        height: 32px;
-      }
-      .ui-rangeSlider-innerBar {
-        height: 32px;
-        margin: 0;
-      }
-      .ui-rangeSlider-handle {
-        height: 32px;
-        width: 4px;
-        padding-top: 6px;
+      .slider {
+        line-height: 29px;
         text-align: center;
-        &.ui-rangeSlider-leftHandle {
-          background-color: #ff0000;
+
+        &.slider-a {
+          background-color: red;
+          background: linear-gradient(to bottom, #e66 0%, #f00 30%, #f00 70%, #e22 100%);
         }
-        &.ui-rangeSlider-rightHandle {
-          background-color: #0000ff;
+        &.slider-b {
+          background-color: blue;
+          background: linear-gradient(to bottom, #66e 0%, #33f 30%, #33f 70%, #33e 100%);
         }
       }
     }
