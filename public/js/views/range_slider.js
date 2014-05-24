@@ -61,6 +61,10 @@ define([
         drag: _.bind(this.onDrag, this),
         stop: _.bind(this.onStop, this)
       });
+      $(window).resize(_.bind(function () {
+        this.getComponentDimensions();
+        this.redraw();
+      }, this));
     },
 
     onDrag: function (event) {
