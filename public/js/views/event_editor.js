@@ -496,7 +496,7 @@ define([
     },
 
     getSelectValue: function (key) {
-      var value = this.$el.find("input[data-key=" + key + "]").select2("data");
+      var value = _.clone(this.$el.find("input[data-key=" + key + "]").select2("data"));
       value.name = value.text;
       delete value.text;
       return value;
