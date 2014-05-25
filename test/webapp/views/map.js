@@ -1042,9 +1042,10 @@ define(
           var map = new Map({
             model: this.model
           });
-          map.lastInfoWindow = {close: sinon.stub()};
+          var close = sinon.stub();
+          map.openInfoWindows = [{close: close}];
           map.closeOpenWindows();
-          map.lastInfoWindow.close.calledOnce.should.equal(true);
+          close.calledOnce.should.equal(true);
         });
 
         it("should close an existing options menu", function () {

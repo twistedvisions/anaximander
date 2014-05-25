@@ -130,9 +130,11 @@ define([
     handleSaveFail: function (model, res) {
       this.$(".error-message").show();
       var text;
-      if (res.responseText.indexOf("last_edited times do not match") >= 0) {
+      if (res.responseText === "please login") {
+        text = "You have been logged out: duplicate this tab and log in, then save again here.";
+      } else if (res.responseText.indexOf("last_edited times do not match") >= 0) {
         text = "Thing can't be saved - it has been edited by someone else. Refresh and try again";
-      } else {
+      } else if (res.responseText) {
         text = res.responseText.substring(0, 100);
       }
       this.$(".error-message").text(text);

@@ -543,6 +543,8 @@ define([
       var text;
       if (res.responseText.indexOf("last_edited times do not match") >= 0) {
         text = "Event can't be saved - it has been edited by someone else. Refresh and try again";
+      } else if (res.responseText === "Unauthorized") {
+        text = "You have been logged out: duplicate this tab and log in, then save again here.";
       } else {
         text = res.responseText.substring(0, 100);
       }

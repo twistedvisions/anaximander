@@ -713,7 +713,7 @@ define(
         });
 
         it("should show the error message if it fails", function () {
-          this.editor.handleSaveFail({}, {responseText: "some error message"});
+          this.editor.handleSaveFail({responseText: "some error message"});
           this.editor.$(".error-message").css("display").should.not.equal("none");
           this.editor.$(".error-message").text().should.equal("some error message");
         });
@@ -753,7 +753,7 @@ define(
 
         describe("handleSaveFail", function () {
           it("should put a custom message in if someone else edited the event", function () {
-            this.editor.handleSaveFail(null, {responseText: "last_edited times do not match"});
+            this.editor.handleSaveFail({responseText: "last_edited times do not match"});
             this.editor.$(".error-message").text().indexOf("Event can't be saved").should.equal(0);
           });
         });
