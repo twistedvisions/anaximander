@@ -1,4 +1,5 @@
 /*global __dirname, process*/
+/*jshint unused:false */
 
 require("newrelic");
 
@@ -57,6 +58,7 @@ secureApp.use(flash());
 secureApp.use(passport.initialize());
 secureApp.use(passport.session());
 
+
 require("./lib/rest/auth/localStrategy");
 require("./lib/rest/auth/facebookStrategy");
 require("./lib/rest/auth/googleStrategy");
@@ -102,6 +104,20 @@ require("./lib/rest/getThingTypes").init(secureApp);
 require("./lib/rest/saveEvent").init(secureApp);
 
 new (require("./lib/rest/search"))(secureApp);
+
+secureApp.use(function (err, req, res, next) {
+  if (err.message.match(/please login/)) {
+    res.send(401, err.message);
+  } else if (err.message.match(/User lacks '.*' permission/)) {
+    res.send(403, err.message);
+  } else if (err.message.match(/.*last_edited times do not match.*/)) {
+    res.send(409, err.message);
+  } else {
+    winston.error("Error occurred: " + err.message);
+    winston.error(err.stack);
+    res.send(500, "An internal error occurred");
+  }
+});
 
 secureServer.listen(nconf.server.securePort);
 unsecureServer.listen(nconf.server.unsecurePort);
