@@ -32,11 +32,6 @@ inner join importance role_importance on event_participant.importance_id = role_
 left join thing_subtype on thing_subtype.thing_id = thing.id
 left join importance thing_importance on thing_subtype.importance_id = thing_importance.id
 inner join importance event_importance on event_importance.id = event.importance_id
-<%= (
-  eventFilters.length > 0 ?
-  "left join thing_subtype on thing.id = thing_subtype.thing_id" :
-  ""
-) %>
 where  ST_Covers (
   ST_SetSRID(ST_GeometryFromText('<%= boundingBox %>'), 4326),
   place.location
