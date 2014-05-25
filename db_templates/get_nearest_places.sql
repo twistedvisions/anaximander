@@ -8,9 +8,10 @@ select
   ) as distance
 from thing as place_thing
 inner join place on place.thing_id = place_thing.id
-where  ST_Distance (
+where ST_DWithin (
   ST_SetSRID(ST_Point($1, $2), 4326),
-  place.location
-) < 50000
+  place.location,
+  5
+)
 order by distance asc
 limit 50
