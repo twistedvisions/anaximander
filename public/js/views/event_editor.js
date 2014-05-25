@@ -453,7 +453,7 @@ define([
       var reason = this.$("textarea[data-key=reason]").val();
       return this.model.update(values, reason).then(
         _.bind(this.handleSaveComplete, this, values),
-        _.bind(this.handleSaveFail, this, null)
+        _.bind(this.handleSaveFail, this)
       );
 
     },
@@ -535,7 +535,7 @@ define([
       return false;
     },
 
-    handleSaveFail: function (model, res) {
+    handleSaveFail: function (res) {
       this.$(".error-message").show();
       var text;
       if (res.responseText.indexOf("last_edited times do not match") >= 0) {
