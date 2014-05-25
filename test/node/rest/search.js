@@ -133,9 +133,10 @@ describe("search", function () {
         ]
       };
 
-      var dates = "{\"2000-01-01 00:00:00\",\"2000-01-02 00:00:00\"}";
+      var dates = "{\"2000-01-01 00:00:00+00\",\"2000-01-02 00:00:00+00\"}";
 
-      Search.prototype.handleSearchResults.call(this, this.res, [
+      var s = new Search({get: function () {}});
+      s.handleSearchResults(this.res, [
         {rows: [getRow(1, {points: JSON.stringify(dbPoints), dates: dates})]},
         {rows: []}
       ]);
@@ -144,6 +145,30 @@ describe("search", function () {
           points: [
             {lat: 10, lon: -20, date: new Date("2000-01-01T00:00:00.000Z")},
             {lat: -30, lon: 40, date: new Date("2000-01-02T00:00:00.000Z")}
+          ]
+        })
+      ]);
+    });
+    it("should handle long timezone offsets", function () {
+      var dbPoints = {
+        "type": "LineString",
+        "coordinates": [
+          [-20, 10],
+          [40, -30]
+        ]
+      };
+
+      var dates = "{\"1811-01-06 04:58:45-00:01:15\",\"1811-01-06 04:58:45+00:01:15\"}";
+      var s = new Search({get: function () {}});
+      s.handleSearchResults(this.res, [
+        {rows: [getRow(1, {points: JSON.stringify(dbPoints), dates: dates})]},
+        {rows: []}
+      ]);
+      this.result.should.eql([
+        getResultRow(1, {
+          points: [
+            {lat: 10, lon: -20, date: new Date("1811-01-06 05:00:00.000Z")},
+            {lat: -30, lon: 40, date: new Date("1811-01-06 04:57:30.000Z")}
           ]
         })
       ]);
