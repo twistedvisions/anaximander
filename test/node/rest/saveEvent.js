@@ -108,6 +108,15 @@ describe("saveEvent", function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "event type importance").should.equal(true);
           }, done);
         });
+        it("should fail if the user lacks the add-event permission", function (done) {
+          this.stubValues[0].pop();
+          this.testSave(function () {
+            throw new Error("should not get here");
+          }, done, function (err) {
+            should.exist(err);
+            done();
+          });
+        });
         it("should save the default importance if it is a new type", function (done) {
           this.fullBody.type.id = -1;
           this.stubValues[0].push({name: "add-type"});
