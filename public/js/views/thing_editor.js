@@ -68,6 +68,8 @@ define([
             this.addSubtype();
             this.subtypeSelectors[this.subtypeId].setValue(subtype.type.id, subtype.importance.id);
           }, this);
+        } else {
+          this.addSubtype();
         }
         this.$(".subtypes-holder").show();
 
