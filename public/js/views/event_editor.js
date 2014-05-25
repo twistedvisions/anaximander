@@ -60,7 +60,8 @@ define([
       this.$(".save").on("click", _.bind(this.handleSave, this));
       this.$(".modal").on("hidden.bs.modal", _.bind(this.handleClose, this));
       this.addValidators();
-
+      this.$(".details form").hide();
+      this.$(".details .loading").show();
       this.fetchData().then(_.bind(this.populateView, this));
 
       this.show();
@@ -204,6 +205,8 @@ define([
     },
 
     populateView: function () {
+      this.$(".details form").show();
+      this.$(".details .loading").hide();
       this.renderEventTypes();
       this.renderParticipants();
       if (this.model) {
