@@ -33,7 +33,7 @@ define([
     },
 
     sliderChanged: function (data) {
-      window.lastEvent = "slider";
+      window.lastEvent = "date-slider";
       var timeRange = this.getTimeRange(data);
       this.model.set("date", timeRange);
       this.showDate();

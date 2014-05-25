@@ -29,6 +29,7 @@ define([
     },
 
     update: function () {
+      window.lastEvent = "importance-slider";
       $("#importance-slider").slider({
         value: this.getValue(this.model.get("importance"))
       });

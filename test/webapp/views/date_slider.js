@@ -24,7 +24,7 @@ define(
 
         // dateSlider.render();
         dateSlider.sliderChanged({min: 0, max: 1});
-        window.lastEvent.should.equal("slider");
+        window.lastEvent.should.equal("date-slider");
       });
 
     });
