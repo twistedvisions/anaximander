@@ -294,7 +294,8 @@ define([
       });
       info.open(this.map, marker);
       info.result = infoBoxData;
-      this.lastInfoWindow = info;
+      this.openInfoWindows = this.openInfoWindows || [];
+      this.openInfoWindows.push(info);
       setTimeout(_.bind(this.afterMouseOverMarker, this), 10);
       this.infoBoxAnalyticsTimeout = setTimeout(_.bind(function () {
         analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
@@ -305,9 +306,10 @@ define([
       if (this.infoBoxAnalyticsTimeout) {
         clearTimeout(this.infoBoxAnalyticsTimeout);
       }
-      if (this.lastInfoWindow) {
-        this.lastInfoWindow.close();
-      }
+      _.each(this.openInfoWindows, function (infoWindow) {
+        infoWindow.close();
+      }, this);
+      this.openInfoWindows = [];
       this.hideOptionsMenu();
     },
 
