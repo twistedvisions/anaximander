@@ -2,8 +2,7 @@
   "development": {
     "server": {
       "host": "https://localhost:8000",
-      "securePort": 8000,
-      "unsecurePort": 8001
+      "port": 8000
     },
     "database": {
       "connection_string": ""
@@ -12,8 +11,7 @@
   "test": {
     "server": {
       "host": "https://localhost:8000",
-      "securePort": 8000,
-      "unsecurePort": 8001
+      "port": 8000
     },
     "auth": {
       "sessionSecret": "somesecret",
@@ -40,8 +38,7 @@
     },
     "server": {
       "host": "https://retred.org",
-      "unsecurePort": 80,
-      "securePort": 443
+      "port": 8000
     }
   },
   "defaults": {
