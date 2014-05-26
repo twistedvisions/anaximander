@@ -17,12 +17,20 @@ define(
             name: "some name",
             link: "some link",
             typeId: 3,
-            subtypes: []
+            subtypes: [{type: {id: 1}, importance: {id: 1}}]
           }),
           state: new Backbone.Model()
         });
         this.thingEditor.thingEditor.subtypes.updateData = _.bind(function () {
-          this.thingEditor.thingEditor.subtypes.reset([]);
+          this.thingEditor.thingEditor.subtypes.reset([{
+            id: 1,
+            name: "subtype 1",
+            default_importance_id: 1,
+            importances: [{
+              id: 1,
+              name: "st importance 1"
+            }]
+          }]);
           return {
             then: function (fn) {
               fn();

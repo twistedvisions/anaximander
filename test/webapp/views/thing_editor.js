@@ -148,9 +148,9 @@ define(
           this.thingEditor.populateValues();
           this.thingEditor.$(".subtypes-holder .subtype").length.should.equal(2);
         });
-        it("should leave the subtypes empty when they do not exist", function () {
+        it("should add a default empty subtype when they do not exist", function () {
           this.thingEditor.populateValues();
-          this.thingEditor.$(".subtypes-holder .subtype").length.should.equal(0);
+          this.thingEditor.$(".subtypes-holder .subtype").length.should.equal(1);
         });
       });
 
