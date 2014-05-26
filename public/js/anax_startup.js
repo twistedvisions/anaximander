@@ -21,10 +21,7 @@ define([
     var data = _.extend(defaultState, storedData);
     this.model = new ViewState(data);
     defaultState.set = true;
-    var permissions = [];
-    if (window.location.href.indexOf("login") > -1) {
-      permissions = [{id: 1, name: "login"}];
-    }
+    var permissions = [{id: 1, name: "login"}];
     User.user = new User({
       id: -1,
       permissions: permissions
