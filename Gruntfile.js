@@ -67,6 +67,13 @@ module.exports = function (grunt) {
           shim: {
             "deep-diff": {
               exports: "DeepDiff"
+            },
+            "cryptojs.core": {
+              exports: "CryptoJS"
+            },
+            "cryptojs.sha256": {
+              deps: ["cryptojs.core"],
+              exports: "CryptoJS"
             }
           },
           modules: [
