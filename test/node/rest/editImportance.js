@@ -20,7 +20,7 @@ describe("editImportance", function () {
   before(function () {
     this.testEdit = function (fn, done, failureFn) {
       var req = {
-        user: {id: 1},
+        user: {id: 1, last_save_time: new Date(0)},
         body: this.fullBody,
         isAuthenticated: function () {
           return true;
@@ -131,7 +131,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -153,7 +154,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_description"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -175,7 +177,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_value"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -197,7 +200,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -218,7 +222,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -243,7 +248,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -266,7 +272,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id"}]
+        [{db_call: "find_importance_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -289,7 +296,8 @@ describe("editImportance", function () {
         [{db_call: "update_importance_name"}],
         [{db_call: "save_importance_change"}],
         [{db_call: "update_importance_last_edited"}],
-        [{db_call: "find_importance_by_id", last_edited: "2014-01-01"}]
+        [{db_call: "find_importance_by_id", last_edited: "2014-01-01"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {

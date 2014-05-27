@@ -2,7 +2,8 @@
   "development": {
     "server": {
       "host": "https://localhost:8000",
-      "port": 8000
+      "port": 8000,
+      "save_rate": 10000
     },
     "database": {
       "connection_string": ""
@@ -11,7 +12,8 @@
   "test": {
     "server": {
       "host": "https://localhost:8000",
-      "port": 8000
+      "port": 8000,
+      "save_rate": 10000
     },
     "auth": {
       "sessionSecret": "somesecret",
@@ -38,10 +40,14 @@
     },
     "server": {
       "host": "https://retred.org",
-      "port": 8000
+      "port": 8000,
+      "save_rate": 10000
     }
   },
   "defaults": {
+    "server": {
+      "save_rate": 10000
+    },
     "parser": {
       "data_file": "/home/pretzel/Downloads/dbpedia_data/3.9/mappingbased_properties_en.nq",
       "parallelism": 8,
