@@ -89,16 +89,8 @@ require("./lib/rest/saveEvent").init(app);
 new (require("./lib/rest/search"))(app);
 
 app.use(function (err, req, res, next) {
-  if (err.message && err.message.match(/please login/)) {
-    res.send(401, err.message);
-  } else if (err.message && err.message.match(/User lacks '.*' permission/)) {
-    res.send(403, err.message);
-  } else if (err.message && err.message.match(/User already exists/)) {
-    res.send(403, err.message);
-  } else if (err.message && err.message.match(/.*last_edited times do not match.*/)) {
-    res.send(409, err.message);
-  } else if (err.message && err.message.match(/Cannot save again so soon/)) {
-    res.send(429, err.message);
+  if (res.statusCode >= 400) {
+    res.send(res.statusCode, err.message);
   } else {
     winston.error("Error occurred: " + err.message);
     winston.error(err.stack);
