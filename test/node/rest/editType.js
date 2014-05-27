@@ -20,7 +20,7 @@ describe("editType", function () {
   before(function () {
     this.testEdit = function (fn, done, failureFn) {
       var req = {
-        user: {id: 1},
+        user: {id: 1, last_save_time: new Date(0)},
         body: this.fullBody,
         isAuthenticated: function () {
           return true;
@@ -131,7 +131,8 @@ describe("editType", function () {
         [{db_call: "update_default_importance_id", id: 2}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -152,7 +153,8 @@ describe("editType", function () {
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -175,7 +177,8 @@ describe("editType", function () {
         [{db_call: "update_default_importance_id"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -197,7 +200,8 @@ describe("editType", function () {
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -218,7 +222,8 @@ describe("editType", function () {
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -240,7 +245,8 @@ describe("editType", function () {
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -265,7 +271,8 @@ describe("editType", function () {
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id"}]
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -288,7 +295,8 @@ describe("editType", function () {
         [{db_call: "update_type_name"}],
         [{db_call: "save_type_change"}],
         [{db_call: "update_type_last_edited"}],
-        [{db_call: "find_type_by_id", last_edited: "2014-01-01"}]
+        [{db_call: "find_type_by_id", last_edited: "2014-01-01"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {

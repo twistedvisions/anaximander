@@ -21,7 +21,7 @@ describe("editEvent", function () {
   before(function () {
     this.testEdit = function (fn, done, failureFn) {
       var req = {
-        user: {id: 1},
+        user: {id: 1, last_save_time: new Date(0)},
         body: this.fullBody,
         isAuthenticated: function () {
           return true;
@@ -141,7 +141,8 @@ describe("editEvent", function () {
         [{db_call: "find_type_by_id", id: 2}],
         [{db_call: "update_event_type", id: 2}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -161,7 +162,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
       this.testEdit(function () {
         this.eventEditor.ensure.calledWith(sinon.match.any, "event type").should.equal(false);
@@ -181,7 +183,8 @@ describe("editEvent", function () {
         [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -201,7 +204,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -237,7 +241,8 @@ describe("editEvent", function () {
         [{db_call: "update_event_type"}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -271,7 +276,8 @@ describe("editEvent", function () {
         [{db_call: "update_event_type"}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -295,7 +301,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -320,7 +327,8 @@ describe("editEvent", function () {
           [{db_call: "update_event_start_date"}],
           [{db_call: "update_event_end_date"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -344,7 +352,8 @@ describe("editEvent", function () {
           [{db_call: "update_event_start_date"}],
           [{db_call: "update_event_end_date"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -368,7 +377,8 @@ describe("editEvent", function () {
           [{db_call: "get_timezone_offset_at_place", offset: 60 * 60}],
           [{db_call: "update_event_place"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -388,7 +398,8 @@ describe("editEvent", function () {
           [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
           [{db_call: "update_event_start_date"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -408,7 +419,8 @@ describe("editEvent", function () {
           [{db_call: "get_timezone_offset_at_place", offset: 60 * 60}],
           [{db_call: "update_event_end_date"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -427,7 +439,8 @@ describe("editEvent", function () {
           [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
           [{db_call: "update_event_link"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -450,7 +463,8 @@ describe("editEvent", function () {
           [{db_call: "update_event_start_date"}],
           [{db_call: "update_event_end_date"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -473,7 +487,8 @@ describe("editEvent", function () {
           [{db_call: "update_event_start_date"}],
           [{db_call: "update_event_end_date"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -494,7 +509,8 @@ describe("editEvent", function () {
           [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
           [{db_call: "update_event_place"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -515,7 +531,8 @@ describe("editEvent", function () {
           [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
           [{db_call: "update_event_place"}],
           [{db_call: "save_event_change"}],
-          [{db_call: "update_event_last_edited"}]
+          [{db_call: "update_event_last_edited"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
 
         this.testEdit(function () {
@@ -535,7 +552,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_link"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -557,7 +575,8 @@ describe("editEvent", function () {
         [{db_call: "update_event_start_date"}],
         [{db_call: "save_event_change"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -579,7 +598,8 @@ describe("editEvent", function () {
         [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
         [{db_call: "update_event_end_date"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -601,7 +621,8 @@ describe("editEvent", function () {
         [{db_call: "find_type_by_id", id: 2}],
         [{db_call: "update_event_type"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -622,7 +643,8 @@ describe("editEvent", function () {
         [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -647,7 +669,8 @@ describe("editEvent", function () {
         [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -674,7 +697,8 @@ describe("editEvent", function () {
         [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -700,7 +724,8 @@ describe("editEvent", function () {
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -718,7 +743,8 @@ describe("editEvent", function () {
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -769,7 +795,8 @@ describe("editEvent", function () {
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -796,7 +823,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_participant_role", id: 2}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -823,7 +851,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_participant_importance", id: 2}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -853,7 +882,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "remove_participant", id: 2}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -898,7 +928,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -918,7 +949,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -942,7 +974,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -977,7 +1010,8 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
-        [{db_call: "update_event_last_edited"}]
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {

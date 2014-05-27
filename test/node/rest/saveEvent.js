@@ -20,7 +20,7 @@ describe("saveEvent", function () {
   before(function () {
     this.testSave = function (fn, done, failureFn) {
       var req = {
-        user: {id: 1},
+        user: {id: 1, last_save_time: new Date(0)},
         body: this.fullBody,
         isAuthenticated: function () {
           return true;
@@ -80,7 +80,8 @@ describe("saveEvent", function () {
       [{id: 8}],
       [{id: 9}],
       [{id: 10}],
-      [{id: 11}]
+      [{id: 11}],
+      [{id: 12}]
     ];
     stubDb.setup(this);
   });
@@ -388,7 +389,7 @@ describe("saveEvent", function () {
     });
     it("should roll back the transaction if a component section fails", function (done) {
       var req = {
-        user: {id: 1},
+        user: {id: 1, last_save_time: new Date(0)},
         body: {
           name: "a test",
           start_date: "2013-03-12T00:00:00.000Z",

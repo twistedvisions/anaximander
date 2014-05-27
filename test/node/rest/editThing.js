@@ -20,7 +20,7 @@ describe("editThing", function () {
   before(function () {
     this.testEdit = function (fn, done, failureFn) {
       var req = {
-        user: {id: 1},
+        user: {id: 1, last_save_time: new Date(0)},
         body: this.fullBody,
         isAuthenticated: function () {
           return true;
@@ -132,7 +132,8 @@ describe("editThing", function () {
         [{db_call: "find_type_by_id", id: 2}],
         [{db_call: "update_thing_type", id: 2}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -152,7 +153,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -173,7 +175,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_link"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -195,7 +198,8 @@ describe("editThing", function () {
         [{db_call: "find_type_by_id", id: 2}],
         [{db_call: "update_thing_type"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -217,7 +221,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_thing_subtype"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -236,7 +241,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_thing_subtype"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -290,7 +296,8 @@ describe("editThing", function () {
         [{db_call: "save_thing_change"}],
         [{db_call: "save_thing_change"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -317,7 +324,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_subtype_importance"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -347,7 +355,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "remove_thing_subtype"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -392,7 +401,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -412,7 +422,8 @@ describe("editThing", function () {
         [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
@@ -438,7 +449,8 @@ describe("editThing", function () {
         [{db_call: "update_thing_name"}],
         [{db_call: "save_thing_subtype"}],
         [{db_call: "save_thing_change"}],
-        [{db_call: "update_thing_last_edited"}]
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {

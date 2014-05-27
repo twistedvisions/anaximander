@@ -1,5 +1,6 @@
 /*global describe, it, beforeEach, afterEach */
 
+var should = require("should");
 var stubDb = require("../stubDb");
 var tryTest = require("../tryTest");
 
@@ -157,7 +158,7 @@ describe("register", function () {
         })
         .end(function (err, res) {
           tryTest(function () {
-            res.text.should.equal("user already exists");
+            should.exist(res.text.match(/User already exists/));
           }, done)();
         });
     }, this), done, true)();
@@ -167,7 +168,7 @@ describe("register", function () {
     ]);
   });
 
-  it("should send a 422 if the user already exists", function (done) {
+  it("should send a 403 if the user already exists", function (done) {
     tryTest(_.bind(function () {
       supertest(this.app)
         .post("/register")
@@ -177,7 +178,7 @@ describe("register", function () {
         })
         .end(function (err, res) {
           tryTest(function () {
-            res.statusCode.should.equal(422);
+            res.statusCode.should.equal(403);
           }, done)();
         });
     }, this), done, true)();

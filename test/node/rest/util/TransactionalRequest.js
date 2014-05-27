@@ -43,12 +43,29 @@ describe("TransactionalRequest", function () {
       };
       this.transactionalRequest.call(req, res, next);
     });
+    it("should fail to process if you have saved too recently", function () {
+      var req = {
+        isAuthenticated: function () {
+          return true;
+        },
+        user: {id: 100, last_save_time: new Date()}
+      };
+      var res = {};
+      var ex;
+      var next = function (e) {
+        ex = e;
+      };
+      this.transactionalRequest.getCalls = function () { return []; };
+      this.transactionalRequest.setResponse = function () {};
+      this.transactionalRequest.call(req, res, next);
+      should.exist(ex);
+    });
     it("should process if you are logged in", function () {
       var req = {
         isAuthenticated: function () {
           return true;
         },
-        user: {id: 100}
+        user: {id: 100, last_save_time: new Date(0)}
       };
       var res = {};
       var ex;
@@ -65,7 +82,7 @@ describe("TransactionalRequest", function () {
         isAuthenticated: function () {
           return true;
         },
-        user: {id: 100}
+        user: {id: 100, last_save_time: new Date(0)}
       };
       var res = {};
       var ex;
@@ -82,7 +99,7 @@ describe("TransactionalRequest", function () {
         isAuthenticated: function () {
           return true;
         },
-        user: {id: 100},
+        user: {id: 100, last_save_time: new Date(0)},
         ip: "123.45.67.89"
       };
       var res = {};
@@ -99,14 +116,15 @@ describe("TransactionalRequest", function () {
     describe("permissions", function () {
       beforeEach(function () {
         this.stubValues = [
-          [{db_call: "get_thing_lock", name: "permission-name1"}]
+          [{db_call: "get_thing_lock", name: "permission-name1"}],
+          [{db_call: "update_user_last_save_time"}]
         ];
         stubDb.setQueryValues(this, this.stubValues);
         this.req = {
           isAuthenticated: function () {
             return true;
           },
-          user: {id: 100}
+          user: {id: 100, last_save_time: new Date(0)}
         };
         this.res = {
           send: function () {}
