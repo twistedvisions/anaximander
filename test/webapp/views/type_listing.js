@@ -377,7 +377,7 @@ define(
                   if (callSuccessful) {
                     fn(this.typeListing.handleTypeChange(type));
                   } else {
-                    reject();
+                    reject({responseText: "text"});
                   }
                 }, this)
               };
@@ -448,7 +448,7 @@ define(
             var cell = this.typeListing.$(".types tbody tr:nth-child(1) td.default-importance");
             cell.find("select").val(2);
             cell.find("select").trigger("change");
-            this.typeListing.$(".not-logged-in:visible").length.should.equal(1);
+            this.typeListing.$(".error-message:visible").length.should.equal(1);
           });
         });
         describe("editing cells", function () {
@@ -466,7 +466,7 @@ define(
                   if (callSuccessful) {
                     fn(this.typeListing.handleTypeChange(type));
                   } else {
-                    reject();
+                    reject({responseText: "text"});
                   }
                 }, this)
               };
@@ -578,7 +578,7 @@ define(
               var event = $.Event("keydown");
               event.keyCode = 13;
               cell.find("input").trigger(event);
-              this.typeListing.$(".not-logged-in:visible").length.should.equal(1);
+              this.typeListing.$(".error-message:visible").length.should.equal(1);
             });
           });
           describe("no changes when saving", function () {

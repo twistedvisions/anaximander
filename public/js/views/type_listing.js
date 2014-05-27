@@ -184,9 +184,10 @@ define([
             row.replaceWith(newRow);
             el.attr("disabled", false);
           },
-          _.bind(function () {
+          _.bind(function (res) {
             el.val(oldValue);
-            this.$(".not-logged-in").show();
+            this.$(".error-message .content").text(res.responseText);
+            this.$(".error-message").show();
             el.attr("disabled", false);
           }, this)
         );
@@ -372,8 +373,9 @@ define([
                 }
 
               },
-              _.bind(function () {
-                this.$(".not-logged-in").show();
+              _.bind(function (res) {
+                this.$(".error-message .content").text(res.responseText);
+                this.$(".error-message").show();
               }, this)
             );
           } else {
