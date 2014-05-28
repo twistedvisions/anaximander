@@ -247,6 +247,9 @@ define([
         this.$(".importances tbody").append(html);
       }, this);
       this.importances = _.groupBy(type.importances, "id");
+      _.each(_.keys(this.importances), function (key) {
+        this.importances[key] = this.importances[key][0];
+      }, this);
       this.bindImportanceRowEvents(typeId);
       this.$(".importances .close").on("click", _.bind(function () {
         analytics.typeListing_hideImportances({
@@ -317,7 +320,7 @@ define([
     },
 
     editCell: function (options, values, e) {
-
+console.log('1');
       analytics["typeListing_" + options.valueType + "Edited"]({
         key: options.key
       });
