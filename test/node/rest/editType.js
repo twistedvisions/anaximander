@@ -257,6 +257,30 @@ describe("editType", function () {
       }, done);
     });
 
+    it("should only save the changed key in the old value in the type change", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-type"}],
+        [{db_call: "get_type_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_type_name"}],
+        [{db_call: "save_type_change"}],
+        [{db_call: "update_type_last_edited"}],
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("save_type_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).default_importance_id);
+        should.exist(JSON.parse(this.args[3][2][3]).name);
+      }, done);
+    });
+
     it("should not save unknown keys in the type change", function (done) {
       this.fullBody = {
         id: 1,

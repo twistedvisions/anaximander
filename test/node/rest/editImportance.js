@@ -56,7 +56,8 @@ describe("editImportance", function () {
 
       this.originalImportance = {
         name: "importance name",
-        default_importance_id: 1,
+        value: 5,
+        description: "why it is important",
         last_edited: "1999-01-01"
       };
     });
@@ -255,6 +256,31 @@ describe("editImportance", function () {
       this.testEdit(function () {
         this.args[3][1].should.equal("save_importance_change");
         should.not.exist(JSON.parse(this.args[3][2][4]).funny);
+      }, done);
+    });
+
+    it("should only save the changed key in the old value in the importance change", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-importance"}],
+        [{db_call: "get_importance_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_importance_name"}],
+        [{db_call: "save_importance_change"}],
+        [{db_call: "update_importance_last_edited"}],
+        [{db_call: "find_importance_by_id,"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("save_importance_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).value);
+        should.exist(JSON.parse(this.args[3][2][3]).name);
       }, done);
     });
 

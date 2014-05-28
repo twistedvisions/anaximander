@@ -55,6 +55,7 @@ describe("editThing", function () {
       }, this));
 
       this.originalThing = {
+        name: "thing name",
         typeId: {
           id: 3
         },
@@ -457,6 +458,53 @@ describe("editThing", function () {
         this.args[4][1].should.equal("save_thing_change");
         should.not.exist(JSON.parse(this.args[4][2][4]).funny);
         should.not.exist(JSON.parse(this.args[4][2][4]).newSubtypes[0].funny);
+      }, done);
+    });
+
+    it("should only save the changed key in the old value in the thing change", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
+        [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_thing_name"}],
+        [{db_call: "save_thing_change"}],
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("save_thing_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).type_id);
+        should.exist(JSON.parse(this.args[3][2][3]).name);
+      }, done);
+    });
+
+    it("should save the subtypes in the old values if they have changed", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name",
+        newSubtypes: [{type: {id: 1}, importance: {id: 1}}]
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
+        [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_thing_name"}],
+        [{db_call: "save_thing_subtype"}],
+        [{db_call: "save_thing_change"}],
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[4][1].should.equal("save_thing_change");
+        should.exist(JSON.parse(this.args[4][2][3]).subtypes);
       }, done);
     });
 

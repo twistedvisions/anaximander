@@ -56,6 +56,7 @@ describe("editEvent", function () {
       }, this));
 
       this.originalEvent = {
+        name: "event name",
         type: {
           id: 3
         },
@@ -66,7 +67,8 @@ describe("editEvent", function () {
         end_offset_seconds: 2 * 60 * 60,
         place: {
           id: 88
-        }
+        },
+        participants: []
       };
     });
     afterEach(function () {
@@ -1019,6 +1021,62 @@ describe("editEvent", function () {
         should.not.exist(JSON.parse(this.args[3][2][4]).newParticipants[0].thing.funny);
         should.not.exist(JSON.parse(this.args[3][2][4]).newParticipants[0].type.funny);
         should.not.exist(JSON.parse(this.args[3][2][4]).newParticipants[0].importance.funny);
+      }, done);
+    });
+
+    it("should only save the changed key in the old value in the event change", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name"
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("save_event_change");
+        should.not.exist(JSON.parse(this.args[3][2][3]).type);
+        should.exist(JSON.parse(this.args[3][2][3]).name);
+      }, done);
+    });
+
+    it("should save the participants in the old values if they have changed", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        name: "new name",
+        newParticipants: [{
+          thing: {
+            id: 1
+          },
+          type: {
+            id: 1
+          },
+          importance: {
+            id: 1
+          }
+        }]
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("save_event_change");
+        should.exist(JSON.parse(this.args[3][2][3]).participants);
       }, done);
     });
 
