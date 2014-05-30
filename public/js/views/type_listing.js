@@ -320,7 +320,6 @@ define([
     },
 
     editCell: function (options, values, e) {
-console.log('1');
       analytics["typeListing_" + options.valueType + "Edited"]({
         key: options.key
       });

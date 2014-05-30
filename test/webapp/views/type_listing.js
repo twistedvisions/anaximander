@@ -159,8 +159,7 @@ define(
         });
         describe("showImportances", function () {
           beforeEach(function () {
-
-            sinon.stub(this.typeListing, "editCell");
+            sinon.spy(this.typeListing, "editCell");
             sinon.stub(this.typeListing, "getImportanceData", function () {
               return {
                 then: function (fn) {
@@ -224,7 +223,7 @@ define(
             el.trigger("click");
             el.hasClass("editing").should.equal(true);
           });
-          it.only("should pass the importances to editCell", function () {
+          it("should pass the importances to editCell", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
             el.trigger("click");
             this.typeListing.editCell.args[0][1][1].name.should.equal("importance 1");
@@ -240,13 +239,11 @@ define(
             analytics.typeListing_importanceEdited.calledOnce.should.equal(true);
           });
           it("should make descriptions editable", function () {
-            hasPermission = false;
             this.typeListing.$("div.importances .close").trigger("click");
             this.typeListing.$(".view-importances span").trigger("click");
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.description");
             el.trigger("click");
-            el.hasClass("editing").should.equal(false);
-            hasPermission = true;
+            el.hasClass("editing").should.equal(true);
           });
           it("should make values editable", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.value");
