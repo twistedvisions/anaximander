@@ -10,6 +10,7 @@ define(
           {
             name: "event 1",
             type: "event",
+            mode: "edit",
             date: new Date().toISOString(),
             username: "x",
             new_values: {
@@ -20,6 +21,7 @@ define(
           {
             name: "thing 1",
             type: "thing",
+            mode: "creation",
             date: new Date().toISOString(),
             username: "y",
             new_values: {
@@ -35,7 +37,7 @@ define(
         html.find("td.date").length.should.equal(6);
         html.find("td.date")[0].textContent.length.should.be.greaterThan(0);
 
-        html.find("td.field")[0].textContent.should.equal("event");
+        html.find("td.field")[0].textContent.should.equal("event edit");
         html.find("td.value")[0].textContent.should.equal("event 1");
 
         html.find("td.field")[1].textContent.should.equal("reason");
@@ -81,7 +83,7 @@ define(
         var html = $(HistoryRenderer(historyCollection));
         try {
           $("body").append(html);
-          html.find("td.field").text().should.equal("default importance");
+          html.find("td.field")[1].textContent.should.equal("default importance");
         } finally {
           html.remove();
         }
@@ -91,6 +93,7 @@ define(
           {
             name: "event 1",
             type: "event",
+            mode: "edit",
             date: new Date().toISOString(),
             username: "x",
             new_values: {
@@ -100,7 +103,7 @@ define(
           }
         ]);
         var html = $(HistoryRenderer(historyCollection));
-        html.find("td.field").first().text().should.equal("event");
+        html.find("td.field").first().text().should.equal("event edit");
         $(html.find("td.field")[1]).text().should.equal("reason");
         html.find("td.field").last().text().should.equal("aaa");
       });
@@ -119,6 +122,39 @@ define(
         ]);
         var html = $(HistoryRenderer(historyCollection));
         html.find("td.username").length.should.equal(2);
+      });
+      it("should format old dates", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            name: "event 1",
+            type: "event",
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "id": "value1",
+              "start_date": "1459-12-21 21:58:45-00:01:02"
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value")[1].textContent.should.equal("Dec 21 1459 9:59 PM");
+      });
+      it("should linkify links", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            name: "event 1",
+            type: "event",
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "id": "value1",
+              "link": "http://somelink.com"
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.value a").length.should.equal(1);
+        html.find("td.value a").attr("href").should.equal("http://somelink.com");
       });
       it("should show arrays of participants as multiple entries", function () {
         var historyCollection = new Backbone.Collection([

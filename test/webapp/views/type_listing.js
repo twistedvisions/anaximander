@@ -159,6 +159,7 @@ define(
         });
         describe("showImportances", function () {
           beforeEach(function () {
+            sinon.spy(this.typeListing, "editCell");
             sinon.stub(this.typeListing, "getImportanceData", function () {
               return {
                 then: function (fn) {
@@ -193,6 +194,7 @@ define(
             analytics.typeListing_showImportances.restore();
             analytics.typeListing_hideImportances.restore();
             analytics.typeListing_importanceEdited.restore();
+            this.typeListing.editCell.restore();
           });
           it("should show the importances table", function () {
             this.typeListing.$("div.importances:visible").length.should.equal(1);
@@ -221,6 +223,11 @@ define(
             el.trigger("click");
             el.hasClass("editing").should.equal(true);
           });
+          it("should pass the importances to editCell", function () {
+            var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
+            el.trigger("click");
+            this.typeListing.editCell.args[0][1][1].name.should.equal("importance 1");
+          });
           it("should not make names editable if the user doesn't have permission", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.name");
             el.trigger("click");
@@ -232,13 +239,11 @@ define(
             analytics.typeListing_importanceEdited.calledOnce.should.equal(true);
           });
           it("should make descriptions editable", function () {
-            hasPermission = false;
             this.typeListing.$("div.importances .close").trigger("click");
             this.typeListing.$(".view-importances span").trigger("click");
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.description");
             el.trigger("click");
-            el.hasClass("editing").should.equal(false);
-            hasPermission = true;
+            el.hasClass("editing").should.equal(true);
           });
           it("should make values editable", function () {
             var el = this.typeListing.$("div.importances tbody tr:nth-child(1) td.value");

@@ -10,9 +10,9 @@ define([
   historyItemTemplate = _.template(historyItemTemplate);
   var omittedKeys = [
     //events
-    "newParticipants", "editedParticipants", "removedParticipants",
+    "participants", "newParticipants", "editedParticipants", "removedParticipants",
     //things
-    "newSubtypes", "editedSubtypes", "removedSubtypes",
+    "subtypes", "newSubtypes", "editedSubtypes", "removedSubtypes",
     //type
     "defaultImportance"
   ];
@@ -24,6 +24,9 @@ define([
       .each(function (key) {
         keyValues.push([key, values[key]]);
       });
+    _.each(values.participants, function (participant) {
+      keyValues.push(["participant added", participant]);
+    });
     _.each(values.newParticipants, function (participant) {
       keyValues.push(["participant added", participant]);
     });
@@ -32,6 +35,9 @@ define([
     });
     _.each(values.removedParticipants, function (participant) {
       keyValues.push(["participant removed", participant]);
+    });
+    _.each(values.subtypes, function (subtype) {
+      keyValues.push(["subtype added", subtype]);
     });
     _.each(values.newSubtypes, function (subtype) {
       keyValues.push(["subtype added", subtype]);
@@ -47,17 +53,40 @@ define([
     }
     return keyValues;
   };
+
+  var longTimestampRegex = /(\d\d\d\d\-\d\d\-\d\d \d\d:\d\d:\d\d)([+\-])(\d\d:\d\d:\d\d)/;
+
+  var getDate = function (str) {
+    var d = new Date(str);
+    if (isNaN(d.getTime())) {
+      var m = str.match(longTimestampRegex);
+      if (m) {
+        d = new Date(
+          moment(m[1]).valueOf() +
+          (m[2] === "-" ? 1 : -1) * moment("1970-01-01 " + m[3]).valueOf()
+        );
+      }
+    }
+    return d;
+  };
+
   var getValue = function (key, value, change) {
     if (key.indexOf("date") >= 0) {
-      var date = moment(value);
+      var date = moment(getDate(value));
       date.add("minutes", date.zone());
       var offsetKey = key.replace("_date", "_offset_seconds");
       if (change.new_values[offsetKey]) {
         date.add("seconds", change.new_values[offsetKey]);
       }
-      return date.format("lll");
+      var str = date.format("lll");
+      if (str === "Invalid date") {
+        str = date.format("YYYY-mm-dd hh:mm:ss");
+      }
+      return str;
     } else if (key.indexOf("offset") >= 0) {
       return null;
+    } else if (key.indexOf("link") >= 0) {
+      return "<a href='" + value + "'>" + value + "</a>";
     } else if (_.isString(value) || _.isNumber(value)) {
       return value;
     } else if (key.indexOf("participant") >= 0) {
@@ -92,7 +121,7 @@ define([
       html.append(body);
       body.append($(historyItemTemplate(
         _.extend(change, {
-          field: change.type,
+          field: change.type + (change.mode ? (" " + change.mode) : ""),
           value: change.name
         })
       )));
