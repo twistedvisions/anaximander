@@ -56,9 +56,7 @@ describe("editThing", function () {
 
       this.originalThing = {
         name: "thing name",
-        typeId: {
-          id: 3
-        },
+        typeId: 3,
         subtypes: [{type: {id: 6}}],
         last_edited: "1999-01-01"
       };
@@ -505,6 +503,29 @@ describe("editThing", function () {
       this.testEdit(function () {
         this.args[4][1].should.equal("save_thing_change");
         should.exist(JSON.parse(this.args[4][2][3]).subtypes);
+      }, done);
+    });
+
+    it("should save the type in the old values if it has changed", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        typeId: 4
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-thing"}],
+        [{db_call: "get_thing_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_type_by_id"}],
+        [{db_call: "update_thing_type"}],
+        [{db_call: "save_thing_change"}],
+        [{db_call: "update_thing_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[4][1].should.equal("save_thing_change");
+        JSON.parse(this.args[4][2][3]).typeId.should.equal(3);
       }, done);
     });
 

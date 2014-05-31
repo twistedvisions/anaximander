@@ -70,6 +70,31 @@ define(
           html.remove();
         }
       });
+      it("should match old and new keys", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "key1": "value1",
+              "key2": "value2"
+            },
+            old_values: {
+              "key1": "value1 old"
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        try {
+          $("body").append(html);
+          html.find("td.value")[1].textContent.should.equal("value1");
+          html.find("td.old-value")[1].textContent.should.equal("value1 old");
+          html.find("td.value")[2].textContent.should.equal("value2");
+          html.find("td.old-value")[2].textContent.should.equal("");
+        } finally {
+          html.remove();
+        }
+      });
       it("should show default importances with a nice key", function () {
         var historyCollection = new Backbone.Collection([
           {

@@ -16,13 +16,13 @@ define([
     //type
     "defaultImportance"
   ];
-  var getKeyValues = function (values) {
+  var getKeyValues = function (values, oldValues) {
     var keyValues = [];
     _.chain(values)
       .omit(omittedKeys)
       .keys()
       .each(function (key) {
-        keyValues.push([key, values[key]]);
+        keyValues.push([key, values[key],  oldValues && oldValues[key]]);
       });
     _.each(values.participants, function (participant) {
       keyValues.push(["participant added", participant]);
@@ -104,7 +104,7 @@ define([
       change = change.toJSON();
       change.date = moment.utc(change.date);
       change.new_values = _.omit(change.new_values, ["id"]);
-      var keyValues = getKeyValues(change.new_values);
+      var keyValues = getKeyValues(change.new_values, change.old_values);
       keyValues.sort(function (a, b) {
         a = a[0];
         b = b[0];
@@ -122,16 +122,19 @@ define([
       body.append($(historyItemTemplate(
         _.extend(change, {
           field: change.type + (change.mode ? (" " + change.mode) : ""),
-          value: change.name
+          value: change.name,
+          old_value: ""
         })
       )));
       _.each(keyValues, function (keyValue) {
         var value = getValue(keyValue[0], keyValue[1], change);
+        var oldValue = keyValue[2] && getValue(keyValue[0], keyValue[2], change);
         if (value) {
           body.append($(historyItemTemplate(
             _.extend(change, {
               field: keyValue[0].replace("_", " "),
-              value: value
+              value: value,
+              old_value: oldValue
             })
           )));
         }

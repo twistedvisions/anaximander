@@ -136,6 +136,40 @@ describe("processChanges", function () {
       this.updatedChanges[0].new_values.participants[0].thing.should.equal("thing-name1");
     });
   });
+  describe("old values", function () {
+    before(function (done) {
+      this.changes = [
+        {
+          new_values: {
+            type_id: 1
+          },
+          old_values: {
+            type_id: 2
+          }
+        }
+      ];
+      stubDb.setup(this);
+      stubDb.setQueryValues(this, [
+        [
+          {id: 1, name: "type-name1"},
+          {id: 2, name: "type-name2"}
+        ]
+      ]);
+      processChanges.processChanges(this.changes).then(_.bind(function (updatedChanges) {
+        this.updatedChanges = updatedChanges;
+        done();
+      }, this));
+    });
+    after(function () {
+      stubDb.restore(this);
+    });
+    it("should look the ids up from the db", function () {
+      this.args[0][1][0].should.eql([1, 2]);
+    });
+    it("should update the changes object with the name", function () {
+      this.updatedChanges[0].old_values.type.should.equal("type-name2");
+    });
+  });
   ["newParticipants", "editedParticipants"].forEach(function (participantType) {
 
     describe(participantType, function () {
