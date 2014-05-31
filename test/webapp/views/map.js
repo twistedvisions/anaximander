@@ -860,86 +860,124 @@ define(
           data.startDate.should.equal("1900-01-01T00:00:00.000Z");
           data.endDate.should.equal("1990-01-01T23:59:00.000Z");
         });
-      });
-
-      describe("marker links", function () {
-        beforeEach(function () {
-          this.event = {
-            participants: [{
-              thing_id: 123,
-              thing_name: "some thing"
-            }],
-            event_id: 1,
-            event_name: "some name",
-            thing_name: "some thing",
-            event_link: "http://something.com/blah",
-            start_date: "2013-03-02",
-            end_date: "2013-04-03",
-            location: [[20, -53]],
-            place_thing_name: "some place"
-          };
-        });
-        describe("single participants", function () {
-          it("should contain the event data in the dataset", function () {
-            var text = this.map.getInfoWindowEntry(this.event);
-            var el = $(text);
-            var dataset = el.data();
-
-            dataset.thingId.should.equal(this.event.participants[0].thing_id);
-            dataset.name.should.equal(this.event.event_name);
-            dataset.link.should.equal(this.event.event_link);
-            dataset.lat.should.equal(this.event.location[0][0]);
-            dataset.lon.should.equal(this.event.location[0][1]);
-            dataset.startDate.should.equal(this.event.start_date);
-            dataset.endDate.should.equal(this.event.end_date);
+        describe("date range", function () {
+          it("should show dates within a day of eachother as a single day", function () {
+            this.map.getDateRangeString(
+              "2014-01-01 23:50",
+              "2014-01-02 01:10"
+            ).should.equal("01/01/2014");
           });
-          it("should be highlighted when the thing id matches the model's highlight", function () {
-            this.map.model.set("highlight", {id: 123});
-            var text = this.map.getInfoWindowEntry(this.event);
-            $(text).find(".event-link").hasClass("highlight").should.equal(true);
+          it("should not show leading zeros for days before 1000", function () {
+            this.map.getDateRangeString(
+              {y: 314, M: 0, d: 1, h: 23, m: 50},
+              {y: 314, M: 0, d: 2, h: 10, m: 10}
+            ).should.equal("01/01/314");
           });
-          it("should not be highlighted when the thing id does not match the model's highlight", function () {
-            this.map.model.set("highlight", {id: 124});
-            var text = this.map.getInfoWindowEntry(this.event);
-            $(text).find(".event-link").hasClass("highlight").should.equal(false);
+          it("should show dates more than a day apart as a range", function () {
+            this.map.getDateRangeString(
+              "2014-01-01 23:50",
+              "2014-01-03 01:10"
+            ).should.equal("01/01/2014 - 03/01/2014");
+          });
+          it("should show BCE suffix when showing a single day before 0", function () {
+            this.map.getDateRangeString(
+              {y: -314, M: 0, d: 1, h: 23, m: 50},
+              {y: -314, M: 0, d: 2, h: 10, m: 10}
+            ).should.equal("01/01/314 BCE");
+          });
+          it("should show BCE suffix on the first day when showing a range spanning 0", function () {
+            this.map.getDateRangeString(
+              {y: -314, M: 0, d: 1, h: 23, m: 50},
+              {y: 314, M: 0, d: 2, h: 10, m: 10}
+            ).should.equal("01/01/314 BCE - 02/01/314 CE");
+          });
+          it("should show BCE suffix on the last day when showing a range before 0", function () {
+            this.map.getDateRangeString(
+              {y: -314, M: 0, d: 1, h: 23, m: 50},
+              {y: -314, M: 0, d: 3, h: 10, m: 10}
+            ).should.equal("01/01/314 - 03/01/314 BCE");
           });
         });
-
-        describe("multiple participants", function () {
+        describe("marker links", function () {
           beforeEach(function () {
-            this.event.participants.push({
-              thing_id: 1234,
-              thing_name: "some thing"
+            this.event = {
+              participants: [{
+                thing_id: 123,
+                thing_name: "some thing"
+              }],
+              event_id: 1,
+              event_name: "some name",
+              thing_name: "some thing",
+              event_link: "http://something.com/blah",
+              start_date: "2013-03-02",
+              end_date: "2013-04-03",
+              location: [[20, -53]],
+              place_thing_name: "some place"
+            };
+          });
+          describe("single participants", function () {
+            it("should contain the event data in the dataset", function () {
+              var text = this.map.getInfoWindowEntry(this.event);
+              var el = $(text);
+              var dataset = el.data();
+
+              dataset.thingId.should.equal(this.event.participants[0].thing_id);
+              dataset.name.should.equal(this.event.event_name);
+              dataset.link.should.equal(this.event.event_link);
+              dataset.lat.should.equal(this.event.location[0][0]);
+              dataset.lon.should.equal(this.event.location[0][1]);
+              dataset.startDate.should.equal(this.event.start_date);
+              dataset.endDate.should.equal(this.event.end_date);
+            });
+            it("should be highlighted when the thing id matches the model's highlight", function () {
+              this.map.model.set("highlight", {id: 123});
+              var text = this.map.getInfoWindowEntry(this.event);
+              $(text).find(".event-link").hasClass("highlight").should.equal(true);
+            });
+            it("should not be highlighted when the thing id does not match the model's highlight", function () {
+              this.map.model.set("highlight", {id: 124});
+              var text = this.map.getInfoWindowEntry(this.event);
+              $(text).find(".event-link").hasClass("highlight").should.equal(false);
             });
           });
-          it("should contain the event data in the dataset", function () {
-            var text = this.map.getInfoWindowEntry(this.event);
-            var parent = $(text);
 
-            parent.find(".participant").each(_.bind(function (i, el) {
-              var dataset = $(el).data();
-              dataset.thingId.should.equal(this.event.participants[i].thing_id);
-              dataset.thingName.should.equal(this.event.participants[i].thing_name);
-            }, this));
+          describe("multiple participants", function () {
+            beforeEach(function () {
+              this.event.participants.push({
+                thing_id: 1234,
+                thing_name: "some thing"
+              });
+            });
+            it("should contain the event data in the dataset", function () {
+              var text = this.map.getInfoWindowEntry(this.event);
+              var parent = $(text);
 
-          });
-          it("should be highlighted when the first thing id matches the model's highlight", function () {
-            this.map.model.set("highlight", {id: 123});
-            var text = this.map.getInfoWindowEntry(this.event);
-            $(text).find(".event-link").hasClass("highlight").should.equal(true);
-          });
-          it("should be highlighted when the another thing id matches the model's highlight", function () {
-            this.map.model.set("highlight", {id: 1234});
-            var text = this.map.getInfoWindowEntry(this.event);
-            $(text).find(".event-link").hasClass("highlight").should.equal(true);
-          });
-          it("should not be highlighted when the thing id does not match the model's highlight", function () {
-            this.map.model.set("highlight", {id: 124});
-            var text = this.map.getInfoWindowEntry(this.event);
-            $(text).find(".event-link").hasClass("highlight").should.equal(false);
+              parent.find(".participant").each(_.bind(function (i, el) {
+                var dataset = $(el).data();
+                dataset.thingId.should.equal(this.event.participants[i].thing_id);
+                dataset.thingName.should.equal(this.event.participants[i].thing_name);
+              }, this));
+
+            });
+            it("should be highlighted when the first thing id matches the model's highlight", function () {
+              this.map.model.set("highlight", {id: 123});
+              var text = this.map.getInfoWindowEntry(this.event);
+              $(text).find(".event-link").hasClass("highlight").should.equal(true);
+            });
+            it("should be highlighted when the another thing id matches the model's highlight", function () {
+              this.map.model.set("highlight", {id: 1234});
+              var text = this.map.getInfoWindowEntry(this.event);
+              $(text).find(".event-link").hasClass("highlight").should.equal(true);
+            });
+            it("should not be highlighted when the thing id does not match the model's highlight", function () {
+              this.map.model.set("highlight", {id: 124});
+              var text = this.map.getInfoWindowEntry(this.event);
+              $(text).find(".event-link").hasClass("highlight").should.equal(false);
+            });
           });
         });
       });
+
 
       describe("getColor", function () {
         it("should be blue at the most recent end", function () {

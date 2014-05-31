@@ -3,6 +3,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "moment",
   "models/current_user",
   "analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
@@ -18,7 +19,8 @@ define([
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
   "less!../../css/map"
-], function ($, _, Backbone, User, analytics, maps, OptionsMenu,
+], function ($, _, Backbone, moment,
+    User, analytics, maps, OptionsMenu,
     EventEditor, Events,
     Position, Scroll, StyledMarker, chroma,
     infoWindowSummaryTemplate, infoWindowEntryTemplate,
@@ -475,10 +477,43 @@ define([
       return this.infoWindowEntryTemplate(_.extend({
         canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-event"),
         participantTemplate: this.infoWindowEntryParticipantTemplate,
-        date: new Date(event.start_date),
+        date: this.getDateRangeString(event.start_date, event.end_date),
         highlighted: highlighted
       }, event));
     },
+
+    getDateRangeString: function (start, end) {
+      start = moment(start);
+      end = moment(end);
+      var str = this.getDateString(start);
+      var zero = moment({y: 0, M: 0, d: 1});
+      var isSwitch = start.isBefore(zero) && end.isAfter(zero);
+      if ((+end - +start) > 24 * 60 * 60 * 1000) {
+        if (isSwitch) {
+          str += " BCE";
+        }
+        str += " - " + this.getDateString(end);
+        if (end.isBefore(zero)) {
+          str += " BCE";
+        } else if (isSwitch) {
+          str += " CE";
+        }
+      } else {
+        if (start.isBefore(zero)) {
+          str += " BCE";
+        }
+      }
+      return str;
+    },
+
+    getDateString: function (date) {
+      if (date.isBefore(moment({y: 1000}))) {
+        return date.format("DD/MM/") + Math.abs(date.toDate().getFullYear());
+      } else {
+        return date.format("DD/MM/YYYY");
+      }
+    },
+
 
     drawShape: function (result) {
       return new google.maps.Polygon({
