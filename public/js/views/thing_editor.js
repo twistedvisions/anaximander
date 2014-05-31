@@ -133,7 +133,13 @@ define([
 
       window.ParsleyValidator
         .addValidator("duplicatesubtypes", _.bind(function () {
-          var subtypes = _.chain(this.getSubtypeValues()).pluck("type").pluck("id").value();
+          var subtypes = _.chain(this.getSubtypeValues())
+            .pluck("type")
+            .pluck("id")
+            .filter(function (id) {
+              return id >= 0;
+            })
+            .value();
           return subtypes.length === _.uniq(subtypes).length;
         }, this), 32)
         .addMessage("en", "duplicatesubtypes", "You cannot add duplicate subtypes");

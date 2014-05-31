@@ -217,6 +217,18 @@ define(
 
           this.thingEditor.validateSubtypeDuplication().should.equal(true);
         });
+        it("should permit multiple new subtypes", function () {
+          this.thingEditor.$("input[data-key=thing-type]").val(1);
+          this.thingEditor.typeSelected();
+          sinon.stub(this.thingEditor, "getSubtypeValues", function () {
+            return [
+              {type: {id: -1}},
+              {type: {id: -1}}
+            ];
+          });
+          this.thingEditor.validateSubtypeDuplication().should.equal(true);
+          this.thingEditor.getSubtypeValues.restore();
+        });
       });
     });
 
