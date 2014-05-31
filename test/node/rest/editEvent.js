@@ -60,6 +60,9 @@ describe("editEvent", function () {
         type: {
           id: 3
         },
+        importance: {
+          id: 3
+        },
         last_edited: "1999-01-01",
         start_date: new Date(1901, 0, 1),
         end_date: new Date(2001, 0, 1),
@@ -1077,6 +1080,54 @@ describe("editEvent", function () {
       this.testEdit(function () {
         this.args[3][1].should.equal("save_event_change");
         should.exist(JSON.parse(this.args[3][2][3]).participants);
+      }, done);
+    });
+
+    it("should save the type_id in the old values if it has changed", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        type: {id: 2}
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_type_by_id", id: 2}],
+        [{db_call: "update_event_type"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[4][1].should.equal("save_event_change");
+        JSON.parse(this.args[4][2][3]).type_id.should.equal(3);
+        JSON.parse(this.args[4][2][4]).type_id.should.equal(2);
+      }, done);
+    });
+
+    it("should save the importance_id in the old values if it has changed", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        importance: {id: 2}
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_importance_by_id", id: 2}],
+        [{db_call: "update_event_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[4][1].should.equal("save_event_change");
+        JSON.parse(this.args[4][2][3]).importance_id.should.equal(3);
+        JSON.parse(this.args[4][2][4]).importance_id.should.equal(2);
       }, done);
     });
 
