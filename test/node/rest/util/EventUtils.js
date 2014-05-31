@@ -244,20 +244,6 @@ describe("EventUtils", function () {
       });
     });
     describe("changing participants", function () {
-      it("should throw an exception if it isn't passed a thing with an id", function () {
-        var ex;
-        try {
-          this.eventUtils.ensureParticipant({
-            thing: {id: -1},
-            type: {id: 1},
-            importance: {id: 2}
-          }, true);
-        }
-        catch (e) {
-          ex = e;
-        }
-        should.exist(ex);
-      });
       it("should ensure at least one of types and importances exist", function () {
         var ex;
         try {
