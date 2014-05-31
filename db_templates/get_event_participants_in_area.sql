@@ -3,6 +3,7 @@ select
   place_thing.id as place_thing_id,
   thing.name as thing_name,
   place_thing.name as place_thing_name,
+  place_thing.link as place_thing_link,
   type.name as thing_type,
   case
       when thing_importance.value is null then role_importance.value * 5 * event_importance.value

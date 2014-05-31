@@ -457,7 +457,11 @@ define([
 
     getInfoWindowSummary: function (result) {
       var name = result.events[0].place_thing_name;
-      return this.infoWindowSummaryTemplate({name: name});
+      var link = result.events[0].place_thing_link;
+      return this.infoWindowSummaryTemplate({
+        name: name,
+        link: link
+      });
     },
 
     getInfoWindowEntry: function (event) {
