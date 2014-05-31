@@ -36,6 +36,7 @@ define(
           event_name: "some event",
           thing_name: "some thing",
           place_thing_name: "some place",
+          place_thing_link: "http://somelink.com",
           start_date: "2014-01-01T01:00:00.000Z",
           end_date: "2014-01-01T23:00:00.000Z",
           participants: [{
