@@ -19,17 +19,17 @@ define([
       var date = this.model.get("date");
       this.slider = new RangeSlider({
         el: ".slider-holder",
-        min: this.convertToRatio(date[0]),
-        max: this.convertToRatio(date[1])
+        min: this.min,
+        max: this.max,
+        state: {
+          min: date[0],
+          max: date[1]
+        }
       });
       this.slider.render();
       this.slider.on("update", this.sliderChanged, this);
       this.model.on("change:date", this.update, this);
       this.showDate();
-    },
-
-    convertToRatio: function (x) {
-      return (x - this.min) / (this.max - this.min);
     },
 
     sliderChanged: function (data) {
@@ -42,22 +42,22 @@ define([
     showDate: function () {
       var timeRange = this.model.get("date");
       var minSlider, maxSlider;
-      if (parseInt(this.$(".slider-a").css("left"), 10) < parseInt(this.$(".slider-b").css("left"), 10)) {
-        minSlider = this.$(".slider-a");
-        maxSlider = this.$(".slider-b");
+
+      if (parseInt(this.$(".slider-a").css("left"), 10) <= parseInt(this.$(".slider-b").css("left"), 10)) {
+        minSlider = this.$(".slider-a .text");
+        maxSlider = this.$(".slider-b .text");
       } else {
-        minSlider = this.$(".slider-b");
-        maxSlider = this.$(".slider-a");
+        minSlider = this.$(".slider-b .text");
+        maxSlider = this.$(".slider-a .text");
       }
       minSlider.text(this.toText(timeRange[0], timeRange[1]));
       maxSlider.text(this.toText(timeRange[1], timeRange[0]));
     },
 
     getTimeRange: function (data) {
-      var range = this.max - this.min;
       return [
-        parseInt((data.min * range) + this.min, 10),
-        parseInt((data.max * range) + this.min, 10)
+        data.min,
+        data.max
       ];
     },
 
@@ -65,9 +65,9 @@ define([
       var date = this.model.get("date");
       var currentPos = this.slider.getState();
 
-      if (Math.round(currentPos.min) !== this.convertToRatio(date[0]) ||
-          Math.round(currentPos.max, 10) !== this.convertToRatio(date[1])) {
-        this.slider.setState(this.convertToRatio(date[0]), this.convertToRatio(date[1]));
+      if ((Math.round(currentPos.min) !== date[0]) ||
+          (Math.round(currentPos.max, 10) !== date[1])) {
+        this.slider.setState(date[0], date[1]);
       }
     },
 

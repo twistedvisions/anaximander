@@ -7,41 +7,45 @@ define(
     var should = chai.should();
     describe("range slider", function () {
       describe("initializing state", function () {
-        it("should set the left state if passed", function () {
-          this.slider = new RangeSlider({min: 0.25});
-          this.slider.state.left.should.equal(0.25);
+        it("should set the min state if passed", function () {
+          this.slider = new RangeSlider({min: -100, max: 200, state: {min: 10}});
+          this.slider.getState().min.should.equal(10);
         });
-        it("should set the right state if passed", function () {
-          this.slider = new RangeSlider({max: 0.75});
-          this.slider.state.right.should.equal(0.75);
+        it("should set the max state if passed", function () {
+          this.slider = new RangeSlider({min: -100, max: 200, state: {max: 20}});
+          this.slider.getState().max.should.equal(20);
         });
-        it("should ensure the left is less than the right", function () {
+        it("should ensure the min state is less than the max", function () {
           var e;
           try {
             this.slider = new RangeSlider({
-              min: 0.5,
-              max: 0.2
+              min: -100,
+              max: 200,
+              state: {
+                min: 20,
+                max: 10
+              }
             });
           } catch (ex) {
             e = ex;
           }
           should.exist(e);
         });
-        it("should default the left state to 0", function () {
-          this.slider = new RangeSlider({});
-          this.slider.state.left.should.equal(0);
+        it("should default the min state to the min range", function () {
+          this.slider = new RangeSlider({min: -100, max: 200});
+          this.slider.getState().min.should.equal(-100);
         });
-        it("should default the right state to 1", function () {
-          this.slider = new RangeSlider({});
-          this.slider.state.right.should.equal(1);
+        it("should default the max state to the max range", function () {
+          this.slider = new RangeSlider({min: -100, max: 200});
+          this.slider.getState().max.should.equal(200);
         });
-        it("should ensure the left state cannot be less than 0", function () {
-          this.slider = new RangeSlider({min: -0.25});
-          this.slider.state.left.should.equal(0);
+        it("should ensure the min state cannot be less than the min range", function () {
+          this.slider = new RangeSlider({min: -100, max: 200, state: {min: -200}});
+          this.slider.getState().min.should.equal(-100);
         });
-        it("should ensure the right state cannot be more than 1", function () {
-          this.slider = new RangeSlider({firstSliderPosition: 1.25});
-          this.slider.state.right.should.equal(1);
+        it("should ensure the max state cannot be more than the max range", function () {
+          this.slider = new RangeSlider({min: -100, max: 200, state: {max: 300}});
+          this.slider.getState().max.should.equal(200);
         });
       });
       describe("getComponentDimensions", function () {
@@ -83,7 +87,7 @@ define(
             val = v;
           });
           this.slider.onDrag({target: {className: "slider-a"}});
-          val.should.eql({min: 0, max: 1});
+          val.should.eql({min: 0, max: 100});
         });
         describe("normal extremes", function () {
           it("should set the state of the left slider at the far left", function () {
@@ -94,14 +98,14 @@ define(
           it("should set the state of the right slider at the far right", function () {
             this.slider.$(".slider-b").css("left", 160);
             this.slider.onDrag({target: {className: "slider-b"}});
-            this.slider.getState().max.should.equal(1);
+            this.slider.getState().max.should.equal(100);
           });
         });
         describe("other extremes", function () {
           it("should set the state of the left slider at the far right", function () {
             this.slider.$(".slider-a").css("left", 160);
             this.slider.onDrag({target: {className: "slider-a"}});
-            this.slider.getState().min.should.equal(1);
+            this.slider.getState().min.should.equal(100);
           });
           it("should set the state of the right slider at the far left", function () {
             this.slider.$(".slider-b").css("left", 0);
@@ -114,29 +118,29 @@ define(
             this.slider.$(".slider-a").css("left", 80);
             this.slider.$(".slider-b").css("left", 40);
             this.slider.onDrag({target: {className: "slider-a"}});
-            this.slider.getState().min.should.equal(0.25);
-            this.slider.getState().max.should.equal(0.5);
+            this.slider.getState().min.should.equal(25);
+            this.slider.getState().max.should.equal(50);
           });
           it("should set the state of the right slider when the left slider has fully been dragged over it", function () {
             this.slider.$(".slider-a").css("left", 120);
             this.slider.$(".slider-b").css("left", 80);
             this.slider.onDrag({target: {className: "slider-b"}});
-            this.slider.getState().min.should.equal(0.5);
-            this.slider.getState().max.should.equal(0.75);
+            this.slider.getState().min.should.equal(50);
+            this.slider.getState().max.should.equal(75);
           });
           it("should set the state of the right slider when the left slider has just been dragged over it", function () {
             this.slider.$(".slider-a").css("left", 81);
             this.slider.$(".slider-b").css("left", 80);
             this.slider.onDrag({target: {className: "slider-a"}});
-            this.slider.getState().min.should.equal(0.5);
-            this.slider.getState().max.should.equal(0.5);
+            this.slider.getState().min.should.equal(50);
+            this.slider.getState().max.should.equal(50);
           });
           it("should set the state of the left slider when the right slider has just been dragged over it", function () {
             this.slider.$(".slider-a").css("left", 80);
             this.slider.$(".slider-b").css("left", 79);
             this.slider.onDrag({target: {className: "slider-b"}});
-            this.slider.getState().min.should.equal(0.5);
-            this.slider.getState().max.should.equal(0.5);
+            this.slider.getState().min.should.equal(50);
+            this.slider.getState().max.should.equal(50);
           });
         });
       });
@@ -165,7 +169,50 @@ define(
             val = v;
           });
           this.slider.onStop();
-          val.should.eql({min: 0, max: 1});
+          val.should.eql({min: 0, max: 100});
+        });
+      });
+      describe.only("stepping", function () {
+        beforeEach(function () {
+          this.slider = new RangeSlider({state: {min: 20, max: 80}});
+          this.slider.render();
+          this.slider.$(".groove").width(200);
+          this.slider.$(".slider-a").width(20);
+          this.slider.$(".slider-b").width(20);
+          this.slider.getComponentDimensions();
+          this.slider.redraw();
+        });
+        it("should step the left slider to the left by one", function () {
+          this.slider.onStep({target: this.slider.$(".slider-a .left")[0]});
+          this.slider.getState().min.should.equal(19);
+          this.slider.getState().max.should.equal(80);
+        });
+        it("should step the left slider to the right by one", function () {
+          this.slider.onStep({target: this.slider.$(".slider-a .right")[0]});
+          this.slider.getState().min.should.equal(21);
+          this.slider.getState().max.should.equal(80);
+        });
+        it("should step the right slider to the left by one", function () {
+          this.slider.onStep({target: this.slider.$(".slider-b .left")[0]});
+          this.slider.getState().min.should.equal(20);
+          this.slider.getState().max.should.equal(79);
+        });
+        it("should step the right slider to the right by one", function () {
+          this.slider.onStep({target: this.slider.$(".slider-b .right")[0]});
+          this.slider.getState().min.should.equal(20);
+          this.slider.getState().max.should.equal(81);
+        });
+        it("should not step the left slider to the right when it abuts the right slider", function () {
+          this.slider.setState(50, 50);
+          this.slider.onStep({target: this.slider.$(".slider-a .right")[0]});
+          this.slider.getState().min.should.equal(50);
+          this.slider.getState().max.should.equal(50);
+        });
+        it("should not step the right slider to the left when it abuts the left slider", function () {
+          this.slider.setState(50, 50);
+          this.slider.onStep({target: this.slider.$(".slider-b .left")[0]});
+          this.slider.getState().min.should.equal(50);
+          this.slider.getState().max.should.equal(50);
         });
       });
       describe("redraw", function () {
@@ -200,7 +247,7 @@ define(
               right(this.slider.$(".slider-b")).should.equal(40);
             });
             it("should have two sliders next to each other when both are at 1", function () {
-              this.slider.setState(1, 1);
+              this.slider.setState(100, 100);
               this.slider.redraw();
               parseInt(this.slider.$(".slider-a").css("left"), 10).should.equal(160);
               right(this.slider.$(".slider-b")).should.equal(200);
@@ -208,7 +255,7 @@ define(
           });
           describe("both at middle", function () {
             it("should have two sliders next to each other", function () {
-              this.slider.setState(0.5, 0.5);
+              this.slider.setState(50, 50);
               this.slider.redraw();
               parseInt(this.slider.$(".slider-a").css("left"), 10).should.equal(80);
               right(this.slider.$(".slider-b")).should.equal(120);
@@ -218,14 +265,14 @@ define(
         describe("slider selected", function () {
           it("should flip the location of unselected slider-a", function () {
             this.slider.selectSliderB();
-            this.slider.setState(0.5, 0.25);
+            this.slider.setState(50, 25);
             this.slider.redraw();
             right(this.slider.$(".slider-a")).should.equal(140);
             //other slider is being dragged so don't set it
           });
           it("should flip the location of unselected slider-b", function () {
             this.slider.selectSliderA();
-            this.slider.setState(0.75, 0.5);
+            this.slider.setState(75, 50);
             this.slider.redraw();
             parseInt(this.slider.$(".slider-b").css("left"), 10).should.equal(60);
             //other slider is being dragged so don't set it

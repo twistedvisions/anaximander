@@ -9,16 +9,19 @@ define([
 
   var RangeSliderView = Backbone.View.extend({
     initialize: function (opts) {
-      this.initializeState(opts || {});
+      opts = opts || {};
+      this.min = opts.min !== undefined ? opts.min : 0;
+      this.max = opts.max !== undefined ? opts.max : 100;
+      this.initializeState(opts.state || {});
     },
 
-    initializeState: function (opts) {
+    initializeState: function (state) {
       this.state = {
         selected: null
       };
       this.setState(
-        opts.min || 0,
-        opts.max || 1
+        state.min || this.min,
+        state.max || this.max
       );
     },
 
@@ -26,8 +29,8 @@ define([
       if ((left > right) && (!this.state.selected)) {
         throw new Error("the first value must be less than the second");
       }
-      this.state.left = Math.max(0, left);
-      this.state.right = Math.min(1, right);
+      this.state.left = Math.max(this.min, left);
+      this.state.right = Math.min(this.max, right);
     },
 
     render: function () {
@@ -56,6 +59,7 @@ define([
     },
 
     attachListeners: function () {
+      this.$(".slider .step").on("click", _.bind(this.onStep, this));
       this.$(".slider").draggable({
         axis: "x",
         containment: "parent",
@@ -66,6 +70,26 @@ define([
         this.getComponentDimensions();
         this.redraw();
       }, this));
+    },
+
+    onStep: function (event) {
+      var target = $(event.target);
+      var change = target.hasClass("left") ? -1 : 1;
+      var state = this.getState();
+
+      if (target.parent().hasClass("slider-a")) {
+        if (state.min + change <= state.max) {
+          state.min += change;
+        }
+      } else {
+        if (state.max + change >= state.min) {
+          state.max += change;
+        }
+      }
+
+      this.setState(state.min, state.max);
+      this.redraw();
+      this.updateListeners();
     },
 
     onDrag: function (event) {
@@ -119,7 +143,11 @@ define([
         right = rightPos / grooveWidth;
       }
 
-      this.setState(left, right);
+      var range = this.max - this.min;
+      this.setState(
+        Math.round(left * range + this.min),
+        Math.round(right * range + this.min)
+      );
 
       this.redraw();
       this.updateListeners();
@@ -139,6 +167,7 @@ define([
         this.state.right = left;
       }
       this.redraw();
+      setTimeout(_.bind(this.redraw, this), 100);
       this.updateListeners();
     },
 
@@ -162,8 +191,10 @@ define([
       var combinedSliderWidth = this.dimensions.sliderA.width + this.dimensions.sliderB.width;
       var grooveWidth = this.dimensions.groove.width - combinedSliderWidth;
 
-      var sliderA_pos = this.state.left * grooveWidth;
-      var sliderB_pos = this.state.right * grooveWidth;
+      var range = this.max - this.min;
+
+      var sliderA_pos = Math.round((this.state.left - this.min) * grooveWidth / range);
+      var sliderB_pos = Math.round((this.state.right - this.min) * grooveWidth / range);
 
       this.state.leftAdjusted = false;
       this.state.rightAdjusted = false;
