@@ -271,6 +271,7 @@ define([
 
       modelData.date = this.extractDate(data);
       modelData.highlight = this.getHighlightFromJSON(data);
+      modelData.importance = this.extractImportance(data);
 
       if (data.area.length === 1) {
         this.extractPointData(modelData, data);
@@ -317,9 +318,18 @@ define([
     },
 
     getHighlightFromJSON: function (data) {
+      var points;
+      if (data.points) {
+        points = data.points;
+      } else {
+        points = data.area;
+        _.each(points, function (point) {
+          point.importance_value = data.importance_value;
+        });
+      }
       return {
         id: data.thing_id,
-        points: data.points || data.area
+        points: points
       };
     },
 
@@ -335,6 +345,12 @@ define([
       }
       return [data.start_date.getFullYear() - dateOffset,
         data.end_date.getFullYear() + dateOffset];
+    },
+
+    extractImportance: function (data) {
+      return data.importance_value || _.reduce(data.points, function (memo, point) {
+        return Math.min(memo, point.importance_value);
+      }, 1000);
     },
 
     extractPointData: function (modelData, data) {
@@ -377,7 +393,7 @@ define([
       this.model.set(modelData, {silent: true});
       FilterUrlSerialiser.deserialise("", this.model);
       window.lastEvent = "search";
-      this.model.trigger("change change:filterState change:date");
+      this.model.trigger("change change:filterState change:date change:importance");
     }
 
   });

@@ -427,7 +427,7 @@ define(
           this.map.showHighlight();
           this.map.paths.length.should.equal(1);
         });
-        it("should only create a path for highlight in the date range", function () {
+        it("should only create a path for highlights in the date range", function () {
           this.map.model.set("highlight", {
             id: 1,
             points: [
@@ -446,6 +446,31 @@ define(
           this.map.model.set("date", [1905, 1915]);
           this.map.showHighlight();
           this.map.paths.length.should.equal(1);
+        });
+        it("should only create a path for highlights with sufficient importance", function () {
+          this.map.model.set("highlight", {
+            id: 1,
+            points: [
+              {lat: 10, lon: -20, date: "1900-01-01", importance_value: 10},
+              {lat: 11, lon: -20, date: "1907-01-01", importance_value: 11},
+              {lat: 11, lon: -20, date: "1911-01-01", importance_value: 12},
+              {lat: 12, lon: -20, date: "1920-01-01", importance_value: 13}
+            ]
+          });
+          this.map.paths = [];
+
+          this.map.model.set("date", [1900, 1921]);
+          this.map.model.set("importance", 9);
+          this.map.showHighlight();
+          this.map.paths.length.should.equal(3);
+
+          this.map.model.set("importance", 11);
+          this.map.showHighlight();
+          this.map.paths.length.should.equal(2);
+
+          this.map.model.set("importance", 13);
+          this.map.showHighlight();
+          this.map.paths.length.should.equal(0);
         });
         it("should set the color for each point", function () {
           sinon.spy(this.map, "getColor");
@@ -796,6 +821,28 @@ define(
           this.model.set("date", [1900, 2000]);
           this.map.lastHighlight = {id: 1};
           this.map.mapNeedsRedrawing().should.equal(true);
+        });
+        it("needs redrawing when the importance has changed", function () {
+          this.map.model.set("highlight", {id: 1});
+          this.map.model.set("importance", {id: 11});
+          this.map.lastModelPosition = {
+            date: [1900, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
+          this.map.lastImportance = 10;
+          this.map.lastHighlight = {id: 1};
+          this.map.mapNeedsRedrawing().should.equal(true);
+        });
+        it("does not need redrawing when the importance has not changed", function () {
+          this.map.model.set("highlight", {id: 1});
+          this.map.model.set("importance", 11);
+          this.map.lastModelPosition = {
+            date: [1900, 2000]
+          };
+          this.model.set("date", [1900, 2000]);
+          this.map.lastImportance = 11;
+          this.map.lastHighlight = {id: 1};
+          this.map.mapNeedsRedrawing().should.equal(false);
         });
       });
 

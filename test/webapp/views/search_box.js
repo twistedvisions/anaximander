@@ -594,6 +594,7 @@ define(
           beforeEach(function () {
             this.data = {
               area: [{lat: 10, lon: -20}],
+              importance_value: 100,
               thing_id: 123
             };
             sinon.stub(this.searchBox, "extractData", _.bind(function () {
@@ -625,13 +626,17 @@ define(
           it("should set the highlight points from the area of the clicked result if there are no points", function () {
             this.searchBox.resultSelected();
             this.searchBox.setModelData.args[0][0].highlight.points
-              .should.eql([{lat: 10, lon: -20}]);
+              .should.eql([{lat: 10, lon: -20, importance_value: 100}]);
           });
           it("should highlight the selected event", function () {
             sinon.stub(this.searchBox, "highlightSelectedResult");
             this.searchBox.resultSelected();
             this.searchBox.highlightSelectedResult.calledOnce
               .should.equal(true);
+          });
+          it("should set the importance to the minimum importance of the result", function () {
+            this.searchBox.resultSelected();
+            this.searchBox.setModelData.args[0][0].importance.should.equal(100);
           });
         });
         it("should remove all filters", function () {

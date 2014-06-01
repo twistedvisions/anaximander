@@ -86,7 +86,7 @@ define([
 
     showHighlight: function () {
       var highlight = this.model.get("highlight");
-
+      var importance = this.model.get("importance");
       if (this.paths) {
         _.each(this.paths, function (path) {
           path.setMap(null);
@@ -95,6 +95,9 @@ define([
       if (highlight.id) {
         var modelDate = this.model.get("date");
         var pointsInRange = _.filter(highlight.points, function (point) {
+          if (point.importance_value < importance) {
+            return false;
+          }
           var pointDate = new Date(point.date).getFullYear();
           return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
         });
@@ -165,6 +168,7 @@ define([
       if (this.mapNeedsRedrawing()) {
         this.redrawMarkers();
         this.lastHighlight = this.model.get("highlight");
+        this.lastImportance = this.model.get("importance");
       }
       this.lastModelPosition = this.getModelPosition();
     },
@@ -184,6 +188,7 @@ define([
 
     mapNeedsRedrawing: function () {
       return !_.isEqual(this.model.get("highlight"), this.lastHighlight) ||
+        !_.isEqual(this.model.get("importance"), this.lastImportance) ||
         !_.isEqual(this.getModelPosition().date, this.lastModelPosition.date);
     },
 

@@ -137,14 +137,28 @@ describe("search", function () {
 
       var s = new Search({get: function () {}});
       s.handleSearchResults(this.res, [
-        {rows: [getRow(1, {points: JSON.stringify(dbPoints), dates: dates})]},
+        {rows: [getRow(1, {
+          points: JSON.stringify(dbPoints),
+          dates: dates,
+          importance_values: [100, 200]
+        })]},
         {rows: []}
       ]);
       this.result.should.eql([
         getResultRow(1, {
           points: [
-            {lat: 10, lon: -20, date: new Date("2000-01-01T00:00:00.000Z")},
-            {lat: -30, lon: 40, date: new Date("2000-01-02T00:00:00.000Z")}
+            {
+              lat: 10,
+              lon: -20,
+              date: new Date("2000-01-01T00:00:00.000Z"),
+              importance_value: 100
+            },
+            {
+              lat: -30,
+              lon: 40,
+              date: new Date("2000-01-02T00:00:00.000Z"),
+              importance_value: 200
+            }
           ]
         })
       ]);
@@ -161,14 +175,28 @@ describe("search", function () {
       var dates = "{\"1811-01-06 04:58:45-00:01:15\",\"1811-01-06 04:58:45+00:01:15\"}";
       var s = new Search({get: function () {}});
       s.handleSearchResults(this.res, [
-        {rows: [getRow(1, {points: JSON.stringify(dbPoints), dates: dates})]},
+        {rows: [getRow(1, {
+          points: JSON.stringify(dbPoints),
+          dates: dates,
+          importance_values: [100, 200]
+        })]},
         {rows: []}
       ]);
       this.result.should.eql([
         getResultRow(1, {
           points: [
-            {lat: 10, lon: -20, date: new Date("1811-01-06 05:00:00.000Z")},
-            {lat: -30, lon: 40, date: new Date("1811-01-06 04:57:30.000Z")}
+            {
+              lat: 10,
+              lon: -20,
+              date: new Date("1811-01-06 05:00:00.000Z"),
+              importance_value: 100
+            },
+            {
+              lat: -30,
+              lon: 40,
+              date: new Date("1811-01-06 04:57:30.000Z"),
+              importance_value: 200
+            }
           ]
         })
       ]);
