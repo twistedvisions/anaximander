@@ -1,22 +1,30 @@
 #importance-slider-container {
   position: fixed;
-  right: 13px;
-  top: 82px;
-  width: 32px;
-  height: 128px;
-  background-color: rgba(255,255,255,0.5);
-  padding: 10px;
-  border: 1px solid rgba(100,100,100,0.5);
+  right: 6px;
+  top: 63px;
+  width: 39px;
+  height: 147px;
+  background-color: rgba(255,255,255,0.7);
+  padding: 35px 17px;
+  border: 1px solid rgba(100,100,100,0.7);
+  border-radius: 3px;
 
   .text {
     float: left;
     left: -10px;
     position: relative;
-    &.more {
+    font-size: 11px;
+    &.less {
       top: -30px;
     }
-    &.less {
-      top: 21px;
+    &.more {
+      top: -10px;
+      left: -11px;
     }
+  }
+
+  #importance-slider {
+    top: -12px;
+    left: -3px;
   }
 }
