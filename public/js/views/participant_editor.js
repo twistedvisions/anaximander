@@ -53,6 +53,10 @@ define([
       }
     },
 
+    updateRoles: function () {
+      this.typeSelector.updateTypes();
+    },
+
     removeParticipant: function () {
       this.$el.remove();
       this.trigger("remove", this.id);
@@ -71,7 +75,9 @@ define([
           thing: this.model.get("thing")
         };
       }
-      return _.extend(value, this.typeSelector.getValue());
+      var value = _.extend(value, this.typeSelector.getValue());
+      value.type.relatedTypeId = this.roles.getEventType();
+      return value;
     },
 
     validate: function () {

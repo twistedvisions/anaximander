@@ -172,7 +172,7 @@ define(
           val.should.eql({min: 0, max: 100});
         });
       });
-      describe.only("stepping", function () {
+      describe("stepping", function () {
         beforeEach(function () {
           this.slider = new RangeSlider({state: {min: 20, max: 80}});
           this.slider.render();

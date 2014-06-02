@@ -40,7 +40,7 @@ exports.up = function (db, callback) {
 exports.down = function (db, callback) {
   var actions = [];
   ["thing", "event", "type", "importance"].forEach(function (tableName) {
-    actions.push(db.dropColumn.bind(db, tableName, "creator_id", callback));
+    actions.push(db.removeColumn.bind(db, tableName, "creator_id", callback));
   });
   actions.push(db.dropTable.bind(db, "creator", callback));
   async.series(actions, callback);

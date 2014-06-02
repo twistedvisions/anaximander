@@ -76,8 +76,15 @@ define([
         _.bind(this.updateTypeImportanceCreator, this));
       this.$("input[data-key=type]").on("change",
         _.bind(this.updateTypeImportance, this));
+      this.$("input[data-key=type]").on("change",
+        _.bind(this.triggerUpdates, this));
       this.$(".importance-group .remove").click(_.bind(this.hideImportanceGroup, this));
 
+    },
+
+    triggerUpdates: function () {
+      var typeId = parseInt(this.$("input[data-key=type]").val(), 10);
+      this.trigger("change:type", typeId);
     },
 
     hideImportanceGroup: function (e) {
@@ -183,6 +190,20 @@ define([
         }]
       }));
       this.$("input[data-key=importance]").select2("val", -2).trigger("change");
+    },
+
+    updateTypes: function () {
+      this.$("input[data-key=type]").select2("val", "");
+      this.$("input[data-key=type]").select2(
+        _.extend(_.clone(this.getTypeSelectOptions()), {
+        data: this.types.map(function (type) {
+          return {
+            id: type.id,
+            text: type.get("name")
+          };
+        })
+      }));
+      this.$("input[data-key=importance]").select2("val", "");
     },
 
     setValue: function (typeId, importanceId) {

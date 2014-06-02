@@ -59,6 +59,7 @@ define([
       this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
       this.$(".save").on("click", _.bind(this.handleSave, this));
       this.$(".modal").on("hidden.bs.modal", _.bind(this.handleClose, this));
+
       this.addValidators();
       this.$(".details form").hide();
       this.$(".details .loading").show();
@@ -167,13 +168,17 @@ define([
       var thingsToFetch = [];
 
       thingsToFetch.push(when(this.types.fetch()));
-      thingsToFetch.push(when(this.roles.fetch()));
       thingsToFetch.push(when(this.eventTypes.fetch()));
 
       thingsToFetch.push(this.getNearestPlaces());
 
       if (this.model) {
-        thingsToFetch.push(when(this.model.fetch()));
+        var d = when.defer();
+        when(this.model.fetch()).then(_.bind(function () {
+          this.roles.setEventType(this.model.get("type").id);
+          when(this.roles.fetch()).then(d.resolve, d.reject);
+        }, this), d.reject);
+        thingsToFetch.push(d.promise);
       }
 
       return when.all(thingsToFetch);
@@ -225,6 +230,21 @@ define([
       this.$(".event-type-selector-holder").append(
         this.eventTypeSelector.render()
       );
+      this.eventTypeSelector.on("change:type", this.eventTypeSelected, this);
+    },
+
+    eventTypeSelected: function (eventTypeId) {
+      var changed = this.roles.setEventType(eventTypeId);
+      if (changed) {
+        when(this.roles.fetch()).then(_.bind(function () {
+          _.each(this.participants, function (participantEditor) {
+            participantEditor.updateRoles();
+          });
+          this.$("input[data-key=participants]").select2("enable", true);
+        }, this));
+      } else {
+        this.$("input[data-key=participants]").select2("enable", true);
+      }
     },
 
     renderParticipants: function () {
@@ -250,7 +270,7 @@ define([
           };
         }
       });
-
+      el.select2("disable", true);
       el.on("change", _.bind(this.addParticipant, this, null));
 
     },

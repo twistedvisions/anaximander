@@ -236,6 +236,16 @@ define(
           this.typeSelector.validate().should.equal(false);
         });
       });
+      describe("triggering updates", function () {
+        it("should trigger updates when the type has changed", function () {
+          var triggered = false;
+          this.typeSelector.on("change:type", function () {
+            triggered = true;
+          });
+          this.typeSelector.setValue(2);
+          triggered.should.equal(true);
+        });
+      });
       describe("analytics", function () {
         beforeEach(function () {
           sinon.stub(Analytics, "newTypeAdded");

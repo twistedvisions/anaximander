@@ -143,6 +143,18 @@ define(
           });
           this.participantEditor.getValue().type.should.equal("type value");
         });
+        it("should set the relatedTypeId", function () {
+          this.participantEditor = new ParticipantEditor({
+            model: this.existingModel,
+            roles: this.rolesCollection
+          });
+          this.rolesCollection.setEventType(2);
+          this.participantEditor.render();
+          sinon.stub(this.participantEditor.typeSelector, "getValue", function () {
+            return {type: {id: 1}};
+          });
+          this.participantEditor.getValue().type.relatedTypeId.should.equal(2);
+        });
       });
     });
   }

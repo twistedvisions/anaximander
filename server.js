@@ -78,6 +78,7 @@ require("./lib/rest/getRecentChanges").init(app);
 require("./lib/rest/getRoleImportanceUsage").init(app);
 require("./lib/rest/getRoleUsage").init(app);
 require("./lib/rest/getRoles").init(app);
+require("./lib/rest/getRolesByRelatedType").init(app);
 require("./lib/rest/getThing").init(app);
 require("./lib/rest/getThingChanges").init(app);
 require("./lib/rest/getThingSubtypeImportanceUsage").init(app);

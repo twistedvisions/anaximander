@@ -346,12 +346,12 @@ define(
             participants: [
               {
                 thing: {id: 3, name: "John Smith"},
-                type: {id: 2},
+                type: {id: 2, relatedTypeId: 1},
                 importance: {id: 20}
               },
               {
                 thing: {id: 4, name: "Joan Doe"},
-                type: {id: 2},
+                type: {id: 2, relatedTypeId: 1},
                 importance: {id: 20}
               }
             ]

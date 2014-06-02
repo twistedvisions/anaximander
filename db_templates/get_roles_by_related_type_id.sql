@@ -10,5 +10,6 @@ select
   importance.last_edited as importance_last_edited
 from type
 inner join importance on importance.type_id = type.id
-where type.type_id = $1
+where type.type_id = 3
+and type.related_type_id = $1
 order by name asc, importance.name asc;

@@ -119,7 +119,7 @@ INSERT INTO type (name, type_id, parent_type_id) VALUES
   ('defunct construction', 3, NULL),       --21
   ('construction site', 3, NULL),          --22
   ('new construction', 3, NULL),           --23
-  ('dead person', 3, NULL),                --24
+  ('deceased', 3, NULL),                   --24
   ('defunct organisation', 3, NULL),       --25
   ('new organisation', 3, NULL),           --26
   ('defunct place', 3, NULL),              --27

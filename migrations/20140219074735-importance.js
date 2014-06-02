@@ -85,10 +85,10 @@ exports.up = function (db, callback) {
 
 exports.down = function (db, callback) {
   async.series([
-    db.dropColumn.bind(db, "event_participant", "importance_id", callback),
-    db.dropColumn.bind(db, "event", "importance_id", callback),
-    db.dropColumn.bind(db, "thing_subtype", "importance_id", callback),
-    db.dropColumn.bind(db, "type", "default_importance_id", callback),
+    db.removeColumn.bind(db, "event_participant", "importance_id", callback),
+    db.removeColumn.bind(db, "event", "importance_id", callback),
+    db.removeColumn.bind(db, "thing_subtype", "importance_id", callback),
+    db.removeColumn.bind(db, "type", "default_importance_id", callback),
     db.dropTable.bind(db, "importance", callback)
   ], callback);
 };
