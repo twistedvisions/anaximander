@@ -63,7 +63,8 @@ define([
     },
 
     showPoint: function (setPosition) {
-      if (this.index === -1 || this.index === this.points.length) {
+      this.$(".current-event-name").removeClass("long-text");
+      if (this.index === -1) {
         var dateText;
         var summaryText;
         if (this.points.length === 1) {
@@ -85,6 +86,9 @@ define([
         var point = this.points[this.index];
         this.$(".current-date").text(moment(point.date).format("lll"));
         this.$(".current-event-name").text(point.event_name);
+        if (point.event_name.length > 40) {
+          this.$(".current-event-name").addClass("long-text");
+        }
         if (setPosition) {
           this.model.set({
             zoom: 8,

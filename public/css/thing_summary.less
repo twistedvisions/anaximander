@@ -13,9 +13,9 @@
       width: 440px;
       background-color: rgba(255,255,255,0.7);
       background-color: #eee;
+      border-radius: 7px;
       > div {
         float: left;
-        font-size: 15px;
       }
       .name-holder {
         height: 100%;
@@ -26,6 +26,8 @@
           width: 200px;
           text-align: center;
           font-weight: bold;
+          font-size: 14px;
+          overflow: hidden;
           a {
             color: #000;
           }
@@ -37,6 +39,7 @@
         height: 100%;
         .glyphicon {
           cursor: pointer;
+          font-size: 15px;
         }
         .current-event {
           height: 100%;
@@ -55,6 +58,10 @@
           }
           .current-event-name {
             font-size: 14px;
+            &.long-text {
+              font-size: 10px;
+              line-height: 12px;
+            }
           }
         }
       }
