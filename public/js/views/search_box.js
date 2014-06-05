@@ -4,7 +4,7 @@ define([
   "backbone",
   "when",
   "analytics",
-  "utils/position",
+  "utils/highlight",
   "utils/scroll",
   "utils/filter_url_serialiser",
   "models/current_user",
@@ -16,7 +16,7 @@ define([
   "text!templates/search_result.htm",
   "less!../../css/search_box"
 ], function ($, _, Backbone, when,
-    Analytics, Position, Scroll, FilterUrlSerialiser, User, ThingEditor,
+    Analytics, Highlight, Scroll, FilterUrlSerialiser, User, ThingEditor,
     SearchResults, Things, template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
@@ -273,17 +273,30 @@ define([
       modelData.highlight = this.getHighlightFromJSON(data);
       modelData.importance = this.extractImportance(data);
 
-      if (data.area.length === 1) {
-        this.extractPointData(modelData, data);
-      } else {
-        this.extractBoundingBoxData(modelData, data);
-      }
+      this.setModelLocation(modelData, data);
 
       window.lastEvent = "search";
       this.setModelData(modelData);
 
       this.highlightSelectedResult();
       Analytics.searchEntryClicked(data);
+    },
+
+    setModelLocation: function (modelData, data) {
+      if (data.area.length === 1) {
+        this.extractPointData(modelData, data);
+      } else {
+        this.extractBoundingBoxData(modelData, data);
+      }
+    },
+
+    extractPointData: function (modelData, data) {
+      modelData.center = [data.area[0].lat, data.area[0].lon];
+      modelData.zoom = 12;
+    },
+
+    extractBoundingBoxData: function (modelData, data) {
+      _.extend(modelData, Highlight.determineModelBounds(data.area));
     },
 
     highlightSelectedResult: function () {
@@ -329,7 +342,11 @@ define([
       }
       return {
         id: data.thing_id,
-        points: points
+        name: data.thing_name,
+        link: data.thing_link,
+        type: data.thing_type_name,
+        points: points,
+        area: data.area
       };
     },
 
@@ -351,42 +368,6 @@ define([
       return data.importance_value || _.reduce(data.points, function (memo, point) {
         return Math.min(memo, point.importance_value);
       }, 1000);
-    },
-
-    extractPointData: function (modelData, data) {
-      modelData.center = [data.area[0].lat, data.area[0].lon];
-      modelData.zoom = 12;
-    },
-
-    extractBoundingBoxData: function (modelData, data) {
-      var lat1 = data.area[0].lat;
-      var lat2 = data.area[1].lat;
-      var lon1 = data.area[0].lon;
-      var lon2 = data.area[1].lon;
-
-      modelData.zoom = -1;
-      modelData.center = Position.getCenter(lat1, lon1, lat2, lon2);
-      modelData.bounds = this.extractBounds(lat1, lon1, lat2, lon2);
-    },
-
-    extractBounds: function (lat1, lon1, lat2, lon2) {
-      var bounds = [{}, {}];
-
-      this.extractBound(bounds, "lon", lon1, lon2);
-      this.extractBound(bounds, "lat", lat1, lat2);
-      return bounds;
-    },
-
-    extractBound: function (bounds, key, a, b) {
-      var delta = (b - a) / 10;
-      if (b > a) {
-        bounds[0][key] = a - delta;
-        bounds[1][key] = b + delta;
-      } else {
-        bounds[0][key] = a + delta;
-        bounds[1][key] = b - delta;
-      }
-      return bounds;
     },
 
     setModelData: function (modelData) {

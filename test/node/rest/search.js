@@ -140,7 +140,8 @@ describe("search", function () {
         {rows: [getRow(1, {
           points: JSON.stringify(dbPoints),
           dates: dates,
-          importance_values: [100, 200]
+          importance_values: [100, 200],
+          event_names: ["event name 1", "event name 2"]
         })]},
         {rows: []}
       ]);
@@ -151,12 +152,14 @@ describe("search", function () {
               lat: 10,
               lon: -20,
               date: new Date("2000-01-01T00:00:00.000Z"),
+              event_name: "event name 1",
               importance_value: 100
             },
             {
               lat: -30,
               lon: 40,
               date: new Date("2000-01-02T00:00:00.000Z"),
+              event_name: "event name 2",
               importance_value: 200
             }
           ]
@@ -178,7 +181,8 @@ describe("search", function () {
         {rows: [getRow(1, {
           points: JSON.stringify(dbPoints),
           dates: dates,
-          importance_values: [100, 200]
+          importance_values: [100, 200],
+          event_names: ["event name 1", "event name 2"]
         })]},
         {rows: []}
       ]);
@@ -189,12 +193,14 @@ describe("search", function () {
               lat: 10,
               lon: -20,
               date: new Date("1811-01-06 05:00:00.000Z"),
+              event_name: "event name 1",
               importance_value: 100
             },
             {
               lat: -30,
               lon: 40,
               date: new Date("1811-01-06 04:57:30.000Z"),
+              event_name: "event name 2",
               importance_value: 200
             }
           ]

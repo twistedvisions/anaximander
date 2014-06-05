@@ -9,12 +9,13 @@ select
   ST_Extent(matching_thing.location) as area,
   array_agg(matching_thing.importance_value) as importance_values,
   ST_AsGeoJSON(ST_MakeLine(matching_thing.location)) as points,
-  array_agg(matching_thing.start_date) as dates
-
+  array_agg(matching_thing.start_date) as dates,
+  array_agg(matching_thing.event_name) as event_names
 from (
   select
     t.id as thing_id,
     e.id as event_id,
+    e.name as event_name,
     t.name as thing_name,
     t.link as thing_link,
     type.name as thing_type_name,

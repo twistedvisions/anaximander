@@ -578,18 +578,6 @@ define(
             modelData.zoom.should.equal(12);
           });
         });
-        describe("bounds", function () {
-          it("should create a bounds that is 10% greater than the bounding box", function () {
-            this.searchBox.extractBound([{}, {}], "lat", 10, 20).should.eql(
-              [{lat: 9}, {lat: 21}]
-            );
-          });
-          it("should set the zoom to be -1 if the bounding box is not a point", function () {
-            var modelData = {};
-            this.searchBox.extractBoundingBoxData(modelData, {area: [{lat: 10, lon: -20}, {lat: 11, lon: -21}]});
-            modelData.zoom.should.equal(-1);
-          });
-        });
         describe("integration", function () {
           beforeEach(function () {
             this.data = {

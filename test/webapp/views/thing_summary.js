@@ -1,0 +1,164 @@
+/*global sinon, describe, it, beforeEach, afterEach */
+define(
+
+  ["jquery", "backbone", "views/thing_summary"],
+
+  function ($, Backbone, ThingSummary) {
+    describe.only("thing summary", function () {
+      beforeEach(function () {
+        this.model = new Backbone.Model();
+        this.thingSummary = new ThingSummary({model: this.model, el: null});
+      });
+      afterEach(function () {
+
+      });
+      describe("interaction", function () {
+        beforeEach(function () {
+          sinon.stub(this.thingSummary, "showPoint");
+        });
+        describe("previous button", function () {
+          it("should decrement the index when the previous button is shown.", function () {
+            this.thingSummary.index = 2;
+            this.thingSummary.showPrevious();
+            this.thingSummary.index.should.equal(1);
+          });
+          it("should wrap around if the index is less than -1", function () {
+            this.thingSummary.points = [1, 2, 3];
+            this.thingSummary.index = -1;
+            this.thingSummary.showPrevious();
+            this.thingSummary.index.should.equal(2);
+          });
+          it("should change the bounds to the highlighted position");
+        });
+        describe("next button", function () {
+          it("should increment the index when the next button is shown.", function () {
+            this.thingSummary.points = [1, 2, 3];
+            this.thingSummary.index = 1;
+            this.thingSummary.showNext();
+            this.thingSummary.index.should.equal(2);
+          });
+          it("should wrap around to -1 if the index is more than the amount of points", function () {
+            this.thingSummary.points = [1, 2, 3];
+            this.thingSummary.index = 2;
+            this.thingSummary.showNext();
+            this.thingSummary.index.should.equal(-1);
+          });
+          it("should change the bounds to the highlighted position");
+        });
+      });
+      describe("model update", function () {
+        describe("nothing highlighted", function () {
+          it("should hide", function () {
+            this.thingSummary.render();
+            this.thingSummary.$el.show();
+            this.thingSummary.update();
+            this.thingSummary.$el.css("display").should.equal("none");
+          });
+        });
+        describe("newly highlighted", function () {
+          beforeEach(function () {
+            this.thingSummary.render();
+            this.model.set("highlight", {
+              name: "thing name",
+              link: "http://thing.com/link",
+              points: [{}]
+            });
+            this.thingSummary.update();
+          });
+          it("should show", function () {
+            this.thingSummary.$el.css("display").should.equal("block");
+          });
+          it("should set the name", function () {
+            this.thingSummary.$(".name").text().should.equal("thing name");
+          });
+          it("should set the link", function () {
+            this.thingSummary.$(".name a").prop("href").should.equal("http://thing.com/link");
+          });
+          it("should show the summary", function () {
+            this.thingSummary.$(".current-event-name").text().should.equal("1 event");
+          });
+        });
+        describe("already highlighted", function () {
+          it("should not change the point it is showing", function () {
+            this.thingSummary.render();
+            this.model.set("highlight", {
+              name: "thing name",
+              link: "http://thing.com/link",
+              points: [{event_name: "event name 1"}, {event_name: "event name 2"}]
+            });
+            this.thingSummary.update();
+            this.thingSummary.showNext();
+            this.thingSummary.showNext();
+            this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+            this.thingSummary.update();
+            this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+          });
+        });
+        describe("importance changed", function () {
+          it("should show the summary");
+        });
+      });
+      describe("show point", function () {
+        describe("summary", function () {
+          describe("multiple events", function () {
+            beforeEach(function () {
+              this.thingSummary.render();
+              this.model.set("highlight", {
+                name: "thing name",
+                link: "http://thing.com/link",
+                points: [{date: new Date(2010, 0, 1)}, {date: new Date(2011, 3, 2)}]
+              });
+              this.thingSummary.update();
+            });
+            it("should show the date range of the thing if there multiple events", function () {
+              this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010 - Apr 2 2011");
+            });
+            it("should show the amount of events", function () {
+              this.thingSummary.$(".current-event-name").text().should.equal("2 events");
+            });
+            it("should show the amount of events at the current importance level");
+          });
+          describe("single event", function () {
+            it("should show the date of the thing if there is a single event", function () {
+              this.thingSummary.render();
+              this.model.set("highlight", {
+                name: "thing name",
+                link: "http://thing.com/link",
+                points: [{date: new Date(2010, 0, 1)}]
+              });
+              this.thingSummary.update();
+              this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010");
+            });
+          });
+        });
+
+        describe("event detail", function () {
+          beforeEach(function () {
+            this.thingSummary.render();
+            this.model.set("highlight", {
+              name: "thing name",
+              link: "http://thing.com/link",
+              points: [
+                {
+                  date: new Date(2010, 0, 1),
+                  event_name: "event name 1"
+                }, {
+                  date: new Date(2011, 3, 2),
+                  event_name: "event name 1"
+                }
+              ]
+            });
+            this.thingSummary.update();
+            this.thingSummary.showNext();
+          });
+          it("should show the date of the event", function () {
+            this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010 12:00 AM");
+          });
+          it("should show the name of the event", function () {
+            this.thingSummary.$(".current-event-name").text().should.equal("event name 1");
+          });
+        });
+      });
+    });
+  }
+);
