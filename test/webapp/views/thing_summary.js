@@ -6,7 +6,9 @@ define(
   function ($, Backbone, ThingSummary) {
     describe.only("thing summary", function () {
       beforeEach(function () {
-        this.model = new Backbone.Model();
+        this.model = new Backbone.Model({
+          importance: 10
+        });
         this.thingSummary = new ThingSummary({model: this.model, el: null});
       });
       afterEach(function () {
@@ -59,11 +61,24 @@ define(
           beforeEach(function () {
             this.thingSummary.render();
             this.model.set("highlight", {
+              importance: 10,
               name: "thing name",
               link: "http://thing.com/link",
-              points: [{}]
+              points: [
+                {
+                  importance_value: 10,
+                  date: new Date(2013, 1, 1)
+                },
+                {
+                  importance_value: 9,
+                  date: new Date(2013, 1, 2)
+                }
+              ]
             });
             this.thingSummary.update();
+          });
+          it("should filter points that are not important", function () {
+            this.thingSummary.$(".current-event-name").text().should.equal("1 event");
           });
           it("should show", function () {
             this.thingSummary.$el.css("display").should.equal("block");
@@ -75,7 +90,7 @@ define(
             this.thingSummary.$(".name a").prop("href").should.equal("http://thing.com/link");
           });
           it("should show the summary", function () {
-            this.thingSummary.$(".current-event-name").text().should.equal("1 event");
+            this.thingSummary.$(".current-event").text().length.should.be.greaterThan(1);
           });
         });
         describe("already highlighted", function () {
@@ -84,7 +99,15 @@ define(
             this.model.set("highlight", {
               name: "thing name",
               link: "http://thing.com/link",
-              points: [{event_name: "event name 1"}, {event_name: "event name 2"}]
+              points: [
+                {
+                  importance_value: 10,
+                  event_name: "event name 1"
+                }, {
+                  importance_value: 10,
+                  event_name: "event name 2"
+                }
+              ]
             });
             this.thingSummary.update();
             this.thingSummary.showNext();
@@ -104,9 +127,19 @@ define(
             beforeEach(function () {
               this.thingSummary.render();
               this.model.set("highlight", {
+                importance: 10,
                 name: "thing name",
                 link: "http://thing.com/link",
-                points: [{date: new Date(2010, 0, 1)}, {date: new Date(2011, 3, 2)}]
+                points: [
+                  {
+                    importance_value: 10,
+                    date: new Date(2010, 0, 1)
+                  },
+                  {
+                    importance_value: 10,
+                    date: new Date(2011, 3, 2)
+                  }
+                ]
               });
               this.thingSummary.update();
             });
@@ -124,7 +157,12 @@ define(
               this.model.set("highlight", {
                 name: "thing name",
                 link: "http://thing.com/link",
-                points: [{date: new Date(2010, 0, 1)}]
+                points: [
+                  {
+                    importance_value: 10,
+                    date: new Date(2010, 0, 1)
+                  }
+                ]
               });
               this.thingSummary.update();
               this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010");
@@ -136,13 +174,17 @@ define(
           beforeEach(function () {
             this.thingSummary.render();
             this.model.set("highlight", {
+              importance: 10,
               name: "thing name",
               link: "http://thing.com/link",
               points: [
                 {
+                  importance_value: 10,
                   date: new Date(2010, 0, 1),
                   event_name: "event name 1"
                 }, {
+
+                  importance_value: 10,
                   date: new Date(2011, 3, 2),
                   event_name: "event name 1"
                 }

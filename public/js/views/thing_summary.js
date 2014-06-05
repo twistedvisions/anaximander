@@ -30,7 +30,8 @@ define([
       var highlight = this.model.get("highlight");
       if (highlight && (!this.highlight || (highlight.id !== this.highlight.id))) {
         this.highlight = highlight;
-        this.points = this.highlight.points;
+        this.points = this.filterImportantPoints(this.model.get("importance"),
+          this.highlight.points);
         this.index = -1;
         if (this.highlight.type !== "place") {
           this.$(".name a").text(this.highlight.name);
@@ -44,6 +45,12 @@ define([
         this.highlight = null;
         this.$el.hide();
       }
+    },
+
+    filterImportantPoints: function (importance, points) {
+      return _.filter(points, function (point) {
+        return point.importance_value >= importance;
+      });
     },
 
     showNext: function () {
