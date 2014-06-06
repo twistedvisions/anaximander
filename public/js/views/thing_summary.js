@@ -20,34 +20,46 @@ define([
     render: function () {
       this.$el.html(template());
       this.update();
-      //todo: should be change:highlight, but it doesn't trigger
-      this.model.on("change", this.update, this);
+
+      this.model.on("change:highlight change:importance", this.update, this);
       this.$(".next").on("click", _.bind(this.showNext, this));
       this.$(".previous").on("click", _.bind(this.showPrevious, this));
     },
 
     update: function () {
       var highlight = this.model.get("highlight");
-      if (highlight && (!this.highlight || (highlight.id !== this.highlight.id))) {
+      if (this.hasHighlightChanged(highlight)) {
         this.highlight = highlight;
-        this.points = this.filterImportantPoints(this.model.get("importance"),
-          this.highlight.points);
-        this.index = -1;
-        if (this.highlight.type !== "place") {
-          this.$(".name a").text(this.highlight.name);
-          this.$(".name a").prop("href", this.highlight.link);
-          this.showPoint();
-          this.$el.show();
-        } else {
+        if (!highlight) {
           this.$el.hide();
+        } else {
+          this.points = this.filterPoints(this.highlight.points);
+          this.index = -1;
+          if (this.highlight.type !== "place") {
+            this.$(".name a").text(this.highlight.name);
+            this.$(".name a").prop("href", this.highlight.link);
+            this.showPoint();
+            this.$el.show();
+          } else {
+            this.$el.hide();
+          }
         }
-      } else if (!highlight) {
-        this.highlight = null;
-        this.$el.hide();
       }
     },
 
-    filterImportantPoints: function (importance, points) {
+    hasHighlightChanged: function (highlight) {
+      if (!highlight || !this.highlight || (this.highlight.id !== highlight.id)) {
+        return true;
+      }
+      var points = this.filterPoints(highlight.points);
+      if (this.points.length !== points.length) {
+        return true;
+      }
+      return false;
+    },
+
+    filterPoints: function (points) {
+      var importance = this.model.get("importance");
       return _.filter(points, function (point) {
         return point.importance_value >= importance;
       });
@@ -72,16 +84,18 @@ define([
     showPoint: function (setPosition) {
       this.$(".current-event-name").removeClass("long-text");
       if (this.index === -1) {
-        var dateText;
+        var dateText = "";
         var summaryText;
         if (this.points.length === 1) {
           dateText = moment(this.points[0].date).format("ll");
           summaryText = "1 event";
         } else {
-          dateText = [
-            moment(this.points[0].date).format("ll"),
-            moment(this.points[this.points.length - 1].date).format("ll")
-          ].join(" - ");
+          if (this.points.length > 0) {
+            dateText = [
+              moment(this.points[0].date).format("ll"),
+              moment(this.points[this.points.length - 1].date).format("ll")
+            ].join(" - ");
+          }
           summaryText = this.points.length + " events";
         }
         this.$(".current-date").text(dateText);

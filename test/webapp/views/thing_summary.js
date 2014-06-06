@@ -48,6 +48,22 @@ define(
           it("should change the bounds to the highlighted position");
         });
       });
+      describe("filter points", function () {
+        it("should filter events by importance", function () {
+          this.model.set("importance", 10);
+          this.thingSummary.filterPoints([
+            {
+              importance_value: 9
+            },
+            {
+              importance_value: 10
+            },
+            {
+              importance_value: 11
+            }
+          ]).length.should.equal(2);
+        });
+      });
       describe("model update", function () {
         describe("nothing highlighted", function () {
           it("should hide", function () {
@@ -94,31 +110,54 @@ define(
           });
         });
         describe("already highlighted", function () {
-          it("should not change the point it is showing", function () {
-            this.thingSummary.render();
-            this.model.set("highlight", {
-              name: "thing name",
-              link: "http://thing.com/link",
-              points: [
-                {
-                  importance_value: 10,
-                  event_name: "event name 1"
-                }, {
-                  importance_value: 10,
-                  event_name: "event name 2"
-                }
-              ]
+          describe("same amount of points", function () {
+            it("should not change the point it is showing", function () {
+              this.thingSummary.render();
+              this.model.set("highlight", {
+                name: "thing name",
+                link: "http://thing.com/link",
+                points: [
+                  {
+                    importance_value: 10,
+                    event_name: "event name 1"
+                  }, {
+                    importance_value: 10,
+                    event_name: "event name 2"
+                  }
+                ]
+              });
+              this.thingSummary.update();
+              this.thingSummary.showNext();
+              this.thingSummary.showNext();
+              this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+              this.thingSummary.update();
+              this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
             });
-            this.thingSummary.update();
-            this.thingSummary.showNext();
-            this.thingSummary.showNext();
-            this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
-            this.thingSummary.update();
-            this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
           });
-        });
-        describe("importance changed", function () {
-          it("should show the summary");
+          describe("different amount of points", function () {
+            it("should reset to the summary", function () {
+              this.thingSummary.render();
+              this.model.set("highlight", {
+                name: "thing name",
+                link: "http://thing.com/link",
+                points: [
+                  {
+                    importance_value: 10,
+                    event_name: "event name 1"
+                  }, {
+                    importance_value: 11,
+                    event_name: "event name 2"
+                  }
+                ]
+              });
+              this.thingSummary.update();
+              this.thingSummary.showNext();
+              this.thingSummary.$(".current-event-name").text().should.equal("event name 1");
+              this.model.set("importance", 11);
+              this.thingSummary.update();
+              this.thingSummary.$(".current-event-name").text().should.equal("1 event");
+            });
+          });
         });
       });
       describe("show point", function () {
@@ -166,6 +205,28 @@ define(
               });
               this.thingSummary.update();
               this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010");
+            });
+          });
+          describe("no events", function () {
+            beforeEach(function () {
+              this.thingSummary.render();
+              this.model.set("highlight", {
+                name: "thing name",
+                link: "http://thing.com/link",
+                points: [
+                  {
+                    importance_value: 9,
+                    date: new Date(2010, 0, 1)
+                  }
+                ]
+              });
+              this.thingSummary.update();
+            });
+            it("should show no date", function () {
+              this.thingSummary.$(".current-date").text().should.equal("");
+            });
+            it("should say no events", function () {
+              this.thingSummary.$(".current-event-name").text().should.equal("0 events");
             });
           });
         });
