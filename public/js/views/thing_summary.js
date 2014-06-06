@@ -21,7 +21,7 @@ define([
       this.$el.html(template());
       this.update();
 
-      this.model.on("change:highlight change:importance", this.update, this);
+      this.model.on("change:highlight change:importance change:date", this.update, this);
       this.$(".next").on("click", _.bind(this.showNext, this));
       this.$(".previous").on("click", _.bind(this.showPrevious, this));
     },
@@ -60,8 +60,13 @@ define([
 
     filterPoints: function (points) {
       var importance = this.model.get("importance");
+      var date = this.model.get("date");
+      var start = moment({y: date[0]});
+      var end = moment({y: date[1]}).endOf("year");
       return _.filter(points, function (point) {
-        return point.importance_value >= importance;
+        var date = moment(point.date);
+        return point.importance_value >= importance &&
+          !(date.isBefore(start) || date.isAfter(end));
       });
     },
 

@@ -7,7 +7,8 @@ define(
     describe.only("thing summary", function () {
       beforeEach(function () {
         this.model = new Backbone.Model({
-          importance: 10
+          importance: 10,
+          date: [1900, 2020]
         });
         this.thingSummary = new ThingSummary({model: this.model, el: null});
       });
@@ -53,13 +54,38 @@ define(
           this.model.set("importance", 10);
           this.thingSummary.filterPoints([
             {
-              importance_value: 9
+              importance_value: 9,
+              date: new Date(1950, 0, 1)
             },
             {
-              importance_value: 10
+              importance_value: 10,
+              date: new Date(1950, 0, 1)
             },
             {
-              importance_value: 11
+              importance_value: 11,
+              date: new Date(1950, 0, 1)
+            }
+          ]).length.should.equal(2);
+        });
+        it("should filter events by date", function () {
+          this.model.set("importance", 8);
+          this.model.set("date", [1900, 2000]);
+          this.thingSummary.filterPoints([
+            {
+              importance_value: 10,
+              date: new Date(1899, 11, 31)
+            },
+            {
+              importance_value: 10,
+              date: new Date(1900, 0, 1)
+            },
+            {
+              importance_value: 10,
+              date: new Date(2000, 11, 31)
+            },
+            {
+              importance_value: 10,
+              date: new Date(2001, 0, 1)
             }
           ]).length.should.equal(2);
         });
@@ -119,9 +145,11 @@ define(
                 points: [
                   {
                     importance_value: 10,
+                    date: new Date(1950, 0, 1),
                     event_name: "event name 1"
                   }, {
                     importance_value: 10,
+                    date: new Date(1950, 0, 1),
                     event_name: "event name 2"
                   }
                 ]
@@ -143,9 +171,11 @@ define(
                 points: [
                   {
                     importance_value: 10,
+                    date: new Date(1950, 0, 1),
                     event_name: "event name 1"
                   }, {
                     importance_value: 11,
+                    date: new Date(1950, 0, 1),
                     event_name: "event name 2"
                   }
                 ]
@@ -243,8 +273,8 @@ define(
                   importance_value: 10,
                   date: new Date(2010, 0, 1),
                   event_name: "event name 1"
-                }, {
-
+                },
+                {
                   importance_value: 10,
                   date: new Date(2011, 3, 2),
                   event_name: "event name 1"
