@@ -1,9 +1,10 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
 
-  ["jquery", "backbone", "views/thing_summary"],
+  ["chai", "jquery", "backbone", "views/thing_summary"],
 
-  function ($, Backbone, ThingSummary) {
+  function (chai, $, Backbone, ThingSummary) {
+    var should = chai.should();
     describe("thing summary", function () {
       beforeEach(function () {
         this.model = new Backbone.Model({
@@ -11,9 +12,6 @@ define(
           date: [1900, 2020]
         });
         this.thingSummary = new ThingSummary({model: this.model, el: null});
-      });
-      afterEach(function () {
-
       });
       describe("interaction", function () {
         beforeEach(function () {
@@ -274,7 +272,6 @@ define(
         describe("summary", function () {
           describe("multiple events", function () {
             beforeEach(function () {
-              this.thingSummary.render();
               this.model.set("highlight", {
                 importance: 10,
                 name: "thing name",
@@ -296,7 +293,8 @@ define(
                   }
                 ]
               });
-              this.thingSummary.update();
+              this.model.set("selectedPointIndex", 1);
+              this.thingSummary.render();
             });
             it("should show the date range of the thing", function () {
               this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010 – Apr 2 2011");
@@ -304,7 +302,9 @@ define(
             it("should show the amount of events", function () {
               this.thingSummary.$(".current-event-name").text().should.equal("2 events");
             });
-            it("should show the amount of events at the current importance level");
+            it("should unset the selectedPointIndex", function () {
+              should.not.exist(this.model.get("selectedPointIndex"));
+            });
           });
           describe("single event", function () {
             it("should show the date of the thing if there is a single event", function () {
@@ -402,6 +402,11 @@ define(
           });
           it("should show the name of the event", function () {
             this.thingSummary.$(".current-event-name").text().should.equal("event name 1");
+          });
+          it("should set the selectedPointIndex", function () {
+            this.model.get("selectedPointIndex").should.equal(0);
+            this.thingSummary.showNext();
+            this.model.get("selectedPointIndex").should.equal(1);
           });
         });
       });

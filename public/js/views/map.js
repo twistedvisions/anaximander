@@ -45,6 +45,7 @@ define([
 
       this.drawMap();
       this.model.on("change", this.update, this);
+      this.model.on("change:selectedPointIndex", this.showHighlight, this);
       this.model.on("force-change", this.forceUpdate, this);
       this.eventLocationsCollection.on("reset", this.drawNewMarkers, this);
       this.eventLocationsCollection.start();
@@ -107,10 +108,18 @@ define([
           return latLng;
         });
         var pairs = _.zip(_.initial(points), _.rest(points));
-        this.paths = _.map(pairs, function (pair) {
+        var selectedIndex = this.model.get("selectedPointIndex");
+        var isAnyUnselected = !(selectedIndex === null || selectedIndex === undefined);
+
+        this.paths = _.map(pairs, function (pair, index) {
+          var shouldDim = isAnyUnselected;
+          if ((selectedIndex === index) || (selectedIndex === index + 1)) {
+            shouldDim = false;
+          }
+
           var path = new google.maps.Polyline({
             path: pair,
-            strokeColor: this.getColor(new Date(pair[0].start_date), false),
+            strokeColor: this.getColor(new Date(pair[0].start_date), shouldDim),
             strokeOpacity: 1.0,
             strokeWeight: 2
           });

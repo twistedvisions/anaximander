@@ -92,6 +92,7 @@ define([
     showPoint: function (setPosition) {
       this.$(".current-event-name").removeClass("long-text");
       if (this.index === -1) {
+        this.model.unset("selectedPointIndex");
         var dateText = "";
         var summaryText;
         if (this.points.length === 1) {
@@ -109,6 +110,7 @@ define([
           this.model.set(Highlight.determineModelBounds(this.highlight.area));
         }
       } else {
+        this.model.set("selectedPointIndex", this.index);
         var point = this.points[this.index];
         this.$(".current-date").text(this.getDateTimeRange(point));
         this.$(".current-event-name").text(point.event_name);
