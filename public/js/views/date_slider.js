@@ -68,6 +68,8 @@ define([
       if ((Math.round(currentPos.min) !== date[0]) ||
           (Math.round(currentPos.max, 10) !== date[1])) {
         this.slider.setState(date[0], date[1]);
+        this.slider.redraw();
+        this.showDate();
       }
     },
 
