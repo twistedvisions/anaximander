@@ -4,10 +4,11 @@ define([
   "backbone",
   "utils/highlight",
   "moment",
+  "analytics",
   "text!templates/thing_summary.htm",
   "moment-range",
   "less!../../css/thing_summary"
-], function ($, _, Backbone, Highlight, moment, template) {
+], function ($, _, Backbone, Highlight, moment, analytics, template) {
 
   template = _.template(template);
 
@@ -79,6 +80,10 @@ define([
         this.index = -1;
       }
       this.showPoint(true);
+      analytics.thingSummary_scroll(_.extend({
+        direction: "next",
+        index: this.index
+      }, this.highlight));
     },
 
     showPrevious: function () {
@@ -87,6 +92,10 @@ define([
         this.index = this.points.length - 1;
       }
       this.showPoint(true);
+      analytics.thingSummary_scroll(_.extend({
+        direction: "previous",
+        index: this.index
+      }, this.highlight));
     },
 
     showPoint: function (setPosition) {

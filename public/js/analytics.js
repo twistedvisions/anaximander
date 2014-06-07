@@ -74,6 +74,8 @@ define(["underscore"], function (_) {
     "typeListing_importanceEdited",
     "typeListing_importanceSaved",
 
+    //thing smmary
+    "thingSummary_scroll",
 
     //filters
     "showFilters",

@@ -1,9 +1,9 @@
-/*global sinon, describe, it, beforeEach */
+/*global sinon, describe, it, beforeEach, afterEach */
 define(
 
-  ["chai", "jquery", "backbone", "views/thing_summary"],
+  ["chai", "jquery", "backbone", "views/thing_summary", "analytics"],
 
-  function (chai, $, Backbone, ThingSummary) {
+  function (chai, $, Backbone, ThingSummary, analytics) {
     var should = chai.should();
     describe("thing summary", function () {
       beforeEach(function () {
@@ -16,6 +16,10 @@ define(
       describe("interaction", function () {
         beforeEach(function () {
           sinon.stub(this.thingSummary, "showPoint");
+          sinon.stub(analytics, "thingSummary_scroll");
+        });
+        afterEach(function () {
+          analytics.thingSummary_scroll.restore();
         });
         describe("previous button", function () {
           it("should decrement the index when the previous button is shown.", function () {
@@ -28,6 +32,10 @@ define(
             this.thingSummary.index = -1;
             this.thingSummary.showPrevious();
             this.thingSummary.index.should.equal(2);
+          });
+          it("should track clicks", function () {
+            this.thingSummary.showPrevious();
+            analytics.thingSummary_scroll.calledOnce.should.equal(true);
           });
         });
         describe("next button", function () {
@@ -42,6 +50,11 @@ define(
             this.thingSummary.index = 2;
             this.thingSummary.showNext();
             this.thingSummary.index.should.equal(-1);
+          });
+          it("should track clicks", function () {
+            this.thingSummary.points = [1, 2, 3];
+            this.thingSummary.showNext();
+            analytics.thingSummary_scroll.calledOnce.should.equal(true);
           });
         });
       });
