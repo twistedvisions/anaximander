@@ -416,11 +416,12 @@ define(
           setMap.calledWith(null).should.equal(true);
         });
         it("should create a path for each highlight", function () {
+          this.map.model.set("importance", 9);
           this.map.model.set("highlight", {
             id: 1,
             points: [
-              {lat: 10, lon: -20, date: "1900-01-01"},
-              {lat: 11, lon: -20, date: "1907-01-01"}
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 11, lon: -20, start_date: "1907-01-01", importance_value: 10}
             ]
           });
           this.map.paths = [];
@@ -428,13 +429,14 @@ define(
           this.map.paths.length.should.equal(1);
         });
         it("should only create a path for highlights in the date range", function () {
+          this.map.model.set("importance", 9);
           this.map.model.set("highlight", {
             id: 1,
             points: [
-              {lat: 10, lon: -20, date: "1900-01-01"},
-              {lat: 11, lon: -20, date: "1907-01-01"},
-              {lat: 11, lon: -20, date: "1911-01-01"},
-              {lat: 12, lon: -20, date: "1920-01-01"}
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 11, lon: -20, start_date: "1907-01-01", importance_value: 10},
+              {lat: 11, lon: -20, start_date: "1911-01-01", importance_value: 10},
+              {lat: 12, lon: -20, start_date: "1920-01-01", importance_value: 10}
             ]
           });
           this.map.paths = [];
@@ -451,10 +453,10 @@ define(
           this.map.model.set("highlight", {
             id: 1,
             points: [
-              {lat: 10, lon: -20, date: "1900-01-01", importance_value: 10},
-              {lat: 11, lon: -20, date: "1907-01-01", importance_value: 11},
-              {lat: 11, lon: -20, date: "1911-01-01", importance_value: 12},
-              {lat: 12, lon: -20, date: "1920-01-01", importance_value: 13}
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 11, lon: -20, start_date: "1907-01-01", importance_value: 11},
+              {lat: 11, lon: -20, start_date: "1911-01-01", importance_value: 12},
+              {lat: 12, lon: -20, start_date: "1920-01-01", importance_value: 13}
             ]
           });
           this.map.paths = [];
@@ -472,14 +474,14 @@ define(
           this.map.showHighlight();
           this.map.paths.length.should.equal(0);
         });
-        it("should set the color for each point", function () {
+        it("should set the color for each path", function () {
           sinon.spy(this.map, "getColor");
           this.map.model.set("highlight", {
             id: 1,
             points: [
-              {lat: 10, lon: -20, date: "1900-01-01"},
-              {lat: 12, lon: -20, date: "1910-01-01"},
-              {lat: 12, lon: -20, date: "1920-01-01"}
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 12, lon: -20, start_date: "1910-01-01", importance_value: 10},
+              {lat: 12, lon: -20, start_date: "1920-01-01", importance_value: 10}
             ]
           });
           this.map.paths = [];
@@ -487,6 +489,69 @@ define(
           this.map.model.set("date", [1900, 1920]);
           this.map.showHighlight();
           this.map.getColor.calledTwice.should.equal(true);
+        });
+
+        it("should only highlight paths around the selected point at the start", function () {
+          sinon.spy(this.map, "getColor");
+          this.map.model.set("highlight", {
+            id: 1,
+            points: [
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 12, lon: -20, start_date: "1910-01-01", importance_value: 10},
+              {lat: 14, lon: -20, start_date: "1920-01-01", importance_value: 10},
+              {lat: 16, lon: -20, start_date: "1930-01-01", importance_value: 10}
+            ]
+          });
+          this.map.paths = [];
+
+          this.map.model.set("date", [1900, 1940]);
+          this.map.model.set("selectedPointIndex", 0);
+          this.map.showHighlight();
+          this.map.getColor.args[0][1].should.equal(false);
+          this.map.getColor.args[1][1].should.equal(true);
+          this.map.getColor.args[2][1].should.equal(true);
+        });
+
+        it("should only highlight paths around the selected point in the middle", function () {
+          sinon.spy(this.map, "getColor");
+          this.map.model.set("highlight", {
+            id: 1,
+            points: [
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 12, lon: -20, start_date: "1910-01-01", importance_value: 10},
+              {lat: 14, lon: -20, start_date: "1920-01-01", importance_value: 10},
+              {lat: 16, lon: -20, start_date: "1930-01-01", importance_value: 10}
+            ]
+          });
+          this.map.paths = [];
+
+          this.map.model.set("date", [1900, 1940]);
+          this.map.model.set("selectedPointIndex", 1);
+          this.map.showHighlight();
+          this.map.getColor.args[0][1].should.equal(false);
+          this.map.getColor.args[1][1].should.equal(false);
+          this.map.getColor.args[2][1].should.equal(true);
+        });
+
+        it("should only highlight paths around the selected point at the end", function () {
+          sinon.spy(this.map, "getColor");
+          this.map.model.set("highlight", {
+            id: 1,
+            points: [
+              {lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10},
+              {lat: 12, lon: -20, start_date: "1910-01-01", importance_value: 10},
+              {lat: 14, lon: -20, start_date: "1920-01-01", importance_value: 10},
+              {lat: 16, lon: -20, start_date: "1930-01-01", importance_value: 10}
+            ]
+          });
+          this.map.paths = [];
+
+          this.map.model.set("date", [1900, 1940]);
+          this.map.model.set("selectedPointIndex", 3);
+          this.map.showHighlight();
+          this.map.getColor.args[0][1].should.equal(true);
+          this.map.getColor.args[1][1].should.equal(true);
+          this.map.getColor.args[2][1].should.equal(false);
         });
       });
 

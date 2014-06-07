@@ -28,6 +28,7 @@
     "jqueryui-timepicker-addon": "1.x",
     "lodash": "2.x",
     "momentjs": "2.x",
+    "moment-range": "1.x",
     "numeral": "1.x",
     "parsleyjs": "2.x",
     "requirejs": "2.x",

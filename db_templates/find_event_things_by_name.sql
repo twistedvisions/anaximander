@@ -9,17 +9,23 @@ select
   ST_Extent(matching_thing.location) as area,
   array_agg(matching_thing.importance_value) as importance_values,
   ST_AsGeoJSON(ST_MakeLine(matching_thing.location)) as points,
-  array_agg(matching_thing.start_date) as dates
-
+  array_agg(matching_thing.start_date) as start_dates,
+  array_agg(matching_thing.start_offset_seconds) as start_offset_seconds,
+  array_agg(matching_thing.end_date) as end_dates,
+  array_agg(matching_thing.end_offset_seconds) as end_offset_seconds,
+  array_agg(matching_thing.event_name) as event_names
 from (
   select
     t.id as thing_id,
     e.id as event_id,
+    e.name as event_name,
     t.name as thing_name,
     t.link as thing_link,
     type.name as thing_type_name,
-    e.start_date as start_date,
-    e.end_date as end_date,
+    e.start_date AT TIME ZONE 'UTC' as start_date,
+    e.start_offset_seconds as start_offset_seconds,
+    e.end_date AT TIME ZONE 'UTC' as end_date,
+    e.end_offset_seconds as end_offset_seconds,
     p.location as location,
     max(case
       when thing_importance.value is null then role_importance.value * 5 * event_importance.value

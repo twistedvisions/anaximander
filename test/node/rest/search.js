@@ -133,14 +133,19 @@ describe("search", function () {
         ]
       };
 
-      var dates = "{\"2000-01-01 00:00:00+00\",\"2000-01-02 00:00:00+00\"}";
+      var start_dates = "{\"2000-01-01 00:00:00+00\",\"2000-01-02 00:00:00+00\"}";
+      var end_dates = "{\"2000-01-01 23:59:59+00\",\"2000-01-02 23:59:59+00\"}";
 
       var s = new Search({get: function () {}});
       s.handleSearchResults(this.res, [
         {rows: [getRow(1, {
           points: JSON.stringify(dbPoints),
-          dates: dates,
-          importance_values: [100, 200]
+          start_dates: start_dates,
+          end_dates: end_dates,
+          importance_values: [100, 200],
+          start_offset_seconds: [0, 10],
+          end_offset_seconds: [0, 10],
+          event_names: ["event name 1", "event name 2"]
         })]},
         {rows: []}
       ]);
@@ -150,13 +155,21 @@ describe("search", function () {
             {
               lat: 10,
               lon: -20,
-              date: new Date("2000-01-01T00:00:00.000Z"),
+              start_date: new Date("2000-01-01T00:00:00.000Z"),
+              start_offset_seconds: 0,
+              end_date: new Date("2000-01-01T23:59:59.000Z"),
+              end_offset_seconds: 0,
+              event_name: "event name 1",
               importance_value: 100
             },
             {
               lat: -30,
               lon: 40,
-              date: new Date("2000-01-02T00:00:00.000Z"),
+              start_date: new Date("2000-01-02T00:00:00.000Z"),
+              start_offset_seconds: 10,
+              end_date: new Date("2000-01-02T23:59:59.000Z"),
+              end_offset_seconds: 10,
+              event_name: "event name 2",
               importance_value: 200
             }
           ]
@@ -172,13 +185,18 @@ describe("search", function () {
         ]
       };
 
-      var dates = "{\"1811-01-06 04:58:45-00:01:15\",\"1811-01-06 04:58:45+00:01:15\"}";
+      var start_dates = "{\"1811-01-06 04:58:45-00:01:15\",\"1811-01-06 04:58:45+00:01:15\"}";
+      var end_dates = "{\"1811-01-07 04:58:45-00:01:15\",\"1811-01-07 04:58:45+00:01:15\"}";
       var s = new Search({get: function () {}});
       s.handleSearchResults(this.res, [
         {rows: [getRow(1, {
           points: JSON.stringify(dbPoints),
-          dates: dates,
-          importance_values: [100, 200]
+          start_dates: start_dates,
+          start_offset_seconds: [0, 0],
+          end_dates: end_dates,
+          end_offset_seconds: [0, 0],
+          importance_values: [100, 200],
+          event_names: ["event name 1", "event name 2"]
         })]},
         {rows: []}
       ]);
@@ -188,13 +206,21 @@ describe("search", function () {
             {
               lat: 10,
               lon: -20,
-              date: new Date("1811-01-06 05:00:00.000Z"),
+              start_date: new Date("1811-01-06 05:00:00.000Z"),
+              start_offset_seconds: 0,
+              end_date: new Date("1811-01-07 05:00:00.000Z"),
+              end_offset_seconds: 0,
+              event_name: "event name 1",
               importance_value: 100
             },
             {
               lat: -30,
               lon: 40,
-              date: new Date("1811-01-06 04:57:30.000Z"),
+              start_date: new Date("1811-01-06 04:57:30.000Z"),
+              start_offset_seconds: 0,
+              end_date: new Date("1811-01-07 04:57:30.000Z"),
+              end_offset_seconds: 0,
+              event_name: "event name 2",
               importance_value: 200
             }
           ]

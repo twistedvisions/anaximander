@@ -32,6 +32,9 @@ require.config({
     "parsley": {
       deps: ["jquery"]
     },
+    "moment-range": {
+      deps: ["moment"]
+    },
     "underscore_string": {
       deps: ["underscore"],
       exports: "underscore_string"
@@ -68,6 +71,7 @@ require.config({
     "jqueryui": "./libs/bower/jquery-ui/jquery-ui",
     "less": "./libs/bower/require-less/less",
     "moment": "./libs/bower/momentjs/moment",
+    "moment-range": "./libs/bower/moment-range/moment-range",
     "numeral": "./libs/bower/numeral/numeral",
     "parsley": "libs/bower/parsleyjs/parsley",
     "select2": "./libs/bower/select2/select2",

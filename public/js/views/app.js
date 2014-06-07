@@ -85,6 +85,11 @@ define([
         this.importanceSlider.render();
       }, this));
 
+      require(["views/thing_summary"], _.bind(function (ThingSummary) {
+        this.thingSummary = new ThingSummary({model: this.model});
+        this.thingSummary.render();
+      }, this));
+
       require(["views/summary_bar"], _.bind(function (SummaryBar) {
         this.summaryBar = new SummaryBar({
           model: this.model,

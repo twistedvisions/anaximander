@@ -45,6 +45,7 @@ define([
 
       this.drawMap();
       this.model.on("change", this.update, this);
+      this.model.on("change:selectedPointIndex", this.showHighlight, this);
       this.model.on("force-change", this.forceUpdate, this);
       this.eventLocationsCollection.on("reset", this.drawNewMarkers, this);
       this.eventLocationsCollection.start();
@@ -98,19 +99,27 @@ define([
           if (point.importance_value < importance) {
             return false;
           }
-          var pointDate = new Date(point.date).getFullYear();
+          var pointDate = new Date(point.start_date).getFullYear();
           return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
         });
         var points = _.map(pointsInRange, function (point) {
           var latLng = new google.maps.LatLng(point.lat, point.lon);
-          latLng.date = point.date;
+          latLng.start_date = point.start_date;
           return latLng;
         });
         var pairs = _.zip(_.initial(points), _.rest(points));
-        this.paths = _.map(pairs, function (pair) {
+        var selectedIndex = this.model.get("selectedPointIndex");
+        var isAnyUnselected = !(selectedIndex === null || selectedIndex === undefined);
+
+        this.paths = _.map(pairs, function (pair, index) {
+          var shouldDim = isAnyUnselected;
+          if ((selectedIndex === index) || (selectedIndex === index + 1)) {
+            shouldDim = false;
+          }
+
           var path = new google.maps.Polyline({
             path: pair,
-            strokeColor: this.getColor(new Date(pair[0].date), false),
+            strokeColor: this.getColor(new Date(pair[0].start_date), shouldDim),
             strokeOpacity: 1.0,
             strokeWeight: 2
           });

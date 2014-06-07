@@ -76,7 +76,7 @@ define([
         };
       }
       var value = _.extend(value, this.typeSelector.getValue());
-      value.type.relatedTypeId = this.roles.getEventType();
+      value.type.related_type_id = this.roles.getEventType();
       return value;
     },
 
