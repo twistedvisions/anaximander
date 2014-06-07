@@ -4,7 +4,7 @@ define(
   ["jquery", "backbone", "views/thing_summary"],
 
   function ($, Backbone, ThingSummary) {
-    describe.only("thing summary", function () {
+    describe("thing summary", function () {
       beforeEach(function () {
         this.model = new Backbone.Model({
           importance: 10,
@@ -190,6 +190,38 @@ define(
           });
         });
       });
+
+      describe("date formatting", function () {
+        describe("getDate", function () {
+          it("should return the date with no offset", function () {
+            this.thingSummary.getDate({
+              date: new Date(1950, 0, 1),
+              date_offset_seconds: 0
+            }).should.equal("Jan 1 1950");
+          });
+          it("should return the date with an offset", function () {
+            this.thingSummary.getDate({
+              date: new Date(1950, 0, 1),
+              date_offset_seconds: -1
+            }).should.equal("Dec 31 1949");
+          });
+        });
+        describe("getDateTime", function () {
+          it("should return the time with no offset", function () {
+            this.thingSummary.getDateTime({
+              date: new Date(1950, 0, 1),
+              date_offset_seconds: 0
+            }).should.equal("Jan 1 1950 12:00 AM");
+          });
+          it("should return the time with an offset", function () {
+            this.thingSummary.getDateTime({
+              date: new Date(1950, 0, 1),
+              date_offset_seconds: -1
+            }).should.equal("Dec 31 1949 11:59 PM");
+          });
+        });
+      });
+
       describe("show point", function () {
         describe("summary", function () {
           describe("multiple events", function () {
@@ -229,7 +261,8 @@ define(
                 points: [
                   {
                     importance_value: 10,
-                    date: new Date(2010, 0, 1)
+                    date: new Date(2010, 0, 1),
+                    date_offset_seconds: 0
                   }
                 ]
               });

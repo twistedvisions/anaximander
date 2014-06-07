@@ -92,13 +92,13 @@ define([
         var dateText = "";
         var summaryText;
         if (this.points.length === 1) {
-          dateText = moment(this.points[0].date).format("ll");
+          dateText = this.getDate(this.points[0]);
           summaryText = "1 event";
         } else {
           if (this.points.length > 0) {
             dateText = [
-              moment(this.points[0].date).format("ll"),
-              moment(this.points[this.points.length - 1].date).format("ll")
+              this.getDate(this.points[0]),
+              this.getDate(this.points[this.points.length - 1])
             ].join(" - ");
           }
           summaryText = this.points.length + " events";
@@ -110,7 +110,7 @@ define([
         }
       } else {
         var point = this.points[this.index];
-        this.$(".current-date").text(moment(point.date).format("lll"));
+        this.$(".current-date").text(this.getDateTime(point));
         this.$(".current-event-name").text(point.event_name);
         if (point.event_name.length > 40) {
           this.$(".current-event-name").addClass("long-text");
@@ -125,6 +125,18 @@ define([
           });
         }
       }
+    },
+
+    getDate: function (point) {
+      return this.getOffsetMoment(point).format("ll");
+    },
+
+    getDateTime: function (point) {
+      return this.getOffsetMoment(point).format("lll");
+    },
+
+    getOffsetMoment: function (point) {
+      return moment(point.date).add("seconds", point.date_offset_seconds);
     }
 
   });
