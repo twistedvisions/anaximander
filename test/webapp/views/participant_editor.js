@@ -153,7 +153,7 @@ define(
           sinon.stub(this.participantEditor.typeSelector, "getValue", function () {
             return {type: {id: 1}};
           });
-          this.participantEditor.getValue().type.relatedTypeId.should.equal(2);
+          this.participantEditor.getValue().type.related_type_id.should.equal(2);
         });
       });
     });
