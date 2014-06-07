@@ -40,7 +40,7 @@ define([
       var collectionRetrieved = {
         success: _.bind(function () {
           count += 1;
-          if (count === 2) {
+          if (count === 3) {
             dataLoaded.resolve(true);
           }
         }, this),
@@ -50,6 +50,7 @@ define([
       };
       this.eventTypesCollection.fetch(collectionRetrieved);
       this.typesCollection.fetch(collectionRetrieved);
+      this.rolesCollection.fetch(collectionRetrieved);
     },
 
     render: function () {

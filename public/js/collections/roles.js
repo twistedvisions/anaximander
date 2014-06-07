@@ -8,7 +8,11 @@ define([
   var Roles = Backbone.Collection.extend({
     model: Role,
     url: function () {
-      return "role/" + this.eventTypeId;
+      if (this.eventTypeId) {
+        return "role/" + this.eventTypeId;
+      } else {
+        return "role";
+      }
     },
     setEventType: function (eventTypeId) {
       if (eventTypeId === this.eventTypeId) {
