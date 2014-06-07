@@ -40,7 +40,7 @@ define([
       var collectionRetrieved = {
         success: _.bind(function () {
           count += 1;
-          if (count === 3) {
+          if (count === 2) {
             dataLoaded.resolve(true);
           }
         }, this),
@@ -48,7 +48,6 @@ define([
           dataLoaded.reject();
         }
       };
-      this.rolesCollection.fetch(collectionRetrieved);
       this.eventTypesCollection.fetch(collectionRetrieved);
       this.typesCollection.fetch(collectionRetrieved);
     },
@@ -106,6 +105,7 @@ define([
           rolesCollection: this.rolesCollection,
           eventTypesCollection: this.eventTypesCollection
         });
+
         filtersLoaded.resolve(true);
       }, this));
       when.all([dataLoaded.promise, filtersLoaded.promise])

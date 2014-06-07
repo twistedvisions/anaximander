@@ -48,6 +48,7 @@ define(
 
       beforeEach(function () {
         Roles.instance = new Roles();
+        sinon.stub(Roles.instance, "fetch");
         Roles.instance.reset([
           {
             id: 1,
@@ -118,6 +119,7 @@ define(
         Types.instance = this.typesCollection;
       });
       afterEach(function () {
+        Roles.instance.fetch.restore();
         delete Roles.instance;
         delete EventTypes.instance;
       });
