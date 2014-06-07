@@ -98,19 +98,19 @@ define([
           if (point.importance_value < importance) {
             return false;
           }
-          var pointDate = new Date(point.date).getFullYear();
+          var pointDate = new Date(point.start_date).getFullYear();
           return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
         });
         var points = _.map(pointsInRange, function (point) {
           var latLng = new google.maps.LatLng(point.lat, point.lon);
-          latLng.date = point.date;
+          latLng.start_date = point.start_date;
           return latLng;
         });
         var pairs = _.zip(_.initial(points), _.rest(points));
         this.paths = _.map(pairs, function (pair) {
           var path = new google.maps.Polyline({
             path: pair,
-            strokeColor: this.getColor(new Date(pair[0].date), false),
+            strokeColor: this.getColor(new Date(pair[0].start_date), false),
             strokeOpacity: 1.0,
             strokeWeight: 2
           });

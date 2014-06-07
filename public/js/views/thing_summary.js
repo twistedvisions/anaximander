@@ -5,6 +5,7 @@ define([
   "utils/highlight",
   "moment",
   "text!templates/thing_summary.htm",
+  "moment-range",
   "less!../../css/thing_summary"
 ], function ($, _, Backbone, Highlight, moment, template) {
 
@@ -64,9 +65,11 @@ define([
       var start = moment({y: date[0]});
       var end = moment({y: date[1]}).endOf("year");
       return _.filter(points, function (point) {
-        var date = moment(point.date);
         return point.importance_value >= importance &&
-          !(date.isBefore(start) || date.isAfter(end));
+          !(
+             moment(point.start_date).isBefore(start) ||
+             moment(point.end_date).isAfter(end)
+          );
       });
     },
 
@@ -92,14 +95,11 @@ define([
         var dateText = "";
         var summaryText;
         if (this.points.length === 1) {
-          dateText = this.getDate(this.points[0]);
+          dateText = this.getDateRange(this.points[0]);
           summaryText = "1 event";
         } else {
           if (this.points.length > 0) {
-            dateText = [
-              this.getDate(this.points[0]),
-              this.getDate(this.points[this.points.length - 1])
-            ].join(" - ");
+            dateText = this.getEventDateRange();
           }
           summaryText = this.points.length + " events";
         }
@@ -110,7 +110,7 @@ define([
         }
       } else {
         var point = this.points[this.index];
-        this.$(".current-date").text(this.getDateTime(point));
+        this.$(".current-date").text(this.getDateTimeRange(point));
         this.$(".current-event-name").text(point.event_name);
         if (point.event_name.length > 40) {
           this.$(".current-event-name").addClass("long-text");
@@ -127,16 +127,64 @@ define([
       }
     },
 
-    getDate: function (point) {
-      return this.getOffsetMoment(point).format("ll");
+    getEventDateRange: function () {
+      return [
+        this.getDate(this.points[0], "start"),
+        this.getDate(this.points[this.points.length - 1], "end")
+      ].join(" – ");
     },
 
-    getDateTime: function (point) {
-      return this.getOffsetMoment(point).format("lll");
+    getDateTimeRange: function (point) {
+      if (this.isLongerThanOneDay(point)) {
+        return this.getDate(point, "start") + " – " + this.getDate(point, "end");
+      } else {
+        var timeRange = [
+          this.getTime(point, "start"),
+          this.getTime(point, "end")
+        ].join(" – ");
+        if (timeRange === "00:00 – 23:59") {
+          return this.getDate(point, "start");
+        } else {
+          return [
+            timeRange,
+            this.getDate(point, "start")
+          ].join(" ");
+        }
+      }
     },
 
-    getOffsetMoment: function (point) {
-      return moment(point.date).add("seconds", point.date_offset_seconds);
+    getDateRange: function (point) {
+      if (this.isLongerThanOneDay(point)) {
+        return this.getDate(point, "start") + " – " + this.getDate(point, "end");
+      } else {
+        return this.getDate(point, "start");
+      }
+    },
+
+    isLongerThanOneDay: function (point) {
+      var range = moment().range(
+        this.getOffsetMoment(point, "start"),
+        this.getOffsetMoment(point, "end")
+      );
+
+      var oneDay = moment().range(
+        moment({y: 2000, m: 1, d: 1}),
+        moment({y: 2000, m: 1, d: 2})
+      );
+
+      return range > oneDay;
+    },
+
+    getDate: function (point, datePrefix) {
+      return this.getOffsetMoment(point, datePrefix).format("ll");
+    },
+
+    getTime: function (point, datePrefix) {
+      return this.getOffsetMoment(point, datePrefix).format("HH:mm");
+    },
+
+    getOffsetMoment: function (point, datePrefix) {
+      return moment(point[datePrefix + "_date"]).add("seconds", point[datePrefix + "_offset_seconds"]);
     }
 
   });

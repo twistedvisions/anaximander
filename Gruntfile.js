@@ -132,6 +132,7 @@ module.exports = function (grunt) {
             "less": "./libs/bower/require-less/less",
             "less-builder": "./libs/bower/require-less/less-builder",
             "moment": "./libs/bower/momentjs/moment",
+            "moment-range": "./libs/bower/moment-range/moment-range",
             "normalize": "./libs/bower/require-less/normalize",
             "numeral": "./libs/bower/numeral/numeral",
             "parsley": "libs/bower/parsleyjs/parsley",
