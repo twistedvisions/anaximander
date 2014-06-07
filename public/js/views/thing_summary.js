@@ -118,15 +118,36 @@ define([
           this.$(".current-event-name").addClass("long-text");
         }
         if (setPosition) {
-          this.model.set({
-            zoom: 8,
-            center: [
-              point.lat,
-              point.lon
-            ]
-          });
+          if (this.index === 0) {
+            this.model.set({
+              zoom: 8,
+              center: [
+                point.lat,
+                point.lon
+              ]
+            });
+          } else {
+            var area = this.getArea(point, this.points[this.index - 1]);
+            this.model.set(Highlight.determineModelBounds(area));
+          }
         }
       }
+    },
+
+    getArea: function (centre, previous) {
+      var latDiff = centre.lat - previous.lat;
+      var lonDiff = centre.lon - previous.lon;
+
+      return [
+        {
+          lat: centre.lat - latDiff,
+          lon: centre.lon - lonDiff
+        },
+        {
+          lat: centre.lat + latDiff,
+          lon: centre.lon + lonDiff
+        }
+      ];
     },
 
     getEventDateRange: function () {

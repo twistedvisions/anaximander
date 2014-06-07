@@ -1,4 +1,4 @@
-/*global sinon, describe, it, beforeEach, afterEach */
+/*global sinon, describe, it, beforeEach */
 define(
 
   ["chai", "jquery", "backbone", "views/thing_summary"],
@@ -29,7 +29,6 @@ define(
             this.thingSummary.showPrevious();
             this.thingSummary.index.should.equal(2);
           });
-          it("should change the bounds to the highlighted position");
         });
         describe("next button", function () {
           it("should increment the index when the next button is shown.", function () {
@@ -44,7 +43,6 @@ define(
             this.thingSummary.showNext();
             this.thingSummary.index.should.equal(-1);
           });
-          it("should change the bounds to the highlighted position");
         });
       });
       describe("filter points", function () {
@@ -360,6 +358,8 @@ define(
               link: "http://thing.com/link",
               points: [
                 {
+                  lat: 10,
+                  lon: 20,
                   importance_value: 10,
                   start_date: new Date(2010, 0, 1),
                   start_offset_seconds: 0,
@@ -368,6 +368,8 @@ define(
                   event_name: "event name 1"
                 },
                 {
+                  lat: 20,
+                  lon: 30,
                   importance_value: 10,
                   start_date: new Date(2011, 3, 2),
                   start_offset_seconds: 0,
@@ -407,6 +409,13 @@ define(
             this.model.get("selectedPointIndex").should.equal(0);
             this.thingSummary.showNext();
             this.model.get("selectedPointIndex").should.equal(1);
+          });
+          it("should reposition the map on first point", function () {
+            this.model.get("center").should.eql([10, 20]);
+          });
+          it("should reposition the map on subsequent point", function () {
+            this.thingSummary.showNext();
+            this.model.get("center").should.eql([20, 30]);
           });
         });
       });
