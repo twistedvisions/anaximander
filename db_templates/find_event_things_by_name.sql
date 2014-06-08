@@ -44,7 +44,7 @@ from (
 
   where t.name ilike $1
   group by t.id, e.id, type.id, p.id
-  order by start_date
+  order by thing_id, start_date asc
 ) matching_thing
 
 group by thing_id, thing_name, thing_link, thing_type_name
