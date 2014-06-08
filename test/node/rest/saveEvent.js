@@ -201,6 +201,19 @@ describe("saveEvent", function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "participant type").should.equal(true);
           }, done);
         });
+        it("should use the event's typeId for the related_event_id when it is a new event type", function (done) {
+          this.fullBody.type.id = -1;
+          this.fullBody.participants[0].type.id = -1;
+          this.fullBody.participants[0].type.name = "new role";
+          this.fullBody.participants[0].type.related_type_id = -1;
+          this.stubValues[0].push({name: "add-type"});
+          this.stubValues.push([{id: 20}]);
+          this.stubValues.push([{id: 21}]);
+          this.testSave(function () {
+            this.args[6][1].should.equal("save_role");
+            this.args[6][2][2].should.equal(3);
+          }, done);
+        });
         it("should ensure that each participant's importance exists", function (done) {
           this.testSave(function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "participant importance").should.equal(true);

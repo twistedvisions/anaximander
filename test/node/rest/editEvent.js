@@ -809,6 +809,51 @@ describe("editEvent", function () {
       }, done);
     });
 
+    it("should set the related_type_id of roles if it is a new event type", function (done) {
+      this.eventEditor.ensureParticipant.restore();
+      sinon.spy(this.eventEditor, "ensureParticipant");
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        type: {
+          id: -1,
+          name: "new type"
+        },
+        editedParticipants: [{
+          thing: {id: 2},
+          type: {id: -1, name: "new role"},
+          importance: {id: -1, name: "Nominal", value: 5, description: "some description"}
+        }]
+      };
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: [{thing: {id: 2}}]
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}, {name: "add-type"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "save_creator", id: 99}],
+        [{db_call: "save_type", id: 100}],
+        [{db_call: "update_event_type"}],
+        [{db_call: "save_role", id: 101}],
+        [{db_call: "save_importance"}],
+        [{db_call: "update_type_default_importance_when_null"}],
+        [{db_call: "find_thing_by_id"}],
+        [{db_call: "update_participant_role"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[5][1].should.equal("save_role");
+        this.args[5][2][2].should.equal(100);
+      }, done);
+    });
+
     it("should change the role of existing participants", function (done) {
       this.fullBody = {
         id: 126,
@@ -837,6 +882,7 @@ describe("editEvent", function () {
         this.args[2][2][0].should.equal(126);
       }, done);
     });
+
     it("should change the importance of existing participants", function (done) {
       this.fullBody = {
         id: 1,

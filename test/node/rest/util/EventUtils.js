@@ -134,7 +134,8 @@ describe("EventUtils", function () {
         }).then(
           tryTest(_.bind(function () {
             this.eventUtils.ensure.calledWith(sinon.match.any, "participant importance").should.equal(true);
-            this.eventUtils.ensure.args[1][6].should.eql(["add-importance"]);
+            //should be hasImportancePermission
+            (typeof this.eventUtils.ensure.args[1][6]).should.equal("function");
           }, this), done)
         );
         stubDb.setQueryValues(this, [[]]);
