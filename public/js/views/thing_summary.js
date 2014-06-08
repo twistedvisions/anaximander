@@ -147,6 +147,9 @@ define([
       var latDiff = centre.lat - previous.lat;
       var lonDiff = centre.lon - previous.lon;
 
+      latDiff = latDiff > 5 ? 5 : latDiff;
+      lonDiff = lonDiff > 5 ? 5 : lonDiff;
+
       return [
         {
           lat: centre.lat - latDiff,
