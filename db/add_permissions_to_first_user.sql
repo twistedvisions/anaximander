@@ -1,4 +1,4 @@
-insert into permission_group_permission (name) values ('admin');
+insert into permission_group (name) values ('admin');
 insert into permission_group_permission (permission_group_id, permission_id) values
   (2, 1),
   (2, 2),
