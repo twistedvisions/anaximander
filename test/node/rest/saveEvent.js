@@ -404,7 +404,7 @@ describe("saveEvent", function () {
         ).then(
           tryTest(_.bind(function () {
             this.args[0][1].should.equal("save_creator");
-            this.args[1][2][5].should.eql(new Date(2013, 5, 1, 23));
+            this.args[1][2][5].should.eql(new Date(2013, 5, 2, 1));
           }, this), done),
           function (e) {
             done(e);
@@ -429,7 +429,7 @@ describe("saveEvent", function () {
         ).then(
           tryTest(_.bind(function () {
             this.args[0][1].should.equal("save_creator");
-            this.args[1][2][6].should.eql(new Date(2013, 5, 2, 1));
+            this.args[1][2][6].should.eql(new Date(2013, 5, 1, 23));
           }, this), done),
           function (e) {
             done(e);
