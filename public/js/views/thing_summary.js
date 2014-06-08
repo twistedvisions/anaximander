@@ -80,10 +80,7 @@ define([
         this.index = -1;
       }
       this.showPoint(true);
-      analytics.thingSummary_scroll(_.extend({
-        direction: "next",
-        index: this.index
-      }, this.highlight));
+      this.sendAnalytics("next");
     },
 
     showPrevious: function () {
@@ -92,10 +89,23 @@ define([
         this.index = this.points.length - 1;
       }
       this.showPoint(true);
-      analytics.thingSummary_scroll(_.extend({
-        direction: "previous",
+      this.sendAnalytics("previous");
+    },
+
+    sendAnalytics: function (direction) {
+      var data = _.extend({
+        direction: direction,
         index: this.index
-      }, this.highlight));
+      }, this.highlight);
+      if (this.index >= 0) {
+        var point = data.points[this.index];
+        _.each(point, function (value, key) {
+          data["point_" + key] = value;
+        });
+      }
+      delete data.points;
+      delete data.area;
+      analytics.thingSummary_scroll(data);
     },
 
     showPoint: function (setPosition) {

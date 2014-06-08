@@ -17,6 +17,8 @@ define(
         beforeEach(function () {
           sinon.stub(this.thingSummary, "showPoint");
           sinon.stub(analytics, "thingSummary_scroll");
+          this.thingSummary.highlight = {points: [{id: 1}, {id: 2}, {id: 3}]};
+          this.thingSummary.points = this.thingSummary.highlight.points;
         });
         afterEach(function () {
           analytics.thingSummary_scroll.restore();
@@ -28,7 +30,6 @@ define(
             this.thingSummary.index.should.equal(1);
           });
           it("should wrap around if the index is less than -1", function () {
-            this.thingSummary.points = [1, 2, 3];
             this.thingSummary.index = -1;
             this.thingSummary.showPrevious();
             this.thingSummary.index.should.equal(2);
@@ -40,19 +41,16 @@ define(
         });
         describe("next button", function () {
           it("should increment the index when the next button is shown.", function () {
-            this.thingSummary.points = [1, 2, 3];
             this.thingSummary.index = 1;
             this.thingSummary.showNext();
             this.thingSummary.index.should.equal(2);
           });
           it("should wrap around to -1 if the index is more than the amount of points", function () {
-            this.thingSummary.points = [1, 2, 3];
             this.thingSummary.index = 2;
             this.thingSummary.showNext();
             this.thingSummary.index.should.equal(-1);
           });
           it("should track clicks", function () {
-            this.thingSummary.points = [1, 2, 3];
             this.thingSummary.showNext();
             analytics.thingSummary_scroll.calledOnce.should.equal(true);
           });
