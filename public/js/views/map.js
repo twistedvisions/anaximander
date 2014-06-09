@@ -497,8 +497,12 @@ define([
     },
 
     getDateRangeString: function (event) {
-      var start = moment(event.start_date).add("seconds", -event.start_offset_seconds);
-      var end = moment(event.end_date).add("seconds", -event.end_offset_seconds);
+      var start = moment(event.start_date)
+        .add("seconds", -event.start_offset_seconds)
+        .add("minutes", -new Date().getTimezoneOffset());
+      var end = moment(event.end_date)
+        .add("seconds", -event.end_offset_seconds)
+        .add("minutes", -new Date().getTimezoneOffset());
 
       var str = this.getDateString(start);
       var zero = moment({y: 0, M: 0, d: 1});
