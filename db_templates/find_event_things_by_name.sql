@@ -42,7 +42,7 @@ from (
   left join thing_subtype tst on tst.thing_id = t.id
   left join importance thing_importance on tst.importance_id = thing_importance.id
 
-  where t.name ilike $1
+  where lower(f_unaccent(t.name)) ilike lower(f_unaccent($1))
   group by t.id, e.id, type.id, p.id
   order by thing_id, start_date asc
 ) matching_thing
