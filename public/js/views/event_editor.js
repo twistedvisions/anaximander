@@ -391,7 +391,9 @@ define([
 
       this.renderTimes(localStartTime, localEndTime);
 
-      _.each(this.model.get("participants"), _.bind(this.addParticipant, this, existing));
+      _.each(this.model.get("participants"), _.bind(function (participant) {
+        this.addParticipant(participant, true);
+      }, this));
     },
 
     getLocalTime: function (key, offsetKey) {
