@@ -322,7 +322,7 @@ define([
       };
     },
 
-    addParticipant: function (participant) {
+    addParticipant: function (participant, existing) {
       if (!participant) {
         participant = this.getSelectedParticipant();
       }
@@ -348,7 +348,9 @@ define([
 
       this.clearParticipantSelector();
 
-      analytics.participantAdded(analyticsData);
+      if (!existing) {
+        analytics.participantAdded(analyticsData);
+      }
     },
 
     getSelectedParticipant: function () {
@@ -389,7 +391,7 @@ define([
 
       this.renderTimes(localStartTime, localEndTime);
 
-      _.each(this.model.get("participants"), _.bind(this.addParticipant, this));
+      _.each(this.model.get("participants"), _.bind(this.addParticipant, this, existing));
     },
 
     getLocalTime: function (key, offsetKey) {
