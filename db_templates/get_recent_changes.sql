@@ -48,8 +48,8 @@ union all
       from (
         select
           e.name,
-          e.start_date,
-          e.end_date,
+          e.start_date at time zone 'utc',
+          e.end_date at time zone 'utc',
           e.type_id,
           e.importance_id,
           e.link,

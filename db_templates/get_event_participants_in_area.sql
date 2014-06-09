@@ -16,9 +16,9 @@ select
   event.id as event_id,
   event.name as event_name,
   event.link as event_link,
-  event.start_date,
+  event.start_date AT TIME ZONE 'UTC' as start_date,
   event.start_offset_seconds,
-  event.end_date,
+  event.end_date AT TIME ZONE 'UTC' as end_date,
   event.end_offset_seconds,
   ST_AsText(place.location) as location,
   ST_Distance (

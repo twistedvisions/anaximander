@@ -4,8 +4,8 @@ select
   t.name as thing_name,
   t.link as thing_link,
   type.name as thing_type_name,
-  min(e.start_date) as start_date,
-  max(e.end_date) as end_date,
+  min(e.start_date AT TIME ZONE 'UTC') as start_date,
+  max(e.end_date AT TIME ZONE 'UTC') as end_date,
   ST_Extent(p.location) as area,
   max(case
     when thing_importance.value is null then 25 * event_importance.value
