@@ -460,19 +460,22 @@ describe("getEvents", function () {
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1000
             },
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1001
             },
             {
               event_id: 2,
               distance: 20,
-              start_date: 200,
+              start_date: new Date(200),
+              end_date: new Date(100),
               thing_id: 1000
             }
           ]
@@ -495,13 +498,15 @@ describe("getEvents", function () {
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1000
             },
             {
               event_id: 2,
               distance: 5,
-              start_date: 200,
+              start_date: new Date(200),
+              end_date: new Date(100),
               thing_id: 1000
             }
           ]
@@ -525,14 +530,16 @@ describe("getEvents", function () {
               event_id: 1,
               distance: 10,
               event_importance_value: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1000
             },
             {
               event_id: 1,
               distance: 10,
               event_importance_value: 20,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1000
             }
           ]
@@ -554,13 +561,15 @@ describe("getEvents", function () {
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1000
             },
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1001
             }
           ]
@@ -582,14 +591,16 @@ describe("getEvents", function () {
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1000,
               importance_value: 1
             },
             {
               event_id: 1,
               distance: 10,
-              start_date: 100,
+              start_date: new Date(100),
+              end_date: new Date(100),
               thing_id: 1001,
               importance_value: 2
             }
