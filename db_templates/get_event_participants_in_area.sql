@@ -39,8 +39,10 @@ where  ST_Covers (
   ST_SetSRID(ST_GeometryFromText('<%= boundingBox %>'), 4326),
   place.location
 )
-and event.start_date >= $3
-and event.end_date <= $4
+and (
+  (event.start_date >= $3 and event.start_date <= $4) or
+  (event.end_date >= $4 and event.end_date <= $4)
+)
 and case
       when thing_importance.value is null then role_importance.value * 5 * event_importance.value >= $5
       else role_importance.value * thing_importance.value * event_importance.value >= $5
