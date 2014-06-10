@@ -231,7 +231,7 @@ define([
     getOffsetMoment: function (point, datePrefix) {
       return moment(point[datePrefix + "_date"])
         .add("seconds", point[datePrefix + "_offset_seconds"])
-        .add("minutes", new Date().getTimezoneOffset());
+        .add("minutes", new Date(point[datePrefix + "_date"]).getTimezoneOffset());
     }
 
   });
