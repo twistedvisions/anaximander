@@ -37,6 +37,7 @@ h1 {
       }
     }
   }
+
   tbody {
     tr:nth-child(1) td {
       padding-top: 10px;
@@ -68,6 +69,20 @@ h1 {
       }
     }
   }
+
+
+  .related-type {
+    display: none;
+  }
+  &[data-type=role] {
+
+    th.related-type {
+      display: table-cell;
+    }
+    td.related-type {
+      display: table-cell;
+    }
+  }
 }
 
 .types {
@@ -82,6 +97,20 @@ h1 {
       }
       th.usage {
         width: 100px;
+      }
+      th.view-importance {
+        width: 20px;
+      }
+    }
+  }
+  &[data-type=role] {
+    thead {
+      tr {
+        th.related-type,
+        th.name,
+        th.default-importance {
+          width: 20%;
+        }
       }
     }
   }

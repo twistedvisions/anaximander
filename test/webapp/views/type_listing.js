@@ -6,7 +6,7 @@ define(
 
   function ($, _, Backbone, when, TypeListing, User, analytics) {
 
-    describe("type listing", function () {
+    describe.only("type listing", function () {
       var hasPermission = true;
 
       describe("startup", function () {
@@ -75,26 +75,27 @@ define(
         describe("showTypes", function () {
           it("should show the types table", function () {
             this.typeListing.$("div.types").hide();
-            this.typeListing.showTypes([[], []]);
+            this.typeListing.showTypes("event", [[], []]);
             this.typeListing.$("div.types:visible").length.should.equal(1);
           });
           it("should hide the importances table", function () {
             this.typeListing.$("div.importances").show();
-            this.typeListing.showTypes([[], []]);
+            this.typeListing.showTypes("event", [[], []]);
             this.typeListing.$("div.importances:visible").length.should.equal(0);
           });
           it("should empty the types table before populating it", function () {
             this.typeListing.$("div.types tbody").append($("<tr>"));
             this.typeListing.$("div.types tbody tr").length.should.equal(1);
-            this.typeListing.showTypes([[], []]);
+            this.typeListing.showTypes("event", [[], []]);
             this.typeListing.$("div.types tbody tr").length.should.equal(0);
           });
           it("should combine the type with the usage", function () {
-            this.typeListing.showTypes([[{id: 1, importances: []}], [{id: 1, usage: 10}]]);
+            this.typeListing.showTypes("event", [[{id: 1, importances: []}], [{id: 1, usage: 10}]]);
             this.typeListing.$("div.types tbody tr td.usage").text().should.equal("10");
           });
           it("should list the types", function () {
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {id: 1, importances: []},
@@ -110,19 +111,20 @@ define(
           });
           it("should make names editable if the user has permission", function () {
             hasPermission = true;
-            this.typeListing.showTypes([[{id: 1, name: "importance name", importances: []}], []]);
+            this.typeListing.showTypes("event", [[{id: 1, name: "importance name", importances: []}], []]);
             this.typeListing.$("div.types tbody tr td.name").trigger("click");
             this.typeListing.$("div.types tbody tr td.name.editing").length.should.equal(1);
           });
           it("should not make names editable if the user doesn't has permission", function () {
             hasPermission = false;
-            this.typeListing.showTypes([[{id: 1, name: "importance name", importances: []}], []]);
+            this.typeListing.showTypes("event", [[{id: 1, name: "importance name", importances: []}], []]);
             this.typeListing.$("div.types tbody tr td.name").trigger("click");
             this.typeListing.$("div.types tbody tr td.name.editing").length.should.equal(0);
             hasPermission = true;
           });
           it("should show the default importances for a type", function () {
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {
@@ -150,7 +152,7 @@ define(
               };
             });
             sinon.stub(this.typeListing, "showImportances");
-            this.typeListing.showTypes([[{id: 1, importances: []}], [{id: 1, usage: 10}]]);
+            this.typeListing.showTypes("event", [[{id: 1, importances: []}], [{id: 1, usage: 10}]]);
             this.typeListing.$(".view-importances span").trigger("click");
             this.typeListing.showImportances.calledOnce.should.equal(true);
             this.typeListing.showImportances.restore();
@@ -169,6 +171,7 @@ define(
             });
             this.typeListing.$("div.importances tbody").append($("<tr>"));
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {
@@ -269,6 +272,7 @@ define(
         describe("filtering", function () {
           it("should filter the type table", function () {
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {id: 1, name: "abc", importances: []},
@@ -285,6 +289,7 @@ define(
           it("should filter the importance table", function () {
             this.typeListing.$(".filter input").val("");
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {
@@ -315,6 +320,7 @@ define(
           it("should change the filter when backspace is pressed", function () {
             this.typeListing.$(".filter input").val("ef");
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {id: 1, name: "abcde", importances: []},
@@ -333,6 +339,7 @@ define(
           });
           it("should filter without respect to case", function () {
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {id: 1, name: "abc", importances: []},
@@ -351,6 +358,7 @@ define(
         describe("editing default importance", function () {
           beforeEach(function () {
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {
@@ -396,6 +404,7 @@ define(
             hasPermission = false;
             try {
               this.typeListing.showTypes(
+                "event",
                 [
                   [
                     {
@@ -477,6 +486,7 @@ define(
               };
             }, this));
             this.typeListing.showTypes(
+              "event",
               [
                 [
                   {

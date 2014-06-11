@@ -43,4 +43,26 @@ describe("getTypesById", function () {
     ]});
   });
 
+  it("should sort the results by related_type then name order", function (done) {
+    var res = {};
+    res.send = function (data) {
+      tryTest(function () {
+        data.length.should.equal(3);
+        data[0].related_type.should.equal("aaa");
+        data[1].related_type.should.equal("bbb");
+        data[2].related_type.should.equal("bbb");
+
+        data[0].name.should.equal("aaa");
+        data[1].name.should.equal("aaa");
+        data[2].name.should.equal("bbb");
+      }, done)();
+    };
+    TypeGrouper(res)({rows: [
+      {id: 3, related_type: "bbb", name: "bbb", default_importance_id: 30, importance_id: 30, importance_name: "i30"},
+      {id: 3, related_type: "bbb", name: "bbb", default_importance_id: 30, importance_id: 31, importance_name: "i31"},
+      {id: 4, related_type: "aaa", name: "aaa", default_importance_id: 40, importance_id: 40, importance_name: "i40"},
+      {id: 5, related_type: "bbb", name: "aaa", default_importance_id: 40, importance_id: 40, importance_name: "i40"}
+    ]});
+  });
+
 });

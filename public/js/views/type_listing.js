@@ -92,7 +92,7 @@ define([
         typeName: "event types"
       });
       when.all([this.getData("/event_type"), this.getData("/event_type/usage")])
-        .then(_.bind(this.showTypes, this));
+        .then(_.bind(this.showTypes, this, "event"));
     },
 
     showRoles: function () {
@@ -102,7 +102,7 @@ define([
         typeName: "roles"
       });
       when.all([this.getData("/role"), this.getData("/role/usage")])
-        .then(_.bind(this.showTypes, this));
+        .then(_.bind(this.showTypes, this, "role"));
     },
 
     showThingSubtype: function (id, name) {
@@ -115,15 +115,16 @@ define([
       when.all([
         this.getData("/type/" + id + "/type"),
         this.getData("/type/" + id + "/type/usage")
-      ]).then(_.bind(this.showTypes, this));
+      ]).then(_.bind(this.showTypes, this, "thing"));
     },
 
     getData: function (url) {
       return when($.get(url));
     },
 
-    showTypes: function (args) {
+    showTypes: function (type, args) {
       var types = args[0], usages = args[1];
+      this.$("div.types").attr("data-type", type);
       this.$("div.types").show();
       this.$("div.importances").hide();
       this.types = _.indexBy(types, "id");
