@@ -154,11 +154,14 @@ define([
     },
 
     getArea: function (centre, previous) {
-      var latDiff = centre.lat - previous.lat;
-      var lonDiff = centre.lon - previous.lon;
+      var latDiff = Math.abs(centre.lat - previous.lat);
+      var lonDiff = Math.abs(centre.lon - previous.lon);
 
       latDiff = latDiff > 5 ? 5 : latDiff;
       lonDiff = lonDiff > 5 ? 5 : lonDiff;
+
+      latDiff = latDiff < 0.01 ? 0.01 : latDiff;
+      lonDiff = lonDiff < 0.01 ? 0.01 : lonDiff;
 
       return [
         {

@@ -432,6 +432,29 @@ define(
             this.model.get("center").should.eql([20, 30]);
           });
         });
+
+        describe("getArea", function () {
+          it("should limit the lat to be no more than 5 degrees", function () {
+            var area = this.thingSummary.getArea({lat: 10, lon: 20}, {lat: 30, lon : 40});
+            area[0].lat.should.equal(5);
+            area[1].lat.should.equal(15);
+          });
+          it("should limit the lat to be no less than 0.01 degrees", function () {
+            var area = this.thingSummary.getArea({lat: 10, lon: 20}, {lat: 10, lon : 20});
+            area[0].lat.should.equal(9.99);
+            area[1].lat.should.equal(10.01);
+          });
+          it("should limit the lon to be no more than 5 degrees", function () {
+            var area = this.thingSummary.getArea({lat: 10, lon: 20}, {lat: 30, lon : 40});
+            area[0].lon.should.equal(15);
+            area[1].lon.should.equal(25);
+          });
+          it("should limit the lon to be no less than 0.01 degrees", function () {
+            var area = this.thingSummary.getArea({lat: 10, lon: 20}, {lat: 10, lon : 20});
+            area[0].lon.should.equal(19.99);
+            area[1].lon.should.equal(20.01);
+          });
+        });
       });
     });
   }
