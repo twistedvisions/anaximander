@@ -753,6 +753,13 @@ define(
             .should.equal("//something.com");
         });
 
+        it("should not prepend // if the url is empty", function () {
+          this.editor.$("input[data-key=link]").val("");
+          this.editor.handleSave();
+          this.editor.eventsCollection.toJSON()[0].link
+            .should.equal("");
+        });
+
         describe("handleSaveFail", function () {
           it("should put a custom message in if someone else edited the event", function () {
             this.editor.handleSaveFail({responseText: "last_edited times do not match"});

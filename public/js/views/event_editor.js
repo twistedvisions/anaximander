@@ -516,8 +516,8 @@ define([
     },
 
     wrapLink: function (link) {
-      if (!link.match(/(https?:)?\/\//)) {
-        return "//" + link;
+      if ((link.length > 0) && !link.match(/(https?:)?\/\//)) {
+        link = "//" + link;
       }
       return link;
     },
