@@ -37,33 +37,51 @@ define([
     updateData: function () {
       if (!this.queryPending) {
         this.queryPending = true;
-        var position = this.state.get("center");
-        var timeRange = this.state.get("date");
-        var bounds = this.state.get("bounds");
-        var filterState = this.state.get("filterState");
-        var importance = this.state.get("importance");
 
-        var params = {
-          lat: position[0],
-          lon: position[1],
-          importance: importance,
-          start: this.getStartOfYear(timeRange[0]),
-          end: this.getEndOfYear(timeRange[1]),
-          roleFilters: _.pluck(FilterUrlSerialiser.getRoleFilterKeys(filterState), "id"),
-          eventTypeFilters: _.pluck(FilterUrlSerialiser.getEventTypeFilterKeys(filterState), "id"),
-          typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState, true)),
-          subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState, true)),
-          notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState, true))
-        };
+        try {
+          var position = this.state.get("center");
+          var timeRange = this.state.get("date");
+          var bounds = this.state.get("bounds");
+          var filterState = this.state.get("filterState");
+          var importance = this.state.get("importance");
+
+          var params = {
+            lat: position[0],
+            lon: position[1],
+            importance: importance,
+            start: this.getStartOfYear(timeRange[0]),
+            end: this.getEndOfYear(timeRange[1]),
+            roleFilters: _.pluck(FilterUrlSerialiser.getRoleFilterKeys(filterState), "id"),
+            eventTypeFilters: _.pluck(FilterUrlSerialiser.getEventTypeFilterKeys(filterState), "id"),
+            typeFilters: JSON.stringify(FilterUrlSerialiser.getTypeFilterKeys(filterState, true)),
+            subtypeFilters: JSON.stringify(FilterUrlSerialiser.getSubtypeFilterKeys(filterState, true)),
+            notSpecifiedTypeFilters: JSON.stringify(FilterUrlSerialiser.getNotSpecifiedTypeFilterKeys(filterState, true))
+          };
 
 
-        var lon = position[1];
+          var lon = position[1];
 
-        if (!this.crossesAntiMeridian(lon, bounds)) {
-          this.simpleQuery(bounds, params);
-        } else {
-          this.queryBothHemispheres(lon, bounds, params);
+          if (!this.crossesAntiMeridian(lon, bounds)) {
+            this.simpleQuery(bounds, params);
+          } else {
+            this.queryBothHemispheres(lon, bounds, params);
+          }
+        } catch (e) {
+          this.queryPending = false;
+          throw e;
         }
+
+        this.timeoutQueryPending();
+      }
+    },
+
+    queryPendingTimeout: 10 * 1000,
+
+    timeoutQueryPending: function () {
+      if (this.queryPending) {
+        setTimeout(_.bind(function () {
+          this.queryPending = false;
+        }, this), this.queryPendingTimeout);
       }
     },
 

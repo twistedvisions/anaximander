@@ -15,9 +15,13 @@ define(
         filterState: new Backbone.Collection()
       });
       FilterUrlSerialiser.deserialise("1:u;3:*;4:11;r:5,6;et:7,8", this.model);
+      this.clock = sinon.useFakeTimers();
       this.events = new EventLocations({
         state: this.model
       });
+    });
+    afterEach(function () {
+      this.clock.restore();
     });
     describe("start", function () {
       var keys = ["center", "date", "bounds", "filterState", "importance"];
@@ -46,6 +50,15 @@ define(
         sinon.stub(this.events, "simpleQuery");
         this.events.updateData();
         this.events.simpleQuery.calledOnce.should.equal(true);
+      });
+      it("should stop querying for a while if there was a failure", function () {
+        sinon.stub(this.events, "simpleQuery");
+        this.events.updateData();
+        this.events.updateData();
+        this.events.simpleQuery.calledOnce.should.equal(true);
+        this.clock.tick(10001);
+        this.events.updateData();
+        this.events.simpleQuery.calledTwice.should.equal(true);
       });
       it("should query both hemispheres when it crosses the antimeridian", function () {
         sinon.stub(this.events, "queryBothHemispheres");
