@@ -398,6 +398,9 @@ define(
                 }
               ]
             });
+            sinon.stub(this.thingSummary, "getTimezoneOffset", function () {
+              return 0;
+            });
             this.thingSummary.update();
             this.thingSummary.showNext();
           });
