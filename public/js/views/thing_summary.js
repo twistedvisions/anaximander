@@ -137,6 +137,7 @@ define([
           summaryText = this.points.length + " events";
         }
         this.$(".current-date").text(dateText);
+        this.$(".current-place").hide();
         this.$(".current-event-name").text(summaryText);
         if (setPosition) {
           this.model.set(Highlight.determineModelBounds(this.highlight.area));
@@ -145,8 +146,10 @@ define([
         var point = this.points[this.index];
         this.model.set("selectedEventId", point.event_id);
         this.$(".current-date").text(this.getDateTimeRange(point));
+        this.$(".current-place").show();
+        this.$(".current-place").text(point.place_name);
         this.$(".current-event-name").text(point.event_name);
-        if (point.event_name.length > 40) {
+        if (point.event_name.length > 60) {
           this.$(".current-event-name").addClass("long-text");
         }
         if (setPosition) {

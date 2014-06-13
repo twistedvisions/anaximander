@@ -4,7 +4,7 @@ define(
   ["jquery", "backbone", "views/thing_summary", "analytics"],
 
   function ($, Backbone, ThingSummary, analytics) {
-    describe("thing summary", function () {
+    describe.only("thing summary", function () {
       beforeEach(function () {
         this.model = new Backbone.Model({
           importance: 10,
@@ -329,9 +329,12 @@ define(
             it("should show the amount of events", function () {
               this.thingSummary.$(".current-event-name").text().should.equal("2 events");
             });
+            it("should hide the place name", function () {
+              this.thingSummary.$(".current-place").css("display").should.equal("none");
+            });
           });
           describe("single event", function () {
-            it("should show the date of the thing if there is a single event", function () {
+            beforeEach(function () {
               this.thingSummary.render();
               this.model.set("highlight", {
                 name: "thing name",
@@ -342,11 +345,14 @@ define(
                     importance_value: 10,
                     start_date: new Date(2010, 0, 1),
                     end_date: new Date(2010, 0, 1, 23, 59, 59),
-                    start_offset_seconds: 0
+                    start_offset_seconds: 0,
+                    place_name: "place name"
                   }
                 ]
               });
               this.thingSummary.update();
+            });
+            it("should show the date of the thing if there is a single event", function () {
               this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010");
             });
           });
@@ -394,7 +400,8 @@ define(
                   start_offset_seconds: 0,
                   end_date: new Date(2011, 0, 1, 23, 59, 59),
                   end_offset_seconds: 0,
-                  event_name: "event name 1"
+                  event_name: "event name 1",
+                  place_name: "place name 1"
                 },
                 {
                   event_id: 2,
@@ -405,7 +412,8 @@ define(
                   start_offset_seconds: 0,
                   end_date: new Date(2011, 3, 2, 23, 59, 59),
                   end_offset_seconds: 0,
-                  event_name: "event name 1"
+                  event_name: "event name 2",
+                  place_name: "place name 2"
                 },
                 {
                   event_id: 3,
@@ -414,7 +422,8 @@ define(
                   start_offset_seconds: 0,
                   end_date: new Date(2011, 3, 2, 23, 58),
                   end_offset_seconds: 0,
-                  event_name: "event name 1"
+                  event_name: "event name 3",
+                  place_name: "place name 3"
                 }
               ]
             });
@@ -450,6 +459,12 @@ define(
           it("should reposition the map on subsequent point", function () {
             this.thingSummary.showNext();
             this.model.get("center").should.eql([20, 30]);
+          });
+          it("should show the place name", function () {
+            this.thingSummary.$(".current-place").css("display").should.not.equal("none");
+          });
+          it("should set the place name", function () {
+            this.thingSummary.$(".current-place").text().should.equal("place name 1");
           });
         });
 

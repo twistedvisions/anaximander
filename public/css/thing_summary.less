@@ -4,13 +4,13 @@
   .holder {
     position: absolute;
     bottom: 20px;
-    height: 60px;
+    height: 80px;
     width: 100%;
     .contents {
       height: 100%;
       margin-left: auto;
       margin-right: auto;
-      width: 440px;
+      width: 500px;
       background-color: rgba(255,255,255,0.7);
       background-color: #eee;
       border-radius: 7px;
@@ -43,18 +43,21 @@
         }
         .current-event {
           height: 100%;
-          width: 200px;
+          width: 265px;
           display: inline-flex;
           flex-direction: column;
-          justify-content: flex-start;
+          justify-content: center;
           > * {
             float: left;
             text-align: center;
-            width: 200px;
+            width: 265px;
           }
           .current-date {
             font-size: 13px;
             margin-bottom: 2px;
+          }
+          .current-place {
+            font-style: italic;
           }
           .current-event-name {
             font-size: 14px;

@@ -14,12 +14,14 @@ select
   array_agg(matching_thing.end_date) as end_dates,
   array_agg(matching_thing.end_offset_seconds) as end_offset_seconds,
   array_agg(matching_thing.event_id) as event_ids,
-  array_agg(matching_thing.event_name) as event_names
+  array_agg(matching_thing.event_name) as event_names,
+  array_agg(matching_thing.place_name) as place_names
 from (
   select
     t.id as thing_id,
     e.id as event_id,
     e.name as event_name,
+    pt.name as place_name,
     t.name as thing_name,
     t.link as thing_link,
     type.name as thing_type_name,
@@ -44,7 +46,7 @@ from (
   left join importance thing_importance on tst.importance_id = thing_importance.id
 
   where lower(f_unaccent(t.name)) ilike lower(f_unaccent($1))
-  group by t.id, e.id, type.id, p.id
+  group by t.id, e.id, type.id, p.id, pt.id
   order by thing_id, start_date asc
 ) matching_thing
 
