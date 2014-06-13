@@ -332,7 +332,7 @@ describe("saveEvent", function () {
         ]);
       });
 
-      ["name", "place_id", "type_id", "start_date", "end_date", "link"].forEach(function (key) {
+      ["name", "place_id", "type_id", "start_date", "end_date"].forEach(function (key) {
         it("should throw an exception if " + key + " cannot be found", function (done) {
           var obj = {
             name: "something happened",
