@@ -12,26 +12,54 @@ define([
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter": "filteredMapView",
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query": "queryMapView",
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight": "queryHighlightedMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter/query/:query/highlight/:highlight": "filteredQueryHighlightedMapView"
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight/state/:state": "queryHighlightedStateMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter/query/:query/highlight/:highlight": "filteredQueryHighlightedMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter/query/:query/highlight/:highlight/state/:state": "filteredQueryHighlightedStateMapView"
     },
 
     mapView: function (lat, lon, zoom, start, end, importance) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, null, null, null);
+      this.filteredQueryHighlightedStateMapView(
+        lat, lon, zoom, start, end, importance,
+        null, null, null, null
+      );
     },
 
     filteredMapView: function (lat, lon, zoom, start, end, importance, filters) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, filters, null, null);
+      this.filteredQueryHighlightedStateMapView(
+        lat, lon, zoom, start, end, importance,
+        filters, null, null, null
+      );
     },
 
     queryMapView: function (lat, lon, zoom, start, end, importance, query) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, null, query, null);
+      this.filteredQueryHighlightedStateMapView(
+        lat, lon, zoom, start, end, importance,
+        null, query, null, null
+      );
     },
 
     queryHighlightedMapView: function (lat, lon, zoom, start, end, importance, query, highlight) {
-      this.filteredQueryHighlightedMapView(lat, lon, zoom, start, end, importance, null, query, highlight);
+      this.filteredQueryHighlightedStateMapView(
+        lat, lon, zoom, start, end, importance,
+        null, query, highlight, null
+      );
+    },
+
+    queryHighlightedStateMapView: function (lat, lon, zoom, start, end, importance, query, highlight, state) {
+      this.filteredQueryHighlightedStateMapView(
+        lat, lon, zoom, start, end, importance,
+        null, query, highlight, state
+      );
     },
 
     filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, importance, filters, query, highlight) {
+      this.filteredQueryHighlightedStateMapView(
+        lat, lon, zoom, start, end, importance,
+        filters, query, highlight, null
+      );
+    },
+
+    filteredQueryHighlightedStateMapView: function (lat, lon, zoom, start, end, importance, filters, query, highlight, state) {
 
       this._setFromUrl = true;
 
@@ -44,6 +72,10 @@ define([
       };
 
       this.getHighlightChange(data, highlight);
+
+      if (state) {
+        data.selectedEventId = parseInt(state, 10);
+      }
 
       window.lastEvent = "url_change";
 
@@ -115,6 +147,7 @@ define([
       var importance = this.model.get("importance");
       var filterState = this.model.get("filterState").toJSON();
       var highlight = this.model.get("highlight");
+      var state = this.model.get("selectedEventId");
       var filters = "";
       var location = [
         "lat", center[0],
@@ -140,6 +173,13 @@ define([
 
           location.push("highlight");
           location.push(highlight.id);
+
+          if (state) {
+
+            location.push("state");
+            location.push(state);
+
+          }
 
         }
       }

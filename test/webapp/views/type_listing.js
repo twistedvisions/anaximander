@@ -6,7 +6,7 @@ define(
 
   function ($, _, Backbone, when, TypeListing, User, analytics) {
 
-    describe.only("type listing", function () {
+    describe("type listing", function () {
       var hasPermission = true;
 
       describe("startup", function () {

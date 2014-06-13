@@ -145,7 +145,8 @@ describe("search", function () {
           importance_values: [100, 200],
           start_offset_seconds: [0, 10],
           end_offset_seconds: [0, 10],
-          event_names: ["event name 1", "event name 2"]
+          event_names: ["event name 1", "event name 2"],
+          event_ids: [1, 2]
         })]},
         {rows: []}
       ]);
@@ -159,6 +160,7 @@ describe("search", function () {
               start_offset_seconds: 0,
               end_date: new Date("2000-01-01T23:59:59.000Z"),
               end_offset_seconds: 0,
+              event_id: 1,
               event_name: "event name 1",
               importance_value: 100
             },
@@ -169,6 +171,7 @@ describe("search", function () {
               start_offset_seconds: 10,
               end_date: new Date("2000-01-02T23:59:59.000Z"),
               end_offset_seconds: 10,
+              event_id: 2,
               event_name: "event name 2",
               importance_value: 200
             }
@@ -196,6 +199,7 @@ describe("search", function () {
           end_dates: end_dates,
           end_offset_seconds: [0, 0],
           importance_values: [100, 200],
+          event_ids: [1, 2],
           event_names: ["event name 1", "event name 2"]
         })]},
         {rows: []}
@@ -210,6 +214,7 @@ describe("search", function () {
               start_offset_seconds: 0,
               end_date: new Date("1811-01-07 05:00:00.000Z"),
               end_offset_seconds: 0,
+              event_id: 1,
               event_name: "event name 1",
               importance_value: 100
             },
@@ -220,6 +225,7 @@ describe("search", function () {
               start_offset_seconds: 0,
               end_date: new Date("1811-01-07 04:57:30.000Z"),
               end_offset_seconds: 0,
+              event_id: 2,
               event_name: "event name 2",
               importance_value: 200
             }

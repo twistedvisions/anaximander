@@ -1,10 +1,9 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
 
-  ["chai", "jquery", "backbone", "views/thing_summary", "analytics"],
+  ["jquery", "backbone", "views/thing_summary", "analytics"],
 
-  function (chai, $, Backbone, ThingSummary, analytics) {
-    var should = chai.should();
+  function ($, Backbone, ThingSummary, analytics) {
     describe("thing summary", function () {
       beforeEach(function () {
         this.model = new Backbone.Model({
@@ -153,11 +152,15 @@ define(
               link: "http://thing.com/link",
               points: [
                 {
+                  event_id: 1,
+                  event_name: "event name 1",
                   importance_value: 10,
                   start_date: new Date(2013, 1, 1),
                   end_date: new Date(2013, 1, 1, 23, 59, 59)
                 },
                 {
+                  event_id: 2,
+                  event_name: "event name 2",
                   importance_value: 9,
                   start_date: new Date(2013, 1, 2),
                   end_date: new Date(2013, 1, 2, 23, 59, 59)
@@ -181,6 +184,14 @@ define(
           it("should show the summary", function () {
             this.thingSummary.$(".current-event").text().length.should.be.greaterThan(1);
           });
+          describe("event id selected", function () {
+            it("should show the event", function () {
+              this.model.set("selectedEventId", 2);
+              this.model.set("importance", 1);
+              this.thingSummary.update();
+              this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+            });
+          });
         });
         describe("already highlighted", function () {
           describe("same amount of points", function () {
@@ -191,11 +202,13 @@ define(
                 link: "http://thing.com/link",
                 points: [
                   {
+                    event_id: 1,
                     importance_value: 10,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
                     event_name: "event name 1"
                   }, {
+                    event_id: 2,
                     importance_value: 10,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
@@ -219,11 +232,13 @@ define(
                 link: "http://thing.com/link",
                 points: [
                   {
+                    event_id: 1,
                     importance_value: 10,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
                     event_name: "event name 1"
                   }, {
+                    event_id: 2,
                     importance_value: 11,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
@@ -287,6 +302,8 @@ define(
                 link: "http://thing.com/link",
                 points: [
                   {
+                    event_id: 1,
+                    event_name: "event name 1",
                     importance_value: 10,
                     start_date: new Date(2010, 0, 1),
                     start_offset_seconds: 0,
@@ -294,6 +311,8 @@ define(
                     end_offset_seconds: 0
                   },
                   {
+                    event_id: 2,
+                    event_name: "event name 2",
                     importance_value: 10,
                     start_date: new Date(2011, 3, 2),
                     start_offset_seconds: 0,
@@ -302,7 +321,6 @@ define(
                   }
                 ]
               });
-              this.model.set("selectedPointIndex", 1);
               this.thingSummary.render();
             });
             it("should show the date range of the thing", function () {
@@ -310,9 +328,6 @@ define(
             });
             it("should show the amount of events", function () {
               this.thingSummary.$(".current-event-name").text().should.equal("2 events");
-            });
-            it("should unset the selectedPointIndex", function () {
-              should.not.exist(this.model.get("selectedPointIndex"));
             });
           });
           describe("single event", function () {
@@ -323,6 +338,7 @@ define(
                 link: "http://thing.com/link",
                 points: [
                   {
+                    event_id: 1,
                     importance_value: 10,
                     start_date: new Date(2010, 0, 1),
                     end_date: new Date(2010, 0, 1, 23, 59, 59),
@@ -342,6 +358,7 @@ define(
                 link: "http://thing.com/link",
                 points: [
                   {
+                    event_id: 1,
                     importance_value: 9,
                     start_date: new Date(2010, 0, 1),
                     end_date: new Date(2010, 0, 1, 23, 59, 59),
@@ -369,6 +386,7 @@ define(
               link: "http://thing.com/link",
               points: [
                 {
+                  event_id: 1,
                   lat: 10,
                   lon: 20,
                   importance_value: 10,
@@ -379,6 +397,7 @@ define(
                   event_name: "event name 1"
                 },
                 {
+                  event_id: 2,
                   lat: 20,
                   lon: 30,
                   importance_value: 10,
@@ -389,6 +408,7 @@ define(
                   event_name: "event name 1"
                 },
                 {
+                  event_id: 3,
                   importance_value: 10,
                   start_date: new Date(2011, 3, 2),
                   start_offset_seconds: 0,
@@ -419,10 +439,10 @@ define(
           it("should show the name of the event", function () {
             this.thingSummary.$(".current-event-name").text().should.equal("event name 1");
           });
-          it("should set the selectedPointIndex", function () {
-            this.model.get("selectedPointIndex").should.equal(0);
+          it("should set the selectedEventId", function () {
+            this.model.get("selectedEventId").should.equal(1);
             this.thingSummary.showNext();
-            this.model.get("selectedPointIndex").should.equal(1);
+            this.model.get("selectedEventId").should.equal(2);
           });
           it("should reposition the map on first point", function () {
             this.model.get("center").should.eql([10, 20]);

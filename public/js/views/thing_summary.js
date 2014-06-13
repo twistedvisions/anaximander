@@ -30,13 +30,14 @@ define([
 
     update: function () {
       var highlight = this.model.get("highlight");
+      var selectedEventId = this.model.get("selectedEventId");
       if (this.hasHighlightChanged(highlight)) {
         this.highlight = highlight;
         if (!highlight) {
           this.$el.hide();
         } else {
           this.points = this.filterPoints(this.highlight.points);
-          this.index = -1;
+          this.index = this.findIndexForEvent(selectedEventId);
           if (this.highlight.type !== "place") {
             this.$(".name a").text(this.highlight.name);
             this.$(".name a").prop("href", this.highlight.link);
@@ -72,6 +73,18 @@ define([
              moment(point.end_date).isAfter(end)
           );
       });
+    },
+
+    findIndexForEvent: function (eventId) {
+      var index;
+      var found = _.find(this.points, function (point, i) {
+        index = i;
+        return point.event_id === eventId;
+      });
+      if (found) {
+        return index;
+      }
+      return -1;
     },
 
     showNext: function () {
@@ -111,7 +124,7 @@ define([
     showPoint: function (setPosition) {
       this.$(".current-event-name").removeClass("long-text");
       if (this.index === -1) {
-        this.model.unset("selectedPointIndex");
+        this.model.unset("selectedEventId");
         var dateText = "";
         var summaryText;
         if (this.points.length === 1) {
@@ -129,8 +142,8 @@ define([
           this.model.set(Highlight.determineModelBounds(this.highlight.area));
         }
       } else {
-        this.model.set("selectedPointIndex", this.index);
         var point = this.points[this.index];
+        this.model.set("selectedEventId", point.event_id);
         this.$(".current-date").text(this.getDateTimeRange(point));
         this.$(".current-event-name").text(point.event_name);
         if (point.event_name.length > 40) {

@@ -13,6 +13,7 @@ select
   array_agg(matching_thing.start_offset_seconds) as start_offset_seconds,
   array_agg(matching_thing.end_date) as end_dates,
   array_agg(matching_thing.end_offset_seconds) as end_offset_seconds,
+  array_agg(matching_thing.event_id) as event_ids,
   array_agg(matching_thing.event_name) as event_names
 from (
   select

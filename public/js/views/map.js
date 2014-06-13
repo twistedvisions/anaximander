@@ -45,7 +45,7 @@ define([
 
       this.drawMap();
       this.model.on("change", this.update, this);
-      this.model.on("change:selectedPointIndex", this.showHighlight, this);
+      this.model.on("change:selectedEventId", this.showHighlight, this);
       this.model.on("force-change", this.forceUpdate, this);
       this.eventLocationsCollection.on("reset", this.drawNewMarkers, this);
       this.eventLocationsCollection.start();
@@ -105,15 +105,16 @@ define([
         var points = _.map(pointsInRange, function (point) {
           var latLng = new google.maps.LatLng(point.lat, point.lon);
           latLng.start_date = point.start_date;
+          latLng.event_id = point.event_id;
           return latLng;
         });
         var pairs = _.zip(_.initial(points), _.rest(points));
-        var selectedIndex = this.model.get("selectedPointIndex");
-        var isAnyUnselected = !(selectedIndex === null || selectedIndex === undefined);
+        var selectedEventId = this.model.get("selectedEventId");
+        var isAnyUnselected = !(selectedEventId === null || selectedEventId === undefined);
 
-        this.paths = _.map(pairs, function (pair, index) {
+        this.paths = _.map(pairs, function (pair) {
           var shouldDim = isAnyUnselected;
-          if ((selectedIndex === index) || (selectedIndex === index + 1)) {
+          if ((pair[0].event_id === selectedEventId) || (pair[1].event_id === selectedEventId)) {
             shouldDim = false;
           }
 
