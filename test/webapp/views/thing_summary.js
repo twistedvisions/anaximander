@@ -4,7 +4,7 @@ define(
   ["jquery", "backbone", "views/thing_summary", "analytics"],
 
   function ($, Backbone, ThingSummary, analytics) {
-    describe.only("thing summary", function () {
+    describe("thing summary", function () {
       beforeEach(function () {
         this.model = new Backbone.Model({
           importance: 10,
@@ -488,6 +488,107 @@ define(
             var area = this.thingSummary.getArea({lat: 10, lon: 20}, {lat: 10, lon : 20});
             area[0].lon.should.equal(19.99);
             area[1].lon.should.equal(20.01);
+          });
+        });
+
+        describe("getOtherInterestingPoint", function () {
+          it("should return the point before first", function () {
+            this.thingSummary.points = [
+              {
+                event_id: 1,
+                lat: 10,
+                lon: 20
+              },
+              {
+                event_id: 2,
+                lat: 11,
+                lon: 30
+              },
+              {
+                event_id: 3,
+                lat: 22,
+                lon: 30
+              }
+            ];
+            this.thingSummary.index = 1;
+            this.thingSummary.getOtherInterestingPoint()
+              .event_id.should.equal(1);
+          });
+          it("should return the point after if the point before is the same", function () {
+            this.thingSummary.points = [
+              {
+                event_id: 1,
+                lat: 11,
+                lon: 20
+              },
+              {
+                event_id: 2,
+                lat: 11,
+                lon: 20
+              },
+              {
+                event_id: 3,
+                lat: 22,
+                lon: 30
+              }
+            ];
+            this.thingSummary.index = 1;
+            this.thingSummary.getOtherInterestingPoint()
+              .event_id.should.equal(3);
+          });
+          it("should return a further away point if the adjacent ones are the same", function () {
+            this.thingSummary.points = [
+              {
+                event_id: 1,
+                lat: 10,
+                lon: 20
+              },
+              {
+                event_id: 2,
+                lat: 22,
+                lon: 30
+              },
+              {
+                event_id: 3,
+                lat: 22,
+                lon: 30
+              },
+              {
+                event_id: 4,
+                lat: 22,
+                lon: 30
+              }
+            ];
+            this.thingSummary.index = 2;
+            this.thingSummary.getOtherInterestingPoint()
+              .event_id.should.equal(1);
+          });
+          it("should return the point before if all the others are the same", function () {
+            this.thingSummary.points = [
+              {
+                event_id: 1,
+                lat: 22,
+                lon: 30
+              },
+              {
+                event_id: 2,
+                lat: 22,
+                lon: 30
+              },
+              {
+                event_id: 3,
+                lat: 22,
+                lon: 30
+              },
+              {
+                event_id: 4,
+                lat: 22,
+                lon: 30
+              }
+            ];
+            this.thingSummary.index = 2;
+            this.thingSummary.getOtherInterestingPoint()
+              .event_id.should.equal(2);
           });
         });
       });

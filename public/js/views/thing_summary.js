@@ -162,11 +162,48 @@ define([
               ]
             });
           } else {
-            var area = this.getArea(point, this.points[this.index - 1]);
+            var otherPoint = this.getOtherInterestingPoint();
+            var area = this.getArea(point, otherPoint);
             this.model.set(Highlight.determineModelBounds(area));
           }
         }
       }
+    },
+
+    getOtherInterestingPoint: function () {
+      var diff = 1;
+      var noneInRange = false;
+      var beforeInRange = true;
+      var afterInRange = true;
+      while (!noneInRange) {
+        if (this.index - diff >= 0) {
+          if (this.isInterestingPoint(this.index - diff)) {
+            return this.points[this.index - diff];
+          }
+        } else {
+          beforeInRange = false;
+        }
+
+        if (this.index + diff < this.points.length) {
+
+          if (this.isInterestingPoint(this.index + diff)) {
+            return this.points[this.index + diff];
+          }
+        } else {
+          afterInRange = false;
+        }
+
+        diff += 1;
+        noneInRange = !(beforeInRange || afterInRange);
+      }
+      return this.points[this.index - 1];
+    },
+
+    isInterestingPoint: function (index) {
+      var point = this.points[this.index];
+      var otherPoint = this.points[index];
+      return (point.lat !== otherPoint.lat) ||
+        (point.lon !== otherPoint.lon);
     },
 
     getArea: function (centre, previous) {
