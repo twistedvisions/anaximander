@@ -348,6 +348,7 @@ define([
         //so it shows them unnecessarily
 
         $(".gm-style-iw").addClass("fix-height");
+        $(".gm-style-iw .summary").insertAfter($(".gm-style-iw .content-holder"));
         //This is an ugly hack to make the InfoWindow allow
         //us to chose the width of the box without it taking it into account
         setTimeout(_.bind(function () {
@@ -467,7 +468,8 @@ define([
         this.getInfoWindowSummary(result),
         "<div class='content-holder'><div class='content'>",
         _.map(result.events, this.getInfoWindowEntry, this).join(""),
-        "</div></div></div>"
+        "</div></div>",
+        "</div>"
       ].join("");
       return content;
     },
