@@ -40,7 +40,8 @@ define(
           start_date: "2014-01-01T01:00:00.000Z",
           end_date: "2014-01-01T23:00:00.000Z",
           participants: [{
-            thing_id: 123
+            thing_id: 123,
+            thing_link: "http://somewhere.com"
           }],
           location: [1, 2]
         };
@@ -1039,7 +1040,8 @@ define(
             this.event = {
               participants: [{
                 thing_id: 123,
-                thing_name: "some thing"
+                thing_name: "some thing",
+                thing_link: "http://somewhere.com"
               }],
               event_id: 1,
               event_name: "some name",
@@ -1081,7 +1083,8 @@ define(
             beforeEach(function () {
               this.event.participants.push({
                 thing_id: 1234,
-                thing_name: "some thing"
+                thing_name: "some thing",
+                thing_link: "http://somewhere.com"
               });
             });
             it("should contain the event data in the dataset", function () {
