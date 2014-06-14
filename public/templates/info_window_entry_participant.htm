@@ -5,6 +5,12 @@
 >
 
   <span class="toolbutton search glyphicon glyphicon-search"></span>
-  <span class="name"><%= thing_name %></span>
+  <span class="name">
+    <% if (thing_link.length > 0) { %>
+      <a href="<%= thing_link %>" target="_blank"><%= thing_name %></a>
+    <% } else { %>
+    <%= thing_name %>
+    <% } %>
+  </span>
 
 </div>

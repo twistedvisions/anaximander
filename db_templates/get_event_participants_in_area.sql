@@ -14,6 +14,7 @@ select
   distance,
   thing.id as thing_id,
   thing.name as thing_name,
+  thing.link as thing_link,
   type.name as thing_type,
   case
     when thing_importance.value is null then role_importance.value * 5
