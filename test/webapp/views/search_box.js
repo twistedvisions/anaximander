@@ -742,16 +742,35 @@ define(
           });
           this.searchBox.model.get("date").should.eql([2014, 2014]);
         });
-        it("should set the bounds on the model", function () {
+        it("should set the importance on the model", function () {
           sinon.stub(this.searchBox, "extractBoundingBoxData");
           var date = new Date(2014, 0, 1);
           this.searchBox.model.set("date", [1900, 1901]);
+          this.searchBox.model.set("importance", 100);
           this.searchBox.resetHighlight({
             area: [{}, {}],
             start_date: date,
-            end_date: date
+            end_date: date,
+            points: [{
+              importance_value: 10
+            }]
           });
-          this.searchBox.extractBoundingBoxData.calledOnce.should.equal(true);
+          this.searchBox.model.get("importance").should.equal(10);
+        });
+        it("should not set the importance on the model if it is already in range", function () {
+          sinon.stub(this.searchBox, "extractBoundingBoxData");
+          var date = new Date(2014, 0, 1);
+          this.searchBox.model.set("date", [1900, 1901]);
+          this.searchBox.model.set("importance", 1);
+          this.searchBox.resetHighlight({
+            area: [{}, {}],
+            start_date: date,
+            end_date: date,
+            points: [{
+              importance_value: 10
+            }]
+          });
+          this.searchBox.model.get("importance").should.equal(1);
         });
       });
       describe("analytics", function () {

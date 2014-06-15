@@ -325,7 +325,10 @@ define([
           data.start_date.getFullYear(),
           data.end_date.getFullYear()
         ];
-        this.extractBoundingBoxData(modelData, data);
+        var newImportance = this.extractImportance(data);
+        if (this.model.get("importance") > newImportance) {
+          modelData.importance = newImportance;
+        }
         this.model.set(modelData);
       }
     },
