@@ -3,7 +3,7 @@
   right: 6px;
   top: 63px;
   width: 40px;
-  height: 147px;
+  height: 154px;
   background-color: rgba(255,255,255,0.7);
   padding: 35px 17px;
   border: 1px solid rgba(100,100,100,0.7);
@@ -26,5 +26,25 @@
   #importance-slider {
     top: -12px;
     left: -3px;
+    height: 107px;
+    z-index: 1;
+  }
+  .markers {
+    top: 26px;
+    left: 11px;
+    position: absolute;
+    .marker {
+      border-top: 1px solid #bbb;
+      border-bottom: 1px solid #bbb;
+      width: 17px;
+      height: 10px;
+      margin-bottom: 10px;
+      &.marker-3 {
+        border-bottom: 1px solid #777;
+      }
+      &.marker-6 {
+        border-bottom: none;
+      }
+    }
   }
 }
