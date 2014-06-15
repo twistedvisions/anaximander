@@ -3,6 +3,7 @@
 var sinon = require("sinon");
 var should = require("should");
 var _ = require("underscore");
+var moment = require("moment");
 
 var tryTest = require("../tryTest");
 var stubDb = require("../stubDb");
@@ -292,8 +293,8 @@ describe("saveEvent", function () {
             name: "something happened",
             type_id: 2,
             place_id: 1,
-            start_date: "2013-06-02",
-            end_date: "2013-06-02",
+            start_date: moment("2013-06-02"),
+            end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
           }
         ).then(
@@ -314,8 +315,8 @@ describe("saveEvent", function () {
             name: "something happened",
             type_id: 2,
             place_id: 1,
-            start_date: "2013-06-02",
-            end_date: "2013-06-02",
+            start_date: moment("2013-06-02"),
+            end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
           }
         ).then(
@@ -338,8 +339,8 @@ describe("saveEvent", function () {
             name: "something happened",
             type_id: 1,
             place_id: 1,
-            start_date: "2013-06-02",
-            end_date: "2013-06-02",
+            start_date: moment("2013-06-02"),
+            end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
           };
           delete obj[key];
@@ -358,8 +359,8 @@ describe("saveEvent", function () {
           name: "something happened",
           type_id: 1,
           place_id: 1,
-          start_date: "2013-06-02",
-          end_date: "2013-06-01",
+          start_date: moment("2013-06-02"),
+          end_date: moment("2013-06-01"),
           link: "http://some.wiki.page/ihope.html"
         }).then(
           function () {
@@ -375,8 +376,8 @@ describe("saveEvent", function () {
             name: "something happened",
             type_id: 1,
             place_id: 2,
-            start_date: "2013-06-02",
-            end_date: "2013-06-02",
+            start_date: moment("2013-06-02"),
+            end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
           }
         ).then(
@@ -389,56 +390,6 @@ describe("saveEvent", function () {
         );
 
         stubDb.setQueryValues(this, [[]]);
-      });
-      it("should adjust the start date, by the timezone offset at the place", function (done) {
-        new saveEvent.EventSaver().createEvent({
-            name: "something happened",
-            type_id: 2,
-            place_id: 1,
-            start_date: "2013-06-02 00:00:00",
-            end_date: "2013-06-02 00:00:00",
-            start_offset_seconds: 3600,
-            end_offset_seconds: -3600,
-            link: "http://some.wiki.page/ihope.html"
-          }
-        ).then(
-          tryTest(_.bind(function () {
-            this.args[0][1].should.equal("save_creator");
-            this.args[1][2][5].should.eql(new Date(2013, 5, 2, 1));
-          }, this), done),
-          function (e) {
-            done(e);
-          }
-        );
-        stubDb.setQueryValues(this, [
-          [{id: 1}],
-          [{id: 2}]
-        ]);
-      });
-      it("should adjust the end date, by the timezone offset at the place", function (done) {
-        new saveEvent.EventSaver().createEvent({
-            name: "something happened",
-            type_id: 2,
-            place_id: 1,
-            start_date: "2013-06-02 00:00:00",
-            end_date: "2013-06-02 00:00:00",
-            start_offset_seconds: 3600,
-            end_offset_seconds: -3600,
-            link: "http://some.wiki.page/ihope.html"
-          }
-        ).then(
-          tryTest(_.bind(function () {
-            this.args[0][1].should.equal("save_creator");
-            this.args[1][2][6].should.eql(new Date(2013, 5, 1, 23));
-          }, this), done),
-          function (e) {
-            done(e);
-          }
-        );
-        stubDb.setQueryValues(this, [
-          [{id: 1}],
-          [{id: 2}]
-        ]);
       });
     });
   });
