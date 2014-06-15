@@ -267,18 +267,23 @@ define([
 
       var data = this.extractData(e);
 
-      var modelData = {};
+      var currentHighlight = this.model.get("highlight");
+      if (currentHighlight && currentHighlight.id === data.thing_id) {
+        this.model.set("highlight", {});
+      } else {
+        var modelData = {};
 
-      modelData.date = this.extractDate(data);
-      modelData.highlight = this.getHighlightFromJSON(data);
-      modelData.importance = this.extractImportance(data);
+        modelData.date = this.extractDate(data);
+        modelData.highlight = this.getHighlightFromJSON(data);
+        modelData.importance = this.extractImportance(data);
 
-      this.setModelLocation(modelData, data);
+        this.setModelLocation(modelData, data);
 
-      window.lastEvent = "search";
-      this.setModelData(modelData);
+        window.lastEvent = "search";
+        this.setModelData(modelData);
 
-      this.highlightSelectedResult();
+        this.highlightSelectedResult();
+      }
       Analytics.searchEntryClicked(data);
     },
 

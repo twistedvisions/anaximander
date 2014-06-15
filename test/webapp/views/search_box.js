@@ -1,9 +1,10 @@
 /*global sinon, describe, it, beforeEach, afterEach */
 define(
-  ["underscore", "jquery", "backbone", "views/search_box",
+  ["chai", "underscore", "jquery", "backbone", "views/search_box",
     "utils/filter_url_serialiser", "utils/scroll", "analytics", "models/current_user"],
-  function (_, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll, Analytics, User) {
+  function (chai, _, $, Backbone, SearchBox, FilterUrlSerialiser, Scroll, Analytics, User) {
     describe("search box", function () {
+      var should = chai.should();
       beforeEach(function () {
         User.user = new User();
         this.searchBox = new SearchBox({
@@ -625,6 +626,11 @@ define(
           it("should set the importance to the minimum importance of the result", function () {
             this.searchBox.resultSelected();
             this.searchBox.setModelData.args[0][0].importance.should.equal(100);
+          });
+          it("should unselect if highlight already selected", function () {
+            this.searchBox.model.set("highlight", {id: 123});
+            this.searchBox.resultSelected();
+            should.not.exist(this.searchBox.model.get("highlight").id);
           });
         });
         it("should remove all filters", function () {
