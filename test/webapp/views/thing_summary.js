@@ -154,6 +154,7 @@ define(
                 {
                   event_id: 1,
                   event_name: "event name 1",
+                  event_link: "event link 1",
                   importance_value: 10,
                   start_date: new Date(2013, 1, 1),
                   end_date: new Date(2013, 1, 1, 23, 59, 59)
@@ -161,6 +162,7 @@ define(
                 {
                   event_id: 2,
                   event_name: "event name 2",
+                  event_link: "event link 2",
                   importance_value: 9,
                   start_date: new Date(2013, 1, 2),
                   end_date: new Date(2013, 1, 2, 23, 59, 59)
@@ -170,7 +172,7 @@ define(
             this.thingSummary.update();
           });
           it("should filter points that are not important", function () {
-            this.thingSummary.$(".current-event-name").text().should.equal("1 event");
+            this.thingSummary.$(".current-event-name:first").text().should.equal("1 event");
           });
           it("should show", function () {
             this.thingSummary.$el.css("display").should.equal("block");
@@ -189,7 +191,7 @@ define(
               this.model.set("selectedEventId", 2);
               this.model.set("importance", 1);
               this.thingSummary.update();
-              this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("event name 2");
             });
           });
         });
@@ -206,22 +208,26 @@ define(
                     importance_value: 10,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
-                    event_name: "event name 1"
+                    event_name: "event name 1",
+                    event_link: "event link 1"
+                  }, {
                   }, {
                     event_id: 2,
                     importance_value: 10,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
-                    event_name: "event name 2"
+                    event_name: "event name 2",
+                    event_link: "event link 2"
+                  }, {
                   }
                 ]
               });
               this.thingSummary.update();
               this.thingSummary.showNext();
               this.thingSummary.showNext();
-              this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("event name 2");
               this.thingSummary.update();
-              this.thingSummary.$(".current-event-name").text().should.equal("event name 2");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("event name 2");
             });
           });
           describe("different amount of points", function () {
@@ -236,22 +242,25 @@ define(
                     importance_value: 10,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
-                    event_name: "event name 1"
+                    event_name: "event name 1",
+                    event_link: "event link 1"
                   }, {
                     event_id: 2,
                     importance_value: 11,
                     start_date: new Date(1950, 0, 1),
                     end_date: new Date(1950, 0, 1, 23, 59, 59),
-                    event_name: "event name 2"
+                    event_name: "event name 2",
+                    event_link: "event link 2"
+                  }, {
                   }
                 ]
               });
               this.thingSummary.update();
               this.thingSummary.showNext();
-              this.thingSummary.$(".current-event-name").text().should.equal("event name 1");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("event name 1");
               this.model.set("importance", 11);
               this.thingSummary.update();
-              this.thingSummary.$(".current-event-name").text().should.equal("1 event");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("1 event");
             });
           });
         });
@@ -304,6 +313,7 @@ define(
                   {
                     event_id: 1,
                     event_name: "event name 1",
+                    event_link: "event link 1",
                     importance_value: 10,
                     start_date: new Date(2010, 0, 1),
                     start_offset_seconds: 0,
@@ -313,6 +323,7 @@ define(
                   {
                     event_id: 2,
                     event_name: "event name 2",
+                    event_link: "event link 2",
                     importance_value: 10,
                     start_date: new Date(2011, 3, 2),
                     start_offset_seconds: 0,
@@ -327,7 +338,7 @@ define(
               this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010 – Apr 2 2011");
             });
             it("should show the amount of events", function () {
-              this.thingSummary.$(".current-event-name").text().should.equal("2 events");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("2 events");
             });
             it("should hide the place name", function () {
               this.thingSummary.$(".current-place").css("display").should.equal("none");
@@ -378,7 +389,7 @@ define(
               this.thingSummary.$(".current-date").text().should.equal("");
             });
             it("should say no events", function () {
-              this.thingSummary.$(".current-event-name").text().should.equal("0 events");
+              this.thingSummary.$(".current-event-name:first").text().should.equal("0 events");
             });
           });
         });
@@ -401,6 +412,7 @@ define(
                   end_date: new Date(2011, 0, 1, 23, 59, 59),
                   end_offset_seconds: 0,
                   event_name: "event name 1",
+                  event_link: "event link 1",
                   place_name: "place name 1"
                 },
                 {
@@ -413,6 +425,7 @@ define(
                   end_date: new Date(2011, 3, 2, 23, 59, 59),
                   end_offset_seconds: 0,
                   event_name: "event name 2",
+                  event_link: "event link 2",
                   place_name: "place name 2"
                 },
                 {
@@ -423,6 +436,7 @@ define(
                   end_date: new Date(2011, 3, 2, 23, 58),
                   end_offset_seconds: 0,
                   event_name: "event name 3",
+                  event_link: "event link 3",
                   place_name: "place name 3"
                 }
               ]
@@ -446,7 +460,7 @@ define(
             this.thingSummary.$(".current-date").text().should.equal("00:00 – 23:58 Apr 2 2011");
           });
           it("should show the name of the event", function () {
-            this.thingSummary.$(".current-event-name").text().should.equal("event name 1");
+            this.thingSummary.$(".current-event-name:first").text().should.equal("event name 1");
           });
           it("should set the selectedEventId", function () {
             this.model.get("selectedEventId").should.equal(1);

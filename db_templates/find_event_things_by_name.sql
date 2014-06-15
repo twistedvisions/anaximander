@@ -15,12 +15,14 @@ select
   array_agg(matching_thing.end_offset_seconds) as end_offset_seconds,
   array_agg(matching_thing.event_id) as event_ids,
   array_agg(matching_thing.event_name) as event_names,
+  array_agg(matching_thing.event_link) as event_links,
   array_agg(matching_thing.place_name) as place_names
 from (
   select
     t.id as thing_id,
     e.id as event_id,
     e.name as event_name,
+    e.link as event_link,
     pt.name as place_name,
     t.name as thing_name,
     t.link as thing_link,

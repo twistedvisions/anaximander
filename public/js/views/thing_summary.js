@@ -139,6 +139,8 @@ define([
         this.$(".current-date").text(dateText);
         this.$(".current-place").hide();
         this.$(".current-event-name").text(summaryText);
+        this.$(".current-event-link").hide();
+        this.$(".current-event-name.no-link").show();
         if (setPosition) {
           this.model.set(Highlight.determineModelBounds(this.highlight.area));
         }
@@ -149,6 +151,14 @@ define([
         this.$(".current-place").show();
         this.$(".current-place").text(point.place_name);
         this.$(".current-event-name").text(point.event_name);
+        this.$(".current-event-link").attr("href", point.event_link);
+        if (point.event_link.length > 0) {
+          this.$(".current-event-link").show();
+          this.$(".current-event-name.no-link").hide();
+        } else {
+          this.$(".current-event-link").hide();
+          this.$(".current-event-name.no-link").show();
+        }
         if (point.event_name.length > 60) {
           this.$(".current-event-name").addClass("long-text");
         }
