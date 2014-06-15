@@ -33,7 +33,7 @@ define([
       var selectedEventId = this.model.get("selectedEventId");
       if (this.hasHighlightChanged(highlight)) {
         this.highlight = highlight;
-        if (!highlight) {
+        if (!highlight || !highlight.id) {
           this.$el.hide();
         } else {
           this.points = this.filterPoints(this.highlight.points);
@@ -51,7 +51,7 @@ define([
     },
 
     hasHighlightChanged: function (highlight) {
-      if (!highlight || !this.highlight || (this.highlight.id !== highlight.id)) {
+      if (!highlight || !highlight.id || !this.highlight || (this.highlight.id !== highlight.id)) {
         return true;
       }
       var points = this.filterPoints(highlight.points);

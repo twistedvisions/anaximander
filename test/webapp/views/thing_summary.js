@@ -147,6 +147,7 @@ define(
           beforeEach(function () {
             this.thingSummary.render();
             this.model.set("highlight", {
+              id: 1,
               importance: 10,
               name: "thing name",
               link: "http://thing.com/link",
@@ -200,6 +201,7 @@ define(
             it("should not change the point it is showing", function () {
               this.thingSummary.render();
               this.model.set("highlight", {
+                id: 1,
                 name: "thing name",
                 link: "http://thing.com/link",
                 points: [
@@ -234,6 +236,7 @@ define(
             it("should reset to the summary", function () {
               this.thingSummary.render();
               this.model.set("highlight", {
+                id: 1,
                 name: "thing name",
                 link: "http://thing.com/link",
                 points: [
@@ -306,6 +309,7 @@ define(
           describe("multiple events", function () {
             beforeEach(function () {
               this.model.set("highlight", {
+                id: 1,
                 importance: 10,
                 name: "thing name",
                 link: "http://thing.com/link",
@@ -348,6 +352,7 @@ define(
             beforeEach(function () {
               this.thingSummary.render();
               this.model.set("highlight", {
+                id: 1,
                 name: "thing name",
                 link: "http://thing.com/link",
                 points: [
@@ -371,6 +376,7 @@ define(
             beforeEach(function () {
               this.thingSummary.render();
               this.model.set("highlight", {
+                id: 1,
                 name: "thing name",
                 link: "http://thing.com/link",
                 points: [
@@ -398,6 +404,7 @@ define(
           beforeEach(function () {
             this.thingSummary.render();
             this.model.set("highlight", {
+              id: 1,
               importance: 10,
               name: "thing name",
               link: "http://thing.com/link",
