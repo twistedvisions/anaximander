@@ -27,8 +27,8 @@
   left join thing on change.thing_id = thing.id
   left join type on change.type_id = type.id
   left join importance on change.importance_id = importance.id
+  where date >= '2014-06-08'
   order by date desc
-  limit 200
 )
 
 union all
@@ -65,8 +65,8 @@ union all
   from creator c
   inner join registered_user on registered_user.id = c.user_id
   inner join event e on e.creator_id = c.id
+  where date >= '2014-06-08'
   order by c.date desc
-  limit 200
 )
 
 union all
@@ -99,8 +99,8 @@ union all
   from creator c
   inner join registered_user on registered_user.id = c.user_id
   inner join thing t on t.creator_id = c.id
+  where date >= '2014-06-08'
   order by c.date desc
-  limit 200
 )
 
 union all
@@ -128,8 +128,8 @@ union all
   from creator c
   inner join registered_user on registered_user.id = c.user_id
   inner join type t on t.creator_id = c.id
+  where date >= '2014-06-08'
   order by c.date desc
-  limit 200
 )
 
 union all
@@ -157,8 +157,8 @@ union all
   from creator c
   inner join registered_user on registered_user.id = c.user_id
   inner join importance i on i.creator_id = c.id
+  where date >= '2014-06-08'
   order by c.date desc
-  limit 200
 )
 
 order by date desc
