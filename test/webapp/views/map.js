@@ -984,6 +984,16 @@ define(
               }
             ).should.equal("01/01/2014");
           });
+          it("should handle timezone offsets", function () {
+            this.map.getDateRangeString(
+              {
+                start_date: "2014-01-02 00:00",
+                end_date: "2014-01-02 23:59",
+                start_offset_seconds: -3600,
+                end_offset_seconds: -3600
+              }
+            ).should.equal("01/01/2014");
+          });
           it("should not show leading zeros for days before 1000", function () {
             this.map.getDateRangeString(
               {
