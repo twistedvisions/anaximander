@@ -150,8 +150,8 @@ define([
       var state = this.model.get("selectedEventId");
       var filters = "";
       var location = [
-        "lat", center[0],
-        "lon", center[1],
+        "lat", center[0].toFixed(5),
+        "lon", center[1].toFixed(5),
         "zoom", zoom,
         "start", date[0],
         "end", date[1],

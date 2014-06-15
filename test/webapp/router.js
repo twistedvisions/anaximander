@@ -110,7 +110,7 @@ define(
           this.model.set("center", [10, -20]);
           this.router.init({model: this.model});
           this.router.handleChange();
-          /lat\/10\/lon\/-20/.test(this.location).should.equal(true);
+          /lat\/10.00000\/lon\/-20.00000/.test(this.location).should.equal(true);
         });
         it("should navigate with the dates value", function () {
           this.router.init({model: this.model});
