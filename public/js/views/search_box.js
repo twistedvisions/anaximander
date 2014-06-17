@@ -208,6 +208,7 @@ define([
         var queryString = this.model.get("query");
         this.model.set("query", "");
         this.model.set("highlight", {});
+        this.model.unset("selectedEventId");
         this.model.trigger("force-change");
         if (queryString) {
           this.$("#search").val(queryString);
@@ -270,6 +271,7 @@ define([
       var currentHighlight = this.model.get("highlight");
       if (currentHighlight && currentHighlight.id === data.thing_id) {
         this.model.set("highlight", {});
+        this.model.unset("selectedEventId");
       } else {
         var modelData = {};
 

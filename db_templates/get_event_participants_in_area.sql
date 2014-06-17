@@ -6,7 +6,7 @@ select
   start_offset_seconds,
   end_date,
   end_offset_seconds,
-  event_importance_value,
+  max_event_importance_value as event_importance_value,
   place_thing_id,
   place_thing_name,
   place_thing_link,
@@ -17,8 +17,8 @@ select
   thing.link as thing_link,
   type.name as thing_type,
   case
-    when thing_importance.value is null then role_importance.value * 5
-    else role_importance.value * thing_importance.value
+    when thing_importance.value is null then event_importance_value * role_importance.value * 5
+    else event_importance_value * role_importance.value * thing_importance.value
   end as importance_value
 from (
   select
@@ -32,7 +32,8 @@ from (
     case
       when thing_importance.value is null then role_importance.value * 5 * event_importance.value
       else role_importance.value * thing_importance.value * event_importance.value
-    end as event_importance_value,
+    end as max_event_importance_value,
+    event_importance.value as event_importance_value,
     place_thing.id as place_thing_id,
     place_thing.name as place_thing_name,
     place_thing.link as place_thing_link,
@@ -70,7 +71,8 @@ from (
     type.id,
     event.id,
     place.id,
-    event_importance_value
+    max_event_importance_value,
+    event_importance.value
   order by
     distance asc,
     event.start_date asc,
@@ -92,6 +94,7 @@ group by
   event_list.start_offset_seconds,
   event_list.end_date,
   event_list.end_offset_seconds,
+  event_list.max_event_importance_value,
   event_list.event_importance_value,
   event_list.place_thing_id,
   event_list.place_thing_name,

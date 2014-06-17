@@ -189,8 +189,10 @@ define(
           });
           describe("event id selected", function () {
             it("should show the event", function () {
-              this.model.set("selectedEventId", 2);
-              this.model.set("importance", 1);
+              this.model.set({
+                "selectedEventId": 2,
+                "importance": 1
+              });
               this.thingSummary.update();
               this.thingSummary.$(".current-event-name:first").text().should.equal("event name 2");
             });
@@ -265,6 +267,40 @@ define(
               this.thingSummary.update();
               this.thingSummary.$(".current-event-name:first").text().should.equal("1 event");
             });
+          });
+        });
+        describe("changing selected event", function () {
+          beforeEach(function () {
+            this.thingSummary.render();
+            this.model.set("highlight", {
+              id: 1,
+              name: "thing name",
+              link: "http://thing.com/link",
+              points: [
+                {
+                  event_id: 1,
+                  importance_value: 10,
+                  start_date: new Date(1950, 0, 1),
+                  end_date: new Date(1950, 0, 1, 23, 59, 59),
+                  event_name: "event name 1",
+                  event_link: "event link 1"
+                }, {
+                  event_id: 2,
+                  importance_value: 11,
+                  start_date: new Date(1950, 0, 1),
+                  end_date: new Date(1950, 0, 1, 23, 59, 59),
+                  event_name: "event name 2",
+                  event_link: "event link 2"
+                }, {
+                }
+              ]
+            });
+            this.thingSummary.update();
+          });
+          it("should show the event", function () {
+            this.model.set("selectedEventId", 2);
+            this.thingSummary.update();
+            this.thingSummary.$(".current-event-name:first").text().should.equal("event name 2");
           });
         });
       });

@@ -147,6 +147,7 @@ describe("search", function () {
           end_offset_seconds: [0, 10],
           event_names: ["event name 1", "event name 2"],
           event_links: ["event link 1", "event link 2"],
+          place_ids: [101, 102],
           place_names: ["place name 1", "place name 2"],
           event_ids: [1, 2]
         })]},
@@ -165,6 +166,7 @@ describe("search", function () {
               event_id: 1,
               event_name: "event name 1",
               event_link: "event link 1",
+              place_id: 101,
               place_name: "place name 1",
               importance_value: 100
             },
@@ -178,6 +180,7 @@ describe("search", function () {
               event_id: 2,
               event_name: "event name 2",
               event_link: "event link 2",
+              place_id: 102,
               place_name: "place name 2",
               importance_value: 200
             }
@@ -208,6 +211,7 @@ describe("search", function () {
           event_ids: [1, 2],
           event_names: ["event name 1", "event name 2"],
           event_links: ["event link 1", "event link 2"],
+          place_ids: [101, 102],
           place_names: ["place name 1", "place name 2"]
         })]},
         {rows: []}
@@ -225,6 +229,7 @@ describe("search", function () {
               event_id: 1,
               event_name: "event name 1",
               event_link: "event link 1",
+              place_id: 101,
               place_name: "place name 1",
               importance_value: 100
             },
@@ -238,6 +243,7 @@ describe("search", function () {
               event_id: 2,
               event_name: "event name 2",
               event_link: "event link 2",
+              place_id: 102,
               place_name: "place name 2",
               importance_value: 200
             }

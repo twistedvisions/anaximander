@@ -35,6 +35,11 @@
       position: absolute;
     }
   }
+  &.fix-height3 {
+    .event-entry {
+      margin-bottom: 5.1px;
+    }
+  }
 
 
 
@@ -63,18 +68,22 @@
     }
   }
   max-height: 200px;
-  .event-link {
-    display: block;
-    max-width: 180px;
+  .event-entry {
 
-    &.highlight {
-      font-weight: bold !important;
-    }
-    &.no-link {
-      cursor: default;
-      color: #333;
-      &:hover {
-        text-decoration: none;
+    margin-bottom: 5px;
+    .event-link {
+      display: block;
+      max-width: 180px;
+
+      &.highlight {
+        font-weight: bold !important;
+      }
+      &.no-link {
+        cursor: default;
+        color: #333;
+        &:hover {
+          text-decoration: none;
+        }
       }
     }
   }

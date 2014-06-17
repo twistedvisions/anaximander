@@ -177,7 +177,7 @@ define(
           it("should show a summary", function () {
             sinon.stub(this.map, "getInfoWindowSummary");
             sinon.stub(this.map, "getInfoBoxData");
-            this.map.mouseOverMarker(null, {});
+            this.map.showInfoBox(null, {});
             this.map.getInfoWindowSummary.calledOnce.should.equal(true);
           });
 
@@ -185,7 +185,7 @@ define(
             sinon.stub(this.map, "getInfoWindowSummary");
             sinon.stub(this.map, "getInfoWindowEntry");
             sinon.stub(this.map, "getInfoBoxData");
-            this.map.mouseOverMarker(null, {events: [{}, {}]});
+            this.map.showInfoBox(null, {events: [{}, {}]});
             this.map.getInfoWindowEntry.calledTwice.should.equal(true);
           });
 
@@ -194,7 +194,7 @@ define(
             sinon.stub(this.map, "onLinkClick");
             try {
               el.appendTo(document.body);
-              this.map.afterMouseOverMarker();
+              this.map.afterShowInfoBox();
               el.find(".event-link").click();
               this.map.onLinkClick.calledOnce.should.equal(true);
             } finally {
@@ -206,7 +206,7 @@ define(
             sinon.stub(this.map, "onSearchClick");
             try {
               el.appendTo(document.body);
-              this.map.afterMouseOverMarker();
+              this.map.afterShowInfoBox();
               el.find(".search").click();
               this.map.onSearchClick.calledOnce.should.equal(true);
             } finally {
@@ -218,7 +218,7 @@ define(
             sinon.stub(this.map, "onEditClick");
             try {
               el.appendTo(document.body);
-              this.map.afterMouseOverMarker();
+              this.map.afterShowInfoBox();
               el.find(".edit").click();
               this.map.onEditClick.calledOnce.should.equal(true);
             } finally {
@@ -292,7 +292,7 @@ define(
               sinon.stub(Scroll, "intoView");
               this.map.render();
               this.map.model.set("highlight", {id: 123});
-              this.map.afterMouseOverMarker();
+              this.map.afterShowInfoBox();
               Scroll.intoView.calledOnce.should.equal(true);
             } finally {
               Scroll.intoView.restore();
@@ -362,9 +362,9 @@ define(
         describe("drawNewMarkers", function () {
           it("should remove necessary mapobjects", function () {
             this.map.mapObjects = {
-              remove_key: this.mapObject
+              "{\"remove_key\": 1}": this.mapObject
             };
-            this.map.drawNewMarkers([["remove_key"], []]);
+            this.map.drawNewMarkers([["{\"remove_key\": 1}"], []]);
             this.mapObject.setMap.calledWith(null).should.equal(true);
             (this.map.mapObjects.remove_key === undefined).should.equal(true);
           });
@@ -374,6 +374,31 @@ define(
             this.map.drawResult.calledOnce.should.equal(true);
             this.map.drawResult.calledWith(JSON.parse(key)).should.equal(true);
             this.map.mapObjects[key].should.equal(this.newMapObject);
+          });
+          describe("selectedEvent", function () {
+            beforeEach(function () {
+              sinon.stub(this.map, "showInfoBox");
+            });
+            afterEach(function () {
+              this.map.showInfoBox.restore();
+            });
+            it("should show the marker", function () {
+              this.map.selectedEvent = {
+                id: 205,
+                place_id: 103
+              };
+              this.map.drawNewMarkers([[], ["{\"place_id\": 103}"]]);
+              this.map.showInfoBox.calledOnce.should.equal(true);
+            });
+            it("should not show the marker if it has been shown before", function () {
+              this.map.selectedEvent = {
+                id: 205,
+                place_id: 103
+              };
+              this.map.lastEventIdShown = 205;
+              this.map.drawNewMarkers([[], ["{\"place_id\": 103}"]]);
+              this.map.showInfoBox.calledOnce.should.equal(false);
+            });
           });
         });
         describe("redrawMarkers", function () {
@@ -554,6 +579,23 @@ define(
           this.map.getColor.args[1][1].should.equal(true);
           this.map.getColor.args[2][1].should.equal(false);
         });
+
+        it("should show an infowindow for the selected event", function () {
+          sinon.spy(this.map, "showSelectedPoint");
+          this.map.model.set({
+            "highlight": {
+              id: 1,
+              points: [
+                {event_id: 102, lat: 10, lon: -20, start_date: "1900-01-01", importance_value: 10}
+              ]
+            },
+            "date": [1900, 1940],
+            selectedEventId: 102
+          });
+          this.map.paths = [];
+          this.map.showHighlight();
+          this.map.showSelectedPoint.calledOnce.should.equal(true);
+        });
       });
 
       describe("forceUpdate", function () {
@@ -706,7 +748,7 @@ define(
             this.map.updateLocation();
             this.map.redrawMarkers.calledOnce.should.equal(true);
           });
-          it("should the last highlighted ids", function () {
+          it("should remember the last highlighted ids", function () {
             this.map.updateLocation();
             this.map.lastHighlight.should.eql({id: 1});
           });
@@ -1051,7 +1093,8 @@ define(
               participants: [{
                 thing_id: 123,
                 thing_name: "some thing",
-                thing_link: "http://somewhere.com"
+                thing_link: "http://somewhere.com",
+                importance_value: 50
               }],
               event_id: 1,
               event_name: "some name",
@@ -1094,7 +1137,8 @@ define(
               this.event.participants.push({
                 thing_id: 1234,
                 thing_name: "some thing",
-                thing_link: "http://somewhere.com"
+                thing_link: "http://somewhere.com",
+                importance_value: 100
               });
             });
             it("should contain the event data in the dataset", function () {

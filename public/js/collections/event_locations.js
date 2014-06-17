@@ -166,6 +166,7 @@ define([
 
     makeKey: function (result) {
       return JSON.stringify({
+        place_id: result[0].place_thing_id,
         location: result[0].location[0],
         events: _.map(result, function (r) {
           return _.omit(r, "distance");

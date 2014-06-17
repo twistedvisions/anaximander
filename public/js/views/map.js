@@ -33,6 +33,7 @@ define([
     initialize: function (opts) {
 
       this.mapObjects = {};
+      this.mapObjectsById = {};
       this.lastHighlight = {};
       this.lastModelPosition = {};
       this.eventLocationsCollection = opts.eventLocationsCollection;
@@ -56,9 +57,11 @@ define([
       var toRender = newMarkers[1];
 
       _.each(toRemove, function (result) {
+        var resultObj = JSON.parse(result);
         var mapObject = this.mapObjects[result];
         mapObject.setMap(null);
         delete this.mapObjects[result];
+        delete this.mapObjectsById[resultObj.place_id];
       }, this);
 
       _.each(toRender, function (result) {
@@ -66,11 +69,17 @@ define([
         var mapObject = this.drawResult(resultObj);
         mapObject.setMap(this.map);
         this.mapObjects[result] = mapObject;
+        this.mapObjectsById[resultObj.place_id] = [mapObject, resultObj];
       }, this);
+
+      if (this.selectedEvent && this.selectedEvent.id !== this.lastEventIdShown) {
+        this.showSelectedPoint();
+      }
     },
 
     redrawMarkers: function () {
       var newMapObjects = {};
+      var newMapObjectsById = {};
 
       _.each(this.mapObjects, function (mapObject, result) {
         mapObject.setMap(null);
@@ -78,59 +87,94 @@ define([
         var newMapObject = this.drawResult(resultObj);
         newMapObject.setMap(this.map);
         newMapObjects[result] = newMapObject;
+        newMapObjectsById[resultObj.place_id] = [newMapObject, resultObj];
       }, this);
 
       this.showHighlight();
 
       this.mapObjects = newMapObjects;
+      this.newMapObjectsById = newMapObjectsById;
     },
 
     showHighlight: function () {
       var highlight = this.model.get("highlight");
-      var importance = this.model.get("importance");
       if (this.paths) {
         _.each(this.paths, function (path) {
           path.setMap(null);
         });
       }
       if (highlight.id) {
-        var modelDate = this.model.get("date");
-        var pointsInRange = _.filter(highlight.points, function (point) {
-          if (point.importance_value < importance) {
-            return false;
-          }
-          var pointDate = new Date(point.start_date).getFullYear();
-          return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
-        });
-        var points = _.map(pointsInRange, function (point) {
-          var latLng = new google.maps.LatLng(point.lat, point.lon);
-          latLng.start_date = point.start_date;
-          latLng.event_id = point.event_id;
-          return latLng;
-        });
+        this.closeOpenWindows();
+        var points = this.getHighlightPoints();
         var pairs = _.zip(_.initial(points), _.rest(points));
+
         var selectedEventId = this.model.get("selectedEventId");
         var isAnyUnselected = !(selectedEventId === null || selectedEventId === undefined);
 
-        this.paths = _.map(pairs, function (pair) {
-          var shouldDim = isAnyUnselected;
-          if ((pair[0].event_id === selectedEventId) || (pair[1].event_id === selectedEventId)) {
-            shouldDim = false;
-          }
+        this.paths = _.map(pairs, _.bind(this.renderPath, this, isAnyUnselected, selectedEventId));
 
-          var path = new google.maps.Polyline({
-            path: pair,
-            strokeColor: this.getColor(new Date(pair[0].start_date), shouldDim),
-            strokeOpacity: 1.0,
-            strokeWeight: 2
-          });
-          path.setMap(this.map);
-          return path;
-        }, this);
-
+        var selectedPoint = this.getSelectedPlaceId(selectedEventId, points);
+        if (selectedPoint) {
+          this.selectedEvent = {
+            id: selectedEventId,
+            place_id: selectedPoint.place_id
+          };
+          this.showSelectedPoint();
+        }
       } else {
         this.paths = [];
+        this.selectedEvent = null;
       }
+    },
+
+    getHighlightPoints: function () {
+      var highlight = this.model.get("highlight");
+      var importance = this.model.get("importance");
+      var modelDate = this.model.get("date");
+      var pointsInRange = _.filter(highlight.points, function (point) {
+        if (point.importance_value < importance) {
+          return false;
+        }
+        var pointDate = new Date(point.start_date).getFullYear();
+        return (pointDate >= modelDate[0]) && (pointDate <= modelDate[1]);
+      });
+      var points = _.map(pointsInRange, function (point) {
+        var latLng = new google.maps.LatLng(point.lat, point.lon);
+        latLng.start_date = point.start_date;
+        latLng.event_id = point.event_id;
+        latLng.place_id = point.place_id;
+        return latLng;
+      });
+      return points;
+    },
+
+    showSelectedPoint: function () {
+      if (this.selectedEvent && this.mapObjectsById[this.selectedEvent.place_id]) {
+        this.lastEventIdShown = this.selectedEvent.id;
+        this.showInfoBox.apply(this, this.mapObjectsById[this.selectedEvent.place_id]);
+      }
+    },
+
+    getSelectedPlaceId: function (selectedEventId, points) {
+      return _.find(points, function (point) {
+        return point.event_id === selectedEventId;
+      });
+    },
+
+    renderPath: function (isAnyUnselected, selectedEventId, pair) {
+      var shouldDim = isAnyUnselected;
+      if ((pair[0].event_id === selectedEventId) || (pair[1].event_id === selectedEventId)) {
+        shouldDim = false;
+      }
+
+      var path = new google.maps.Polyline({
+        path: pair,
+        strokeColor: this.getColor(new Date(pair[0].start_date), shouldDim),
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+      path.setMap(this.map);
+      return path;
     },
 
     forceUpdate: function () {
@@ -297,14 +341,14 @@ define([
       });
 
       google.maps.event.addListener(marker, "mouseover",
-        _.bind(this.mouseOverMarker, this, marker, result)
+        _.bind(this.showInfoBox, this, marker, result)
       );
 
       return marker;
 
     },
 
-    mouseOverMarker: function (marker, infoBoxData) {
+    showInfoBox: function (marker, infoBoxData) {
       this.closeOpenWindows();
       var info = new google.maps.InfoWindow({
         content: this.getContent(infoBoxData)
@@ -313,7 +357,7 @@ define([
       info.result = infoBoxData;
       this.openInfoWindows = this.openInfoWindows || [];
       this.openInfoWindows.push(info);
-      setTimeout(_.bind(this.afterMouseOverMarker, this), 10);
+      setTimeout(_.bind(this.afterShowInfoBox, this), 10);
       this.infoBoxAnalyticsTimeout = setTimeout(_.bind(function () {
         analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
       }, this), 1000);
@@ -336,7 +380,7 @@ define([
       }
     },
 
-    afterMouseOverMarker: function () {
+    afterShowInfoBox: function () {
       $(".event-entry .event-link").on("click", _.bind(this.onLinkClick, this));
       $(".event-entry .search").on("click", _.bind(this.onSearchClick, this));
       $(".event-entry .edit").on("click", _.bind(this.onEditClick, this));
@@ -370,17 +414,33 @@ define([
       var el;
 
       if (highlight.id) {
-        var el = $(".event-entry[data-thing-id=" + highlight.id + "]");
+        var el;
+        if (this.selectedEvent) {
+          el = $(".event-entry[data-id=" + this.selectedEvent.id + "]");
+        }
+        if (!el || el.length === 0) {
+          el = $(".event-entry[data-thing-id=" + highlight.id + "]");
+        }
         if (el && el.length) {
           Scroll.intoView(el, el.parent(), 50);
+          setTimeout(function () {
+            $(".gm-style-iw").addClass("fix-height3");
+          }, 100);
         }
       }
     },
 
     onSearchClick: function (e) {
       var data = this.getMarkerData(e);
-      this.model.set("query", data.thingName);
-      this.model.set("highlight", {id: data.thingId, reset: true});
+      var modelData = {
+        "query": data.thingName,
+        "highlight": {id: data.thingId, reset: true},
+        "selectedEventId": data.id
+      };
+      if (data.importanceValue < this.model.get("importance")) {
+        modelData.importance = data.importanceValue;
+      }
+      this.model.set(modelData);
       analytics.mapEntrySearched(data);
     },
 
@@ -398,7 +458,10 @@ define([
     },
 
     getMarkerData: function (e) {
-      return $(e.target).parent().data();
+      return _.extend(
+        $(e.target).parent().parent().data(),
+        $(e.target).parent().data()
+      );
     },
 
     getMarkerText: function (events) {
@@ -484,19 +547,28 @@ define([
     },
 
     getInfoWindowEntry: function (event) {
-      var highlight = this.model.get("highlight");
-      var highlighted =
-        _.intersection(
-          [highlight.id],
-          _.pluck(event.participants, "thing_id")
-        ).length > 0;
-
       return this.infoWindowEntryTemplate(_.extend({
         canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-event"),
         participantTemplate: this.infoWindowEntryParticipantTemplate,
         date: this.getDateRangeString(event),
-        highlighted: highlighted
+        highlighted: this.shouldHighlightInfoWindowEntry(event)
       }, event));
+    },
+
+    shouldHighlightInfoWindowEntry: function (event) {
+      var highlight = this.model.get("highlight");
+      var selectedEventId = this.model.get("selectedEventId");
+
+      if (selectedEventId) {
+        return event.event_id === selectedEventId;
+      } else {
+        var highlighted =
+          _.intersection(
+            [highlight.id],
+            _.pluck(event.participants, "thing_id")
+          ).length > 0;
+        return highlighted;
+      }
     },
 
     getDateRangeString: function (event) {

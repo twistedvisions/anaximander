@@ -23,7 +23,7 @@ define([
       this.$el.html(template());
       this.update();
 
-      this.model.on("change:highlight change:importance change:date", this.update, this);
+      this.model.on("change:highlight change:selectedEventId change:importance change:date", this.update, this);
       this.$(".next").on("click", _.bind(this.showNext, this));
       this.$(".previous").on("click", _.bind(this.showPrevious, this));
     },
@@ -35,18 +35,26 @@ define([
         this.highlight = highlight;
         if (!highlight || !highlight.id) {
           this.$el.hide();
-        } else {
-          this.points = this.filterPoints(this.highlight.points);
-          this.index = this.findIndexForEvent(selectedEventId);
-          if (this.highlight.type !== "place") {
-            this.$(".name a").text(this.highlight.name);
-            this.$(".name a").prop("href", this.highlight.link);
-            this.showPoint();
-            this.$el.show();
-          } else {
-            this.$el.hide();
-          }
+        } else if (!highlight.reset) {
+          this.updateHighlight();
         }
+      } else if (!highlight.reset && !!selectedEventId && (this.lastEventId !== selectedEventId)) {
+        this.highlight = highlight;
+        this.updateHighlight();
+      }
+    },
+
+    updateHighlight: function () {
+      var selectedEventId = this.model.get("selectedEventId");
+      this.points = this.filterPoints(this.highlight.points);
+      this.index = this.findIndexForEvent(selectedEventId);
+      if (this.highlight.type !== "place") {
+        this.$(".name a").text(this.highlight.name);
+        this.$(".name a").prop("href", this.highlight.link);
+        this.showPoint();
+        this.$el.show();
+      } else {
+        this.$el.hide();
       }
     },
 
@@ -55,7 +63,7 @@ define([
         return true;
       }
       var points = this.filterPoints(highlight.points);
-      if (this.points.length !== points.length) {
+      if (!this.points || this.points.length !== points.length) {
         return true;
       }
       return false;
@@ -125,6 +133,7 @@ define([
       this.$(".current-event-name").removeClass("long-text");
       if (this.index === -1) {
         this.model.unset("selectedEventId");
+        this.lastEventId = null;
         var dateText = "";
         var summaryText;
         if (this.points.length === 1) {
@@ -147,6 +156,7 @@ define([
       } else {
         var point = this.points[this.index];
         this.model.set("selectedEventId", point.event_id);
+        this.lastEventId = point.event_id;
         this.$(".current-date").text(this.getDateTimeRange(point));
         this.$(".current-place").show();
         this.$(".current-place").text(point.place_name);

@@ -11,6 +11,7 @@
 <% if (participants.length === 1) { %>
   data-thing-id="<%= participants[0].thing_id %>"
   data-thing-name="<%= participants[0].thing_name %>"
+  data-importance-value="<%= participants[0].importance_value %>"
 <% } %>
 >
     <a class="event-link <%= (highlighted ? " highlight" : "") %><% if (event_link.length === 0) { %> no-link <% } %> "

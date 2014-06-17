@@ -16,6 +16,7 @@ select
   array_agg(matching_thing.event_id) as event_ids,
   array_agg(matching_thing.event_name) as event_names,
   array_agg(matching_thing.event_link) as event_links,
+  array_agg(matching_thing.place_id) as place_ids,
   array_agg(matching_thing.place_name) as place_names
 from (
   select
@@ -23,6 +24,7 @@ from (
     e.id as event_id,
     e.name as event_name,
     e.link as event_link,
+    pt.id as place_id,
     pt.name as place_name,
     t.name as thing_name,
     t.link as thing_link,
