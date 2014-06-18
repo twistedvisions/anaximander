@@ -28,7 +28,7 @@ define(["underscore"], function (_) {
   var events = [
     //map
     "navigation",
-    "infoBoxShown",
+    "infoWindowShown",
     "linkClicked",
     "mapEntrySearched",
     "mapEntryEdited",

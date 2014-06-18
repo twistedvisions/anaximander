@@ -151,7 +151,7 @@ define([
     showSelectedPoint: function () {
       if (this.selectedEvent && this.mapObjectsById[this.selectedEvent.place_id]) {
         this.lastEventIdShown = this.selectedEvent.id;
-        this.showInfoBox.apply(this, this.mapObjectsById[this.selectedEvent.place_id]);
+        this.showInfoWindow.apply(this, this.mapObjectsById[this.selectedEvent.place_id]);
       }
     },
 
@@ -341,31 +341,31 @@ define([
       });
 
       google.maps.event.addListener(marker, "mouseover",
-        _.bind(this.showInfoBox, this, marker, result)
+        _.bind(this.showInfoWindow, this, marker, result)
       );
 
       return marker;
 
     },
 
-    showInfoBox: function (marker, infoBoxData) {
+    showInfoWindow: function (marker, infoWindowData) {
       this.closeOpenWindows();
       var info = new google.maps.InfoWindow({
-        content: this.getContent(infoBoxData)
+        content: this.getContent(infoWindowData)
       });
       info.open(this.map, marker);
-      info.result = infoBoxData;
+      info.result = infoWindowData;
       this.openInfoWindows = this.openInfoWindows || [];
       this.openInfoWindows.push(info);
-      setTimeout(_.bind(this.afterShowInfoBox, this), 10);
-      this.infoBoxAnalyticsTimeout = setTimeout(_.bind(function () {
-        analytics.infoBoxShown(this.getInfoBoxData(infoBoxData));
+      setTimeout(_.bind(this.afterShowInfoWindow, this), 10);
+      this.infoWindowAnalyticsTimeout = setTimeout(_.bind(function () {
+        analytics.infoWindowShown(this.getInfoWindowData(infoWindowData));
       }, this), 1000);
     },
 
     closeOpenWindows: function () {
-      if (this.infoBoxAnalyticsTimeout) {
-        clearTimeout(this.infoBoxAnalyticsTimeout);
+      if (this.infoWindowAnalyticsTimeout) {
+        clearTimeout(this.infoWindowAnalyticsTimeout);
       }
       _.each(this.openInfoWindows, function (infoWindow) {
         infoWindow.close();
@@ -380,7 +380,7 @@ define([
       }
     },
 
-    afterShowInfoBox: function () {
+    afterShowInfoWindow: function () {
       $(".event-entry .event-link").on("click", _.bind(this.onLinkClick, this));
       $(".event-entry .search").on("click", _.bind(this.onSearchClick, this));
       $(".event-entry .edit").on("click", _.bind(this.onEditClick, this));
@@ -472,7 +472,7 @@ define([
       }
     },
 
-    getInfoBoxData: function (results) {
+    getInfoWindowData: function (results) {
       var data = {};
       data.lat = results.location[0];
       data.lon = results.location[1];

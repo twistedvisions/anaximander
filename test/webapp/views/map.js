@@ -99,7 +99,7 @@ define(
       });
       describe("interaction", function () {
         beforeEach(function () {
-          sinon.stub(Analytics, "infoBoxShown");
+          sinon.stub(Analytics, "infoWindowShown");
           sinon.stub(Analytics, "optionsMenuShown");
           sinon.stub(Analytics, "linkClicked");
 
@@ -125,7 +125,7 @@ define(
         });
 
         afterEach(function () {
-          Analytics.infoBoxShown.restore();
+          Analytics.infoWindowShown.restore();
           Analytics.linkClicked.restore();
           Analytics.optionsMenuShown.restore();
           StyledMarker.StyledMarker.restore();
@@ -176,16 +176,16 @@ define(
 
           it("should show a summary", function () {
             sinon.stub(this.map, "getInfoWindowSummary");
-            sinon.stub(this.map, "getInfoBoxData");
-            this.map.showInfoBox(null, {});
+            sinon.stub(this.map, "getInfoWindowData");
+            this.map.showInfoWindow(null, {});
             this.map.getInfoWindowSummary.calledOnce.should.equal(true);
           });
 
           it("should show an entry for each event", function () {
             sinon.stub(this.map, "getInfoWindowSummary");
             sinon.stub(this.map, "getInfoWindowEntry");
-            sinon.stub(this.map, "getInfoBoxData");
-            this.map.showInfoBox(null, {events: [{}, {}]});
+            sinon.stub(this.map, "getInfoWindowData");
+            this.map.showInfoWindow(null, {events: [{}, {}]});
             this.map.getInfoWindowEntry.calledTwice.should.equal(true);
           });
 
@@ -194,7 +194,7 @@ define(
             sinon.stub(this.map, "onLinkClick");
             try {
               el.appendTo(document.body);
-              this.map.afterShowInfoBox();
+              this.map.afterShowInfoWindow();
               el.find(".event-link").click();
               this.map.onLinkClick.calledOnce.should.equal(true);
             } finally {
@@ -206,7 +206,7 @@ define(
             sinon.stub(this.map, "onSearchClick");
             try {
               el.appendTo(document.body);
-              this.map.afterShowInfoBox();
+              this.map.afterShowInfoWindow();
               el.find(".search").click();
               this.map.onSearchClick.calledOnce.should.equal(true);
             } finally {
@@ -218,7 +218,7 @@ define(
             sinon.stub(this.map, "onEditClick");
             try {
               el.appendTo(document.body);
-              this.map.afterShowInfoBox();
+              this.map.afterShowInfoWindow();
               el.find(".edit").click();
               this.map.onEditClick.calledOnce.should.equal(true);
             } finally {
@@ -238,7 +238,7 @@ define(
             google.maps.event.triggers[3]();
             this.clock.tick(1000);
 
-            Analytics.infoBoxShown.calledOnce.should.equal(true);
+            Analytics.infoWindowShown.calledOnce.should.equal(true);
           });
 
           it("should track when a marker link is clicked on", function () {
@@ -292,7 +292,7 @@ define(
               sinon.stub(Scroll, "intoView");
               this.map.render();
               this.map.model.set("highlight", {id: 123});
-              this.map.afterShowInfoBox();
+              this.map.afterShowInfoWindow();
               Scroll.intoView.calledOnce.should.equal(true);
             } finally {
               Scroll.intoView.restore();
@@ -377,10 +377,10 @@ define(
           });
           describe("selectedEvent", function () {
             beforeEach(function () {
-              sinon.stub(this.map, "showInfoBox");
+              sinon.stub(this.map, "showInfoWindow");
             });
             afterEach(function () {
-              this.map.showInfoBox.restore();
+              this.map.showInfoWindow.restore();
             });
             it("should show the marker", function () {
               this.map.selectedEvent = {
@@ -388,7 +388,7 @@ define(
                 place_id: 103
               };
               this.map.drawNewMarkers([[], ["{\"place_id\": 103}"]]);
-              this.map.showInfoBox.calledOnce.should.equal(true);
+              this.map.showInfoWindow.calledOnce.should.equal(true);
             });
             it("should not show the marker if it has been shown before", function () {
               this.map.selectedEvent = {
@@ -397,7 +397,7 @@ define(
               };
               this.map.lastEventIdShown = 205;
               this.map.drawNewMarkers([[], ["{\"place_id\": 103}"]]);
-              this.map.showInfoBox.calledOnce.should.equal(false);
+              this.map.showInfoWindow.calledOnce.should.equal(false);
             });
           });
         });
@@ -992,7 +992,7 @@ define(
 
       describe("info box", function () {
         it("should send summary information to analytics", function () {
-          var data = this.map.getInfoBoxData({
+          var data = this.map.getInfoWindowData({
             location: [1, 2],
             events: [{
               start_date: "1900-01-01T00:00:00.000Z",
