@@ -106,12 +106,9 @@ define([
       if (highlight.id) {
         this.closeOpenWindows();
         var points = this.getHighlightPoints();
-        var pairs = _.zip(_.initial(points), _.rest(points));
-
         var selectedEventId = this.model.get("selectedEventId");
-        var isAnyUnselected = !(selectedEventId === null || selectedEventId === undefined);
 
-        this.paths = _.map(pairs, _.bind(this.renderPath, this, isAnyUnselected, selectedEventId));
+        this.renderPaths(points);
 
         var selectedPoint = this.getSelectedPlaceId(selectedEventId, points);
         if (selectedPoint) {
@@ -119,7 +116,7 @@ define([
             id: selectedEventId,
             place_id: selectedPoint.place_id
           };
-          this.showSelectedPoint();
+          this.showSelectedPoint(points);
         }
       } else {
         this.paths = [];
@@ -161,19 +158,48 @@ define([
       });
     },
 
-    renderPath: function (isAnyUnselected, selectedEventId, pair) {
-      var shouldDim = isAnyUnselected;
-      if ((pair[0].event_id === selectedEventId) || (pair[1].event_id === selectedEventId)) {
-        shouldDim = false;
-      }
+    renderPaths: function (points) {
+      var selectedEventId = this.model.get("selectedEventId");
 
+      var pairs = _.zip(_.initial(points), _.rest(points));
+
+      var isAnyUnselected = !(selectedEventId === null || selectedEventId === undefined);
+
+      var shouldDim = function (pair) {
+        var shouldDim = isAnyUnselected;
+        if ((pair[0].event_id === selectedEventId) || (pair[1].event_id === selectedEventId)) {
+          shouldDim = false;
+        }
+        return shouldDim;
+      };
+
+      var dimmedPaths = _.chain(pairs)
+        .filter(function (pair) {
+          return shouldDim(pair) === true;
+        })
+        .map(_.bind(this.renderPath, this, isAnyUnselected, selectedEventId, true))
+        .value();
+
+      var normalPaths = _.chain(pairs)
+        .filter(function (pair) {
+          return shouldDim(pair) === false;
+        })
+        .map(_.bind(this.renderPath, this, isAnyUnselected, selectedEventId, false))
+        .value();
+
+      this.paths = dimmedPaths.concat(normalPaths);
+
+    },
+
+    renderPath: function (isAnyUnselected, selectedEventId, isDimmed, pair) {
       var path = new google.maps.Polyline({
         path: pair,
-        strokeColor: this.getColor(new Date(pair[0].start_date), shouldDim),
+        strokeColor: this.getColor(new Date(pair[0].start_date), isDimmed),
         strokeOpacity: 1.0,
         strokeWeight: 2
       });
       path.setMap(this.map);
+      path.isDimmed = isDimmed;
       return path;
     },
 

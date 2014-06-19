@@ -533,9 +533,9 @@ define(
           this.map.model.set("date", [1900, 1940]);
           this.map.model.set("selectedEventId", 1);
           this.map.showHighlight();
-          this.map.getColor.args[0][1].should.equal(false);
-          this.map.getColor.args[1][1].should.equal(true);
-          this.map.getColor.args[2][1].should.equal(true);
+          this.map.paths[0].isDimmed.should.equal(true);
+          this.map.paths[1].isDimmed.should.equal(true);
+          this.map.paths[2].isDimmed.should.equal(false);
         });
 
         it("should only highlight paths around the selected event in the middle", function () {
@@ -554,9 +554,9 @@ define(
           this.map.model.set("date", [1900, 1940]);
           this.map.model.set("selectedEventId", 2);
           this.map.showHighlight();
-          this.map.getColor.args[0][1].should.equal(false);
-          this.map.getColor.args[1][1].should.equal(false);
-          this.map.getColor.args[2][1].should.equal(true);
+          this.map.paths[0].isDimmed.should.equal(true);
+          this.map.paths[1].isDimmed.should.equal(false);
+          this.map.paths[2].isDimmed.should.equal(false);
         });
 
         it("should only highlight paths around the selected event at the end", function () {
@@ -575,9 +575,9 @@ define(
           this.map.model.set("date", [1900, 1940]);
           this.map.model.set("selectedEventId", 4);
           this.map.showHighlight();
-          this.map.getColor.args[0][1].should.equal(true);
-          this.map.getColor.args[1][1].should.equal(true);
-          this.map.getColor.args[2][1].should.equal(false);
+          this.map.paths[0].isDimmed.should.equal(true);
+          this.map.paths[1].isDimmed.should.equal(true);
+          this.map.paths[2].isDimmed.should.equal(false);
         });
 
         it("should show an infowindow for the selected event", function () {
