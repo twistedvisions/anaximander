@@ -125,7 +125,7 @@ describe("RequestUtils", function () {
         ]);
       });
       it("should allow nominal importances to be created if you can edit-type", function (done) {
-        this.fnArgs[0].name = "Nominal";
+        this.fnArgs[0].name = "nominal";
         this.fnArgs[0].value = 5;
         this.fnArgs.push(_.bind(this.eventSaver.hasImportancePermission, this.eventSaver));
         this.eventSaver.permissions = {
