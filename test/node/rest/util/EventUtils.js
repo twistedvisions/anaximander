@@ -130,6 +130,52 @@ describe("EventUtils", function () {
         [{db_call: "update_type_default_importance_when_null"}]
       ]);
     });
+    it("should ensure existing roles and importances", function (done) {
+      this.participants = [{
+        thing: {id: 1},
+        type: {id: 2},
+        importance: {id: 3}
+      }];
+      this.eventUtils.ensureParticipantTypesAndImportances(
+        this.participants, 321
+      ).then(
+        _.bind(function () {
+          this.participants[0].type.id.should.equal(2);
+          this.participants[0].importance.id.should.equal(3);
+          done();
+        }, this)
+      );
+      stubDb.setQueryValues(this, [
+        [{db_call: "find_type_by_id", id: 2}],
+        [{db_call: "find_importance_by_id", id: 3}]
+      ]);
+    });
+    it("should only ensure roles and importances that exist in multiple participants one", function (done) {
+      this.participants = [{
+        thing: {id: 1},
+        type: {id: 2},
+        importance: {id: 3}
+      }, {
+        thing: {id: 2},
+        type: {id: 2},
+        importance: {id: 3}
+      }];
+      this.eventUtils.ensureParticipantTypesAndImportances(
+        this.participants, 321
+      ).then(
+        _.bind(function () {
+          this.participants[0].type.id.should.equal(2);
+          this.participants[0].importance.id.should.equal(3);
+          this.participants[1].type.id.should.equal(2);
+          this.participants[1].importance.id.should.equal(3);
+          done();
+        }, this)
+      );
+      stubDb.setQueryValues(this, [
+        [{db_call: "find_type_by_id", id: 2}],
+        [{db_call: "find_importance_by_id", id: 3}]
+      ]);
+    });
     it("should save new importances that exist once", function (done) {
       this.participants = [
         {
