@@ -218,7 +218,7 @@ describe("editEvent", function () {
       }, done);
     });
 
-    it("should save a default importance if it is a new type", function (done) {
+    it("should still save a nominal importance if it is a new type with a different importance", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
@@ -238,11 +238,11 @@ describe("editEvent", function () {
         [{db_call: "get_user_permissions", name: "edit-event"},
           {name: "add-type"}, {name: "add-importance"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
-        [{db_call: "save_creator"}],
+        [{db_call: "save_creator", id: 101}],
         [{db_call: "save_type"}],
         [{db_call: "save_creator"}],
         [{db_call: "save_importance"}],
-        [{db_call: "update_type_default_importance_when_null"}],
+        [{db_call: "save_importance"}],
         [{db_call: "update_event_type"}],
         [{db_call: "update_event_importance"}],
         [{db_call: "save_event_change"}],
@@ -251,7 +251,7 @@ describe("editEvent", function () {
       ];
 
       this.testEdit(function () {
-        this.args[6][1].should.equal("update_type_default_importance_when_null");
+        this.args[4][1].should.equal("save_importance");
       }, done);
     });
     it("should not save a type if the user lacks permission", function (done) {
@@ -822,7 +822,7 @@ describe("editEvent", function () {
         editedParticipants: [{
           thing: {id: 2},
           type: {id: -1, name: "new role"},
-          importance: {id: -1, name: "Nominal", value: 5, description: "some description"}
+          importance: {id: -1, name: "nominal", value: 5, description: "some description"}
         }]
       };
       this.originalEvent = {
@@ -837,12 +837,16 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "save_creator", id: 99}],
         [{db_call: "save_type", id: 100}],
-        [{db_call: "update_event_type"}],
+        [{db_call: "update_event_type", id: 1010}],
         [{db_call: "save_role", id: 101}],
-        [{db_call: "save_importance"}],
+        [{db_call: "save_importance", id: 1011}],
         [{db_call: "update_type_default_importance_when_null"}],
         [{db_call: "find_thing_by_id"}],
         [{db_call: "update_participant_role"}],
+        [{db_call: "update_participant_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "save_event_change"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
@@ -858,56 +862,64 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 126,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}, type: {id: 3}, importance: {}}]
+        editedParticipants: [{thing: {id: 2}, type: {id: 5}, importance: {id: 6}}]
       };
 
       this.originalEvent = {
         type: {
           id: 3
         },
-        participants: [{thing: {id: 2}}]
+        participants: [{thing: {id: 2}, type: {id: 3}, importance: {id: 4}}]
       };
 
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_participant_role", id: 2}],
+        [{db_call: "find_type_by_id", id: 5}],
+        [{db_call: "find_importance_by_id", id: 6}],
+        [{db_call: "update_participant_role"}],
+        [{db_call: "update_participant_importance"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("update_participant_role");
-        this.args[2][2][0].should.equal(126);
+        this.args[4][1].should.equal("update_participant_role");
+        this.args[4][2][0].should.equal(126);
       }, done);
     });
+
+    it("should not look for types that are unchanged");
 
     it("should change the importance of existing participants", function (done) {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}, type: {}, importance: {id: 3}}]
+        editedParticipants: [{thing: {id: 2}, type: {id: 4}, importance: {id: 30}}]
       };
 
       this.originalEvent = {
         type: {
           id: 3
         },
-        participants: [{thing: {id: 2}}]
+        participants: [{thing: {id: 2}, type: {id: 4}, importance: {id: 30}}]
       };
 
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
-        [{db_call: "update_participant_importance", id: 2}],
+        [{db_call: "find_type_by_id", id: 4}],
+        [{db_call: "find_importance_by_id", id: 30}],
+        [{db_call: "update_participant_role"}],
+        [{db_call: "update_participant_importance"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
-        this.args[2][1].should.equal("update_participant_importance");
+        this.args[5][1].should.equal("update_participant_importance");
       }, done);
     });
 
@@ -1060,16 +1072,18 @@ describe("editEvent", function () {
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "update_event_name"}],
+        [{db_call: "find_type_by_id", id: 1}],
+        [{db_call: "find_importance_by_id", id: 1}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
-        this.args[3][1].should.equal("save_event_change");
-        should.not.exist(JSON.parse(this.args[3][2][4]).newParticipants[0].thing.funny);
-        should.not.exist(JSON.parse(this.args[3][2][4]).newParticipants[0].type.funny);
-        should.not.exist(JSON.parse(this.args[3][2][4]).newParticipants[0].importance.funny);
+        this.args[5][1].should.equal("save_event_change");
+        should.not.exist(JSON.parse(this.args[5][2][4]).newParticipants[0].thing.funny);
+        should.not.exist(JSON.parse(this.args[5][2][4]).newParticipants[0].type.funny);
+        should.not.exist(JSON.parse(this.args[5][2][4]).newParticipants[0].importance.funny);
       }, done);
     });
 
@@ -1117,6 +1131,8 @@ describe("editEvent", function () {
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_type_by_id", id: 1}],
+        [{db_call: "find_importance_by_id", id: 1}],
         [{db_call: "update_event_name"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
@@ -1124,8 +1140,8 @@ describe("editEvent", function () {
       ];
 
       this.testEdit(function () {
-        this.args[3][1].should.equal("save_event_change");
-        should.exist(JSON.parse(this.args[3][2][3]).participants);
+        this.args[5][1].should.equal("save_event_change");
+        should.exist(JSON.parse(this.args[5][2][3]).participants);
       }, done);
     });
 

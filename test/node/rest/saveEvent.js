@@ -197,7 +197,32 @@ describe("saveEvent", function () {
         });
       });
       describe("participants", function () {
-        it("should ensure that each participant's type exists", function (done) {
+        it("should ensure that each existing participant's type exists", function (done) {
+          this.testSave(function () {
+            this.eventSaver.ensure.calledWith(sinon.match.any, "participant type").should.equal(true);
+          }, done);
+        });
+        it("should ensure that a single new participant's type exists", function (done) {
+          delete this.fullBody.participants[0].type.id;
+          this.fullBody.participants[0].type.name = "new role";
+          this.stubValues[0].push({name: "add-type"});
+          this.stubValues.push([{id: 20}]);
+          this.testSave(function () {
+            this.eventSaver.ensure.calledWith(sinon.match.any, "participant type").should.equal(true);
+          }, done);
+        });
+        it("should ensure that multiple new participant's type exists", function (done) {
+          delete this.fullBody.participants[0].type.id;
+          this.fullBody.participants[0].type.name = "new role";
+          this.fullBody.participants.push({
+            thing: {id: 20},
+            type: {name: "new role"},
+            importance: {id: 21}
+          });
+          this.stubValues[0].push({name: "add-type"});
+          this.stubValues.push([{id: 20}]);
+          this.stubValues.push([{id: 21}]);
+          this.stubValues.push([{id: 22}]);
           this.testSave(function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "participant type").should.equal(true);
           }, done);
@@ -216,6 +241,29 @@ describe("saveEvent", function () {
           }, done);
         });
         it("should ensure that each participant's importance exists", function (done) {
+          this.testSave(function () {
+            this.eventSaver.ensure.calledWith(sinon.match.any, "participant importance").should.equal(true);
+          }, done);
+        });
+        it("should ensure that multiple participant's same new importance exists", function (done) {
+          delete this.fullBody.participants[0].importance.id;
+          this.fullBody.participants[0].importance.name = "new role importance";
+          this.fullBody.participants[0].importance.description = "some description";
+          this.fullBody.participants[0].importance.value = 1;
+
+          this.fullBody.participants.push({
+            thing: {id: 20},
+            type: {id: 1},
+            importance: {
+              name: "new role importance",
+              description: "new description",
+              value: 5
+            }
+          });
+          this.stubValues[0].push({name: "add-importance"});
+          this.stubValues.push([{id: 20}]);
+          this.stubValues.push([{id: 21}]);
+          this.stubValues.push([{id: 22}]);
           this.testSave(function () {
             this.eventSaver.ensure.calledWith(sinon.match.any, "participant importance").should.equal(true);
           }, done);
