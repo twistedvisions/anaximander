@@ -617,7 +617,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        type: {id: 2}
+        type: {id: 2, related_type_id: 101}
       };
 
       this.stubValues = [
@@ -862,7 +862,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 126,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}, type: {id: 5}, importance: {id: 6}}]
+        editedParticipants: [{thing: {id: 2}, type: {id: 5, related_type_id: 101}, importance: {id: 6}}]
       };
 
       this.originalEvent = {
@@ -896,7 +896,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        editedParticipants: [{thing: {id: 2}, type: {id: 4}, importance: {id: 30}}]
+        editedParticipants: [{thing: {id: 2}, type: {id: 4, related_type_id: 101}, importance: {id: 30}}]
       };
 
       this.originalEvent = {
@@ -1059,6 +1059,7 @@ describe("editEvent", function () {
           },
           type: {
             id: 1,
+            related_type_id: 101,
             funny: "business"
           },
           importance: {
@@ -1120,7 +1121,8 @@ describe("editEvent", function () {
             id: 1
           },
           type: {
-            id: 1
+            id: 1,
+            related_type_id: 101
           },
           importance: {
             id: 1
@@ -1149,7 +1151,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        type: {id: 2}
+        type: {id: 2, related_type_id: 101}
       };
 
       this.stubValues = [

@@ -63,7 +63,8 @@ describe("saveEvent", function () {
           typeId: 4
         },
         type: {
-          id: 1
+          id: 1,
+          related_type_id: 101
         },
         importance: {
           id: 1
@@ -253,7 +254,7 @@ describe("saveEvent", function () {
 
           this.fullBody.participants.push({
             thing: {id: 20},
-            type: {id: 1},
+            type: {id: 1, related_type_id: 101},
             importance: {
               name: "new role importance",
               description: "new description",
@@ -280,7 +281,7 @@ describe("saveEvent", function () {
             var thing = this.fullBody.participants[0].thing;
             thing.id = -1;
             thing.subtypes = [{
-              type: {id: 1},
+              type: {id: 1, related_type_id: 101},
               importance: {id: 1}
             }];
             this.stubValues[0].push({name: "add-thing"});
@@ -462,6 +463,7 @@ describe("saveEvent", function () {
           },
           type: {
             id: 2,
+            related_type_id: 101,
             name: "some type"
           },
           attendees: [{

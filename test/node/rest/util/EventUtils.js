@@ -133,7 +133,7 @@ describe("EventUtils", function () {
     it("should ensure existing roles and importances", function (done) {
       this.participants = [{
         thing: {id: 1},
-        type: {id: 2},
+        type: {id: 2, related_type_id: 101},
         importance: {id: 3}
       }];
       this.eventUtils.ensureParticipantTypesAndImportances(
@@ -153,11 +153,11 @@ describe("EventUtils", function () {
     it("should only ensure roles and importances that exist in multiple participants one", function (done) {
       this.participants = [{
         thing: {id: 1},
-        type: {id: 2},
+        type: {id: 2, related_type_id: 101},
         importance: {id: 3}
       }, {
         thing: {id: 2},
-        type: {id: 2},
+        type: {id: 2, related_type_id: 101},
         importance: {id: 3}
       }];
       this.eventUtils.ensureParticipantTypesAndImportances(
@@ -180,18 +180,15 @@ describe("EventUtils", function () {
       this.participants = [
         {
           thing: {id: 1},
-          type: {id: 100},
+          type: {id: 100, related_type_id: 101},
           importance: {name: "new importance", description: "description", value: 5}
         }
       ];
       this.eventUtils.ensureParticipantTypesAndImportances(
         this.participants, 321
-      ).then(
-        _.bind(function () {
-          this.participants[0].importance.id.should.equal(3);
-          done();
-        }, this)
-      );
+      ).then(tryTest(_.bind(function () {
+        this.participants[0].importance.id.should.equal(3);
+      }, this), done));
       stubDb.setQueryValues(this, [
         [{db_call: "find_type_by_id", id: 100}],
         [{db_call: "save_creator", id: 1}],
@@ -202,12 +199,12 @@ describe("EventUtils", function () {
       this.participants = [
         {
           thing: {id: 1},
-          type: {id: 100},
+          type: {id: 100, related_type_id: 101},
           importance: {name: "new importance", description: "description", value: 5}
         },
         {
           thing: {id: 2},
-          type: {id: 100},
+          type: {id: 100, related_type_id: 101},
           importance: {name: "new importance", description: "description", value: 5}
         }
       ];
