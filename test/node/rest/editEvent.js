@@ -49,7 +49,7 @@ describe("editEvent", function () {
     beforeEach(function () {
       this.stubValues = [];
       sinon.spy(this.eventEditor, "ensure");
-      sinon.stub(this.eventEditor, "ensureParticipant");
+      sinon.spy(this.eventEditor, "ensureParticipant");
       sinon.stub(this.eventEditor, "addParticipant");
       sinon.stub(this.eventEditor, "getEvent", _.bind(function () {
         this.eventEditor.originalEvent = this.originalEvent;
@@ -722,12 +722,15 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        newParticipants: [{thing: {}, type: {}, importance: {}}]
+        newParticipants: [{thing: {id: 1}, type: {id: 1, related_type_id: 1}, importance: {id: 1}}]
       };
 
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_role_by_id", id: 1}],
+        [{db_call: "find_importance_by_id", id: 1}],
+        [{db_call: "find_thing_by_id", id: 1}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
@@ -741,12 +744,17 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        newParticipants: [{thing: {}, type: {}, importance: {}}]
+        newParticipants: [
+          {thing: {id: 1}, type: {id: 1, related_type_id: 1}, importance: {id: 1}}
+        ]
       };
 
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_role_by_id", id: 1}],
+        [{db_call: "find_importance_by_id", id: 1}],
+        [{db_call: "find_thing_by_id", id: 1}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
@@ -799,6 +807,7 @@ describe("editEvent", function () {
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_thing_by_id"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
@@ -877,6 +886,7 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "find_type_by_id", id: 5}],
         [{db_call: "find_importance_by_id", id: 6}],
+        [{db_call: "find_importance_by_id", id: 2}],
         [{db_call: "update_participant_role"}],
         [{db_call: "update_participant_importance"}],
         [{db_call: "save_event_change"}],
@@ -885,8 +895,8 @@ describe("editEvent", function () {
       ];
 
       this.testEdit(function () {
-        this.args[4][1].should.equal("update_participant_role");
-        this.args[4][2][0].should.equal(126);
+        this.args[5][1].should.equal("update_participant_role");
+        this.args[5][2][0].should.equal(126);
       }, done);
     });
 
@@ -911,6 +921,7 @@ describe("editEvent", function () {
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
         [{db_call: "find_type_by_id", id: 4}],
         [{db_call: "find_importance_by_id", id: 30}],
+        [{db_call: "find_thing_by_id", id: 4}],
         [{db_call: "update_participant_role"}],
         [{db_call: "update_participant_importance"}],
         [{db_call: "save_event_change"}],
@@ -919,7 +930,7 @@ describe("editEvent", function () {
       ];
 
       this.testEdit(function () {
-        this.args[5][1].should.equal("update_participant_importance");
+        this.args[6][1].should.equal("update_participant_importance");
       }, done);
     });
 
@@ -1075,16 +1086,17 @@ describe("editEvent", function () {
         [{db_call: "update_event_name"}],
         [{db_call: "find_type_by_id", id: 1}],
         [{db_call: "find_importance_by_id", id: 1}],
+        [{db_call: "find_thing_by_id", id: 1}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
-        this.args[5][1].should.equal("save_event_change");
-        should.not.exist(JSON.parse(this.args[5][2][4]).newParticipants[0].thing.funny);
-        should.not.exist(JSON.parse(this.args[5][2][4]).newParticipants[0].type.funny);
-        should.not.exist(JSON.parse(this.args[5][2][4]).newParticipants[0].importance.funny);
+        this.args[6][1].should.equal("save_event_change");
+        should.not.exist(JSON.parse(this.args[6][2][4]).newParticipants[0].thing.funny);
+        should.not.exist(JSON.parse(this.args[6][2][4]).newParticipants[0].type.funny);
+        should.not.exist(JSON.parse(this.args[6][2][4]).newParticipants[0].importance.funny);
       }, done);
     });
 
@@ -1133,17 +1145,18 @@ describe("editEvent", function () {
       this.stubValues = [
         [{db_call: "get_user_permissions", name: "edit-event"}],
         [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_name"}],
         [{db_call: "find_type_by_id", id: 1}],
         [{db_call: "find_importance_by_id", id: 1}],
-        [{db_call: "update_event_name"}],
+        [{db_call: "find_thing_by_id"}],
         [{db_call: "save_event_change"}],
         [{db_call: "update_event_last_edited"}],
         [{db_call: "update_user_last_save_time"}]
       ];
 
       this.testEdit(function () {
-        this.args[5][1].should.equal("save_event_change");
-        should.exist(JSON.parse(this.args[5][2][3]).participants);
+        this.args[6][1].should.equal("save_event_change");
+        should.exist(JSON.parse(this.args[6][2][3]).participants);
       }, done);
     });
 
