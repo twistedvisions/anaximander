@@ -354,7 +354,7 @@ describe("EventUtils", function () {
     describe("subtypes", function () {
       it("should save new subtypes that exist once", function (done) {
         this.participants = [{
-          thing: {name: "new thing", type: 1, subtypes: [{
+          thing: {name: "new thing", typeId: 1, subtypes: [{
             type: {name: "new type"},
             importance: {name: "new importance", description: "description", value: 5}
           }]},
@@ -382,7 +382,7 @@ describe("EventUtils", function () {
       it("should save new subtypes that exist multiple times", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -392,7 +392,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing2", type: 1, subtypes: [
+            thing: {name: "new thing2", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -424,7 +424,7 @@ describe("EventUtils", function () {
       it("should save multiple new subtypes that have the same name, but existing in different thing types", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -434,7 +434,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing2", type: 1, subtypes: [
+            thing: {name: "new thing2", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -466,7 +466,7 @@ describe("EventUtils", function () {
       it("should save new subtype importances that exist once", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -479,10 +479,9 @@ describe("EventUtils", function () {
         this.eventUtils.ensureParticipantTypesAndImportances(
           this.participants, 321
         ).then(
-          _.bind(function () {
+          tryTest(_.bind(function () {
             this.participants[0].thing.subtypes[0].importance.id.should.equal(5);
-            done();
-          }, this)
+          }, this), done)
         );
         stubDb.setQueryValues(this, [
           [{db_call: "find_type_by_id", id: 2}],
@@ -495,7 +494,7 @@ describe("EventUtils", function () {
       it("should save new subtype importances that multiple times", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -505,7 +504,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing2", type: 1, subtypes: [
+            thing: {name: "new thing2", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {name: "new importance1", description: "description", value: 5}
@@ -535,7 +534,7 @@ describe("EventUtils", function () {
       it("should ensure existing subtypes that exist once", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {id: 5}
@@ -563,7 +562,7 @@ describe("EventUtils", function () {
       it("should ensure existing subtypes that exist multiple times", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {id: 5}
@@ -573,7 +572,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing2", type: 1, subtypes: [
+            thing: {name: "new thing2", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {id: 5}
@@ -602,7 +601,7 @@ describe("EventUtils", function () {
       it("should ensure existing subtype importances that exist once", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {id: 5}
@@ -630,7 +629,7 @@ describe("EventUtils", function () {
       it("should ensure existing subtype importances that multiple times", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {id: 5}
@@ -640,7 +639,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing2", type: 1, subtypes: [
+            thing: {name: "new thing2", typeId: 1, subtypes: [
               {
                 type: {id: 4},
                 importance: {id: 5}
@@ -670,7 +669,7 @@ describe("EventUtils", function () {
       it("should create and make default for a new type a nominal importance, if no nominal importance is passed", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "new importance", description: "importance description", value: 5}
@@ -704,7 +703,7 @@ describe("EventUtils", function () {
       it("should save the nominal importance as the default for the type if it is passed", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "nominal", description: "importance description", value: 5}
@@ -737,7 +736,7 @@ describe("EventUtils", function () {
       it("should save one nominal importance if many non-nominal importances are saved for a new type", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "not nominal1", description: "importance description", value: 5}
@@ -747,7 +746,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "not nominal2", description: "importance description", value: 5}
@@ -781,7 +780,7 @@ describe("EventUtils", function () {
       it("should save a nominal importance if many non-nominal and a nominal importance is saved for a new type", function (done) {
         this.participants = [
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "not nominal1", description: "importance description", value: 5}
@@ -791,7 +790,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "nominal", description: "importance description", value: 5}
@@ -801,7 +800,7 @@ describe("EventUtils", function () {
             importance: {id: 3}
           },
           {
-            thing: {name: "new thing1", type: 1, subtypes: [
+            thing: {name: "new thing1", typeId: 1, subtypes: [
               {
                 type: {name: "new type"},
                 importance: {name: "not nominal2", description: "importance description", value: 5}
