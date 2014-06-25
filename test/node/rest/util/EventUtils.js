@@ -349,7 +349,6 @@ describe("EventUtils", function () {
           [{db_call: "update_type_default_importance_when_null"}]
         ]);
       });
-      it("should fail if the nominal value is not 5");
     });
     describe("subtypes", function () {
       it("should save new subtypes that exist once", function (done) {

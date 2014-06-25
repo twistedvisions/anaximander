@@ -939,8 +939,6 @@ describe("editEvent", function () {
       }, done);
     });
 
-    it("should not look for types that are unchanged");
-
     it("should change the importance of existing participants", function (done) {
       this.fullBody = {
         id: 1,
