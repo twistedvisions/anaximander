@@ -199,7 +199,7 @@ describe("register", function () {
         .end(function (err, res) {
           tryTest(function () {
             res.status.should.equal(400);
-            res.text.should.equal("a username must be given");
+            res.text.trim().should.equal("a username must be given");
           }, done)();
         });
     }, this), done, true)();
@@ -216,7 +216,7 @@ describe("register", function () {
         .end(function (err, res) {
           tryTest(function () {
             res.status.should.equal(400);
-            res.text.should.equal("a password must be given");
+            res.text.trim().should.equal("a password must be given");
           }, done)();
         });
     }, this), done, true)();
