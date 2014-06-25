@@ -40,6 +40,7 @@ describe("editEvent", function () {
   beforeEach(function () {
     this.eventEditor = new editEvent.EventEditor();
     stubDb.setup(this);
+
   });
   afterEach(function () {
     stubDb.restore(this);
@@ -49,6 +50,7 @@ describe("editEvent", function () {
     beforeEach(function () {
       this.stubValues = [];
       sinon.spy(this.eventEditor, "ensure");
+      sinon.spy(this.eventEditor, "ensureParticipantTypesAndImportances");
       sinon.spy(this.eventEditor, "ensureParticipant");
       sinon.stub(this.eventEditor, "addParticipant");
       sinon.stub(this.eventEditor, "getEvent", _.bind(function () {
@@ -76,6 +78,7 @@ describe("editEvent", function () {
     });
     afterEach(function () {
       this.eventEditor.ensure.restore();
+      this.eventEditor.ensureParticipantTypesAndImportances.restore();
       this.eventEditor.ensureParticipant.restore();
       this.eventEditor.addParticipant.restore();
       this.eventEditor.getEvent.restore();
@@ -815,6 +818,42 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.eventEditor.ensureParticipant.calledOnce.should.equal(true);
+      }, done);
+    });
+
+    it("should ensure that new and changed participants' values exist together", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        newParticipants: [{thing: {id: 12}, type: {id: 13, related_type_id: 1}, importance: {id: 14}}],
+        editedParticipants: [{thing: {id: 2}, type: {id: 23, related_type_id: 1}, importance: {id: 24}}]
+      };
+
+      this.originalEvent = {
+        type: {
+          id: 3
+        },
+        participants: [{thing: {id: 2}, type: {id: 3}, importance: {id: 3}}]
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "find_role_by_id", id: 23}],
+        [{db_call: "find_role_by_id", id: 13}],
+        [{db_call: "find_importance_by_id", id: 24}],
+        [{db_call: "find_importance_by_id", id: 14}],
+        [{db_call: "find_thing_by_id", id: 12}],
+        [{db_call: "find_thing_by_id", id: 2}],
+        [{db_call: "update_participant_role"}],
+        [{db_call: "update_participant_importance"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.eventEditor.ensureParticipantTypesAndImportances.calledOnce.should.equal(true);
       }, done);
     });
 
