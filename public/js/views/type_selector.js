@@ -42,6 +42,7 @@ define([
       this.setImportanceSelectMode(true, true);
       this.renderTypes();
       this.renderTypeImportances();
+      this.addValidators();
       return this.$el;
     },
 
@@ -252,6 +253,15 @@ define([
 
     getTypeName: function () {
       return this.$("input[data-key=type]").select2("data").text;
+    },
+
+    addValidators: function () {
+      window.ParsleyValidator
+        .addValidator("notnominal", function (name) {
+          return name.trim().toLowerCase() !== "nominal";
+        }, 32)
+        .addMessage("en", "notnominal", "Do not create custom nominal importances");
+
     },
 
     validate: function () {
