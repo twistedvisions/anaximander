@@ -499,6 +499,7 @@ define([
       this.$(".error-message").hide();
 
       ok = ok && this.$("form").parsley().validate();
+      ok = ok && this.eventTypeSelector.validate();
       _.each(_.values(this.participants), function (participant) {
         ok = ok && participant.validate();
       });

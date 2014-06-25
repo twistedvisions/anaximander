@@ -216,6 +216,21 @@ define(
           this.typeSelector.$("input[data-key=importance-name]").val("");
           this.typeSelector.validate().should.equal(false);
         });
+        it("should prevent users from creating nominal importances", function () {
+          this.typeSelector.$("input[data-key=importance]").select2("data",
+            {id: -1, text: "new importance"});
+          this.typeSelector.$("input[data-key=importance]").trigger("change");
+
+          this.typeSelector.$("textarea[data-key=importance-description]").val("new importance description");
+          this.typeSelector.$("input[data-key=importance-name]").val("nominal");
+          this.typeSelector.validate().should.equal(false);
+
+          this.typeSelector.$("input[data-key=importance-name]").val("Nominal ");
+          this.typeSelector.validate().should.equal(false);
+
+          this.typeSelector.$("input[data-key=importance-name]").val("Not nominal ");
+          this.typeSelector.validate().should.equal(true);
+        });
         it("should validate the importance description, if it is a new importance", function () {
           this.typeSelector.$("input[data-key=importance]").select2("data",
             {id: -1, text: "new importance"});
