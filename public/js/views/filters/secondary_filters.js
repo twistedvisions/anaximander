@@ -106,7 +106,7 @@ define([
       this.model.removeFilterStateKey(this.getId(this.getNotSelectedId(parentTypeId)));
       var removed = false;
       this.currentCollection.forEach(function (filter) {
-        removed = removed || this.model.removeFilterStateKey(this.getId(filter.get("id")), true);
+        removed = this.model.removeFilterStateKey(this.getId(filter.get("id")), true) || removed;
       }, this);
       if (removed) {
         this.model.get("filterState").trigger("remove");
