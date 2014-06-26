@@ -14,7 +14,7 @@ define([
       center: [53.24112905344493, 6.191539001464932],
       zoom: 9,
       radius: 10,
-      importance: 125
+      importance: 8
     };
     this.setGeoLocation(defaultState);
     var storedData = this.getStoredData();

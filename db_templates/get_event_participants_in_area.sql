@@ -17,7 +17,7 @@ select
   thing.link as thing_link,
   type.name as thing_type,
   case
-    when thing_importance.value is null then event_importance_value * role_importance.value * 5
+    when thing_importance.value is null then event_importance_value * role_importance.value * 2
     else event_importance_value * role_importance.value * thing_importance.value
   end as importance_value
 from (
@@ -30,7 +30,7 @@ from (
     event.end_date AT TIME ZONE 'UTC' as end_date,
     event.end_offset_seconds,
     case
-      when thing_importance.value is null then role_importance.value * 5 * event_importance.value
+      when thing_importance.value is null then role_importance.value * 2 * event_importance.value
       else role_importance.value * thing_importance.value * event_importance.value
     end as max_event_importance_value,
     event_importance.value as event_importance_value,
@@ -61,7 +61,7 @@ from (
     (event.end_date >= $3 and event.end_date <= $4)
   )
   and case
-        when thing_importance.value is null then role_importance.value * 5 * event_importance.value >= $5
+        when thing_importance.value is null then role_importance.value * 2 * event_importance.value >= $5
         else role_importance.value * thing_importance.value * event_importance.value >= $5
       end
   <%= eventFilters %>

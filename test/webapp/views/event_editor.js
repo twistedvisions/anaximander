@@ -546,7 +546,7 @@ define(
               values.importance.id.should.be.lessThan(0);
               values.importance.name.should.equal("Nominal");
               values.importance.description.should.equal("a default value of importance for event type 1");
-              values.importance.value.should.equal(5);
+              values.importance.value.should.equal(2);
             });
             it("should collect new participants", function () {
               this.editor.render();

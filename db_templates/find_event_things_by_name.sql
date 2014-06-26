@@ -35,7 +35,7 @@ from (
     e.end_offset_seconds as end_offset_seconds,
     p.location as location,
     max(case
-      when thing_importance.value is null then role_importance.value * 5 * event_importance.value
+      when thing_importance.value is null then role_importance.value * 2 * event_importance.value
       else role_importance.value * thing_importance.value * event_importance.value
     end) as importance_value
   from thing t

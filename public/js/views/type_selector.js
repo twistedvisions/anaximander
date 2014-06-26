@@ -19,7 +19,7 @@ define([
       this.importanceDisplay = options.importanceDisplay;
       this.defaultNewImportanceName = "Nominal";
       this.defaultNewImportanceDescription = "a default value of importance";
-      this.defaultNewImportanceValue = 5;
+      this.defaultNewImportanceValue = 2;
     },
 
     getImportanceSelectOptions: function () {
