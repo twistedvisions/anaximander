@@ -21,7 +21,8 @@ define(
             default_importance_id: 1,
             importances: [{
               id: 1,
-              name: "importance 1"
+              name: "importance 1",
+              description: "description 1"
             }]
           }, {
             id: 2,
@@ -29,10 +30,12 @@ define(
             default_importance_id: 3,
             importances: [{
               id: 2,
-              name: "importance 2"
+              name: "importance 2",
+              description: "description 2"
             }, {
               id: 3,
-              name: "importance 3"
+              name: "importance 3",
+              description: "description 3"
             }]
           }])
         });
@@ -107,7 +110,7 @@ define(
             {id: -1, text: "new type"});
           this.typeSelector.$("input[data-key=type]").trigger("change");
           this.typeSelector.$("input[data-key=importance]").select2("data")
-            .should.eql({id: -2, text: "Nominal"});
+            .should.eql({id: -2, text: "Nominal", "description": "a default value of importance for new type"});
         });
         it("should not allow you to create new types if you do not have permission", function () {
           User.user = new User();
