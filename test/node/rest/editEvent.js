@@ -870,7 +870,7 @@ describe("editEvent", function () {
         editedParticipants: [{
           thing: {id: 2},
           type: {id: -1, name: "new role"},
-          importance: {id: -1, name: "nominal", value: 5, description: "some description"}
+          importance: {id: -1, name: "nominal", value: 2, description: "some description"}
         }]
       };
       this.originalEvent = {

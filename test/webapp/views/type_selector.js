@@ -160,7 +160,7 @@ define(
           this.typeSelector.getValue().importance.id.should.equal(-2);
           this.typeSelector.getValue().importance.name.should.equal("Nominal");
           this.typeSelector.getValue().importance.description.should.equal("a default value of importance for Type Name");
-          this.typeSelector.getValue().importance.value.should.equal(5);
+          this.typeSelector.getValue().importance.value.should.equal(2);
         });
         it("should get the importance value for existing importances", function () {
           this.typeSelector.$("input[data-key=type]").val(2);

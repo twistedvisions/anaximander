@@ -8,8 +8,8 @@ select
   max(e.end_date AT TIME ZONE 'UTC') as end_date,
   ST_Extent(p.location) as area,
   max(case
-    when thing_importance.value is null then 25 * event_importance.value
-    else thing_importance.value * event_importance.value * 5
+    when thing_importance.value is null then 4 * event_importance.value
+    else thing_importance.value * event_importance.value * 2
   end) as importance_value
 
 from thing t
