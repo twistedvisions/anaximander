@@ -4,7 +4,8 @@ define([
   "backbone",
   "analytics",
   "models/current_user",
-  "text!templates/type_selector.htm"
+  "text!templates/type_selector.htm",
+  "less!../../css/type_selector"
 ], function ($, _, Backbone, Analytics, User, template) {
 
   var TypeSelector = Backbone.View.extend({
@@ -24,7 +25,15 @@ define([
     getImportanceSelectOptions: function () {
       var options = {
         placeholder: this.importancePlaceholder,
-        data: []
+        data: [],
+        formatResult: function (state) {
+          return [
+            state.text,
+            "<span class='description'>&nbsp;&mdash;&nbsp;",
+            state.description,
+            "</span>"
+          ].join("");
+        }
       };
       if (User.user.hasPermission("add-importance")) {
         options.createSearchChoice = function (text) {
@@ -165,10 +174,11 @@ define([
     setImportanceDropdownValues: function (importances) {
       this.$("input[data-key=importance]").select2(
         _.extend(_.clone(this.getImportanceSelectOptions()), {
-        data: _.map(importances, function (type) {
+        data: _.map(importances, function (importance) {
           return {
-            id: type.id,
-            text: type.name
+            id: importance.id,
+            text: importance.name,
+            description: importance.description
           };
         })
       }));
@@ -187,7 +197,8 @@ define([
         _.extend(_.clone(this.getImportanceSelectOptions()), {
         data: [{
           id: -2,
-          text: this.defaultNewImportanceName
+          text: this.defaultNewImportanceName,
+          description: this.defaultNewImportanceDescription + " for " + this.getTypeName()
         }]
       }));
       this.$("input[data-key=importance]").select2("val", -2).trigger("change");
