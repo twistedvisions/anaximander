@@ -407,6 +407,10 @@ define([
     },
 
     afterShowInfoWindow: function () {
+      if ($(".event-entry").length === 0) {
+        setTimeout(_.bind(this.afterShowInfoWindow, this), 500);
+        return;
+      }
       $(".event-entry .event-link").on("click", _.bind(this.onLinkClick, this));
       $(".event-entry .search").on("click", _.bind(this.onSearchClick, this));
       $(".event-entry .edit").on("click", _.bind(this.onEditClick, this));
