@@ -43,6 +43,7 @@
   "exportsOverride": {
     "bootstrap": {
       "bootstrap/less": "less/*.less",
+      "bootstrap/less/mixins": "less/mixins/*.less",
       "bootstrap/fonts": "fonts/*",
       ".": "./dist/js/bootstrap.js"
     },
