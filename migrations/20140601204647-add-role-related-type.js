@@ -39,6 +39,6 @@ exports.up = function (db, callback) {
 
 exports.down = function (db, callback) {
   var actions = [];
-  actions.push(db.removeColumn.bind(db, "type", "related_type_id", callback));
+  actions.push(db.removeColumn.bind(db, "type", "related_type_id"));
   async.series(actions, callback);
 };
