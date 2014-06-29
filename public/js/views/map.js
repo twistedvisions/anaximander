@@ -149,7 +149,7 @@ define([
     showSelectedPoint: function () {
       if (this.selectedEvent && this.mapObjectsById[this.selectedEvent.place_id]) {
         this.lastEventIdShown = this.selectedEvent.id;
-        this.showInfoWindow.apply(this, this.mapObjectsById[this.selectedEvent.place_id]);
+        this.showInfoWindow.apply(this, this.mapObjectsById[this.selectedEvent.place_id].concat([true]));
       }
     },
 
@@ -375,7 +375,7 @@ define([
 
     },
 
-    showInfoWindow: function (marker, infoWindowData) {
+    showInfoWindow: function (marker, infoWindowData, disableAnalytics) {
       this.closeOpenWindows();
       var info = new google.maps.InfoWindow({
         content: this.getContent(infoWindowData)
@@ -385,9 +385,11 @@ define([
       this.openInfoWindows = this.openInfoWindows || [];
       this.openInfoWindows.push(info);
       setTimeout(_.bind(this.afterShowInfoWindow, this), 10);
-      this.infoWindowAnalyticsTimeout = setTimeout(_.bind(function () {
-        analytics.infoWindowShown(this.getInfoWindowData(infoWindowData));
-      }, this), 1000);
+      if (!disableAnalytics) {
+        this.infoWindowAnalyticsTimeout = setTimeout(_.bind(function () {
+          analytics.infoWindowShown(this.getInfoWindowData(infoWindowData));
+        }, this), 1000);
+      }
     },
 
     closeOpenWindows: function () {
