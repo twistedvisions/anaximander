@@ -489,8 +489,8 @@ define([
 
       //todo: do this consistently in one place
       //compare with model/event as well!
-      values.start_date = values.start_date.add("minutes", values.start_date.getTimezoneOffset());
-      values.end_date = values.end_date.add("minutes", values.end_date.getTimezoneOffset());
+      values.start_date = values.start_date.add("minutes", -values.start_date.zone());
+      values.end_date = values.end_date.add("minutes", -values.end_date.zone());
 
       var model = new Event(values);
       this.eventsCollection.add(model);
