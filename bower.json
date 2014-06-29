@@ -48,7 +48,7 @@
       ".": "./dist/js/bootstrap.js"
     },
     "jquery-ui": {
-      ".": "./ui/jquery-ui.js",
+      ".": "./jquery-ui.js",
       "jquery-ui/themes/smoothness": "themes/smoothness/*.css",
       "jquery-ui/themes/smoothness/images": "themes/smoothness/images/*"
     }

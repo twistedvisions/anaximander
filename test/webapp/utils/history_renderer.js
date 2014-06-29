@@ -132,6 +132,22 @@ define(
         $(html.find("td.field")[1]).text().should.equal("reason");
         html.find("td.field").last().text().should.equal("aaa");
       });
+      it("should show a message for deletions", function () {
+        var historyCollection = new Backbone.Collection([
+          {
+            name: "event 1",
+            type: "event",
+            mode: "edit",
+            date: new Date().toISOString(),
+            username: "x",
+            new_values: {
+              "deleted": true
+            }
+          }
+        ]);
+        var html = $(HistoryRenderer(historyCollection));
+        html.find("td.field").first().text().should.equal("event deleted");
+      });
       it("should not create an entry for ids", function () {
         var historyCollection = new Backbone.Collection([
           {

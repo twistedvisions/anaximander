@@ -4,6 +4,7 @@ define([
   "underscore",
   "backbone",
   "moment",
+  "when",
   "models/current_user",
   "analytics",
   "async!//maps.googleapis.com/maps/api/js?key=" + window.googleApiKey +
@@ -19,7 +20,7 @@ define([
   "text!templates/info_window_entry.htm",
   "text!templates/info_window_entry_participant.htm",
   "less!../../css/map"
-], function ($, _, Backbone, moment,
+], function ($, _, Backbone, moment, when,
     User, analytics, maps, OptionsMenu,
     EventEditor, Events,
     Position, Scroll, StyledMarker, chroma,
@@ -414,6 +415,7 @@ define([
       $(".event-entry .event-link").on("click", _.bind(this.onLinkClick, this));
       $(".event-entry .search").on("click", _.bind(this.onSearchClick, this));
       $(".event-entry .edit").on("click", _.bind(this.onEditClick, this));
+      $(".event-entry .delete").on("click",  _.debounce(_.bind(this.onDeleteClick, this), 100, true));
 
       if ($(".content-holder").height() >= 200) {
         //This is an ugly hack to allow us to put scroll bars on.
@@ -487,11 +489,77 @@ define([
       }).render();
     },
 
+    onDeleteClick: function (e) {
+      when(this.confirmDelete()).then(_.bind(function (shouldDelete) {
+        if (shouldDelete) {
+          var data = this.getFullMarkerData(e);
+          when($.ajax({
+            url: "/event",
+            type: "DELETE",
+            processData: false,
+            contentType: "application/json",
+            data: JSON.stringify({
+              id: data.id,
+              last_edited: data.eventLastEdited
+            })
+          })).then(
+            _.bind(this.handleDeleteSuccess, this, data),
+            _.bind(this.handleDeleteFailure, this, data)
+          );
+        }
+      }, this));
+    },
+
+    confirmDelete: function () {
+      return window.confirm("Are you sure you want to delete this event?");
+    },
+
+    handleDeleteSuccess: function (data) {
+      var highlightId = this.model.get("highlight").id;
+
+      if (
+        _.find(data.participants, function (participant) {
+          return participant.thingId === highlightId;
+        })
+      ) {
+        this.model.set("highlight", {id: highlightId, reset: true});
+      }
+      this.model.trigger("change:center");
+    },
+
+    handleDeleteFailure: function (data, e) {
+      $("#map-holder #message .content").text(e.responseText);
+      $("#map-holder #message").css("visibility", "visible");
+      if (this.messageTimeout) {
+        clearTimeout(this.messageTimeout);
+      }
+      this.messageTimeout = setTimeout(_.bind(function () {
+        $("#map-holder #message").css("visibility", "hidden");
+      }, this), 10000);
+    },
+
     getMarkerData: function (e) {
       return _.extend(
         $(e.target).parent().parent().data(),
         $(e.target).parent().data()
       );
+    },
+
+    getFullMarkerData: function (e) {
+      var el = $(e.target).parent();
+      var data = _.clone(el.data());
+
+      data.participants = [];
+      if (data.thingId) {
+        data.participants.push(_.pick(data, ["thingId", "thingName", "importaneValue"]));
+      } else {
+        el.find(".participant").each(function (index, participantEl) {
+          data.participants.push($(participantEl).data());
+        });
+      }
+
+
+      return data;
     },
 
     getMarkerText: function (events) {
@@ -579,10 +647,19 @@ define([
     getInfoWindowEntry: function (event) {
       return this.infoWindowEntryTemplate(_.extend({
         canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-event"),
+        canDelete: User.user.get("logged-in") && this.canDelete(event),
         participantTemplate: this.infoWindowEntryParticipantTemplate,
         date: this.getDateRangeString(event),
         highlighted: this.shouldHighlightInfoWindowEntry(event)
       }, event));
+    },
+
+    canDelete: function (event) {
+      return User.user.hasPermission("delete-event") ||
+        (
+          User.user.hasPermission("delete-own-event") &&
+          event.creatorUserId === User.user.id
+        );
     },
 
     shouldHighlightInfoWindowEntry: function (event) {

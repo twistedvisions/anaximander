@@ -21,6 +21,7 @@ left join thing_subtype tst on tst.thing_id = t.id
 left join importance thing_importance on tst.importance_id = thing_importance.id
 
 where lower(f_unaccent(t.name)) ilike lower(f_unaccent($1))
+and e.deleted = 'false'
 
 group by t.id, type.id
 

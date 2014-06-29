@@ -1,6 +1,8 @@
 <div
   class="event-entry"
   data-id="<%= event_id %>"
+  data-creator-user-id="<%= creator_user_id %>"
+  data-event-last-edited="<%= event_last_edited %>"
   data-name="<%= event_name %>"
   data-link="<%= event_link %>"
   data-lat="<%= location[0][0] %>"
@@ -25,6 +27,9 @@
 
 <% if (canEdit) { %>
   <span class="toolbutton edit glyphicon glyphicon-pencil"></span>
+<% } %>
+<% if (canDelete) { %>
+  <span class="toolbutton delete glyphicon glyphicon-trash"></span>
 <% } %>
 <% if (participants.length === 1) { %>
   <span class="toolbutton search glyphicon glyphicon-search"></span>

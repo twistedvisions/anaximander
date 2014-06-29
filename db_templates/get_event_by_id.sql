@@ -2,6 +2,7 @@ select
   event.id,
   event.name,
   event.last_edited,
+  creator.user_id as creator_user_id,
   place_thing.id as place_id,
   place_thing.name as place_name,
   ST_AsGeoJSON(place.location) as location,
@@ -23,5 +24,6 @@ inner join place on place_thing.id = place.thing_id
 inner join event_participant on event.id = event_participant.event_id
 inner join thing participant on event_participant.thing_id = participant.id
 inner join type role on event_participant.role_id = role.id
+inner join creator on creator.id = event.creator_id
 where event.id = $1
 ;
