@@ -50,6 +50,7 @@ from (
   left join importance thing_importance on tst.importance_id = thing_importance.id
 
   where lower(f_unaccent(t.name)) ilike lower(f_unaccent($1))
+  and e.deleted = 'false'
   group by t.id, e.id, type.id, p.id, pt.id
   order by thing_id, start_date asc
 ) matching_thing

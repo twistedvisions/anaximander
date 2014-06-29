@@ -56,6 +56,7 @@ from (
     ST_SetSRID(ST_GeometryFromText('<%= boundingBox %>'), 4326),
     place.location
   )
+  and event.deleted = 'false'
   and (
     (event.start_date >= $3 and event.start_date <= $4) or
     (event.end_date >= $3 and event.end_date <= $4)
