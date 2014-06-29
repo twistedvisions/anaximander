@@ -1,5 +1,7 @@
 select
   event_list.event_id,
+  event_list.event_last_edited as event_last_edited,
+  creator.user_id as creator_user_id,
   event_name,
   event_link,
   start_date,
@@ -23,6 +25,8 @@ select
 from (
   select
     event.id as event_id,
+    event.last_edited as event_last_edited,
+    event.creator_id as creator_id,
     event.name as event_name,
     event.link as event_link,
     event.start_date AT TIME ZONE 'UTC' as start_date,
@@ -81,6 +85,7 @@ from (
     thing.id asc
   limit 200
 ) event_list
+inner join creator on creator.id = event_list.creator_id
 inner join event_participant on event_participant.event_id = event_list.event_id
 inner join thing on event_participant.thing_id = thing.id
 inner join type on thing.type_id = type.id
@@ -89,6 +94,7 @@ left join thing_subtype on thing_subtype.thing_id = thing.id
 left join importance thing_importance on thing_subtype.importance_id = thing_importance.id
 group by
   event_list.event_id,
+  event_list.event_last_edited,
   event_list.event_name,
   event_list.event_link,
   event_list.start_date,
@@ -102,6 +108,7 @@ group by
   event_list.place_thing_link,
   event_list.location,
   event_list.distance,
+  creator.id,
   thing.id,
   type.id,
   importance_value

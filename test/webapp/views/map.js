@@ -32,6 +32,8 @@ define(
         this.sampleEvent = {
           distance: 1,
           event_id: 1,
+          creator_user_id: 101,
+          event_last_edited: "2013-01-01",
           event_link: "somelink",
           event_name: "some event",
           thing_name: "some thing",
@@ -224,6 +226,35 @@ define(
             } finally {
               el.remove();
             }
+          });
+
+          it("should call onDeleteClick when the delete button is clicked", function () {
+            var el = $("<div class='event-entry'><div class='delete'></div></div>");
+            sinon.stub(this.map, "onDeleteClick");
+            try {
+              el.appendTo(document.body);
+              this.map.afterShowInfoWindow();
+              el.find(".delete").click();
+              this.map.onDeleteClick.calledOnce.should.equal(true);
+            } finally {
+              el.remove();
+            }
+          });
+          it("should confirm whether the user wants to delete the event", function () {
+            sinon.stub(this.map, "confirmDelete");
+            try {
+              this.map.onDeleteClick();
+              this.map.confirmDelete.calledOnce.should.equal(true);
+            } finally {
+              this.map.confirmDelete.restore();
+            }
+          });
+          it("should update the highlight of the model if the deleted event was highlighted", function () {
+            this.map.model.set("highlight", {id: 2});
+            this.map.handleDeleteSuccess({
+              participants: [{thingId: 1}, {thingId: 2}]
+            });
+            this.map.model.get("highlight").reset.should.equal(true);
           });
 
           it("should track when a marker is hovered over", function () {
@@ -1097,6 +1128,8 @@ define(
                 importance_value: 50
               }],
               event_id: 1,
+              creator_user_id: 101,
+              event_last_edited: "2013-01-01",
               event_name: "some name",
               thing_name: "some thing",
               event_link: "http://something.com/blah",
