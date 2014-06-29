@@ -155,6 +155,7 @@ define([
         }
       } else {
         var point = this.points[this.index];
+        window.lastEvent = "eventSelected";
         this.model.set("selectedEventId", point.event_id);
         this.lastEventId = point.event_id;
         this.$(".current-date").text(this.getDateTimeRange(point));
