@@ -62,6 +62,7 @@ new Provider.provider("google");
 new Provider.provider("twitter");
 new Provider.provider("github");
 
+require("./lib/rest/deleteEvent").init(app);
 require("./lib/rest/editEvent").init(app);
 require("./lib/rest/editImportance").init(app);
 require("./lib/rest/editThing").init(app);
