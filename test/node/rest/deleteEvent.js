@@ -206,6 +206,7 @@ describe("deleteEvent", function () {
 
       this.testEdit(function () {
         this.args[3][1].should.equal("save_event_change");
+        JSON.parse(this.args[3][2][4]).should.eql({deleted: true});
       }, done);
     });
 

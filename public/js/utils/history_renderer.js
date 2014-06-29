@@ -121,7 +121,12 @@ define([
       html.append(body);
       body.append($(historyItemTemplate(
         _.extend(change, {
-          field: change.type + (change.mode ? (" " + change.mode) : ""),
+          field: change.type +
+            (
+              change.new_values.deleted ? " deleted" : (
+                change.mode ? (" " + change.mode) : ""
+              )
+            ),
           value: change.name,
           old_value: ""
         })
