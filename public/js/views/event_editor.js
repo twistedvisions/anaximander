@@ -486,6 +486,12 @@ define([
     },
 
     saveNewEvent: function (values) {
+
+      //todo: do this consistently in one place
+      //compare with model/event as well!
+      values.start_date = values.start_date.add("minutes", values.start_date.getTimezoneOffset());
+      values.end_date = values.end_date.add("minutes", values.end_date.getTimezoneOffset());
+
       var model = new Event(values);
       this.eventsCollection.add(model);
       return when(model.save(null, {})).then(
