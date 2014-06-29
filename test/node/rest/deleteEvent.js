@@ -109,8 +109,7 @@ describe("deleteEvent", function () {
       it("should getEvent if you have delete-event permission", function (done) {
         this.fullBody = {
           id: 1,
-          last_edited: "2000-01-01",
-          name: "new name"
+          last_edited: "2000-01-01"
         };
 
         this.stubValues = [
@@ -129,8 +128,7 @@ describe("deleteEvent", function () {
       it("should getEvent if you have delete-own-event permission", function (done) {
         this.fullBody = {
           id: 1,
-          last_edited: "2000-01-01",
-          name: "new name"
+          last_edited: "2000-01-01"
         };
 
         this.stubValues = [
@@ -149,8 +147,7 @@ describe("deleteEvent", function () {
       it("should not getEvent if you have neither permission", function (done) {
         this.fullBody = {
           id: 1,
-          last_edited: "2000-01-01",
-          name: "new name"
+          last_edited: "2000-01-01"
         };
 
         this.stubValues = [
@@ -173,8 +170,7 @@ describe("deleteEvent", function () {
       it("should fail if you have delete-own-event permission and it isn't your event", function (done) {
         this.fullBody = {
           id: 1,
-          last_edited: "2000-01-01",
-          name: "new name"
+          last_edited: "2000-01-01"
         };
 
         this.stubValues = [
@@ -196,8 +192,7 @@ describe("deleteEvent", function () {
     it("should call save_change after a change has happened", function (done) {
       this.fullBody = {
         id: 1,
-        last_edited: "2000-01-01",
-        name: "new name"
+        last_edited: "2000-01-01"
       };
 
       this.stubValues = [
@@ -217,8 +212,7 @@ describe("deleteEvent", function () {
     it("should not save the last_edited time in the event change", function (done) {
       this.fullBody = {
         id: 1,
-        last_edited: "2000-01-01",
-        name: "new name"
+        last_edited: "2000-01-01"
       };
 
       this.stubValues = [
