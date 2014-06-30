@@ -27,13 +27,18 @@ describe("saveEvent", function () {
           return true;
         }
       };
+      var result;
       var res = {
-        send: function () {}
+        send: function (r) {
+          result = r;
+        }
       };
       var next = function (e) {
         return failureFn ? failureFn(e) : null;
       };
-      this.eventSaver.call(req, res, next).then(tryTest(_.bind(fn, this), done));
+      this.eventSaver.call(req, res, next).then(tryTest(_.bind(function () {
+        return _.bind(fn, this, result)();
+      }, this), done));
       stubDb.setQueryValues(this, this.stubValues);
     };
   });
@@ -448,6 +453,11 @@ describe("saveEvent", function () {
       this.testSave(function () {
         this.db.startTransaction.callCount.should.equal(1);
         this.db.endTransaction.callCount.should.equal(1);
+      }, done);
+    });
+    it("should send the new event id", function (done) {
+      this.testSave(function (result) {
+        result.id.should.equal(10);
       }, done);
     });
     it("should roll back the transaction if a component section fails", function (done) {
