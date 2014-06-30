@@ -536,7 +536,7 @@ define([
       return value;
     },
 
-    handleSaveComplete: function (values) {
+    handleSaveComplete: function (values, result) {
       if (this.model) {
         analytics.eventSaved(values);
       } else {
@@ -544,7 +544,7 @@ define([
       }
 
       this.hide();
-      this.updateHighlight(values);
+      this.updateHighlight(values, result && result.id);
       //force a refresh of data
       this.state.trigger("change:center");
     },
@@ -553,7 +553,7 @@ define([
       this.$el.find(".modal").modal("hide");
     },
 
-    updateHighlight: function (values) {
+    updateHighlight: function (values, newEventId) {
       var highlightId = this.state.get("highlight").id;
       var participantMatchesHighlight = function (participant) {
         return participant.thing.id === highlightId;
@@ -563,7 +563,10 @@ define([
             _.find(values.participants, participantMatchesHighlight) ||
             this.model && _.find(this.model.get("participants"), participantMatchesHighlight)
           ) {
-        this.state.set("highlight", {id: highlightId, reset: true});
+        this.state.set({
+          "highlight": {id: highlightId, reset: true},
+          "selectedEventId": newEventId
+        });
         return true;
       }
       return false;

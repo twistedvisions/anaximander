@@ -652,7 +652,7 @@ define(
           sinon.stub(this.editor, "updateHighlight");
           sinon.stub(this.editor, "hide");
           try {
-            this.editor.handleSaveComplete();
+            this.editor.handleSaveComplete({}, {id: 1});
             this.editor.state.trigger.calledWith("change:center").should.equal(true);
           } finally {
             this.editor.state.trigger.restore();
@@ -694,6 +694,12 @@ define(
           this.editor.state.set("highlight", {id: 123});
           this.editor.updateHighlight({participants: [{thing: {id: 123}}]});
           this.editor.state.get("highlight").reset.should.equal(true);
+        });
+
+        it("should update the selectedEventId if the added participant is already highlighted", function () {
+          this.editor.state.set("highlight", {id: 123});
+          this.editor.updateHighlight({participants: [{thing: {id: 123}}]}, 456);
+          this.editor.state.get("selectedEventId").should.equal(456);
         });
 
         it("should not update the highlight if the added participant is not highlighted", function () {
