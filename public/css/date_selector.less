@@ -1,0 +1,138 @@
+.date-selector {
+  height: 377px;
+  .year-holder {
+    margin-bottom: 5px;
+    > * {
+      float: left;
+    }
+
+    br {
+      clear: both;
+    }
+    .change-year {
+      border: 1px solid #ccc;
+      margin-bottom: 6px;
+      padding: 0px 2px;
+      cursor: pointer;
+      &.minus {
+        margin-right: 2px;
+        border-top-left-radius: 7px;
+        border-bottom-left-radius: 7px;
+      }
+      &.plus {
+        text-align: right;
+        margin-left: 2px;
+        border-top-right-radius: 7px;
+        border-bottom-right-radius: 7px;
+      }
+    }
+    .years {
+      > * {
+        float: left;
+        height: 70px;
+        width: 12px;
+        text-align: center;
+        cursor: pointer;
+        padding: 0px 1px;
+        color: #333;
+        &:nth-child(even) {
+          background-color: #f3f3f3;
+          color: #000;
+        }
+        &.selected {
+          border: 1px solid red;
+          font-weight: bold;
+          margin: 0px 2px;
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+  .month-holder {
+    margin-bottom: 5px;
+    clear: left;
+    width: 180px;
+    margin-left: auto;
+    margin-right: auto;
+    > div {
+      float: left;
+      width: 30px;
+      text-align: center;
+      cursor: pointer;
+      padding: 1px;
+
+      &.selected {
+        border: 1px solid red;
+        padding: 0px;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+    }
+    br {
+      clear: both;
+    }
+  }
+  .day-holder {
+    clear: left;
+    // width: 156px;
+    height: 116px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+
+    &.long-month {
+      height: 136px;
+    }
+
+    table {
+      border-spacing: 1px;
+      border-collapse: separate;
+      th {
+        text-align: right;
+        padding: 0px 2px;
+      }
+      tbody {
+        tr {
+          td {
+            // width: 21px;
+            padding: 1px 3px;
+
+            border: 1px solid transparent;
+            text-align: right;
+            cursor: pointer;
+            line-height: 14px;
+
+            &.selected {
+              border: 1px solid red;
+              padding: 0px 2px;
+              font-weight: bold;
+              border-radius: 5px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .time-holder, .time-summary, .date-summary {
+    margin-bottom: 8px;
+    .time-label {
+      display: inline-block;
+      width: 40px;
+      font-weight: bold;
+    }
+    .time-slider {
+      display: inline-block;
+      width: 135px;
+    }
+  }
+
+  .footer {
+    .done {
+      float: right;
+    }
+
+    br {
+      clear: both;
+    }
+  }
+}

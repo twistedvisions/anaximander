@@ -161,27 +161,19 @@ define(
           });
         });
 
-        it("should set the end when the start is set if it is empty", function () {
+        it("should set the end if it is empty when the start is set", function () {
           this.editor.render();
-          this.editor.$("input[data-key=end]").val().should.equal("");
-          this.editor.$("input[data-key=start]").val("2012-12-04");
-          this.editor.$("input[data-key=start]").trigger("change");
+          this.editor.$("input[data-key=end]").val("");
+          this.editor.startDateSelector.setDate(new Date(2012, 11, 4));
           this.editor.$("input[data-key=end]").val().should.equal("2012-12-04 23:59");
-          this.editor.$("input.date").datepicker("hide");
-          this.editor.$el.find(".modal").modal("hide");
-          this.editor.$el.remove();
         });
 
         it("should move the end when the start moves", function () {
           this.editor.render();
           this.editor.lastStart = moment("2012-12-04");
-          this.editor.$("input[data-key=end]").val().should.equal("");
-          this.editor.$("input[data-key=start]").val("2012-12-01");
-          this.editor.$("input[data-key=start]").trigger("change");
+          this.editor.$("input[data-key=end]").val("");
+          this.editor.startDateSelector.setDate(new Date(2012, 11, 01));
           this.editor.$("input[data-key=end]").val().should.equal("2012-12-01 23:59");
-          this.editor.$("input.date").datepicker("hide");
-          this.editor.$el.find(".modal").modal("hide");
-          this.editor.$el.remove();
         });
 
         it("should not move the end when the start is not the same day", function () {
@@ -673,8 +665,8 @@ define(
           });
 
           it("should not save if the end is before the start", function () {
-            this.editor.$("input[data-key=start]").val("2000-01-02 00:00");
-            this.editor.$("input[data-key=end]").val("2000-01-01 23:59");
+            this.editor.startDateSelector.setDate(new Date(2000, 0, 2));
+            this.editor.endDateSelector.setDate(new Date(2000, 0, 1));
             this.editor.handleSave();
             this.editor.eventsCollection.toJSON().length.should.equal(0);
           });

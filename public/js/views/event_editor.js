@@ -12,20 +12,20 @@ define([
   "collections/event_types",
   "views/type_selector",
   "views/participant_editor",
+  "views/date_selector",
   "utils/history_renderer",
   "utils/parsley_listener",
   "analytics",
   "text!templates/event_editor.htm",
   "bootstrap",
-  "datetimepicker",
   "parsley",
   "less!../../css/event_editor",
-  "less!../../css/select2-bootstrap",
-  "less!../../css/datetimepicker"
+  "less!../../css/select2-bootstrap"
 ], function ($, _, Backbone, when, moment, numeral,
     Event, EventsCollection,
     Types, Roles, EventTypes,
-    TypeSelector, ParticipantEditor, HistoryRenderer, ParsleyListener,
+    TypeSelector, ParticipantEditor, DateSelector,
+    HistoryRenderer, ParsleyListener,
     analytics, template, historyTemplate, historyItemTemplate) {
 
   var EventEditor = Backbone.View.extend({
@@ -54,9 +54,32 @@ define([
 
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
-      this.$("input[data-key=end]").datetimepicker(this.getDatePickerOpts());
-      this.$("input[data-key=start]").datetimepicker(this.getDatePickerOpts(true));
-      this.$("input[data-key=start]").on("change", _.bind(this.updateEnd, this));
+      var date = this.state.get("date");
+      var defaultDate = new Date((date[0] + date[1]) / 2, 0, 1);
+
+      this.startDateSelector = new DateSelector({
+        date: defaultDate,
+        input: this.$("input[data-key=start]")
+      }).render();
+
+      this.endDateSelector = new DateSelector({
+        date: defaultDate,
+        input: this.$("input[data-key=end]")
+      }).render();
+
+      this.startDateSelector.on("show", _.bind(function () {
+        this.endDateSelector.hidePopup();
+      }, this));
+
+      this.endDateSelector.on("show", _.bind(function () {
+        this.startDateSelector.hidePopup();
+      }, this));
+
+      this.$("input[data-key=end]").val("");
+
+      this.updateEnd();
+
+      this.startDateSelector.on("change", _.bind(this.updateEnd, this));
       this.$(".save").on("click", _.bind(this.handleSave, this));
       this.$(".modal").on("hidden.bs.modal", _.bind(this.handleClose, this));
 
@@ -125,11 +148,11 @@ define([
       var endOfDay = start.endOf("day").toDate();
       var end = this.$el.find("input[data-key=end]").val();
       if (!end) {
-        this.$el.find("input[data-key=end]").datetimepicker("setDate", endOfDay);
+        this.endDateSelector.setDate(endOfDay);
       } else if (this.lastStart) {
         end = moment(end);
         if (this.lastStart.endOf("day").isSame(end, "minute")) {
-          this.$el.find("input[data-key=end]").datetimepicker("setDate", endOfDay);
+          this.endDateSelector.setDate(endOfDay);
         }
       }
       this.lastStart = start;
@@ -137,11 +160,11 @@ define([
 
     addValidators: function () {
       var el = this.$el;
-
+      var self = this;
       window.ParsleyValidator
         .addValidator("endafterstart", function () {
-          var start = new Date(el.find("input[data-key=start]").datetimepicker("getDate")).getTime();
-          var end = new Date(el.find("input[data-key=end]").datetimepicker("getDate")).getTime();
+          var start = self.startDateSelector.getDate().getTime();
+          var end = self.endDateSelector.getDate().getTime();
           return end >= start;
         }, 32)
         .addMessage("en", "endafterstart", "The end date should be after the start");
@@ -403,8 +426,8 @@ define([
     },
 
     renderTimes: function (localStartTime, localEndTime) {
-      this.$el.find("input[data-key=start]").datetimepicker("setDate", localStartTime.toDate());
-      this.$el.find("input[data-key=end]").datepicker("setDate", localEndTime.toDate());
+      this.startDateSelector.setDate(localStartTime.toDate());
+      this.endDateSelector.setDate(localEndTime.toDate());
     },
 
     handleSave: function () {
