@@ -249,6 +249,8 @@ define([
           value.name = value.text;
           value.description = this.defaultNewImportanceDescription + " for " + this.getTypeName();
           value.value = this.defaultNewImportanceValue;
+        } else {
+          delete value.description;
         }
         delete value.text;
       } else {
