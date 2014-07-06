@@ -135,6 +135,7 @@ define([
         this.$(".types tbody").append(html);
       }, this);
       this.bindTypeRowEvents();
+      this.filterTables();
     },
 
     bindTypeRowEvents: function (row) {
