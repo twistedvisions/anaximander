@@ -24,7 +24,7 @@
     "deep-diff": "0.1.x",
     "es5-shim": "3.x",
     "jquery": "2.x",
-    "jquery-ui": "1.10.x",
+    "jquery-ui": "1.x",
     "jqueryui-timepicker-addon": "1.x",
     "lodash": "2.x",
     "momentjs": "2.x",
@@ -48,7 +48,7 @@
       ".": "./dist/js/bootstrap.js"
     },
     "jquery-ui": {
-      ".": "./ui/jquery-ui.js",
+      ".": "./jquery-ui.js",
       "jquery-ui/themes/smoothness": "themes/smoothness/*.css",
       "jquery-ui/themes/smoothness/images": "themes/smoothness/images/*"
     }
