@@ -9,6 +9,7 @@ var express = require("express");
 var supertest = require("supertest");
 var http = require("http");
 var passport = require("passport");
+var bodyParser = require("body-parser");
 
 var register = require("../../../lib/rest/register");
 
@@ -24,7 +25,8 @@ describe("register", function () {
     stubDb.setup(this);
 
     this.app = express();
-    this.app.use(express.bodyParser());
+
+    this.app.use(bodyParser.json());
 
     this.app.use(passport.initialize());
     this.app.use(passport.session());
