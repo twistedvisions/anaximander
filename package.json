@@ -34,17 +34,16 @@
     "socket.io": "0.9.x",
     "async": "0.2.x",
     "execSync": "1.0.1-pre",
-    "moment": "2.6.x"
-
-  },
-  "devDependencies": {
+    "moment": "2.6.x",
     "grunt": "0.4.x",
     "grunt-bower-task": "^0.3.4",
     "grunt-cli": "0.1.x",
     "grunt-contrib-clean": "*",
     "grunt-contrib-jshint": "0.7.x",
     "grunt-contrib-less": "0.11.x",
-    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-contrib-requirejs": "^0.4.4"
+  },
+  "devDependencies": {
     "grunt-mocha-test": "0.10.x",
     "grunt-karma": "0.8",
     "less": "1.x",
