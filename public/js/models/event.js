@@ -60,6 +60,9 @@ define([
       oldValues.participants = this.removeParticipantsFromArray(oldValues.participants, oldParticipants);
       values.participants = this.removeParticipantsFromArray(values.participants, newParticipants);
 
+      this.sortParticipants(oldValues);
+      this.sortParticipants(values);
+
       var differences = this.getRawDifferences(oldValues, values);
 
       values.participants = originalParticipants;
@@ -142,12 +145,27 @@ define([
 
           if (!obj.type) {
             obj.type = originalParticipant.type;
+          } else {
+            obj.type.related_type_id = (values.type && values.type.id) || oldValues.type.id;
           }
           return obj;
         });
       }
 
       return toSend;
+    },
+
+    sortParticipants: function (values) {
+      values.participants.sort(function (a, b) {
+        if (a.thing.id && b.thing.id) {
+          return a.thing.id > b.thing.id ? 1 : (a.thing.id === b.thing.id ? 0 : -1);
+        } else if (a.thing.id) {
+          return 1;
+        } else if (b.thing.id) {
+          return -1;
+        }
+        return a.thing.name > b.thing.name ? 1 : (a.thing.name === b.thing.name ? 0 : -1);
+      });
     },
 
     //just so can be stubbed for testing
