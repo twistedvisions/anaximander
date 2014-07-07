@@ -125,7 +125,6 @@ module.exports = function (grunt) {
             "cookies": "./libs/bower/cookies-js/cookies",
             "cryptojs.core": "./libs/bower/cryptojslib/core",
             "cryptojs.sha256": "./libs/bower/cryptojslib/sha256",
-            "datetimepicker": "./libs/bower/jqueryui-timepicker-addon/src/jquery-ui-timepicker-addon",
             "deep-diff": "./libs/bower/deep-diff/index",
             "jquery": "./libs/bower/jquery/jquery",
             "jqueryui": "./libs/bower/jquery-ui/jquery-ui",
