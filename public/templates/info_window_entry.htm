@@ -40,8 +40,11 @@
   <span class="date">
     <%= date %>
   </span>
-  <% for (var i = 0, ii = participants.length; i < ii; i += 1) { %>
+  <% for (var i = 0, ii = 4; i < ii; i += 1) { %>
   <%= participantTemplate(participants[i])  %>
   <% } %>
+  <% if (participants.length > 4) {%>
+    <span class="other-summary">&hellip; and <%= (participants.length - 4) %> <%= ((participants.length - 4) === 1 ? "other" : "others") %></span>
+  <% }%>
 <% } %>
 </div>
