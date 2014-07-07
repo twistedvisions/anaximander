@@ -59,7 +59,8 @@
     "should": "1.x",
     "sinon": "1.7.x",
     "socket.io-client": "0.9.x",
-    "supertest": "0.8.x"
+    "supertest": "0.8.x",
+    "body-parser": "1.x"
   },
   "scripts": {
     "test": "export NODE_ENV=test && ./node_modules/.bin/grunt test",
