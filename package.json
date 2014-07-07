@@ -6,6 +6,8 @@
     "underscore": "1.x",
     "when": "2.3",
     "express": "3.x",
+    "cookie-parser": "1.x",
+    "cookie-session": "1.x",
     "pg": "2.x",
     "lazy": "1.x",
     "humanize": "0.0.8",
@@ -33,6 +35,7 @@
     "async": "0.2.x",
     "execSync": "1.0.1-pre",
     "moment": "2.6.x"
+
   },
   "devDependencies": {
     "grunt": "0.4.x",

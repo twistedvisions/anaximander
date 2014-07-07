@@ -9,6 +9,9 @@ var flash = require("connect-flash");
 var passport = require("passport");
 var fs = require("fs");
 
+var cookieParser = require("cookie-parser");
+var cookieSession = require("cookie-session");
+
 var nconf = require("./lib/config");
 var winston = require("winston");
 
@@ -27,10 +30,10 @@ var server = http.createServer(app);
 
 app.use(express.compress());
 app.use(express["static"](__dirname + "/public"));
-app.use(express.cookieParser());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(express.cookieSession({
+app.use(cookieSession({
   secret: nconf.auth.sessionSecret,
   cookie: {
     maxAge: 24 * 60 * 60 * 1000
