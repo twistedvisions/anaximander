@@ -345,8 +345,9 @@ describe("saveEvent", function () {
       it("should create event if all the necessary values exist", function (done) {
         new saveEvent.EventSaver().createEvent({
             name: "something happened",
-            type_id: 2,
             place_id: 1,
+            type_id: 2,
+            importance_id: 3,
             start_date: moment("2013-06-02"),
             end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
@@ -367,8 +368,9 @@ describe("saveEvent", function () {
       it("should ensure a creator", function (done) {
         new saveEvent.EventSaver().createEvent({
             name: "something happened",
-            type_id: 2,
             place_id: 1,
+            type_id: 2,
+            importance_id: 3,
             start_date: moment("2013-06-02"),
             end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
@@ -387,12 +389,13 @@ describe("saveEvent", function () {
         ]);
       });
 
-      ["name", "place_id", "type_id", "start_date", "end_date"].forEach(function (key) {
+      ["name", "place_id", "type_id", "importance_id", "start_date", "end_date"].forEach(function (key) {
         it("should throw an exception if " + key + " cannot be found", function (done) {
           var obj = {
             name: "something happened",
             type_id: 1,
             place_id: 1,
+            importance_id: 1,
             start_date: moment("2013-06-02"),
             end_date: moment("2013-06-02"),
             link: "http://some.wiki.page/ihope.html"
