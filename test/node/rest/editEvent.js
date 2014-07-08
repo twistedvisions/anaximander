@@ -589,7 +589,31 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[3][1].should.equal("update_event_start_date");
-        this.args[3][2][1].isSame(moment([1900, 0, 1])).should.equal(true);
+        moment(this.args[3][2][1]).isSame(moment([1900, 0, 1])).should.equal(true);
+        this.args[3][2][2].should.equal(2 * 60 * 60);
+      }, done);
+    });
+    it("should save a changed BCE start date", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        start_date: moment([-12, 0, 1]).toDate()
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
+        [{db_call: "update_event_start_date"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("update_event_start_date");
+        this.args[3][2][1].should.equal("000012-01-01T00:00:00.000Z BC");
         this.args[3][2][2].should.equal(2 * 60 * 60);
       }, done);
     });
@@ -612,7 +636,30 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[3][1].should.equal("update_event_end_date");
-        this.args[3][2][1].isSame(moment([2000, 0, 1])).should.equal(true);
+        moment(this.args[3][2][1]).isSame(moment([2000, 0, 1])).should.equal(true);
+        this.args[3][2][2].should.equal(2 * 60 * 60);
+      }, done);
+    });
+    it("should save a changed BCE end date", function (done) {
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        end_date: new Date(-24, 0, 1)
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "get_timezone_offset_at_place", offset: 2 * 60 * 60}],
+        [{db_call: "update_event_end_date"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        this.args[3][1].should.equal("update_event_end_date");
+        this.args[3][2][1].should.equal("000024-01-01T00:00:00.000Z BC");
         this.args[3][2][2].should.equal(2 * 60 * 60);
       }, done);
     });
