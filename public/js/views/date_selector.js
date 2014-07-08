@@ -131,6 +131,9 @@ define([
       if (this.boundInput) {
         this.boundInput.popover("hide");
         this.popupShowing = false;
+        if (!$("body").hasClass("modal-open")) {
+          $("body").addClass("modal-open");
+        }
       }
     },
 
