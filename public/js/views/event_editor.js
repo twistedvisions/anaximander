@@ -55,7 +55,7 @@ define([
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
       var date = this.state.get("date");
-      var defaultDate = new Date((date[0] + date[1]) / 2, 0, 1);
+      var defaultDate = moment([(date[0] + date[1]) / 2, 0, 1]).toDate();
 
       this.startDateSelector = new DateSelector({
         date: defaultDate,
@@ -144,13 +144,12 @@ define([
     },
 
     updateEnd: function () {
-      var start = moment(this.$el.find("input[data-key=start]").val());
+      var start = this.getStartDate();
       var endOfDay = start.endOf("day").toDate();
-      var end = this.$el.find("input[data-key=end]").val();
-      if (!end) {
+      if (!this.$("input[data-key=end]").val()) {
         this.endDateSelector.setDate(endOfDay);
       } else if (this.lastStart) {
-        end = moment(end);
+        var end = this.getEndDate();
         if (this.lastStart.endOf("day").isSame(end, "minute")) {
           this.endDateSelector.setDate(endOfDay);
         }
@@ -476,8 +475,8 @@ define([
       values.name = this.$el.find("input[data-key=name]").val();
       values.link = this.wrapLink(this.$el.find("input[data-key=link]").val());
       values.place = this.getPlace();
-      values.start_date = moment(this.$el.find("input[data-key=start]").val());
-      values.end_date = moment(this.$el.find("input[data-key=end]").val());
+      values.start_date = this.getStartDate();
+      values.end_date = this.getEndDate();
 
       if (this.model) {
         values.start_date.add("seconds", -this.model.get("start_offset_seconds"));
@@ -488,6 +487,14 @@ define([
       values.participants = this.getParticipantValues();
 
       return values;
+    },
+
+    getStartDate: function () {
+      return moment(this.$el.find("input[data-key=start]").val(), "YYYYY-MM-DD HH:mm");
+    },
+
+    getEndDate: function () {
+      return moment(this.$el.find("input[data-key=end]").val(), "YYYYY-MM-DD HH:mm");
     },
 
     getParticipantValues: function () {

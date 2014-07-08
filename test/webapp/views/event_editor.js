@@ -168,6 +168,13 @@ define(
           this.editor.$("input[data-key=end]").val().should.equal("2012-12-04 23:59");
         });
 
+        it("should set the end if it is empty when the start is set for BCE years", function () {
+          this.editor.render();
+          this.editor.$("input[data-key=end]").val("");
+          this.editor.startDateSelector.setDate(moment([-12, 11, 4]).toDate());
+          this.editor.$("input[data-key=end]").val().should.equal("-0012-12-04 23:59");
+        });
+
         it("should move the end when the start moves", function () {
           this.editor.render();
           this.editor.lastStart = moment("2012-12-04");
