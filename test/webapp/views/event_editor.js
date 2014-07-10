@@ -241,6 +241,7 @@ define(
             state: new Backbone.Model({date: [1900, 2000]})
           });
           stubFetchData(this.editor);
+          sinon.stub(this.editor, "showModal");
           this.editor.render();
           sinon.stub(this.editor, "getSelectedParticipant", function () {
             return {
@@ -253,6 +254,7 @@ define(
         afterEach(function () {
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
+          this.editor.showModal.restore();
         });
         it("should add a model to the participants collection", function () {
           _.keys(this.editor.participants).length.should.equal(0);
@@ -289,6 +291,7 @@ define(
             state: new Backbone.Model({date: [1900, 2000]})
           });
           stubFetchData(this.editor);
+          sinon.stub(this.editor, "showModal");
           this.editor.render();
           sinon.stub(this.editor, "getSelectedParticipant", function () {
             return {thing: {id: 1, name: "some name"}};
@@ -302,6 +305,7 @@ define(
           Analytics.eventSaveValidationFailed.restore();
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
+          this.editor.showModal.restore();
         });
         it("should log when someone adds a participant", function () {
           this.editor.addParticipant();
@@ -363,10 +367,12 @@ define(
             {id: 4, name: "existing place name", distance: 0},
             {id: 5, name: "existing place name1", distance: 1200}
           ];
+          sinon.stub(this.editor, "showModal");
         });
         afterEach(function () {
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
+          this.editor.showModal.restore();
         });
         describe("rendering", function () {
 
@@ -588,6 +594,7 @@ define(
           stubFetchData(this.editor);
           this.editor.startOffset = 0;
           this.editor.endOffset = 0;
+          sinon.stub(this.editor, "showModal");
           this.editor.render();
           this.editor.$("input[data-key=name]").val("some name");
           this.editor.$("input[data-key=link]").val("some link");
@@ -607,6 +614,7 @@ define(
           Event.prototype.save.restore();
           this.editor.$el.find(".modal").modal("hide");
           this.editor.$el.remove();
+          this.editor.showModal.restore();
         });
 
         it("should not make the reason required if it saving a new event", function () {

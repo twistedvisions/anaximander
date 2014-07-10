@@ -95,6 +95,10 @@ define([
 
     show: function () {
       $("body").append(this.$el);
+      this.showModal();
+    },
+
+    showModal: function () {
       this.$(".modal").modal();
       this.$(".modal").modal("show");
     },

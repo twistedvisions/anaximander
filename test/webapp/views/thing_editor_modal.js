@@ -21,6 +21,7 @@ define(
           }),
           state: new Backbone.Model()
         });
+        sinon.stub(this.thingEditor, "showModal");
         this.thingEditor.thingEditor.subtypes.updateData = _.bind(function () {
           this.thingEditor.thingEditor.subtypes.reset([{
             id: 1,
@@ -37,6 +38,9 @@ define(
             }
           };
         }, this);
+      });
+      afterEach(function () {
+        this.thingEditor.showModal.restore();
       });
       describe("interactions", function () {
         it("should show history when you click on the tab", function () {
