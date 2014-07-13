@@ -10,8 +10,8 @@ var getRow = function (id, opts) {
     thing_name: "thing_name" + id,
     thing_link: "thing_link_" + id,
     thing_type_name: "thing_type_name_" + id,
-    start_date: "2014-01-0" + id,
-    end_date: "2014-01-0" + id,
+    start_date: new Date("2014-01-0" + id),
+    end_date: new Date("2014-01-0" + id),
     area: "BOX(10 -20,-30 40)"
   }, opts);
 };
@@ -133,8 +133,8 @@ describe("search", function () {
         ]
       };
 
-      var start_dates = "{\"2000-01-01 00:00:00+00\",\"2000-01-02 00:00:00+00\"}";
-      var end_dates = "{\"2000-01-01 23:59:59+00\",\"2000-01-02 23:59:59+00\"}";
+      var start_dates = ["2000-01-01 00:00:00+00", "2000-01-02 00:00:00+00"];
+      var end_dates = ["2000-01-01 23:59:59+00", "2000-01-02 23:59:59+00"];
 
       var s = new Search({get: function () {}});
       s.handleSearchResults(this.res, [
@@ -153,103 +153,43 @@ describe("search", function () {
         })]},
         {rows: []}
       ]);
-      this.result.should.eql([
-        getResultRow(1, {
-          points: [
-            {
-              lat: 10,
-              lon: -20,
-              start_date: new Date("2000-01-01T00:00:00.000Z"),
-              start_offset_seconds: 0,
-              end_date: new Date("2000-01-01T23:59:59.000Z"),
-              end_offset_seconds: 0,
-              event_id: 1,
-              event_name: "event name 1",
-              event_link: "event link 1",
-              place_id: 101,
-              place_name: "place name 1",
-              importance_value: 100
-            },
-            {
-              lat: -30,
-              lon: 40,
-              start_date: new Date("2000-01-02T00:00:00.000Z"),
-              start_offset_seconds: 10,
-              end_date: new Date("2000-01-02T23:59:59.000Z"),
-              end_offset_seconds: 10,
-              event_id: 2,
-              event_name: "event name 2",
-              event_link: "event link 2",
-              place_id: 102,
-              place_name: "place name 2",
-              importance_value: 200
-            }
-          ]
-        })
-      ]);
-    });
-    it("should handle long timezone offsets", function () {
-      var dbPoints = {
-        "type": "LineString",
-        "coordinates": [
-          [-20, 10],
-          [40, -30]
+      var expected = [getResultRow(1, {
+        points: [
+          {
+            lat: 10,
+            lon: -20,
+            start_date: new Date("2000-01-01T00:00:00.000Z").toISOString(),
+            start_offset_seconds: 0,
+            end_date: new Date("2000-01-01T23:59:59.000Z").toISOString(),
+            end_offset_seconds: 0,
+            event_id: 1,
+            event_name: "event name 1",
+            event_link: "event link 1",
+            place_id: 101,
+            place_name: "place name 1",
+            importance_value: 100
+          },
+          {
+            lat: -30,
+            lon: 40,
+            start_date: new Date("2000-01-02T00:00:00.000Z").toISOString(),
+            start_offset_seconds: 10,
+            end_date: new Date("2000-01-02T23:59:59.000Z").toISOString(),
+            end_offset_seconds: 10,
+            event_id: 2,
+            event_name: "event name 2",
+            event_link: "event link 2",
+            place_id: 102,
+            place_name: "place name 2",
+            importance_value: 200
+          }
         ]
-      };
-
-      var start_dates = "{\"1811-01-06 04:58:45-00:01:15\",\"1811-01-06 04:58:45+00:01:15\"}";
-      var end_dates = "{\"1811-01-07 04:58:45-00:01:15\",\"1811-01-07 04:58:45+00:01:15\"}";
-      var s = new Search({get: function () {}});
-      s.handleSearchResults(this.res, [
-        {rows: [getRow(1, {
-          points: JSON.stringify(dbPoints),
-          start_dates: start_dates,
-          start_offset_seconds: [0, 0],
-          end_dates: end_dates,
-          end_offset_seconds: [0, 0],
-          importance_values: [100, 200],
-          event_ids: [1, 2],
-          event_names: ["event name 1", "event name 2"],
-          event_links: ["event link 1", "event link 2"],
-          place_ids: [101, 102],
-          place_names: ["place name 1", "place name 2"]
-        })]},
-        {rows: []}
-      ]);
-      this.result.should.eql([
-        getResultRow(1, {
-          points: [
-            {
-              lat: 10,
-              lon: -20,
-              start_date: new Date("1811-01-06 05:00:00.000Z"),
-              start_offset_seconds: 0,
-              end_date: new Date("1811-01-07 05:00:00.000Z"),
-              end_offset_seconds: 0,
-              event_id: 1,
-              event_name: "event name 1",
-              event_link: "event link 1",
-              place_id: 101,
-              place_name: "place name 1",
-              importance_value: 100
-            },
-            {
-              lat: -30,
-              lon: 40,
-              start_date: new Date("1811-01-06 04:57:30.000Z"),
-              start_offset_seconds: 0,
-              end_date: new Date("1811-01-07 04:57:30.000Z"),
-              end_offset_seconds: 0,
-              event_id: 2,
-              event_name: "event name 2",
-              event_link: "event link 2",
-              place_id: 102,
-              place_name: "place name 2",
-              importance_value: 200
-            }
-          ]
-        })
-      ]);
+      })];
+      _.each(_.keys(this.result[0]), function (key) {
+        if (this.result[0][key] && expected[0][key]) {
+          this.result[0][key].should.eql(expected[0][key]);
+        }
+      }, this);
     });
   });
 });

@@ -8,7 +8,7 @@
     "express": "3.x",
     "cookie-parser": "1.x",
     "cookie-session": "1.x",
-    "pg": "2.x",
+    "pg": "3.x",
     "lazy": "1.x",
     "humanize": "0.0.8",
     "lodash": "1.x",
