@@ -150,7 +150,7 @@ define([
         this.$(".current-event-name").text(summaryText);
         this.$(".current-event-link").hide();
         this.$(".current-event-name.no-link").show();
-        if (setPosition) {
+        if (setPosition && (this.highlight.area.length > 1)) {
           this.model.set(Highlight.determineModelBounds(this.highlight.area));
         }
       } else {
