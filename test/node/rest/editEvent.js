@@ -613,7 +613,7 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[3][1].should.equal("update_event_start_date");
-        this.args[3][2][1].should.equal("000012-01-01T00:00:00.000Z BC");
+        this.args[3][2][1].should.equal("000013-01-01T00:00:00.000Z BC");
         this.args[3][2][2].should.equal(2 * 60 * 60);
       }, done);
     });
@@ -659,7 +659,7 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[3][1].should.equal("update_event_end_date");
-        this.args[3][2][1].should.equal("000024-01-01T00:00:00.000Z BC");
+        this.args[3][2][1].should.equal("000025-01-01T00:00:00.000Z BC");
         this.args[3][2][2].should.equal(2 * 60 * 60);
       }, done);
     });

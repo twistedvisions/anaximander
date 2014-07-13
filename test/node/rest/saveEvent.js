@@ -455,14 +455,14 @@ describe("saveEvent", function () {
     it("should save BC start dates", function (done) {
       this.fullBody.start_date = "-002013-03-12T00:00:00.000Z";
       this.testSave(function () {
-        this.args[9][2][5].should.equal("002013-03-12T00:00:00.000Z BC");
+        this.args[9][2][5].should.equal("002014-03-12T00:00:00.000Z BC");
       }, done);
     });
     it("should save BC end dates", function (done) {
       this.fullBody.start_date = "-002013-03-12T00:00:00.000Z";
       this.fullBody.end_date = "-002013-03-13T00:00:00.000Z";
       this.testSave(function () {
-        this.args[9][2][6].should.equal("002013-03-13T00:00:00.000Z BC");
+        this.args[9][2][6].should.equal("002014-03-13T00:00:00.000Z BC");
       }, done);
     });
   });
