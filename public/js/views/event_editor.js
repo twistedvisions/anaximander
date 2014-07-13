@@ -149,7 +149,11 @@ define([
 
     updateEnd: function () {
       var start = this.getStartDate();
-      var endOfDay = start.endOf("day").toDate();
+      var endOfDay = moment(start).endOf("day");
+      if (endOfDay.get("year") <= 0) {
+        endOfDay.subtract("year", 1);
+      }
+      endOfDay = endOfDay.toDate();
       if (!this.$("input[data-key=end]").val()) {
         this.endDateSelector.setDate(endOfDay);
       } else if (this.lastStart) {
@@ -422,10 +426,16 @@ define([
     },
 
     getLocalTime: function (key, offsetKey) {
-      return this.model.get(key)
+      var localTime = this.model.get(key)
         .clone()
         .add("seconds", this.model.get(offsetKey));
+      if (localTime.get("year") <= 0) {
+        localTime.subtract("year", 1);
+      }
+      return localTime;
     },
+
+
 
     renderTimes: function (localStartTime, localEndTime) {
       this.startDateSelector.setDate(localStartTime.toDate());
@@ -494,11 +504,19 @@ define([
     },
 
     getStartDate: function () {
-      return moment(this.$el.find("input[data-key=start]").val(), "YYYYY-MM-DD HH:mm");
+      return this.getDateValue("start");
     },
 
     getEndDate: function () {
-      return moment(this.$el.find("input[data-key=end]").val(), "YYYYY-MM-DD HH:mm");
+      return this.getDateValue("end");
+    },
+
+    getDateValue: function (fieldKey) {
+      var date = moment(this.$el.find("input[data-key=" + fieldKey + "]").val(), "YYYYY-MM-DD HH:mm");
+      if (date.get("year") < 0) {
+        date.add("year", 1);
+      }
+      return date;
     },
 
     getParticipantValues: function () {

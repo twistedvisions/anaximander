@@ -18,16 +18,14 @@
         <span class="toolbutton edit glyphicon glyphicon-pencil"></span>
       <% } %>
 
-      <% if (end_date - start_date < 24 * 60 * 60 * 1000) { %>
+      <% if ((end_date.valueOf() - start_date.valueOf()) < 24 * 60 * 60 * 1000) { %>
 
-      1 event on <%=  start_date.toLocaleDateString() %>
+      1 event on <%= dateRange %>
 
       <% } else { %>
 
       <%= event_count %> events
-      <%=  start_date.toLocaleDateString() %>
-      &ndash;
-      <%=  end_date.toLocaleDateString() %>
+      <%= dateRange %>
 
       <% }%>
     </span>

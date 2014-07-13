@@ -3,12 +3,12 @@ define([
   "underscore",
   "backbone",
   "utils/highlight",
+  "utils/date_formatter",
   "moment",
   "analytics",
   "text!templates/thing_summary.htm",
-  "moment-range",
   "less!../../css/thing_summary"
-], function ($, _, Backbone, Highlight, moment, analytics, template) {
+], function ($, _, Backbone, Highlight, DateFormatter, moment, analytics, template) {
 
   template = _.template(template);
 
@@ -250,59 +250,24 @@ define([
     },
 
     getEventDateRange: function () {
-      return [
-        this.getDate(this.points[0], "start"),
-        this.getDate(this.points[this.points.length - 1], "end")
-      ].join(" – ");
-    },
-
-    getDateTimeRange: function (point) {
-      if (this.isLongerThanOneDay(point)) {
-        return this.getDate(point, "start") + " – " + this.getDate(point, "end");
-      } else {
-        var timeRange = [
-          this.getTime(point, "start"),
-          this.getTime(point, "end")
-        ].join(" – ");
-        if (timeRange === "00:00 – 23:59") {
-          return this.getDate(point, "start");
-        } else {
-          return [
-            timeRange,
-            this.getDate(point, "start")
-          ].join(" ");
-        }
-      }
+      return DateFormatter.formatDateRange(
+        this.getOffsetMoment(this.points[0], "start"),
+        this.getOffsetMoment(this.points[this.points.length - 1], "end")
+      );
     },
 
     getDateRange: function (point) {
-      if (this.isLongerThanOneDay(point)) {
-        return this.getDate(point, "start") + " – " + this.getDate(point, "end");
-      } else {
-        return this.getDate(point, "start");
-      }
-    },
-
-    isLongerThanOneDay: function (point) {
-      var range = moment().range(
+      return DateFormatter.formatDateRange(
         this.getOffsetMoment(point, "start"),
         this.getOffsetMoment(point, "end")
       );
+    },
 
-      var oneDay = moment().range(
-        moment({y: 2000, m: 1, d: 1}),
-        moment({y: 2000, m: 1, d: 2})
+    getDateTimeRange: function (point) {
+      return DateFormatter.formatDateTimeRange(
+        this.getOffsetMoment(point, "start"),
+        this.getOffsetMoment(point, "end")
       );
-
-      return range > oneDay;
-    },
-
-    getDate: function (point, datePrefix) {
-      return this.getOffsetMoment(point, datePrefix).format("ll");
-    },
-
-    getTime: function (point, datePrefix) {
-      return this.getOffsetMoment(point, datePrefix).format("HH:mm");
     },
 
     getOffsetMoment: function (point, datePrefix) {

@@ -1050,32 +1050,32 @@ define(
           it("should show dates within a day of eachother as a single day", function () {
             this.map.getDateRangeString(
               {
-                start_date: "2014-01-01 23:50",
-                end_date: "2014-01-02 01:10",
+                start_date: "2014-01-02 00:00",
+                end_date: "2014-01-02 23:59",
                 start_offset_seconds: 0,
                 end_offset_seconds: 0
               }
-            ).should.equal("01/01/2014");
+            ).should.equal("02/01/2014");
           });
           it("should handle timezone offsets", function () {
             this.map.getDateRangeString(
               {
-                start_date: "2014-01-02 00:00",
-                end_date: "2014-01-02 23:59",
+                start_date: "2014-01-02 23:00",
+                end_date: "2014-01-02 22:59",
                 start_offset_seconds: -3600,
                 end_offset_seconds: -3600
               }
-            ).should.equal("01/01/2014");
+            ).should.equal("02/01/2014");
           });
           it("should not show leading zeros for days before 1000", function () {
             this.map.getDateRangeString(
               {
-                start_date: {y: 314, M: 0, d: 1, h: 23, m: 50},
-                end_date: {y: 314, M: 0, d: 2, h: 10, m: 10},
+                start_date: {y: 314, M: 0, d: 1},
+                end_date: {y: 314, M: 0, d: 1, h: 23, m: 59},
                 start_offset_seconds: 0,
                 end_offset_seconds: 0
               }
-            ).should.equal("01/01/314");
+            ).should.equal("01/01/0314");
           });
           it("should show dates more than a day apart as a range", function () {
             this.map.getDateRangeString(
@@ -1085,17 +1085,17 @@ define(
                 start_offset_seconds: 0,
                 end_offset_seconds: 0
               }
-            ).should.equal("01/01/2014 - 03/01/2014");
+            ).should.equal("01/01/2014 \u2013 03/01/2014");
           });
           it("should show BCE suffix when showing a single day before 0", function () {
             this.map.getDateRangeString(
               {
-                start_date: {y: -314, M: 0, d: 1, h: 23, m: 50},
-                end_date: {y: -314, M: 0, d: 2, h: 10, m: 10},
+                start_date: {y: -314, M: 0, d: 1},
+                end_date: {y: -314, M: 0, d: 1, h: 23, m: 59},
                 start_offset_seconds: 0,
                 end_offset_seconds: 0
               }
-            ).should.equal("01/01/314 BCE");
+            ).should.equal("01/01/0314 BCE");
           });
           it("should show BCE suffix on the first day when showing a range spanning 0", function () {
             this.map.getDateRangeString(
@@ -1105,7 +1105,7 @@ define(
                 start_offset_seconds: 0,
                 end_offset_seconds: 0
               }
-            ).should.equal("01/01/314 BCE - 02/01/314 CE");
+            ).should.equal("01/01/0314 BCE \u2013 02/01/0314 CE");
           });
           it("should show BCE suffix on the last day when showing a range before 0", function () {
             this.map.getDateRangeString(
@@ -1115,7 +1115,7 @@ define(
                 start_offset_seconds: 0,
                 end_offset_seconds: 0
               }
-            ).should.equal("01/01/314 - 03/01/314 BCE");
+            ).should.equal("01/01/0314 \u2013 03/01/0314 BCE");
           });
         });
         describe("marker links", function () {

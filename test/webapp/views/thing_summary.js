@@ -305,41 +305,6 @@ define(
         });
       });
 
-      describe("date formatting", function () {
-        describe("getDateTimeRange", function () {
-          it("should return the date with no offset", function () {
-            this.thingSummary.getDate({
-              start_date: new Date(1950, 0, 1),
-              end_date: new Date(1950, 0, 1, 23, 59, 59),
-              start_offset_seconds: 0
-            }, "start").should.equal("Jan 1 1950");
-          });
-          it("should return the date with an offset", function () {
-            this.thingSummary.getDate({
-              start_date: new Date(1950, 0, 1),
-              end_date: new Date(1950, 0, 1, 23, 59, 59),
-              start_offset_seconds: -1
-            }, "start").should.equal("Dec 31 1949");
-          });
-        });
-        describe("getTime", function () {
-          it("should return the time with no offset", function () {
-            this.thingSummary.getTime({
-              start_date: new Date(1950, 0, 1),
-              end_date: new Date(1950, 0, 1, 23, 59, 59),
-              start_offset_seconds: 0
-            }, "start").should.equal("00:00");
-          });
-          it("should return the time with an offset", function () {
-            this.thingSummary.getTime({
-              start_date: new Date(1950, 0, 1),
-              end_date: new Date(1950, 0, 1, 23, 59, 59),
-              start_offset_seconds: -1
-            }, "start").should.equal("23:59");
-          });
-        });
-      });
-
       describe("show point", function () {
         describe("summary", function () {
           describe("multiple events", function () {
@@ -375,7 +340,7 @@ define(
               this.thingSummary.render();
             });
             it("should show the date range of the thing", function () {
-              this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010 – Apr 2 2011");
+              this.thingSummary.$(".current-date").text().should.equal("01/01/2010 – 02/04/2011");
             });
             it("should show the amount of events", function () {
               this.thingSummary.$(".current-event-name:first").text().should.equal("2 events");
@@ -405,7 +370,7 @@ define(
               this.thingSummary.update();
             });
             it("should show the date of the thing if there is a single event", function () {
-              this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010");
+              this.thingSummary.$(".current-date").text().should.equal("01/01/2010");
             });
           });
           describe("no events", function () {
@@ -489,18 +454,6 @@ define(
             });
             this.thingSummary.update();
             this.thingSummary.showNext();
-          });
-          it("should show the date range of the event when it is longer than a day", function () {
-            this.thingSummary.$(".current-date").text().should.equal("Jan 1 2010 – Jan 1 2011");
-          });
-          it("should show the date of the event when it is exactly a day", function () {
-            this.thingSummary.showNext();
-            this.thingSummary.$(".current-date").text().should.equal("Apr 2 2011");
-          });
-          it("should show the time of the event when it is shorter than a day", function () {
-            this.thingSummary.showNext();
-            this.thingSummary.showNext();
-            this.thingSummary.$(".current-date").text().should.equal("00:00 – 23:58 Apr 2 2011");
           });
           it("should show the name of the event", function () {
             this.thingSummary.$(".current-event-name:first").text().should.equal("event name 1");

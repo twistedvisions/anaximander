@@ -3,8 +3,10 @@ define([
   "underscore",
   "backbone",
   "when",
+  "moment",
   "analytics",
   "utils/highlight",
+  "utils/date_formatter",
   "utils/scroll",
   "utils/filter_url_serialiser",
   "models/current_user",
@@ -15,8 +17,8 @@ define([
   "text!templates/search_summary.htm",
   "text!templates/search_result.htm",
   "less!../../css/search_box"
-], function ($, _, Backbone, when,
-    Analytics, Highlight, Scroll, FilterUrlSerialiser, User, ThingEditor,
+], function ($, _, Backbone, when, moment,
+    Analytics, Highlight, DateFormatter, Scroll, FilterUrlSerialiser, User, ThingEditor,
     SearchResults, Things, template, searchSummary, searchResult) {
 
   var SearchBoxView = Backbone.View.extend({
@@ -161,11 +163,23 @@ define([
     },
 
     generateSearchEntry: function (x) {
-      var el = $(this.searchResultTemplate(_.extend({
-        canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-thing")
-      }, x.toJSON())));
+      var el = $(this.searchResultTemplate(_.extend(
+        {
+          canEdit: User.user.get("logged-in") && User.user.hasPermission("edit-thing"),
+          dateRange: DateFormatter.formatDateRange(
+            this.formatDate(x.get("start_date"), x.get("start_offset_seconds")),
+            this.formatDate(x.get("end_date"), x.get("end_offset_seconds"))
+          )
+        },
+        x.toJSON()
+      )));
       el.data("result", x.toJSON());
       return el;
+    },
+
+    formatDate: function (date, offset) {
+      var d = moment(date).add("seconds", offset);
+      return d;
     },
 
     renderSearchEntries: function (searchEntries) {

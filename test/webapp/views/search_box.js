@@ -254,12 +254,8 @@ define(
         });
         describe("generateSearchEntry", function () {
           it("should store the result in the drop down's data", function () {
-            var el = this.searchBox.generateSearchEntry({
-              toJSON: _.bind(function () {
-                return this.searchEntry;
-              }, this)
-            });
-            el.data("result").should.equal(this.searchEntry);
+            var el = this.searchBox.generateSearchEntry(new Backbone.Model(this.searchEntry));
+            el.data("result").should.eql(this.searchEntry);
           });
         });
         describe("renderSearchEntries", function () {

@@ -14,6 +14,7 @@ define([
   "collections/events",
   "utils/position",
   "utils/scroll",
+  "utils/date_formatter",
   "styled_marker",
   "chroma",
   "text!templates/info_window_summary.htm",
@@ -23,7 +24,7 @@ define([
 ], function ($, _, Backbone, moment, when,
     User, analytics, maps, OptionsMenu,
     EventEditor, Events,
-    Position, Scroll, StyledMarker, chroma,
+    Position, Scroll, DateFormatter, StyledMarker, chroma,
     infoWindowSummaryTemplate, infoWindowEntryTemplate,
     infoWindowEntryParticipantTemplate) {
 
@@ -681,6 +682,7 @@ define([
     },
 
     getDateRangeString: function (event) {
+
       var start = moment(event.start_date)
         .add("seconds", event.start_offset_seconds)
         .add("minutes", -moment(event.start_date).toDate().getTimezoneOffset());
@@ -689,35 +691,9 @@ define([
         .add("seconds", event.end_offset_seconds)
         .add("minutes", -moment(event.end_date).toDate().getTimezoneOffset());
 
-      var str = this.getDateString(start);
-      var zero = moment({y: 0, M: 0, d: 1});
-      var isSwitch = start.isBefore(zero) && end.isAfter(zero);
-      if ((+end - +start) > 24 * 60 * 60 * 1000) {
-        if (isSwitch) {
-          str += " BCE";
-        }
-        str += " - " + this.getDateString(end);
-        if (end.isBefore(zero)) {
-          str += " BCE";
-        } else if (isSwitch) {
-          str += " CE";
-        }
-      } else {
-        if (start.isBefore(zero)) {
-          str += " BCE";
-        }
-      }
-      return str;
-    },
+      return DateFormatter.formatDateRange(start, end);
 
-    getDateString: function (date) {
-      if (date.isBefore(moment({y: 1000}))) {
-        return date.format("DD/MM/") + Math.abs(date.toDate().getFullYear());
-      } else {
-        return date.format("DD/MM/YYYY");
-      }
     },
-
 
     drawShape: function (result) {
       return new google.maps.Polygon({
