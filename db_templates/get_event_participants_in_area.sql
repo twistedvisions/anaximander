@@ -29,9 +29,9 @@ from (
     event.creator_id as creator_id,
     event.name as event_name,
     event.link as event_link,
-    event.start_date AT TIME ZONE 'UTC' as start_date,
+    event.start_date AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as start_date,
     event.start_offset_seconds,
-    event.end_date AT TIME ZONE 'UTC' as end_date,
+    event.end_date AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as end_date,
     event.end_offset_seconds,
     case
       when thing_importance.value is null then role_importance.value * 2 * event_importance.value

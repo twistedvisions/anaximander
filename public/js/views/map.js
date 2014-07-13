@@ -685,11 +685,11 @@ define([
 
       var start = moment(event.start_date)
         .add("seconds", event.start_offset_seconds)
-        .add("minutes", -moment(event.start_date).toDate().getTimezoneOffset());
+        .add("minutes", moment(event.start_date).toDate().getTimezoneOffset());
 
       var end = moment(event.end_date)
         .add("seconds", event.end_offset_seconds)
-        .add("minutes", -moment(event.end_date).toDate().getTimezoneOffset());
+        .add("minutes", moment(event.end_date).toDate().getTimezoneOffset());
 
       return DateFormatter.formatDateRange(start, end);
 
