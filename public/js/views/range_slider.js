@@ -20,8 +20,8 @@ define([
         selected: null
       };
       this.setState(
-        state.min || this.min,
-        state.max || this.max
+        state.min !== undefined ? state.min : this.min,
+        state.max !== undefined ? state.max : this.max
       );
     },
 

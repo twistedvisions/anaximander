@@ -15,6 +15,14 @@ define(
           this.slider = new RangeSlider({min: -100, max: 200, state: {max: 20}});
           this.slider.getState().max.should.equal(20);
         });
+        it("should set the min state if passed zero", function () {
+          this.slider = new RangeSlider({min: -100, max: 200, state: {min: 0}});
+          this.slider.getState().min.should.equal(0);
+        });
+        it("should set the max state if passed zero", function () {
+          this.slider = new RangeSlider({min: -100, max: 200, state: {max: 0}});
+          this.slider.getState().max.should.equal(0);
+        });
         it("should ensure the min state is less than the max", function () {
           var e;
           try {
