@@ -74,12 +74,12 @@ define([
     },
 
     toText: function (year, otherYear) {
-      if (year < 0) {
-        return (-year) + "BCE";
-      } else if (otherYear && otherYear < 0) {
+      if (year <= 0) {
+        return (-(year - 1)) + "BCE";
+      } else if (otherYear !== undefined && otherYear <= 0) {
         return year + "CE";
       }
-      return year;
+      return year.toString();
     }
   });
 

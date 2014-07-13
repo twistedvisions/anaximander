@@ -29,6 +29,36 @@ define(
 
     });
 
+    describe("text", function () {
+      it("should show no suffix if both times are after 1 BCE", function () {
+        new DateSlider({model: model}).toText(1500, 1600).should.equal("1500");
+      });
+      it("should show suffix if it is CE and the other is BCE", function () {
+        new DateSlider({model: model}).toText(1500, -1600).should.equal("1500CE");
+      });
+      it("should show no suffix if it is CE and the other is doesn't exist", function () {
+        new DateSlider({model: model}).toText(1500).should.equal("1500");
+      });
+      it("should show suffix if it is BCE and the other is CE", function () {
+        new DateSlider({model: model}).toText(-1500, 1600).should.equal("1501BCE");
+      });
+      it("should show suffix if it is BCE and the other is BCE", function () {
+        new DateSlider({model: model}).toText(-1500, -1600).should.equal("1501BCE");
+      });
+      it("should show suffix if it is BCE and the other doesn't exist", function () {
+        new DateSlider({model: model}).toText(-1500).should.equal("1501BCE");
+      });
+      it("should show suffix if it is 1 BCE and the other is 1 CE", function () {
+        new DateSlider({model: model}).toText(0, 1).should.equal("1BCE");
+      });
+      it("should show suffix if it is 2 BCE and the other is 1 BCE", function () {
+        new DateSlider({model: model}).toText(-1, 0).should.equal("2BCE");
+      });
+      it("should show no suffix if it is 1 CE and the other is 2 CE", function () {
+        new DateSlider({model: model}).toText(1, 2).should.equal("1");
+      });
+    });
+
   }
 
 );
