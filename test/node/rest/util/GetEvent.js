@@ -25,6 +25,9 @@ describe("GetEvent", function () {
         getTime: function () {
           return 1000000;
         },
+        getFullYear: function () {
+          return 1980;
+        },
         getTimezoneOffset: function () {
           return 120;
         }
@@ -41,12 +44,27 @@ describe("GetEvent", function () {
         getTime: function () {
           return 1000000;
         },
+        getFullYear: function () {
+          return 1980;
+        },
         getTimezoneOffset: function () {
           return 120;
         }
       };
       getEvent.handleGetEvent([this.firstRow]);
       time.should.equal(1000000 - 120 * 60 * 1000);
+    });
+    it("should convert postgres BCE year to JS BCE year for start dates", function () {
+      //postgres year -1 === JS year 0
+      this.firstRow.start_date = new Date(Date.UTC(-100, 0, 1));
+      var event = getEvent.handleGetEvent([this.firstRow]);
+      event.start_date.should.eql(new Date(Date.UTC(-99, 0, 1)));
+    });
+    it("should convert postgres BCE year to JS BCE year for end dates", function () {
+      //postgres year -1 === JS year 0
+      this.firstRow.end_date = new Date(Date.UTC(-100, 0, 1));
+      var event = getEvent.handleGetEvent([this.firstRow]);
+      event.end_date.should.eql(new Date(Date.UTC(-99, 0, 1)));
     });
     it("should make an importance object", function () {
       var event = getEvent.handleGetEvent([this.firstRow]);
