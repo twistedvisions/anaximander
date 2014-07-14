@@ -36,7 +36,19 @@ define(
         this.dateSelector.getDate().should.eql(new Date(2014, 0, 1, 11, 43));
       });
 
-      it("should not update the date while the text is not in the correct format", function () {
+      it("should update the date when the linked input is typed into, even in non-standard formats", function () {
+        this.linkedInput = $("<input type='text'>");
+        this.dateSelector = new DateSelector({
+          date: new Date(2014, 6, 1, 11, 43),
+          input: this.linkedInput
+        });
+        this.dateSelector.render();
+        this.linkedInput.val("Jun 16 1954");
+        this.linkedInput.trigger("keyup");
+        this.dateSelector.getDate().should.eql(new Date(1954, 5, 16, 0, 0));
+      });
+
+      it("should not update the date while the month text is not in the correct format", function () {
         this.linkedInput = $("<input type='text'>");
         this.dateSelector = new DateSelector({
           date: new Date(2014, 6, 1, 11, 43),
@@ -44,7 +56,23 @@ define(
         });
         this.dateSelector.render();
         this.linkedInput.val("2014-0-01 11:43");
+        sinon.stub(this.dateSelector, "inputDoesNotMatch");
         this.linkedInput.trigger("keyup");
+        this.dateSelector.inputDoesNotMatch.calledOnce.should.equal(true);
+        this.dateSelector.getDate().should.eql(new Date(2014, 6, 1, 11, 43));
+      });
+
+      it("should not update the date while the year text is not in the correct format", function () {
+        this.linkedInput = $("<input type='text'>");
+        this.dateSelector = new DateSelector({
+          date: new Date(2014, 6, 1, 11, 43),
+          input: this.linkedInput
+        });
+        this.dateSelector.render();
+        this.linkedInput.val("294-01-01 11:43");
+        sinon.stub(this.dateSelector, "inputDoesNotMatch");
+        this.linkedInput.trigger("keyup");
+        this.dateSelector.inputDoesNotMatch.calledOnce.should.equal(true);
         this.dateSelector.getDate().should.eql(new Date(2014, 6, 1, 11, 43));
       });
 
