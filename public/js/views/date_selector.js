@@ -186,7 +186,7 @@ define([
       this.drawDays();
       this.drawTime();
       this.drawHours();
-      this.drawMonths();
+      this.drawMinutes();
       this.attachListeners();
       this.updateInput();
     },
@@ -293,7 +293,7 @@ define([
 
     drawMinutes: function () {
       this.$(".minute-slider").slider({
-        value: this.date.getHours()
+        value: this.date.getMinutes()
       });
     },
 
@@ -303,7 +303,11 @@ define([
 
     updateInput: function () {
       if (this.boundInput) {
-        this.boundInput.val(this.getText());
+        var currentValue = this.boundInput.val();
+        var newValue = this.getText();
+        if (currentValue !== newValue) {
+          this.boundInput.val(newValue);
+        }
       }
     }
   });

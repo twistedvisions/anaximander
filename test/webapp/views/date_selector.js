@@ -48,6 +48,19 @@ define(
         this.dateSelector.getDate().should.eql(new Date(2014, 6, 1, 11, 43));
       });
 
+      it("should not update the date if it is the same", function () {
+        this.linkedInput = $("<input type='text'>");
+        this.dateSelector = new DateSelector({
+          date: new Date(2014, 6, 1, 11, 43),
+          input: this.linkedInput
+        });
+        this.dateSelector.render();
+        this.linkedInput.val("2014-07-01 11:43");
+        sinon.spy(this.linkedInput, "val");
+        this.linkedInput.trigger("keyup");
+        this.linkedInput.val.calledWith("2014-07-01 11:43").should.equal(false);
+      });
+
       describe("summary", function () {
         it("should show the date when > 0", function () {
           this.dateSelector = new DateSelector({
@@ -235,6 +248,26 @@ define(
             this.dateSelector.render();
             this.dateSelector.$(".day-holder.long-month").length.should.equal(1);
           });
+        });
+      });
+
+
+      describe("hours", function () {
+        it("should set the hour slider", function () {
+          this.dateSelector = new DateSelector({
+            date: new Date(2014, 7, 1, 15, 37)
+          });
+          this.dateSelector.render();
+          this.dateSelector.$(".hour-slider").slider("value").should.equal(15);
+        });
+      });
+      describe("minutes", function () {
+        it("should set the minute slider", function () {
+          this.dateSelector = new DateSelector({
+            date: new Date(2014, 7, 1, 15, 37)
+          });
+          this.dateSelector.render();
+          this.dateSelector.$(".minute-slider").slider("value").should.equal(37);
         });
       });
     });
