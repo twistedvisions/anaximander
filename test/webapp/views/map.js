@@ -1208,7 +1208,7 @@ define(
       describe("getColor", function () {
         it("should be blue at the most recent end", function () {
           var map = new Map({model: this.model});
-          map.getColor(new Date("2000-12-31")).should.be.equal("#0000fe");
+          map.getColor(new Date("2000-12-31")).should.be.equal("#0000ff");
         });
         it("should be red at the most distant end", function () {
           var map = new Map({model: this.model});
@@ -1216,11 +1216,16 @@ define(
         });
         it("should be a mixture in the middle", function () {
           var map = new Map({model: this.model});
-          map.getColor(new Date("1950-05-06")).should.be.equal("#80007e");
+          map.getColor(new Date("1950-05-06")).should.be.equal("#7e0080");
         });
         it("should be washed out if it is dimmed", function () {
           var map = new Map({model: this.model});
           map.getColor(new Date("1900-01-01"), true).should.be.equal("#ff9f79");
+        });
+        it("should a mixture in the middle around 1CE", function () {
+          this.model.set("date", [10, -10]);
+          var map = new Map({model: this.model});
+          map.getColor(new Date(-1, 0, 1)).should.be.equal("#72008c");
         });
       });
 

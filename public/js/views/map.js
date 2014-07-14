@@ -590,7 +590,9 @@ define([
     getColor: function (eventTime, isDimmed) {
       var range = this.model.get("date");
       var start = new Date(range[0], 0, 1);
+      start.setFullYear(range[0]);
       var end = new Date(range[1], 12, 31);
+      end.setFullYear(range[1]);
 
       var diff = 1 - ((end.getTime() - eventTime.getTime()) /
                       (end.getTime() - start.getTime()));
