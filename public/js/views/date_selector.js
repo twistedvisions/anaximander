@@ -116,14 +116,16 @@ define([
         this.date = moment(value, "YYYY-MM-DD HH:mm").toDate();
         this.setBaseYear();
         this.redraw();
+        this.triggerChange();
       } else if (value.match(/\d\d\d\-\d\d\-\d\d \d\d:\d\d|\d\d\-\d\d\-\d\d \d\d:\d\d|\d\-\d\d\-\d\d \d\d:\d\d|\d\d\d\d\-\d\-\d\d \d\d:\d\d|\d\d\d\d\-\d\d\-\d \d\d:\d\d|\d\d\d\d\-\d\d\-\d\d \d:\d\d|\d\d\d\d\-\d\d\-\d\d \d\d:\d/)) {
         this.inputDoesNotMatch();
       } else {
-        var newDate = moment(value);
+        var newDate = moment(new Date(value));
         if (!isNaN(newDate.valueOf())) {
           this.date = newDate.toDate();
           this.setBaseYear();
           this.redraw();
+          this.triggerChange();
         }
       }
     },
