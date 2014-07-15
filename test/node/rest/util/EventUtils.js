@@ -974,13 +974,13 @@ describe("EventUtils", function () {
   describe("setTimezoneOffset", function () {
     it("should adjust the start date, by the timezone offset at the place", function (done) {
       var params = {
-        start_date: "2013-06-02 00:00:00",
-        end_date: "2013-06-02 00:00:00",
+        start_date: "2013-06-02T00:00:00Z",
+        end_date: "2013-06-02T00:00:00Z",
         placeId: 1
       };
       new EventUtils().setTimezoneOffset(params).then(
         tryTest(_.bind(function () {
-          params.start_date.toDate().should.eql(moment("2013-06-02 01:00:00").toDate());
+          params.start_date.toDate().should.eql(moment("2013-06-02T01:00:00Z").toDate());
         }, this), done),
         done
       );
@@ -990,13 +990,13 @@ describe("EventUtils", function () {
     });
     it("should adjust the end date, by the timezone offset at the place", function (done) {
       var params = {
-        start_date: "2013-06-02 00:00:00",
-        end_date: "2013-06-02 00:00:00",
+        start_date: "2013-06-02T00:00:00Z",
+        end_date: "2013-06-02T00:00:00Z",
         placeId: 1
       };
       new EventUtils().setTimezoneOffset(params).then(
         tryTest(_.bind(function () {
-          params.end_date.toDate().should.eql(moment("2013-06-02 01:00:00").toDate());
+          params.end_date.toDate().should.eql(moment("2013-06-02T01:00:00Z").toDate());
         }, this), done),
         done
       );
@@ -1006,13 +1006,13 @@ describe("EventUtils", function () {
     });
     it("should not permit the start year to be 0", function (done) {
       var params = {
-        start_date: "0000-06-02 00:00:00",
-        end_date: "2013-06-02 00:00:00",
+        start_date: "0000-06-02T00:00:00Z",
+        end_date: "2013-06-02T00:00:00Z",
         placeId: 1
       };
       new EventUtils().setTimezoneOffset(params).then(
         tryTest(_.bind(function () {
-          params.start_date.toDate().should.eql(moment("-000001-06-02 00:00:00").toDate());
+          params.start_date.get("year").should.eql(-1);
         }, this), done),
         done
       );
@@ -1022,13 +1022,13 @@ describe("EventUtils", function () {
     });
     it("should not permit the end year to be 0", function (done) {
       var params = {
-        start_date: "-0001-06-02 00:00:00",
-        end_date: "0000-06-02 00:00:00",
+        start_date: "-000001-06-02T00:00:00Z",
+        end_date: "0000-06-02T00:00:00Z",
         placeId: 1
       };
       new EventUtils().setTimezoneOffset(params).then(
         tryTest(_.bind(function () {
-          params.end_date.toDate().should.eql(moment("-000001-06-02 00:00:00").toDate());
+         params.end_date.get("year").should.eql(-1);
         }, this), done),
         done
       );
