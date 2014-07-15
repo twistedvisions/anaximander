@@ -16,44 +16,6 @@ describe("GetEvent", function () {
       };
       this.next = function () {};
     });
-    it("should take the local timezone ofset out of the start date, so the iso time looks right", function () {
-      var time;
-      this.firstRow.end_date = {
-        setTime: function (_time) {
-          time = _time;
-        },
-        getTime: function () {
-          return 1000000;
-        },
-        getFullYear: function () {
-          return 1980;
-        },
-        getTimezoneOffset: function () {
-          return 120;
-        }
-      };
-      getEvent.handleGetEvent([this.firstRow]);
-      time.should.equal(1000000 - 120 * 60 * 1000);
-    });
-    it("should take the local timezone ofset out of the start date, so the iso time looks right", function () {
-      var time;
-      this.firstRow.start_date = {
-        setTime: function (_time) {
-          time = _time;
-        },
-        getTime: function () {
-          return 1000000;
-        },
-        getFullYear: function () {
-          return 1980;
-        },
-        getTimezoneOffset: function () {
-          return 120;
-        }
-      };
-      getEvent.handleGetEvent([this.firstRow]);
-      time.should.equal(1000000 - 120 * 60 * 1000);
-    });
     it("should convert postgres BCE year to JS BCE year for start dates", function () {
       //postgres year -1 === JS year 0
       this.firstRow.start_date = new Date(Date.UTC(-100, 0, 1));
