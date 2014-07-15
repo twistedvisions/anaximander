@@ -178,7 +178,9 @@ define([
     },
 
     formatDate: function (date, offset) {
-      var d = moment(date).add("seconds", offset);
+      var d = moment(date)
+        .add("seconds", offset)
+        .add("minutes", moment(date).zone());
       return d;
     },
 
