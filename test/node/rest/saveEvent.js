@@ -418,7 +418,28 @@ describe("saveEvent", function () {
           place_id: 1,
           start_date: moment("2013-06-02"),
           end_date: moment("2013-06-01"),
+          importance_id: 1,
           link: "http://some.wiki.page/ihope.html"
+        }).then(
+          function () {
+            done({message: "should not succeed"});
+          },
+          tryTest(function (e) {
+            should.exist(e);
+          }, done)
+        );
+      });
+      it("should throw an exception if the link is javascript", function (done) {
+        var link = "java";
+        link += "script:(function () {alert('yowsers')})";
+        new saveEvent.EventSaver().createEvent({
+          name: "something happened",
+          type_id: 1,
+          place_id: 1,
+          importance_id: 1,
+          start_date: moment("2013-06-02"),
+          end_date: moment("2013-06-03"),
+          link: link
         }).then(
           function () {
             done({message: "should not succeed"});

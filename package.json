@@ -35,6 +35,7 @@
     "async": "0.2.x",
     "execSync": "1.0.1-pre",
     "moment": "2.6.x",
+    "validator": "3.x",
     "less": "1.x",
     "csso": "1.x",
     "grunt": "0.4.x",

@@ -552,7 +552,7 @@ describe("editEvent", function () {
       this.fullBody = {
         id: 1,
         last_edited: "2000-01-01",
-        link: "new link"
+        link: "http://yourlink.com"
       };
 
       this.stubValues = [
@@ -566,8 +566,36 @@ describe("editEvent", function () {
 
       this.testEdit(function () {
         this.args[2][1].should.equal("update_event_link");
-        this.args[2][2][1].should.equal("new link");
+        this.args[2][2][1].should.equal("http://yourlink.com");
       }, done);
+    });
+
+    it("should not save a changed XSS link", function (done) {
+      var link = "java";
+      link += "script:(function () {alert('yowsers')})";
+
+      this.fullBody = {
+        id: 1,
+        last_edited: "2000-01-01",
+        link: link
+      };
+
+      this.stubValues = [
+        [{db_call: "get_user_permissions", name: "edit-event"}],
+        [{db_call: "get_event_lock", last_edited: "2000-01-01"}],
+        [{db_call: "update_event_link"}],
+        [{db_call: "save_event_change"}],
+        [{db_call: "update_event_last_edited"}],
+        [{db_call: "update_user_last_save_time"}]
+      ];
+
+      this.testEdit(function () {
+        throw new Error("should not get here");
+      }, done, function (e) {
+        should.exist(e);
+        done();
+      });
+
     });
     it("should save a changed start date at the right timezone offset", function (done) {
       this.fullBody = {
