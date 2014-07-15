@@ -29,9 +29,9 @@ from (
     t.name as thing_name,
     t.link as thing_link,
     type.name as thing_type_name,
-    e.start_date AT TIME ZONE 'UTC' as start_date,
+    e.start_date AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as start_date,
     e.start_offset_seconds as start_offset_seconds,
-    e.end_date AT TIME ZONE 'UTC' as end_date,
+    e.end_date AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' as end_date,
     e.end_offset_seconds as end_offset_seconds,
     p.location as location,
     max(case
