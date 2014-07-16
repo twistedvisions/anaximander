@@ -62,11 +62,7 @@ define([
       if (!highlight || !highlight.id || !this.highlight || (this.highlight.id !== highlight.id)) {
         return true;
       }
-      var points = this.filterPoints(highlight.points);
-      if (!this.points || this.points.length !== points.length) {
-        return true;
-      }
-      return false;
+      return !highlight.reset;
     },
 
     filterPoints: function (points) {

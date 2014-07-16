@@ -74,7 +74,7 @@ define([
         this.mapObjectsById[resultObj.place_id] = [mapObject, resultObj];
       }, this);
 
-      if (this.selectedEvent && this.selectedEvent.id !== this.lastEventIdShown) {
+      if (this.selectedEvent) {
         this.showSelectedPoint();
       }
     },

@@ -421,14 +421,14 @@ define(
               this.map.drawNewMarkers([[], ["{\"place_id\": 103}"]]);
               this.map.showInfoWindow.calledOnce.should.equal(true);
             });
-            it("should not show the marker if it has been shown before", function () {
+            it("should redraw the marker when it has been shown before", function () {
               this.map.selectedEvent = {
                 id: 205,
                 place_id: 103
               };
               this.map.lastEventIdShown = 205;
               this.map.drawNewMarkers([[], ["{\"place_id\": 103}"]]);
-              this.map.showInfoWindow.calledOnce.should.equal(false);
+              this.map.showInfoWindow.calledOnce.should.equal(true);
             });
           });
         });

@@ -1028,7 +1028,7 @@ describe("EventUtils", function () {
       };
       new EventUtils().setTimezoneOffset(params).then(
         tryTest(_.bind(function () {
-         params.end_date.get("year").should.eql(-1);
+          params.end_date.get("year").should.eql(-1);
         }, this), done),
         done
       );
