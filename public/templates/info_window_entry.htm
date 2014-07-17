@@ -18,7 +18,7 @@
 >
     <a class="event-link <%= (highlighted ? " highlight" : "") %><% if (event_link.length === 0) { %> no-link <% } %> "
       <% if (event_link.length > 0) { %>
-        href="<%= encodeURI(event_link) %>"
+        href="<%= event_link %>"
         target="_blank"
       <% } %>
     >
