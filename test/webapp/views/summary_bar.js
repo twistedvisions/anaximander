@@ -167,5 +167,22 @@ define(
         should.exist(summaryBar.login);
       });
     });
+    describe("blog link", function () {
+      beforeEach(function () {
+        sinon.stub(analytics, "blogLinkClicked");
+      });
+      afterEach(function () {
+        analytics.blogLinkClicked.restore();
+      });
+      it("should track people clicking on the blog", function () {
+        var summaryBar = new SummaryBar({
+          model: this.model,
+          eventLocationsCollection: this.collection
+        });
+        summaryBar.render();
+        summaryBar.$("#blog-link a").trigger("click");
+        analytics.blogLinkClicked.calledOnce.should.equal(true);
+      });
+    });
   }
 );

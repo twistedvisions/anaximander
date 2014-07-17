@@ -94,6 +94,9 @@ define(["underscore"], function (_) {
     "logout",
     "register",
 
+    //other summary bar
+    "blogLinkClicked",
+
     //recent changes
     "recentChangesViewed"
   ];

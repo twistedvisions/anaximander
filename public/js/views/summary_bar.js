@@ -108,6 +108,9 @@ define([
       this.$("#filter-toggle").on("click", _.bind(this.showFilters, this));
       this.model.on("change", this.setFilterButtonHighlighting, this);
       this.setFilterButtonHighlighting();
+      this.$("#blog-link a").on("click", _.bind(function () {
+        analytics.blogLinkClicked();
+      }, this));
     },
 
     setFilterButtonHighlighting: function () {
