@@ -387,7 +387,8 @@ define([
     getSelectedParticipant: function () {
       var select = this.$("input[data-key=participants]");
       var participants = select.select2("data");
-      var data = participants[0];
+      var data = _.clone(participants[0]);
+      data.name = data.text;
       delete data.text;
 
       return {thing: data};

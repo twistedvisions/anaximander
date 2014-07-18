@@ -279,7 +279,22 @@ define(
             _.keys(this.editor.participants).length.should.equal(0);
           });
         });
+        describe("getSelectedParticipant", function () {
+          beforeEach(function () {
+            this.editor.getSelectedParticipant.restore();
+          });
+          it("should set a name", function () {
+            this.editor.$("input[data-key=participants]").select2({
+              data: [{id: 1, text: "participant name"}],
+              initSelection: function (element, cb) {
+                cb([{id: 1, text: "participant name"}]);
+              }
+            });
+            this.editor.getSelectedParticipant().thing.name.should.equal("participant name");
+          });
+        });
       });
+
 
       describe("analytics", function () {
         beforeEach(function () {
