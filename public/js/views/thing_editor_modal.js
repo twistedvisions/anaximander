@@ -68,6 +68,7 @@ define([
 
     show: function () {
       $("body").append(this.$el);
+      this.showModal();
     },
 
     showModal: function () {
