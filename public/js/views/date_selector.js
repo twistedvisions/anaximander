@@ -280,13 +280,13 @@ define([
     },
 
     getFirstDayOfMonth: function () {
-      var startOfMonth = new Date(this.date);
+      var startOfMonth = new Date(this.date.getTime());
       startOfMonth.setDate(1);
       return startOfMonth.getDay();
     },
 
     getDaysInMonth: function () {
-      var endOfMonth = new Date(this.date);
+      var endOfMonth = new Date(this.date.getTime());
       endOfMonth.setDate(1);
       endOfMonth.setMonth(endOfMonth.getMonth() + 1);
       endOfMonth.setDate(endOfMonth.getDate() - 1);
