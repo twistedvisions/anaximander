@@ -182,6 +182,9 @@ define([
           };
         })
       }));
+      if (this.importanceDisplay) {
+        this.$("input[data-key=importance]").css("display", this.importanceDisplay);
+      }
     },
 
     setImportancesForNewType: function () {
