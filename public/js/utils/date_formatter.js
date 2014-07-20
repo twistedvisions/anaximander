@@ -5,6 +5,14 @@ define(["moment", "moment-range"], function (moment) {
     formatDateRange: function (start, end) {
       start = moment(start);
       end = moment(end);
+
+      if (start.get("year") === 0) {
+        start.add("year", 1);
+      }
+      if (end.get("year") === 0) {
+        end.add("year", 1);
+      }
+
       if (start.isSame(end, "day")) {
         return this.getDateString(start);
       } else {
