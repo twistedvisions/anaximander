@@ -55,7 +55,7 @@ define([
       this.$(".nav .history a").on("click", _.bind(this.showHistoryTab, this));
 
       var date = this.state.get("date");
-      var defaultDate = moment([(date[0] + date[1]) / 2, 0, 1]).toDate();
+      var defaultDate = moment([(date[0] + date[1]) / 2, 0, 1]);
 
       this.startDateSelector = new DateSelector({
         date: defaultDate,
@@ -427,20 +427,21 @@ define([
     },
 
     getLocalTime: function (key, offsetKey) {
-      var localTime = this.model.get(key)
+      var time = this.model.get(key);
+      var localTime = time
         .clone()
         .add("seconds", this.model.get(offsetKey));
       if (localTime.get("year") <= 0) {
         localTime.subtract("year", 1);
       }
+      localTime.zone(time.zone());
       return localTime;
     },
 
 
-
     renderTimes: function (localStartTime, localEndTime) {
-      this.startDateSelector.setDate(localStartTime.toDate());
-      this.endDateSelector.setDate(localEndTime.toDate());
+      this.startDateSelector.setDate(localStartTime);
+      this.endDateSelector.setDate(localEndTime);
     },
 
     handleSave: function () {

@@ -1,12 +1,28 @@
 /*global describe, it */
 define(
 
-  ["underscore", "jquery", "utils/date_formatter"],
+  ["underscore", "jquery", "utils/date_formatter", "moment"],
 
-  function (_, $, DateFormatter) {
+  function (_, $, DateFormatter, moment) {
     describe("date formatter", function () {
 
       describe("formatDateRange", function () {
+        it("should show a date string if shorter than a day", function () {
+          DateFormatter.formatDateRange(new Date(2000, 0, 1, 0, 0), new Date(2000, 0, 1, 23, 59))
+            .should.equal("01/01/2000");
+        });
+        it("should fix up start dates that have a mismatched timezone", function () {
+          var start = moment(new Date(2000, 0, 1, 0, 0));
+          start.zone(-12);
+          DateFormatter.formatDateRange(start, new Date(2000, 0, 1, 23, 59))
+            .should.equal("01/01/2000");
+        });
+        it("should fix up end dates that have a mismatched timezone", function () {
+          var end = moment(new Date(2000, 0, 1, 0, 0));
+          end.zone(12);
+          DateFormatter.formatDateRange(new Date(2000, 0, 1, 0, 0), end)
+            .should.equal("01/01/2000");
+        });
         it("should show the date range without era if all CE", function () {
           DateFormatter.formatDateRange(new Date(2000, 0, 1), new Date(2001, 1, 2))
             .should.equal("01/01/2000 \u2013 02/02/2001");

@@ -11,7 +11,7 @@ define([
   var DateSelector = Backbone.View.extend({
     initialize: function (opts) {
       opts = opts || {};
-      this.date = opts.date;
+      this.date = moment(opts.date);
       this.setBaseYear();
       this.boundInput = opts.input;
     },
@@ -22,7 +22,7 @@ define([
     },
 
     setDate: function (date) {
-      this.date = date;
+      this.date = moment(date);
       this.updateInput();
       this.setBaseYear();
       this.redraw();
@@ -49,7 +49,7 @@ define([
     },
 
     setBaseYear: function () {
-      this.baseYear = this.date.getFullYear();
+      this.baseYear = this.date.get("year");
     },
 
     renderSliders: function () {
@@ -57,7 +57,7 @@ define([
         orientation: "horizontal",
         min: 0,
         max: 23,
-        value: this.date.getHours(),
+        value: this.date.get("hour"),
         slide: _.bind(this.handleHourSlide, this)
       });
 
@@ -65,25 +65,25 @@ define([
         orientation: "horizontal",
         min: 0,
         max: 59,
-        value: this.date.getMinutes(),
+        value: this.date.get("minute"),
         slide: _.bind(this.handleMinuteSlide, this)
       });
     },
 
     handleHourSlide: function (e, result) {
-      this.date.setHours(result.value);
+      this.date.set("hour", result.value);
       this.redraw();
       this.triggerChange();
     },
 
     handleMinuteSlide: function (e, result) {
-      this.date.setMinutes(result.value);
+      this.date.set("minute", result.value);
       this.redraw();
       this.triggerChange();
     },
 
     getText: function () {
-      return moment(this.date).format("YYYY-MM-DD HH:mm");
+      return this.date.format("YYYY-MM-DD HH:mm");
     },
 
     handlePopupShown: function () {
@@ -113,7 +113,7 @@ define([
     handleInputKeyup: function () {
       var value = this.boundInput.val();
       if (value.match(/\d\d\d\d\-\d\d\-\d\d \d\d:\d\d/)) {
-        this.date = moment(value, "YYYY-MM-DD HH:mm").toDate();
+        this.date = moment(value, "YYYY-MM-DD HH:mm");
         this.setBaseYear();
         this.redraw();
         this.triggerChange();
@@ -122,7 +122,7 @@ define([
       } else {
         var newDate = moment(new Date(value));
         if (!isNaN(newDate.valueOf())) {
-          this.date = newDate.toDate();
+          this.date = newDate;
           this.setBaseYear();
           this.redraw();
           this.triggerChange();
@@ -136,7 +136,7 @@ define([
 
     showPopup: function () {
       if (!this.popupShowing) {
-        this.baseYear = this.date.getFullYear();
+        this.baseYear = this.date.get("year");
         this.boundInput.popover("show");
         this.popupShowing = true;
       }
@@ -160,21 +160,21 @@ define([
         sign = -1;
       }
       var amount = el.data().year;
-      this.date.setFullYear(this.date.getFullYear() + sign * amount);
+      this.date.set("year", this.date.get("year") + sign * amount);
       this.baseYear += sign * amount;
       this.redraw();
     },
 
     selectYear: function (e) {
       var el = $(e.target);
-      this.date.setFullYear(el.data().value);
+      this.date.set("year", el.data().value);
       this.redraw();
       this.triggerChange();
     },
 
     selectMonth: function (e) {
       var el = $(e.target);
-      this.date.setMonth(el.data().month);
+      this.date.set("month", el.data().month);
       this.redraw();
       this.triggerChange();
     },
@@ -183,7 +183,7 @@ define([
       var el = $(e.target);
       var date = el.text();
       if (date) {
-        this.date.setDate(parseInt(date, 10));
+        this.date.set("date", parseInt(date, 10));
       }
       //todo: is this necessary?
       this.redraw();
@@ -208,15 +208,15 @@ define([
 
     drawDate: function () {
       this.$(".date-summary .value").text([
-        Math.abs(this.date.getFullYear()),
-        _.string.lpad(this.date.getMonth() + 1, 2, "0"),
-        _.string.lpad(this.date.getDate(), 2, "0"),
-      ].join("-") + " " + (this.date.getFullYear() > 0 ? "CE" : "BCE"));
+        Math.abs(this.date.get("year")),
+        _.string.lpad(this.date.get("month") + 1, 2, "0"),
+        _.string.lpad(this.date.get("date"), 2, "0")
+      ].join("-") + " " + (this.date.get("year") > 0 ? "CE" : "BCE"));
     },
 
     drawYears: function () {
       this.$(".years").html("");
-      var year = this.date.getFullYear();
+      var year = this.date.get("year");
       var offset = 0;
       _.each(_.range(this.baseYear - 5, this.baseYear + 5), function (currentYear) {
         if (currentYear === 0) {
@@ -235,7 +235,7 @@ define([
 
     drawMonths: function () {
       this.$(".month-holder div").removeClass("selected");
-      this.$(".month-holder div[data-month=" + this.date.getMonth() + "]").addClass("selected");
+      this.$(".month-holder div[data-month=" + this.date.get("month") + "]").addClass("selected");
     },
 
     drawDays: function () {
@@ -270,7 +270,7 @@ define([
         this.$(".day-holder").removeClass("long-month");
       }
       this.$(".day-holder td").removeClass("selected");
-      this.$(".day-holder td[data-value=" + this.date.getDate() + "]").addClass("selected");
+      this.$(".day-holder td[data-value=" + this.date.get("date") + "]").addClass("selected");
     },
 
     addDateCell: function (daysInMonth, tr, day) {
@@ -280,35 +280,35 @@ define([
     },
 
     getFirstDayOfMonth: function () {
-      var startOfMonth = new Date(this.date.getTime());
-      startOfMonth.setDate(1);
-      return startOfMonth.getDay();
+      var startOfMonth = this.date.clone();
+      startOfMonth.set("date", 1);
+      return startOfMonth.day();
     },
 
     getDaysInMonth: function () {
-      var endOfMonth = new Date(this.date.getTime());
-      endOfMonth.setDate(1);
-      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
-      endOfMonth.setDate(endOfMonth.getDate() - 1);
-      return endOfMonth.getDate();
+      var endOfMonth = this.date.clone();
+      endOfMonth.set("date", 1);
+      endOfMonth.set("month", endOfMonth.get("month") + 1);
+      endOfMonth.set("date", endOfMonth.get("date") - 1);
+      return endOfMonth.get("date");
     },
 
     drawTime: function () {
       this.$(".time-summary .value").text([
-        _.string.lpad(this.date.getHours(), 2, "0"),
-        _.string.lpad(this.date.getMinutes(), 2, "0")
+        _.string.lpad(this.date.get("hour"), 2, "0"),
+        _.string.lpad(this.date.get("minute"), 2, "0")
       ].join(":"));
     },
 
     drawHours: function () {
       this.$(".hour-slider").slider({
-        value: this.date.getHours()
+        value: this.date.get("hour")
       });
     },
 
     drawMinutes: function () {
       this.$(".minute-slider").slider({
-        value: this.date.getMinutes()
+        value: this.date.get("minute")
       });
     },
 

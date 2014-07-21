@@ -6,6 +6,8 @@ define(["moment", "moment-range"], function (moment) {
       start = moment(start);
       end = moment(end);
 
+      this.fixZones(start, end);
+
       if (start.get("year") === 0) {
         start.add("year", 1);
       }
@@ -32,6 +34,8 @@ define(["moment", "moment-range"], function (moment) {
       start = moment(start);
       end = moment(end);
 
+      this.fixZones(start, end);
+
       if (this.isLongerThanOneDay(start, end)) {
         return this.formatDateRange(start, end);
       } else {
@@ -46,6 +50,16 @@ define(["moment", "moment-range"], function (moment) {
             timeRange,
             this.getDateString(end)
           ].join(" ");
+        }
+      }
+    },
+
+    fixZones: function (start, end) {
+      if (start.zone() !== end.zone()) {
+        if (this.getTimeString(start) === "00:00") {
+          end.zone(start.zone());
+        } else {
+          start.zone(end.zone());
         }
       }
     },

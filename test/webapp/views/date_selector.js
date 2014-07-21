@@ -11,7 +11,7 @@ define(
         var dateSelector = new DateSelector({
           date: new Date(1990, 06, 04, 11, 43)
         });
-        dateSelector.getDate().should.eql(new Date(1990, 06, 04, 11, 43));
+        dateSelector.getDate().toDate().should.eql(new Date(1990, 06, 04, 11, 43));
       });
 
       it("should set the date on the linked input", function () {
@@ -33,7 +33,7 @@ define(
         this.dateSelector.render();
         this.linkedInput.val("2014-01-01 11:43");
         this.linkedInput.trigger("keyup");
-        this.dateSelector.getDate().should.eql(new Date(2014, 0, 1, 11, 43));
+        this.dateSelector.getDate().toDate().should.eql(new Date(2014, 0, 1, 11, 43));
       });
 
       it("should update the date when the linked input is typed into, even in non-standard formats", function () {
@@ -45,7 +45,7 @@ define(
         this.dateSelector.render();
         this.linkedInput.val("Jun 16 1954");
         this.linkedInput.trigger("keyup");
-        this.dateSelector.getDate().should.eql(new Date(1954, 5, 16, 0, 0));
+        this.dateSelector.getDate().toDate().should.eql(new Date(1954, 5, 16, 0, 0));
       });
 
       it("should not update the date while the month text is not in the correct format", function () {
@@ -59,7 +59,7 @@ define(
         sinon.stub(this.dateSelector, "inputDoesNotMatch");
         this.linkedInput.trigger("keyup");
         this.dateSelector.inputDoesNotMatch.calledOnce.should.equal(true);
-        this.dateSelector.getDate().should.eql(new Date(2014, 6, 1, 11, 43));
+        this.dateSelector.getDate().toDate().should.eql(new Date(2014, 6, 1, 11, 43));
       });
 
       it("should not update the date while the year text is not in the correct format", function () {
@@ -73,7 +73,7 @@ define(
         sinon.stub(this.dateSelector, "inputDoesNotMatch");
         this.linkedInput.trigger("keyup");
         this.dateSelector.inputDoesNotMatch.calledOnce.should.equal(true);
-        this.dateSelector.getDate().should.eql(new Date(2014, 6, 1, 11, 43));
+        this.dateSelector.getDate().toDate().should.eql(new Date(2014, 6, 1, 11, 43));
       });
 
       it("should not update the date if it is the same", function () {
@@ -148,7 +148,7 @@ define(
                   this.dateSelector.$(selector).click();
                 });
                 it("should change the date", function () {
-                  this.dateSelector.getDate().getFullYear().should.equal(1990 + this.amount);
+                  this.dateSelector.getDate().toDate().getFullYear().should.equal(1990 + this.amount);
                 });
                 it("should update the visible date after it was clicked", function () {
                   this.dateSelector.$(".year-holder .selected").data().value.should.equal((1990 + this.amount));
@@ -182,7 +182,7 @@ define(
             });
             it("should set the month", function () {
               this.dateSelector.$(this.selector).click();
-              this.dateSelector.getDate().getMonth().should.equal(i);
+              this.dateSelector.getDate().toDate().getMonth().should.equal(i);
             });
             it("should select the month", function () {
               this.dateSelector.$(this.selector + ".selected").length.should.equal(0);
@@ -225,7 +225,7 @@ define(
           });
           it("should set the date on click", function () {
             this.dateSelector.$(this.selector).click();
-            this.dateSelector.getDate().getDate().should.equal(7);
+            this.dateSelector.getDate().toDate().getDate().should.equal(7);
           });
           it("should select the date", function () {
             this.dateSelector.$(this.selector).click();
@@ -264,7 +264,7 @@ define(
               newDate = date;
             });
             this.dateSelector.$(".month-holder [data-month=0]").click();
-            newDate.should.eql(new Date(2014, 0, 1, 11, 43));
+            newDate.toDate().should.eql(new Date(2014, 0, 1, 11, 43));
           });
         });
 
