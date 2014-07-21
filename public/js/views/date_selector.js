@@ -12,6 +12,7 @@ define([
     initialize: function (opts) {
       opts = opts || {};
       this.date = moment(opts.date);
+      this.zone = this.date.zone();
       this.setBaseYear();
       this.boundInput = opts.input;
     },
@@ -23,6 +24,7 @@ define([
 
     setDate: function (date) {
       this.date = moment(date);
+      this.zone = this.date.zone();
       this.updateInput();
       this.setBaseYear();
       this.redraw();
@@ -72,12 +74,14 @@ define([
 
     handleHourSlide: function (e, result) {
       this.date.set("hour", result.value);
+      this.date.zone(this.zone);
       this.redraw();
       this.triggerChange();
     },
 
     handleMinuteSlide: function (e, result) {
       this.date.set("minute", result.value);
+      this.date.zone(this.zone);
       this.redraw();
       this.triggerChange();
     },
@@ -113,7 +117,14 @@ define([
     handleInputKeyup: function () {
       var value = this.boundInput.val();
       if (value.match(/\d\d\d\d\-\d\d\-\d\d \d\d:\d\d/)) {
-        this.date = moment(value, "YYYY-MM-DD HH:mm");
+        var newDate = moment(value, "YYYY-MM-DD HH:mm");
+        if (Math.abs(newDate.valueOf() - this.date.valueOf()) < 86400000) {
+          newDate.zone(this.zone);
+          if (this.zone !== 0) {
+            newDate.add("minutes", this.zone);
+          }
+        }
+        this.date = newDate;
         this.setBaseYear();
         this.redraw();
         this.triggerChange();
@@ -161,6 +172,7 @@ define([
       }
       var amount = el.data().year;
       this.date.set("year", this.date.get("year") + sign * amount);
+      this.zone = this.date.zone();
       this.baseYear += sign * amount;
       this.redraw();
     },
@@ -168,6 +180,7 @@ define([
     selectYear: function (e) {
       var el = $(e.target);
       this.date.set("year", el.data().value);
+      this.zone = this.date.zone();
       this.redraw();
       this.triggerChange();
     },
@@ -175,6 +188,7 @@ define([
     selectMonth: function (e) {
       var el = $(e.target);
       this.date.set("month", el.data().month);
+      this.zone = this.date.zone();
       this.redraw();
       this.triggerChange();
     },
@@ -184,6 +198,7 @@ define([
       var date = el.text();
       if (date) {
         this.date.set("date", parseInt(date, 10));
+        this.zone = this.date.zone();
       }
       //todo: is this necessary?
       this.redraw();
