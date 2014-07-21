@@ -170,8 +170,8 @@ define([
       var self = this;
       window.ParsleyValidator
         .addValidator("endafterstart", function () {
-          var start = self.startDateSelector.getDate().getTime();
-          var end = self.endDateSelector.getDate().getTime();
+          var start = self.startDateSelector.getDate().valueOf();
+          var end = self.endDateSelector.getDate().valueOf();
           return end >= start;
         }, 32)
         .addMessage("en", "endafterstart", "The end date should be after the start");
