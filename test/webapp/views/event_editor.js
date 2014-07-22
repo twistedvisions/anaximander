@@ -406,9 +406,10 @@ define(
           });
           it("should display the event place with distance if further away", function () {
             this.editor.render();
-            this.editor.$("input[data-key=place]").select2("val", 5);
-            this.editor.$("input[data-key=place]").val().should.equal("5");
-            this.editor.$("input[data-key=place]").select2("data").text.should.equal("existing place name1 (1.2 km)");
+            this.editor.getPlaces([
+              {id: 4, name: "existing place name", distance: 0},
+              {id: 5, name: "existing place name1", distance: 1200}
+            ]).results[1].text.should.equal("existing place name1 (1.2 km)");
           });
           it("should set the event type editor", function () {
             this.editor.render();

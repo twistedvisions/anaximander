@@ -200,8 +200,6 @@ define([
       thingsToFetch.push(when(this.types.fetch()));
       thingsToFetch.push(when(this.eventTypes.fetch()));
 
-      thingsToFetch.push(this.getNearestPlaces());
-
       if (this.model) {
         var d = when.defer();
         when(this.model.fetch()).then(_.bind(function () {
@@ -212,31 +210,6 @@ define([
       }
 
       return when.all(thingsToFetch);
-    },
-
-    getNearestPlaces: function () {
-      var coords;
-      if (this.newEvent) {
-        coords = {
-          lat: this.newEvent.location.lat,
-          lon: this.newEvent.location.lon
-        };
-      } else if (this.model) {
-        coords = {
-          lat: this.model.get("lat"),
-          lon: this.model.get("lon")
-        };
-      }
-      //todo: store this in a collection
-      return when($.get(
-        "/place",
-        coords,
-        _.bind(this.handleGetNearestPlaces, this)
-      ));
-    },
-
-    handleGetNearestPlaces: function (places) {
-      this.nearestPlaces = places;
     },
 
     populateView: function () {
@@ -307,7 +280,59 @@ define([
 
     renderPlaces: function () {
 
-      var queryResults = _.map(this.nearestPlaces, function (place) {
+      this.$("input[data-key=place]").select2({
+        placeholder: "Select or add a place",
+        ajax: {
+          url: _.bind(this.getPlaceUrl, this),
+          dataType: "json",
+          data: function (term, page) {
+            return {
+              q: term,
+              page: page
+            };
+          },
+          results: _.bind(this.getPlaces, this)
+        },
+        createSearchChoice: function (text) {
+          return {
+            id: -1,
+            text: text
+          };
+        },
+        initSelection: _.bind(function (element, callback) {
+          callback(this.selectedPlace);
+        }, this)
+      });
+
+      if (this.model) {
+        this.selectedPlace = {
+          id: this.model.get("place").id,
+          text: this.model.get("place").name
+        };
+        this.$("input[data-key=place]").select2("val", this.model.get("place").id);
+      }
+    },
+
+    getPlaceUrl: function (placeName) {
+      var coords;
+      if (this.newEvent) {
+        coords = {
+          lat: this.newEvent.location.lat,
+          lon: this.newEvent.location.lon
+        };
+      } else if (this.model) {
+        coords = {
+          lat: this.model.get("lat"),
+          lon: this.model.get("lon")
+        };
+      }
+
+      return ["/place?lat=", coords.lat, "&lon=", coords.lon, "%q=", encodeURIComponent(placeName)].join("");
+    },
+
+    getPlaces: function (data) {
+
+      var queryResults = _.map(data, function (place) {
         var text = place.name;
         if (place.distance > 100) {
           text += " (" + numeral(place.distance / 1000).format("0,0.0") + " km)";
@@ -318,21 +343,10 @@ define([
         };
       });
 
-      this.$("input[data-key=place]").select2({
-        placeholder: "Select or add a place",
-        data: queryResults,
-        createSearchChoice: function (text) {
-          return {
-            id: -1,
-            text: text
-          };
-        }
-      });
+      return {
+        results: queryResults
+      };
 
-      if (this.model) {
-        this.$("input[data-key=place]")
-          .select2("val", this.model.get("place").id);
-      }
     },
 
     getSelectableParticipants: function (data/*, page*/) {
@@ -409,7 +423,10 @@ define([
 
     renderExistingEvent: function () {
       this.$el.find("input[data-key=name]").val(this.model.get("name"));
-      this.$el.find("input[data-key=place]").val(this.model.get("place").name);
+      this.$el.find("input[data-key=place]").select2("data", [{
+        id: this.model.get("place").id,
+        text: this.model.get("place").name
+      }]);
       this.eventTypeSelector.setValue(
         this.model.get("type").id,
         this.model.get("importance").id
