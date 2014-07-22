@@ -119,9 +119,11 @@ define([
       if (value.match(/\d\d\d\d\-\d\d\-\d\d \d\d:\d\d/)) {
         var newDate = moment(value, "YYYY-MM-DD HH:mm");
         if (Math.abs(newDate.valueOf() - this.date.valueOf()) < 86400000) {
-          newDate.zone(this.zone);
-          if (this.zone !== 0) {
-            newDate.add("minutes", this.zone);
+          if (newDate.hour() !== parseInt(value.match(/\s(\d\d):/)[1], 10)) {
+            newDate.zone(this.zone);
+            if (this.zone !== 0) {
+              newDate.add("minutes", this.zone);
+            }
           }
         }
         this.date = newDate;
