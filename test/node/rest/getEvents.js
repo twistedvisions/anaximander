@@ -80,7 +80,7 @@ describe("getEvents", function () {
     it("should allow you to view only values that have no specified secondary", function () {
       getEvents.generateEventFilters({
         typeFilters: [],
-        subtypeFilters: [{id: 2, parent_type: 1}, {id: 3, parent_type: 1}],
+        subtypeFilters: [{id: 2, parent_type_id: 1}, {id: 3, parent_type_id: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
         "and ((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (2, 3)) or (thing_subtype.thing_type_id is null))) " +
@@ -101,7 +101,7 @@ describe("getEvents", function () {
     it("should allow you to specify only a single secondary", function () {
       getEvents.generateEventFilters({
         typeFilters: [],
-        subtypeFilters: [{id: 3, parent_type: 1}],
+        subtypeFilters: [{id: 3, parent_type_id: 1}],
         notSpecifiedTypeFilters: [{id: 1}]
       }).should.equal(
         "and ((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)))) " +
@@ -120,7 +120,7 @@ describe("getEvents", function () {
     it("should allow you to specify a secondary and not specifieds", function () {
       getEvents.generateEventFilters({
         typeFilters: [],
-        subtypeFilters: [{id: 3, parent_type: 1}],
+        subtypeFilters: [{id: 3, parent_type_id: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
         "and ((((thing.type_id = 1) and ((thing_subtype.thing_type_id not in (3)) or " +
@@ -164,7 +164,7 @@ describe("getEvents", function () {
     it("should allow you to specify both types and subtypes of a different type", function () {
       getEvents.generateEventFilters({
         typeFilters: [{id: 2}],
-        subtypeFilters: [{id: 3, parent_type: 1}],
+        subtypeFilters: [{id: 3, parent_type_id: 1}],
         notSpecifiedTypeFilters: [{id: 1}]
       }).should.equal(
         "and (" +
@@ -213,7 +213,7 @@ describe("getEvents", function () {
     it("should allow you to filter out a whole type and a single other subtype", function () {
       getEvents.generateEventFilters({
         typeFilters: [{id: 2}],
-        subtypeFilters: [{id: 3, parent_type: 1}],
+        subtypeFilters: [{id: 3, parent_type_id: 1}],
         notSpecifiedTypeFilters: []
       }).should.equal(
         "and (" +
@@ -278,7 +278,7 @@ describe("getEvents", function () {
 
       var query = getEvents.generateEventFilters({
         typeFilters: [],
-        subtypeFilters: [{id: 2, parent_type: 1}, {id: 4, parent_type: 2}],
+        subtypeFilters: [{id: 2, parent_type_id: 1}, {id: 4, parent_type_id: 2}],
         notSpecifiedTypeFilters: []
       });
 
@@ -326,7 +326,7 @@ describe("getEvents", function () {
 
       var query = getEvents.generateEventFilters({
         typeFilters: [],
-        subtypeFilters: [{id: 4, parent_type: 2}],
+        subtypeFilters: [{id: 4, parent_type_id: 2}],
         notSpecifiedTypeFilters: [{id: 1}]
       });
 
@@ -422,7 +422,7 @@ describe("getEvents", function () {
         try {
           getEvents.generateEventFilters({
             typeFilters: [{id: 2}],
-            subtypeFilters: [{id: 4, parent_type: 2}, {id: "4 -- bobby tables", parent_type: 2}],
+            subtypeFilters: [{id: 4, parent_type_id: 2}, {id: "4 -- bobby tables", parent_type_id: 2}],
             notSpecifiedTypeFilters: []
           });
         } catch (_e) {
@@ -435,7 +435,7 @@ describe("getEvents", function () {
         try {
           getEvents.generateEventFilters({
             typeFilters: [{id: 2}],
-            subtypeFilters: [{id: 4, parent_type: 2}],
+            subtypeFilters: [{id: 4, parent_type_id: 2}],
             notSpecifiedTypeFilters: [{id: 1}, {id: "2 -- bobby tables"}]
           });
         } catch (_e) {
