@@ -13,8 +13,8 @@ define([
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query": "queryMapView",
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight": "queryHighlightedMapView",
       "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight/state/:state": "queryHighlightedStateMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter/query/:query/highlight/:highlight": "filteredQueryHighlightedMapView",
-      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/filter/:filter/query/:query/highlight/:highlight/state/:state": "filteredQueryHighlightedStateMapView"
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight/filter/:filter": "filteredQueryHighlightedMapView",
+      "lat/:lat/lon/:lon/zoom/:zoom/start/:start/end/:end/importance/:importance/query/:query/highlight/:highlight/state/:state/filter/:filter": "filteredQueryHighlightedStateMapView"
     },
 
     mapView: function (lat, lon, zoom, start, end, importance) {
@@ -27,39 +27,39 @@ define([
     filteredMapView: function (lat, lon, zoom, start, end, importance, filters) {
       this.filteredQueryHighlightedStateMapView(
         lat, lon, zoom, start, end, importance,
-        filters, null, null, null
+        null, null, null, filters
       );
     },
 
     queryMapView: function (lat, lon, zoom, start, end, importance, query) {
       this.filteredQueryHighlightedStateMapView(
         lat, lon, zoom, start, end, importance,
-        null, query, null, null
+        query, null, null, null
       );
     },
 
     queryHighlightedMapView: function (lat, lon, zoom, start, end, importance, query, highlight) {
       this.filteredQueryHighlightedStateMapView(
         lat, lon, zoom, start, end, importance,
-        null, query, highlight, null
+        query, highlight, null, null
       );
     },
 
     queryHighlightedStateMapView: function (lat, lon, zoom, start, end, importance, query, highlight, state) {
       this.filteredQueryHighlightedStateMapView(
         lat, lon, zoom, start, end, importance,
-        null, query, highlight, state
+        query, highlight, state, null
       );
     },
 
-    filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, importance, filters, query, highlight) {
+    filteredQueryHighlightedMapView: function (lat, lon, zoom, start, end, importance, query, highlight, filters) {
       this.filteredQueryHighlightedStateMapView(
         lat, lon, zoom, start, end, importance,
-        filters, query, highlight, null
+        query, highlight, null, filters
       );
     },
 
-    filteredQueryHighlightedStateMapView: function (lat, lon, zoom, start, end, importance, filters, query, highlight, state) {
+    filteredQueryHighlightedStateMapView: function (lat, lon, zoom, start, end, importance, query, highlight, state, filters) {
 
       this._setFromUrl = true;
 
@@ -158,13 +158,7 @@ define([
         "importance", importance
       ];
 
-      if (filterState.length > 0) {
-
-        location.push("filter");
-        filters = FilterUrlSerialiser.serialise(this.model);
-        location.push(filters);
-
-      } else if (query) {
+      if (query) {
 
         location.push("query");
         location.push(encodeURIComponent(query));
@@ -182,6 +176,14 @@ define([
           }
 
         }
+      }
+
+      if (filterState.length > 0) {
+
+        location.push("filter");
+        filters = FilterUrlSerialiser.serialise(this.model);
+        location.push(filters);
+
       }
 
       this.navigate(location.join("/"));

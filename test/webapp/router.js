@@ -41,15 +41,15 @@ define(
         });
         it("should call filteredQueryHighlightedMapView with a filter but no query or highlight from filteredMapView", function () {
           this.router.filteredMapView(1, 2, 3, 4, 5, 125, "some filters");
-          this.router.filteredQueryHighlightedStateMapView.calledWith(1, 2, 3, 4, 5, 125, "some filters", null, null).should.equal(true);
+          this.router.filteredQueryHighlightedStateMapView.calledWith(1, 2, 3, 4, 5, 125, null, null, null, "some filters").should.equal(true);
         });
         it("should call filteredQueryHighlightedMapView with query but no filter or highlight from queryMapView", function () {
           this.router.queryMapView(1, 2, 3, 4, 5, 125, "searchString");
-          this.router.filteredQueryHighlightedStateMapView.calledWith(1, 2, 3, 4, 5, 125, null, "searchString", null).should.equal(true);
+          this.router.filteredQueryHighlightedStateMapView.calledWith(1, 2, 3, 4, 5, 125, "searchString", null, null, null).should.equal(true);
         });
         it("should call filteredQueryHighlightedMapView with query and highlight but no filter from queryHighlightedMapView", function () {
           this.router.queryHighlightedMapView(1, 2, 3, 4, 5, 125, "searchString", "[1]");
-          this.router.filteredQueryHighlightedStateMapView.calledWith(1, 2, 3, 4, 5, 125, null, "searchString", "[1]").should.equal(true);
+          this.router.filteredQueryHighlightedStateMapView.calledWith(1, 2, 3, 4, 5, 125, "searchString", "[1]", null, null).should.equal(true);
         });
       });
       describe("filteredQueryHighlightedStateMapView", function () {
@@ -74,7 +74,7 @@ define(
             this.router.model = this.model;
             this.model.set("query", "some query");
             sinon.stub(this.router.model, "set");
-            this.router.filteredQueryHighlightedStateMapView(1, 1, 3, 1900, 2000, 125, null, "some query", null, null);
+            this.router.filteredQueryHighlightedStateMapView(1, 1, 3, 1900, 2000, 125, "some query", null, null, null);
             (this.router.model.set.args[0][0][key] === undefined).should.equal(true);
           });
         });
@@ -84,7 +84,7 @@ define(
           this.model.on("change:filterState", function () {
             called = true;
           });
-          this.router.filteredQueryHighlightedStateMapView(1, 1, 3, 1900, 2000, 125, "1:*", "some query", null, null);
+          this.router.filteredQueryHighlightedStateMapView(1, 1, 3, 1900, 2000, 125, "some query", null, null, "1:*");
           called.should.equal(true);
         });
         it("should not trigger an event if the filterState has not changed", function () {
@@ -94,7 +94,7 @@ define(
           this.model.on("change:filterState", function () {
             called = true;
           });
-          this.router.filteredQueryHighlightedStateMapView(1, 1, 3, 1900, 2000, 125, "1:*", "some query", null, null);
+          this.router.filteredQueryHighlightedStateMapView(1, 1, 3, 1900, 2000, 125, "some query", null, null, "1:*");
           called.should.equal(false);
         });
       });
