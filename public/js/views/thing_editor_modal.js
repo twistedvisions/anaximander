@@ -122,7 +122,7 @@ define([
       this.hide();
 
       //force a refresh of data
-      this.state.trigger("change:center");
+      this.state.trigger("change:thing change:center");
     },
 
     hide: function () {

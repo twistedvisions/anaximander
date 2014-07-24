@@ -40,6 +40,7 @@ define([
       }, this));
       this.model.on("change:query", this.updateQuery, this);
       this.model.on("change:highlight", this.updateHighlight, this);
+      this.model.on("change:thing", this.handleThingChange, this);
       this.$("#search").focus();
       $("#search-box").on("hide.bs.dropdown", _.bind(this.bsHideSearchResults, this));
       $("#search-box").on("show.bs.dropdown", _.bind(this.bsShowSearchResults, this));
@@ -113,6 +114,10 @@ define([
           }
         }
       }
+    },
+
+    handleThingChange: function () {
+      this.updateQuery();
     },
 
     handleBodyResize: function () {
