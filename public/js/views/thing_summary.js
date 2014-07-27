@@ -35,7 +35,7 @@ define([
         this.highlight = highlight;
         if (!highlight || !highlight.id) {
           this.$el.hide();
-        } else if (!highlight.reset) {
+        } else if (!highlight.reset && highlight.points) {
           this.updateHighlight();
         }
       } else if (!highlight.reset && !!selectedEventId && (this.lastEventId !== selectedEventId)) {
